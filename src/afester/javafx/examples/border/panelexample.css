@@ -1,0 +1,23 @@
+#hello {
+	-fx-border-image-source: url(border.png);
+	-fx-border-image-slice:  6px;
+	-fx-border-image-insets: 0px;
+	-fx-border-image-repeat: repeat;
+	-fx-border-image-width:  6px;
+}
+
+#hello2 {
+  -fx-border-image-source: url(border.png), url(trafficlight.png);
+  -fx-border-image-slice:  6px             , 16px 46px 0px 0px;
+  -fx-border-image-insets: 0px             , 0px;
+  -fx-border-image-repeat: repeat          , no-repeat;
+  -fx-border-image-width:  6px             , 16px 46px 0px 0px;
+}
+
+#hello3 {
+	-fx-border-image-source: url(border.png), url(trafficlight.png);
+	-fx-border-image-slice:  6px             , 16px 0px 0px 0px;
+	-fx-border-image-insets: 0px             , 0px;
+	-fx-border-image-repeat: repeat          , no-repeat;
+	-fx-border-image-width:  6px             , 16px 0px 0px 0px;
+}
