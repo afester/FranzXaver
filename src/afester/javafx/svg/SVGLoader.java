@@ -64,8 +64,13 @@ public class SVGLoader {
     private Group parentNode;
     
     private Group result;
-    
-    private boolean addRootRect = false;    // flag whether to add a rectangle in the size of the drawing
+
+	// flag whether to add a rectangle in the size of the drawing
+    private boolean addRootRect = false;
+
+    // flag whether to use the alternative SVG Path element handling which adds
+    // separate nodes for the path elements instead of an SVGPath node
+    private boolean useSeparatePathElements = false;
 
     private Map<String, Consumer<SVGOMElement>> elementMap = new HashMap<>();
 
@@ -74,7 +79,11 @@ public class SVGLoader {
         elementMap.put("defs",     e -> handleElement((SVGOMDefsElement) e));
         elementMap.put("metadata", e -> handleElement((SVGOMMetadataElement) e));
         elementMap.put("g",        e -> handleElement((SVGOMGElement) e));
-        elementMap.put("path",     e -> handleElement((SVGOMPathElement) e));
+        if (useSeparatePathElements) {
+        	elementMap.put("path", e -> handlePath2((SVGOMPathElement) e));
+        } else {
+        	elementMap.put("path", e -> handleElement((SVGOMPathElement) e));
+        }
         elementMap.put("rect",     e -> handleElement((SVGOMRectElement) e));
         elementMap.put("text",     e -> handleElement((SVGOMTextElement) e));
         elementMap.put("tspan",    e -> handleElement((SVGOMTSpanElement) e));
