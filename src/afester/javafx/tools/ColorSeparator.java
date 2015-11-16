@@ -14,40 +14,44 @@ import javafx.scene.paint.Color;
 
 public class ColorSeparator {
 
+    /** The source image */
     private Image sourceImage;
     
+    /**
+     * 
+     * @param image
+     */
     public ColorSeparator(Image image) {
         sourceImage = image;
     }
 
     /**
-     * Creates a color mask in the size of the given image.
+     * Creates a color mask in the size of the source image.
      * 
-     * @param source The source image
      * @param color  The color to use for the mask
      *
-     * @return A color mask with the given color and the size of the given image. 
+     * @return A color mask with the given color and the size of the source image. 
      */
-    private ColorInput createColorMask(Image source, Color color) {
+    private ColorInput createColorMask(Color color) {
         ColorInput colorInput = new ColorInput();
         colorInput.setPaint(color);
         colorInput.setX(0);
         colorInput.setY(0);
-        colorInput.setWidth(source.getWidth());
-        colorInput.setHeight(source.getHeight());
+        colorInput.setWidth(sourceImage.getWidth());
+        colorInput.setHeight(sourceImage.getHeight());
         return colorInput;
     }
 
     /**
-     * 
-     * @param source
-     * @param color
+     * Returns a color channel for the given color. 
+     *
+     * @param color 
      * @return
      */
-    private Image getChannel(Image source, Color color) {
+    private Image getChannel(Color color) {
         Node img = new ImageView(sourceImage);
 
-        ColorInput mask = createColorMask(sourceImage, color);
+        ColorInput mask = createColorMask(color);
         Blend blend = new Blend();
         blend.setMode(BlendMode.MULTIPLY);
         blend.setTopInput(mask);
@@ -60,41 +64,37 @@ public class ColorSeparator {
     }
 
     /**
-     * 
-     * @return
+     * @return An image which is identical to the source image, but
+     *         contains the red color channel only. 
      */
     public Image getRedChannel() {
-        return getChannel(sourceImage, Color.RED);  // #ff0000
+        return getChannel(Color.RED);  // #ff0000
     }
 
     /**
-     * 
-     * @return
+     * @return An image which is identical to the source image, but
+     *         contains the green color channel only. 
      */
     public Image getGreenChannel() {
-        return getChannel(sourceImage, Color.LIME); // #00ff00
+        return getChannel(Color.LIME); // #00ff00
     }
 
     /**
-     * 
-     * @return
+     * @return An image which is identical to the source image, but
+     *         contains the blue color channel only. 
      */
     public Image getBlueChannel() {
-        return getChannel(sourceImage, Color.BLUE); // #0000ff
+        return getChannel(Color.BLUE); // #0000ff
     }
 
     /**
+     * Brain-dead implementation of a color separator which returns the
+     * blue color channel of an image.
      * 
-     * @return
-     */
-//    public Image getAlphaChannel() {
-//        return getChannel(sourceImage, new Color(0.0, 0.0, 0.0, 1.0)); // #000000ff
-//    }
-
-    /**
      * @deprecated Use getBlueChannel instead
      *
-     * @return
+     * @return An image which is identical to the source image, but
+     *         contains the blue color channel only. 
      */
     public Image getBlueChannel1() {
         PixelReader pr = sourceImage.getPixelReader();
