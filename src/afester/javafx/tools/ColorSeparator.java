@@ -12,14 +12,18 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
+/**
+ * Utility class to extract red, green and blue color channels from an image. 
+ */
 public class ColorSeparator {
 
     /** The source image */
     private Image sourceImage;
     
     /**
-     * 
-     * @param image
+     * Creates a ColorSeparator and specified the input image. 
+     *
+     * @param image The input image to use.
      */
     public ColorSeparator(Image image) {
         sourceImage = image;
@@ -32,7 +36,7 @@ public class ColorSeparator {
      *
      * @return A color mask with the given color and the size of the source image. 
      */
-    private ColorInput createColorMask(Color color) {
+    public ColorInput createColorMask(Color color) {
         ColorInput colorInput = new ColorInput();
         colorInput.setPaint(color);
         colorInput.setX(0);
@@ -42,19 +46,36 @@ public class ColorSeparator {
         return colorInput;
     }
 
+    
     /**
-     * Returns a color channel for the given color. 
+     * Create a color Blend effect for the source image.
      *
-     * @param color 
-     * @return
+     * @param color The color to use for the top source area.
+     *
+     * @return A Blend effect of type MULTIPLY and with a top source which 
+     *         is a solid area of the given color. 
      */
-    private Image getChannel(Color color) {
-        Node img = new ImageView(sourceImage);
-
+    public Blend createColorBlend(Color color) {
         ColorInput mask = createColorMask(color);
         Blend blend = new Blend();
         blend.setMode(BlendMode.MULTIPLY);
         blend.setTopInput(mask);
+        return blend;
+    }
+
+    
+    /**
+     * Returns a color channel for the given color. 
+     *
+     * @param color The color to use for the mask.
+     *
+     * @return An Image where the given color has been filtered from the source
+     *         image.   
+     */
+    private Image getChannel(Color color) {
+        Node img = new ImageView(sourceImage);
+
+        Blend blend = createColorBlend(color);
         img.setEffect(blend);
 
         SnapshotParameters params = new SnapshotParameters();
@@ -64,7 +85,7 @@ public class ColorSeparator {
     }
 
     /**
-     * @return An image which is identical to the source image, but
+     * @return An image which is identical to the input image, but
      *         contains the red color channel only. 
      */
     public Image getRedChannel() {
@@ -72,7 +93,7 @@ public class ColorSeparator {
     }
 
     /**
-     * @return An image which is identical to the source image, but
+     * @return An image which is identical to the input image, but
      *         contains the green color channel only. 
      */
     public Image getGreenChannel() {
@@ -80,7 +101,7 @@ public class ColorSeparator {
     }
 
     /**
-     * @return An image which is identical to the source image, but
+     * @return An image which is identical to the input image, but
      *         contains the blue color channel only. 
      */
     public Image getBlueChannel() {
