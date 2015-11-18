@@ -1,6 +1,7 @@
 package afester.javafx.svg;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -214,21 +215,6 @@ public class SVGLoader {
         System.err.println("Handling <pattern>: " + element);
     }
 
-    /**
-     * @param fileName The name of the SVG file to load.
-     *
-     * @return A JavaFX node representing the SVG file.
-     */
-    public Group loadSvg(String fileName) {
-        // note: uses the DOM approach.
-        // probably a SAX based approach would be better from a performance perspective.
-        SVGOMDocument doc = (SVGOMDocument) loadSvgDocument(fileName);
-
-        result = new Group();
-        parentNode = result;
-        handle(doc);
-        return result;
-    }
 
 
     /**
@@ -555,5 +541,68 @@ public class SVGLoader {
         }
 
         return null;
+    }
+
+
+    public Document loadSvgDocument(InputStream svgFile) {
+        try {
+            String parser = XMLResourceDescriptor.getXMLParserClassName();
+            SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory( parser );
+            SVGOMDocument document = (SVGOMDocument) factory.createDocument("", svgFile);
+
+            UserAgent userAgent = new UserAgentAdapter();
+            DocumentLoader loader = new DocumentLoader( userAgent );
+            BridgeContext bridgeContext = new BridgeContext( userAgent, loader );
+            bridgeContext.setDynamicState( BridgeContext.DYNAMIC );
+    
+            // Enable CSS- and SVG-specific enhancements.
+            (new GVTBuilder()).build( bridgeContext, document );
+
+            return document;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    
+    /**
+     * Loads an SVG file from a file with a specified name and returns a corresponding 
+     * JavaFX scene graph.
+     *
+     * @param fileName The name of the SVG file to load.
+     *
+     * @return A JavaFX node representing the SVG file.
+     */
+    public Group loadSvg(String fileName) {
+        // note: uses the DOM approach.
+        // probably a SAX based approach would be better from a performance perspective.
+        SVGOMDocument doc = (SVGOMDocument) loadSvgDocument(fileName);
+
+        result = new Group();
+        parentNode = result;
+        handle(doc);
+        return result;
+    }
+
+
+    /**
+     * Loads an SVG file from an InputStream and returns a corresponding 
+     * JavaFX scene graph.
+     *
+     * @param svgFile A stream which provides the SVG document.
+     *
+     * @return A JavaFX node representing the SVG file.
+     */
+    public Group loadSvg(InputStream svgFile) {
+        // note: uses the DOM approach.
+        // probably a SAX based approach would be better from a performance perspective.
+        SVGOMDocument doc = (SVGOMDocument) loadSvgDocument(svgFile);
+
+        result = new Group();
+        parentNode = result;
+        handle(doc);
+        return result;
     }
 }
