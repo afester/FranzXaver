@@ -54,7 +54,7 @@ public class SVGStyleTools {
         return fxTrans;
     }
 
-    Color getFillColor(SVGStylableElement obj) {
+    private Color getFillColor(SVGStylableElement obj) {
         Color result = null;
         
         // svgElement.getComputedStyle() takes care of all styling aspects,
@@ -78,7 +78,7 @@ public class SVGStyleTools {
     }
 
     
-    Color getStrokeColor(SVGStylableElement obj) {
+    private Color getStrokeColor(SVGStylableElement obj) {
 
         Color result = null;
 
@@ -113,7 +113,13 @@ public class SVGStyleTools {
         CSSStyleDeclaration style = svgElement.getComputedStyle(obj, null);
         CSSOMSVGComputedStyle.ComputedCSSValue swidth = (ComputedCSSValue) style.getPropertyCSSValue("stroke-width");
         if (swidth != null) {
-            float strokeWidth = swidth.getFloatValue(CSSPrimitiveValue.CSS_NUMBER);
+            float strokeWidth = 0;
+            if (swidth.getPrimitiveType() == CSSPrimitiveValue.CSS_NUMBER) {
+                strokeWidth = swidth.getFloatValue (CSSPrimitiveValue.CSS_NUMBER);
+            } else {
+                strokeWidth = swidth.getFloatValue (CSSPrimitiveValue.CSS_PX);
+            }
+
             fxObj.setStrokeWidth(strokeWidth);
         }
     }

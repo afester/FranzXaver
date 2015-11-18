@@ -17,6 +17,7 @@ import org.apache.batik.anim.dom.SVGOMMetadataElement;
 import org.apache.batik.anim.dom.SVGOMPathElement;
 import org.apache.batik.anim.dom.SVGOMPatternElement;
 import org.apache.batik.anim.dom.SVGOMRectElement;
+import org.apache.batik.anim.dom.SVGOMLineElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.anim.dom.SVGOMTSpanElement;
 import org.apache.batik.anim.dom.SVGOMTextElement;
@@ -51,13 +52,16 @@ public class SVGLoader {
         elementMap.put("defs",     e -> bh.handleElement((SVGOMDefsElement) e));
         elementMap.put("metadata", e -> bh.handleElement((SVGOMMetadataElement) e));
         elementMap.put("g",        e -> bh.handleElement((SVGOMGElement) e));
+
         if (useSeparatePathElements) {
         	elementMap.put("path", e -> bh.handlePath2((SVGOMPathElement) e));
         } else {
         	elementMap.put("path", e -> bh.handleElement((SVGOMPathElement) e));
         }
+        elementMap.put("line",     e -> bh.handleElement((SVGOMLineElement) e));
         elementMap.put("rect",     e -> bh.handleElement((SVGOMRectElement) e));
         elementMap.put("text",     e -> bh.handleElement((SVGOMTextElement) e));
+
         elementMap.put("tspan",    e -> bh.handleElement((SVGOMTSpanElement) e));
         elementMap.put("pattern",  e -> bh.handleElement((SVGOMPatternElement) e));
     }

@@ -14,6 +14,7 @@ import javafx.scene.transform.Affine;
 import org.apache.batik.anim.dom.SVGOMAnimatedPathData;
 import org.apache.batik.anim.dom.SVGOMDefsElement;
 import org.apache.batik.anim.dom.SVGOMGElement;
+import org.apache.batik.anim.dom.SVGOMLineElement;
 import org.apache.batik.anim.dom.SVGOMMetadataElement;
 import org.apache.batik.anim.dom.SVGOMPathElement;
 import org.apache.batik.anim.dom.SVGOMPatternElement;
@@ -265,5 +266,26 @@ public class SVGBasicElementHandler {
         System.err.println("Handling <pattern>: " + element);
     }
 
+
+    void handleElement(SVGOMLineElement element) {
+        // Get attributes from SVG node
+        float x1 = element.getX1().getBaseVal().getValue();
+        float y1 = element.getY1().getBaseVal().getValue();
+        float x2 = element.getX2().getBaseVal().getValue();
+        float y2 = element.getY2().getBaseVal().getValue();
+
+        // Create JavaFX Line object
+        Line result = new Line(x1, y1, x2, y2);
+        result.setId(element.getId());
+
+        Affine transformation = styleTools.getTransform(element);
+        if (transformation != null) {
+            result.getTransforms().add(transformation);
+        }
+
+        styleTools.applyStyle(result, element);
+
+        loader.parentNode.getChildren().add(result);
+    }
 
 }
