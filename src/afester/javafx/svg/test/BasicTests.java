@@ -85,7 +85,7 @@ public class BasicTests {
 
         Text t = (Text) n2;
         assertEquals("Hello World", t.getText());
-        assertEquals(10.0, t.getX(), 0.01);
-        assertEquals(12.36, t.getY(), 0.01);
+        assertEquals(11.07, t.getX(), 0.01);
+        assertEquals(51.79, t.getY(), 0.01);
     }
 }
