@@ -11,20 +11,19 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 /**
- * Example for a Region border definition.
- * Just launch this class using a Java8 runtime environment.
- * No other dependencies required.
+ * Example for a Region border definition. Just launch this class using a Java8
+ * runtime environment. No other dependencies required.
  *
  */
 public class ColorChannelsExample extends Application {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
         launch(args);
-	}
-	
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-	    Image sampleImage = new Image(getClass().getResourceAsStream("sample.png"));
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        Image sampleImage = new Image(getClass().getResourceAsStream("sample.png"));
 
         ColorSeparator cs = new ColorSeparator(sampleImage);
         Image red = cs.getRedChannel();
@@ -43,13 +42,13 @@ public class ColorChannelsExample extends Application {
         mainGroup.setPadding(new Insets(10));
         mainGroup.setSpacing(10);
         mainGroup.getChildren().addAll(
-                new ImageView(sampleImage),
+                new ImageView(sampleImage), 
                 colorImages,
                 new ImageView(blue1));
         Scene scene = new Scene(mainGroup, 800, 600);
 
         primaryStage.setScene(scene);
         primaryStage.show();
-	}
+    }
 
 }
