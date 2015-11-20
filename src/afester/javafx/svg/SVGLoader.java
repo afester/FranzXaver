@@ -18,6 +18,8 @@ import org.apache.batik.anim.dom.SVGOMPathElement;
 import org.apache.batik.anim.dom.SVGOMPatternElement;
 import org.apache.batik.anim.dom.SVGOMRectElement;
 import org.apache.batik.anim.dom.SVGOMLineElement;
+import org.apache.batik.anim.dom.SVGOMCircleElement;
+import org.apache.batik.anim.dom.SVGOMEllipseElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.anim.dom.SVGOMTSpanElement;
 import org.apache.batik.anim.dom.SVGOMTextElement;
@@ -60,6 +62,8 @@ public class SVGLoader {
         }
         elementMap.put("line",     e -> bh.handleElement((SVGOMLineElement) e));
         elementMap.put("rect",     e -> bh.handleElement((SVGOMRectElement) e));
+        elementMap.put("circle",   e -> bh.handleElement((SVGOMCircleElement) e));
+        elementMap.put("ellipse",  e -> bh.handleElement((SVGOMEllipseElement) e));
         elementMap.put("text",     e -> bh.handleElement((SVGOMTextElement) e));
 
         elementMap.put("tspan",    e -> bh.handleElement((SVGOMTSpanElement) e));

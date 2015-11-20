@@ -3,7 +3,9 @@ package afester.javafx.svg;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.CubicCurve;
+import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
@@ -12,7 +14,9 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 
 import org.apache.batik.anim.dom.SVGOMAnimatedPathData;
+import org.apache.batik.anim.dom.SVGOMCircleElement;
 import org.apache.batik.anim.dom.SVGOMDefsElement;
+import org.apache.batik.anim.dom.SVGOMEllipseElement;
 import org.apache.batik.anim.dom.SVGOMGElement;
 import org.apache.batik.anim.dom.SVGOMLineElement;
 import org.apache.batik.anim.dom.SVGOMMetadataElement;
@@ -276,6 +280,49 @@ public class SVGBasicElementHandler {
 
         // Create JavaFX Line object
         Line result = new Line(x1, y1, x2, y2);
+        result.setId(element.getId());
+
+        Affine transformation = styleTools.getTransform(element);
+        if (transformation != null) {
+            result.getTransforms().add(transformation);
+        }
+
+        styleTools.applyStyle(result, element);
+
+        loader.parentNode.getChildren().add(result);
+    }
+
+
+    public void handleElement(SVGOMCircleElement element) {
+        // Get attributes from SVG node
+        float x = element.getCx().getBaseVal().getValue();
+        float y = element.getCy().getBaseVal().getValue();
+        float r = element.getR().getBaseVal().getValue();
+
+        // Create JavaFX Circle object
+        Circle result = new Circle(x, y, r);
+        result.setId(element.getId());
+
+        Affine transformation = styleTools.getTransform(element);
+        if (transformation != null) {
+            result.getTransforms().add(transformation);
+        }
+
+        styleTools.applyStyle(result, element);
+
+        loader.parentNode.getChildren().add(result);
+    }
+
+
+    public void handleElement(SVGOMEllipseElement element) {
+        // Get attributes from SVG node
+        float x = element.getCx().getBaseVal().getValue();
+        float y = element.getCy().getBaseVal().getValue();
+        float rx = element.getRx().getBaseVal().getValue();
+        float ry = element.getRy().getBaseVal().getValue();
+
+        // Create JavaFX Ellipse object
+        Ellipse result = new Ellipse(x, y, rx, ry);
         result.setId(element.getId());
 
         Affine transformation = styleTools.getTransform(element);

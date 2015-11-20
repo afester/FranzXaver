@@ -14,6 +14,7 @@ import org.apache.batik.css.dom.CSSOMComputedStyle.ComputedCSSValue;
 import org.apache.batik.css.dom.CSSOMSVGComputedStyle.ComputedCSSPaintValue;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSStyleDeclaration;
+import org.w3c.dom.css.CSSValue;
 import org.w3c.dom.svg.SVGMatrix;
 import org.w3c.dom.svg.SVGPaint;
 import org.w3c.dom.svg.SVGTransform;
@@ -102,15 +103,24 @@ public class SVGStyleTools {
     }
 
 
-    void applyStyle(Shape fxObj, SVGStylableElement obj) {
+    /**
+     * Applies the styling of an svg element to a JavaFX Shape object.
+     *
+     * @param fxObj   The JavaFX Shape object to style.
+     * @param element The SVG DOM element which defines the styling.
+     */
+    void applyStyle(Shape fxObj, SVGStylableElement element) {
 
-        Color fillColor = getFillColor(obj);
+        // stroke
+        Color fillColor = getFillColor(element);
         fxObj.setFill(fillColor);
 
-        Color strokeColor = getStrokeColor(obj);
+        // fill
+        Color strokeColor = getStrokeColor(element);
         fxObj.setStroke(strokeColor);
 
-        CSSStyleDeclaration style = svgElement.getComputedStyle(obj, null);
+        // stroke-width
+        CSSStyleDeclaration style = svgElement.getComputedStyle(element, null);
         CSSOMSVGComputedStyle.ComputedCSSValue swidth = (ComputedCSSValue) style.getPropertyCSSValue("stroke-width");
         if (swidth != null) {
             float strokeWidth = 0;
@@ -122,9 +132,25 @@ public class SVGStyleTools {
 
             fxObj.setStrokeWidth(strokeWidth);
         }
+
+        // stroke-dasharray
+        CSSOMSVGComputedStyle.ComputedCSSValue strokeDashArray = (ComputedCSSValue) style.getPropertyCSSValue("stroke-dasharray");
+        if (strokeDashArray != null && strokeDashArray.getCssValueType() == CSSValue.CSS_VALUE_LIST) {
+            for (int i = 0;  i < strokeDashArray.getLength();  i++) {
+                double dashLength = strokeDashArray.getValue().item(i).getFloatValue();
+                fxObj.getStrokeDashArray().add(dashLength);            
+            }
+        }
+
+        // stroke-dashoffset
+        CSSOMSVGComputedStyle.ComputedCSSValue strokeDashOffset = (ComputedCSSValue) style.getPropertyCSSValue("stroke-dashoffset");
+        if (strokeDashOffset != null) {
+            double dashOffset = strokeDashOffset.getValue().getFloatValue();
+            fxObj.setStrokeDashOffset(dashOffset);
+        }
     }
 
-    
+
     void applyTextStyle(Text fxObj, SVGStylableElement obj) {
         CSSStyleDeclaration style = svgElement.getComputedStyle(obj, null); // obj.getStyle();
 
