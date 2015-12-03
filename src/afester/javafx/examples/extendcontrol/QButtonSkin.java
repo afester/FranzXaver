@@ -10,7 +10,7 @@ import javafx.scene.shape.Rectangle;
 // http://download.java.net/jdk9/jfxdocs/javafx/scene/control/skin/ButtonSkin.html
 class QButtonSkin extends com.sun.javafx.scene.control.skin.ButtonSkin {
 
-    private Rectangle rect = null;
+    private Rectangle rect = new Rectangle(0., 0., 200., 200.);
 
     public QButtonSkin(Button button) {
         super(button);
@@ -21,10 +21,8 @@ class QButtonSkin extends com.sun.javafx.scene.control.skin.ButtonSkin {
         super.updateChildren();
 
         if (rect == null) {
-            rect = new Rectangle(0., 0., 200., 200.);
-            rect.setStroke(Color.RED);
-            rect.setFill(Color.TRANSPARENT);
-            rect.setStrokeWidth(2);
+            rect = new Rectangle(2, 2, 8, 8);
+            rect.setFill(Color.RED);
         }
         getChildren().add(rect);
     }
