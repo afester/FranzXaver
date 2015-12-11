@@ -13,13 +13,16 @@ import org.apache.batik.anim.dom.SVGOMDefsElement;
 import org.apache.batik.anim.dom.SVGOMDocument;
 import org.apache.batik.anim.dom.SVGOMElement;
 import org.apache.batik.anim.dom.SVGOMGElement;
+import org.apache.batik.anim.dom.SVGOMLinearGradientElement;
 import org.apache.batik.anim.dom.SVGOMMetadataElement;
 import org.apache.batik.anim.dom.SVGOMPathElement;
 import org.apache.batik.anim.dom.SVGOMPatternElement;
+import org.apache.batik.anim.dom.SVGOMRadialGradientElement;
 import org.apache.batik.anim.dom.SVGOMRectElement;
 import org.apache.batik.anim.dom.SVGOMLineElement;
 import org.apache.batik.anim.dom.SVGOMCircleElement;
 import org.apache.batik.anim.dom.SVGOMEllipseElement;
+import org.apache.batik.anim.dom.SVGOMStopElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.anim.dom.SVGOMTSpanElement;
 import org.apache.batik.anim.dom.SVGOMTextElement;
@@ -68,6 +71,10 @@ public class SVGLoader {
 
         elementMap.put("tspan",    e -> bh.handleElement((SVGOMTSpanElement) e));
         elementMap.put("pattern",  e -> bh.handleElement((SVGOMPatternElement) e));
+
+        elementMap.put("linearGradient",  e -> bh.handleElement((SVGOMLinearGradientElement) e));
+        elementMap.put("radialGradient",  e -> bh.handleElement((SVGOMRadialGradientElement) e));
+        elementMap.put("stop",     e -> {} );
     }
 
 

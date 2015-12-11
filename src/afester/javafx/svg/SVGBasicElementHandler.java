@@ -1,8 +1,16 @@
 package afester.javafx.svg;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Paint;
+import javafx.scene.paint.RadialGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.CubicCurve;
 import javafx.scene.shape.Ellipse;
@@ -14,20 +22,28 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 
 import org.apache.batik.anim.dom.SVGOMAnimatedPathData;
+import org.apache.batik.anim.dom.SVGOMAnimatedPathData.BaseSVGPathSegList;
 import org.apache.batik.anim.dom.SVGOMCircleElement;
 import org.apache.batik.anim.dom.SVGOMDefsElement;
 import org.apache.batik.anim.dom.SVGOMEllipseElement;
 import org.apache.batik.anim.dom.SVGOMGElement;
+import org.apache.batik.anim.dom.SVGOMGradientElement;
 import org.apache.batik.anim.dom.SVGOMLineElement;
+import org.apache.batik.anim.dom.SVGOMLinearGradientElement;
 import org.apache.batik.anim.dom.SVGOMMetadataElement;
 import org.apache.batik.anim.dom.SVGOMPathElement;
 import org.apache.batik.anim.dom.SVGOMPatternElement;
+import org.apache.batik.anim.dom.SVGOMRadialGradientElement;
 import org.apache.batik.anim.dom.SVGOMRectElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
+import org.apache.batik.anim.dom.SVGOMStopElement;
 import org.apache.batik.anim.dom.SVGOMTSpanElement;
 import org.apache.batik.anim.dom.SVGOMTextElement;
-import org.apache.batik.anim.dom.SVGOMAnimatedPathData.BaseSVGPathSegList;
+import org.apache.batik.css.dom.CSSOMSVGColor;
+import org.apache.batik.css.dom.CSSOMValue;
 import org.apache.batik.dom.svg.SVGPathSegItem;
+import org.w3c.dom.css.CSSPrimitiveValue;
+import org.w3c.dom.css.CSSStyleDeclaration;
 
 public class SVGBasicElementHandler {
 
@@ -335,4 +351,89 @@ public class SVGBasicElementHandler {
         loader.parentNode.getChildren().add(result);
     }
 
+
+    public void handleElement(SVGOMRadialGradientElement e) {
+        // Get attributes from SVG node
+        String id = e.getId();
+        float focusAngle = e.getFx().getBaseVal().getValue();   // TODO
+        float focusDistance = e.getFy().getBaseVal().getValue();    // TODO
+        float centerX = e.getCx().getBaseVal().getValue();
+        float centerY = e.getCy().getBaseVal().getValue();
+        float radius = e.getR().getBaseVal().getValue();
+        List<Stop> stops = getStops(e);
+
+        RadialGradient gradientObject = 
+                new RadialGradient(focusAngle, focusDistance, centerX, centerY, radius, 
+                                   true, CycleMethod.NO_CYCLE, 
+                                   stops);
+        styleTools.addPaint(id, gradientObject);
+    }
+
+
+    public void handleElement(SVGOMLinearGradientElement e) {
+        // Get attributes from SVG node
+        String id = e.getId();
+        float startX = e.getX1().getBaseVal().getValue();
+        float startY = e.getY1().getBaseVal().getValue();
+        float endX = e.getX2().getBaseVal().getValue();
+        float endY = e.getY2().getBaseVal().getValue();
+        List<Stop> stops = getStops(e);
+
+        LinearGradient gradientObject = 
+                new LinearGradient(startX, startY, endX, endY, 
+                                   true, CycleMethod.NO_CYCLE,
+                                   stops);
+        styleTools.addPaint(id, gradientObject);
+    }
+
+
+    private List<Stop> getStops(SVGOMGradientElement e) {
+        List<Stop> result = new ArrayList<>();
+
+        // traverse child nodes to add any stops
+        for (int idx = 0;  idx < e.getChildNodes().getLength();  idx++) {
+            Object stop = e.getChildNodes().item(idx);
+            if (stop instanceof SVGOMStopElement) {
+                Stop stopObject = createStopElement((SVGOMStopElement) stop);
+                result.add(stopObject);
+            }
+        }
+
+        // check xlink:href to get all stops from a possibly linked gradient
+        String hRef = e.getHref().getBaseVal();
+        if (hRef.startsWith("#")) {
+            hRef = hRef.substring(1);
+            Paint linked = styleTools.getPaint(hRef);
+            if (linked != null) {
+                if (linked instanceof LinearGradient) {
+                    LinearGradient target = (LinearGradient) linked;
+                    result.addAll(target.getStops());
+                } else if (linked instanceof RadialGradient) {
+                    RadialGradient target = (RadialGradient ) linked;
+                    result.addAll(target.getStops());
+                }
+            }
+        }
+
+        return result;
+    }
+    
+    
+    private Stop createStopElement(SVGOMStopElement e) {
+        float offset = e.getOffset().getBaseVal();
+
+        CSSStyleDeclaration style = styleTools.svgElement.getComputedStyle(e, null);
+        CSSOMSVGColor stopColorValue = (CSSOMSVGColor) style.getPropertyCSSValue("stop-color");
+
+        float red = stopColorValue.getRed().getFloatValue(CSSPrimitiveValue.CSS_NUMBER) / 255;
+        float green = stopColorValue.getGreen().getFloatValue(CSSPrimitiveValue.CSS_NUMBER) / 255;
+        float blue = stopColorValue.getBlue().getFloatValue(CSSPrimitiveValue.CSS_NUMBER) / 255;
+
+        CSSOMValue stopOpacityValue = (CSSOMValue) style.getPropertyCSSValue("stop-opacity");
+        float stopOpacity = stopOpacityValue.getFloatValue (CSSPrimitiveValue.CSS_NUMBER);
+
+        Color stopColor = new Color(red, green, blue, stopOpacity);
+
+        return new Stop(offset,  stopColor);
+    }
 }

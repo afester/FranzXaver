@@ -1,6 +1,11 @@
 package afester.javafx.svg;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javafx.scene.paint.Color;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -23,7 +28,8 @@ import org.w3c.dom.svg.SVGTransformable;
 
 public class SVGStyleTools {
 
-    private SVGOMSVGElement svgElement = null;
+    protected SVGOMSVGElement svgElement = null;
+    private Map<String, Paint> paints = new HashMap<>();
 
     SVGStyleTools(SVGOMSVGElement svgElement) {
         this.svgElement = svgElement;
@@ -55,9 +61,9 @@ public class SVGStyleTools {
         return fxTrans;
     }
 
-    private Color getFillColor(SVGStylableElement obj) {
-        Color result = null;
-        
+    private Paint getFillColor(SVGStylableElement obj) {
+        Paint result = null;
+
         // svgElement.getComputedStyle() takes care of all styling aspects,
         // like inheritance of style attributes or presentation versus CSS styles
         CSSStyleDeclaration style = svgElement.getComputedStyle(obj, null);
@@ -67,21 +73,32 @@ public class SVGStyleTools {
             return null;
         }
 
-        float red = val.getRed().getFloatValue(CSSPrimitiveValue.CSS_NUMBER) / 255;
-        float green = val.getGreen().getFloatValue(CSSPrimitiveValue.CSS_NUMBER) / 255;
-        float blue = val.getBlue().getFloatValue(CSSPrimitiveValue.CSS_NUMBER) / 255;
+        if (val.getPaintType() == SVGPaint.SVG_PAINTTYPE_URI) {
+            String uri = val.getUri();
+            if (uri.startsWith("file:#")) {
+                uri = uri.substring("file:#".length());
+            }
+            result = paints.get(uri);
+            System.err.printf("PAINT: %s=%s\n", uri, result);
+        }
 
-        CSSOMComputedStyle.ComputedCSSValue  opacity = (ComputedCSSValue) style.getPropertyCSSValue("fill-opacity");
-        float alpha = opacity.getFloatValue(CSSPrimitiveValue.CSS_NUMBER);
-        result = new Color(red, green, blue, alpha);
+        if (val.getPaintType() == SVGPaint.SVG_PAINTTYPE_RGBCOLOR) {
+            float red = val.getRed().getFloatValue(CSSPrimitiveValue.CSS_NUMBER) / 255;
+            float green = val.getGreen().getFloatValue(CSSPrimitiveValue.CSS_NUMBER) / 255;
+            float blue = val.getBlue().getFloatValue(CSSPrimitiveValue.CSS_NUMBER) / 255;
+    
+            CSSOMComputedStyle.ComputedCSSValue  opacity = (ComputedCSSValue) style.getPropertyCSSValue("fill-opacity");
+            float alpha = opacity.getFloatValue(CSSPrimitiveValue.CSS_NUMBER);
+            result = new Color(red, green, blue, alpha);
+        }
 
         return result;
     }
 
-    
-    private Color getStrokeColor(SVGStylableElement obj) {
 
-        Color result = null;
+    private Paint getStrokeColor(SVGStylableElement obj) {
+
+        Paint result = null;
 
         CSSStyleDeclaration style = svgElement.getComputedStyle(obj, null);
         CSSOMSVGComputedStyle.ComputedCSSPaintValue val = (ComputedCSSPaintValue) style.getPropertyCSSValue("stroke");
@@ -90,15 +107,26 @@ public class SVGStyleTools {
             return null;    // stroke=none
         }
 
-        float red = val.getRed().getFloatValue(CSSPrimitiveValue.CSS_NUMBER) / 255;
-        float green = val.getGreen().getFloatValue(CSSPrimitiveValue.CSS_NUMBER) / 255;
-        float blue = val.getBlue().getFloatValue(CSSPrimitiveValue.CSS_NUMBER) / 255;
+        if (val.getPaintType() == SVGPaint.SVG_PAINTTYPE_URI) {
+            String uri = val.getUri();
+            if (uri.startsWith("file:#")) {
+                uri = uri.substring("file:#".length());
+            }
+            result = paints.get(uri);
+            System.err.printf("PAINT: %s=%s\n", uri, result);
+        }
 
-        CSSOMComputedStyle.ComputedCSSValue opacity = (ComputedCSSValue) style.getPropertyCSSValue("stroke-opacity");
-        float alpha = opacity.getFloatValue(CSSPrimitiveValue.CSS_NUMBER);
-
-        result = new Color(red, green, blue, alpha);
-
+        if (val.getPaintType() == SVGPaint.SVG_PAINTTYPE_RGBCOLOR) {
+            float red = val.getRed().getFloatValue(CSSPrimitiveValue.CSS_NUMBER) / 255;
+            float green = val.getGreen().getFloatValue(CSSPrimitiveValue.CSS_NUMBER) / 255;
+            float blue = val.getBlue().getFloatValue(CSSPrimitiveValue.CSS_NUMBER) / 255;
+    
+            CSSOMComputedStyle.ComputedCSSValue opacity = (ComputedCSSValue) style.getPropertyCSSValue("stroke-opacity");
+            float alpha = opacity.getFloatValue(CSSPrimitiveValue.CSS_NUMBER);
+    
+            result = new Color(red, green, blue, alpha);
+        }
+        
         return result;
     }
 
@@ -112,11 +140,11 @@ public class SVGStyleTools {
     void applyStyle(Shape fxObj, SVGStylableElement element) {
 
         // stroke
-        Color fillColor = getFillColor(element);
+        Paint fillColor = getFillColor(element);
         fxObj.setFill(fillColor);
 
         // fill
-        Color strokeColor = getStrokeColor(element);
+        Paint strokeColor = getStrokeColor(element);
         fxObj.setStroke(strokeColor);
 
         // stroke-width
@@ -181,6 +209,14 @@ public class SVGStyleTools {
         font-weight:normal;
         font-stretch:normal;
 */
+    }
+
+    public void addPaint(String id, Paint paintObject) {
+        paints.put(id,  paintObject);
+    }
+
+    public Paint getPaint(String hRef) {
+        return paints.get(hRef);
     }
 
 }
