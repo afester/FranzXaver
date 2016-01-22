@@ -1,0 +1,30 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = "afester.javafx.examples.svg.SVGLoaderResultViewer"
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+       }
+       resources {
+            srcDir 'src'
+       }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.apache.xmlgraphics:batik-dom:1.8'
+    compile 'org.apache.xmlgraphics:batik-anim:1.8'
+    compile 'org.apache.xmlgraphics:batik-bridge:1.8'
+    compile 'xalan:xalan:2.7.2'
+  
+    runtime 'org.apache.xmlgraphics:xmlgraphics-commons:2.1'
+ 
+    compile 'junit:junit:4.12'
+}

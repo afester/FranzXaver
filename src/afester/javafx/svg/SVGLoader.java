@@ -9,20 +9,19 @@ import java.util.function.Consumer;
 import javafx.scene.Group;
 
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
+import org.apache.batik.anim.dom.SVGOMCircleElement;
 import org.apache.batik.anim.dom.SVGOMDefsElement;
 import org.apache.batik.anim.dom.SVGOMDocument;
 import org.apache.batik.anim.dom.SVGOMElement;
+import org.apache.batik.anim.dom.SVGOMEllipseElement;
 import org.apache.batik.anim.dom.SVGOMGElement;
+import org.apache.batik.anim.dom.SVGOMLineElement;
 import org.apache.batik.anim.dom.SVGOMLinearGradientElement;
 import org.apache.batik.anim.dom.SVGOMMetadataElement;
 import org.apache.batik.anim.dom.SVGOMPathElement;
 import org.apache.batik.anim.dom.SVGOMPatternElement;
 import org.apache.batik.anim.dom.SVGOMRadialGradientElement;
 import org.apache.batik.anim.dom.SVGOMRectElement;
-import org.apache.batik.anim.dom.SVGOMLineElement;
-import org.apache.batik.anim.dom.SVGOMCircleElement;
-import org.apache.batik.anim.dom.SVGOMEllipseElement;
-import org.apache.batik.anim.dom.SVGOMStopElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.anim.dom.SVGOMTSpanElement;
 import org.apache.batik.anim.dom.SVGOMTextElement;
@@ -49,15 +48,17 @@ public class SVGLoader {
 
     private Map<String, Consumer<SVGOMElement>> elementMap = new HashMap<>();
 
-    
+    private SVGBasicElementHandler bh;
+
     public SVGLoader() {
-        SVGBasicElementHandler bh = new SVGBasicElementHandler(this);
-        
+        bh = new SVGBasicElementHandler(this);
+
         elementMap.put("svg",      e -> bh.handleElement((SVGOMSVGElement) e));
         elementMap.put("defs",     e -> bh.handleElement((SVGOMDefsElement) e));
         elementMap.put("metadata", e -> bh.handleElement((SVGOMMetadataElement) e));
-        elementMap.put("g",        e -> bh.handleElement((SVGOMGElement) e));
+//        elementMap.put("title",     e -> {} );
 
+        elementMap.put("g",        e -> bh.handleElement((SVGOMGElement) e));
         if (useSeparatePathElements) {
         	elementMap.put("path", e -> bh.handlePath2((SVGOMPathElement) e));
         } else {
@@ -75,6 +76,75 @@ public class SVGLoader {
         elementMap.put("linearGradient",  e -> bh.handleElement((SVGOMLinearGradientElement) e));
         elementMap.put("radialGradient",  e -> bh.handleElement((SVGOMRadialGradientElement) e));
         elementMap.put("stop",     e -> {} );
+/*
+        <title>
+
+        <a>
+        <altGlyph>
+        <altGlyphDef>
+        <altGlyphItem>
+        <animate>
+        <animateColor>
+        <animateMotion>
+        <animateTransform>
+        <clipPath>
+        <color-profile>
+        <cursor>
+        <desc>
+        <filter>
+        <feGaussianBlur>
+        <feOffset>
+        <feSpecularLighting>
+        <fePointLight>
+        <feComposite>
+        <feMerge>
+        <feMergeNode>
+        <feBlend>
+        <feColorMatrix>
+        <feComponentTransfer>
+        <feConvolveMatrix>
+        <feDiffuseLighting>
+        <feDisplacementMap>
+        <feDistantLight>
+        <feFlood>
+        <feFuncA>
+        <feFuncB>
+        <feFuncG>
+        <feFuncR>
+        <feImage>
+        <feMorphology>
+        <feSpotLight>
+        <feTile>
+        <feTurbulence>
+        <font>
+        <font-face>
+        <font-face-format>
+        <font-face-name>
+        <font-face-src>
+        <font-face-uri>
+        <foreignObject>
+        <glyph>
+        <glyphRef>
+        <hkern>
+        <image>
+        <marker>
+        <mask>
+        <missing-glyph>
+        <mpath>
+        <polygon>
+        <polyline>
+        <script>
+        <set>
+        <style>
+        <switch>
+        <symbol>
+        <textPath>
+        <tref>
+        <use>
+        <view>
+        <vkern>
+*/
+        
     }
 
 
@@ -87,6 +157,10 @@ public class SVGLoader {
         this.addRootRect = flag;
     }
 
+
+    public void setGradientTransformPolicy(GradientPolicy policy) {
+       bh.gradientFactory.setTransformationPolicy(policy);
+    }
 
     private void handle(org.w3c.dom.Node node) {
         Group par = parentNode;  // save current parent
@@ -199,6 +273,19 @@ public class SVGLoader {
 
         parentNode = new Group();
         handle(doc);
+
+ //       for (Map.Entry<String, GradientInfo> gi : bh.styleTools.gradients.entrySet()) {
+ //           Line l = new Line(gi.getValue().getFrom().getX(), 
+//                              gi.getValue().getFrom().getY(),
+//                              gi.getValue().getTo().getX(), 
+//                              gi.getValue().getTo().getY());
+//            l.setStroke(Color.RED);
+//            parentNode.getChildren().add(l);
+ //           System.err.println(gi);
+ //       }
+
         return parentNode;
     }
+
+
 }

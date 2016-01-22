@@ -3,10 +3,10 @@ package afester.javafx.svg;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Paint;
 import javafx.scene.paint.RadialGradient;
@@ -44,11 +44,140 @@ import org.apache.batik.css.dom.CSSOMValue;
 import org.apache.batik.dom.svg.SVGPathSegItem;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSStyleDeclaration;
+import org.w3c.dom.svg.SVGMatrix;
+import org.w3c.dom.svg.SVGRect;
+
+
+class TransOperations {
+    private double rotation = 0;
+    private double scaleX = 0;
+    private double scaleY = 0;
+    private double skewX = 0;
+    private double transX = 0;
+    private double transY = 0;
+
+    public TransOperations() {
+    }
+
+    public static TransOperations getFromAffine(Affine affine) {
+        TransOperations result = new TransOperations();
+
+        // http://stackoverflow.com/a/32125700/1611055
+        // JavaFX: [  mxx  mxy  0  tx  ]
+        //         [  myx  myy  0  ty  ]
+        //         [    0    0  0   0  ]
+
+        result.rotation = Math.atan2(affine.getMxy(), affine.getMxx());
+        double denom = Math.pow(affine.getMxx(), 2) + Math.pow(affine.getMxy(), 2);
+        result.scaleX = Math.sqrt(denom);
+        result.scaleY = (affine.getMxx() * affine.getMyy() - affine.getMyx() * affine.getMxy()) / result.scaleX;
+        result.skewX = Math.atan2(affine.getMxx() * affine.getMyx() + affine.getMxy() * affine.getMyy(), denom);
+        result.transX = affine.getTx();
+        result.transY = affine.getTy();
+
+        return result;
+    }
+
+    public static TransOperations getFromSVG(SVGMatrix matrix) {
+        TransOperations result = new TransOperations();
+    
+        // http://stackoverflow.com/a/32125700/1611055
+    
+        // SVG: [   a    c   0   e  ]
+        //      [   b    d   0   f  ]
+        //      [   0    0   0   0 ]
+    
+        result.rotation = Math.atan2(matrix.getC(), matrix.getA());
+        double denom = Math.pow(matrix.getA(), 2) + Math.pow(matrix.getC(), 2);
+        result.scaleX = Math.sqrt(denom);
+        result.scaleY = (matrix.getA() * matrix.getD() - matrix.getB() * matrix.getC()) / result.scaleX;
+        result.skewX = Math.atan2(matrix.getA() * matrix.getB() + matrix.getC() *  matrix.getD(), denom);
+        result.transX = matrix.getE();
+        result.transY = matrix.getF();
+
+        return result;
+    }
+
+    public Point2D getTranslation() {
+        return new Point2D(transX, transY);
+    }
+    
+    public Point2D getSkew() {
+        return new Point2D(skewX, 0);
+    }
+    
+    public Point2D getScale() {
+        return new Point2D(scaleX, scaleY);
+    }
+    
+    public double getRotation() {
+        return rotation;
+    }
+
+    public boolean hasRotation() {
+        if (rotation < Math.ulp(rotation)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean hasScale() {
+        if (scaleX < Math.ulp(scaleX) &&
+            scaleY < Math.ulp(scaleY)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean hasSkew() {
+        if (skewX < Math.ulp(skewX)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean hasTranslation() {
+        if (transX < Math.ulp(transX) &&
+            transY < Math.ulp(transY)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public String toString() {
+        String rot = "None";
+        if (hasRotation()) {
+            rot = "" + getRotation();
+        }
+
+        String scale = "None";
+        if (hasScale()) {
+            scale = getScale().toString();
+        }
+
+        String trans = "None";
+        if (hasTranslation()) {
+            trans = getTranslation().toString();
+        }
+
+        String skew = "None";
+        if (hasSkew()) {
+            skew = getSkew().toString();
+        }
+
+        return String.format("Rotation=%s, Scale=%s, Skew=%s, Translation=%s",  rot, scale, skew, trans);
+    }
+}
 
 public class SVGBasicElementHandler {
 
-    private SVGStyleTools styleTools = null;
+    public SVGStyleTools styleTools = null;
     private SVGLoader loader = null;
+    GradientFactory gradientFactory = new GradientFactory();
 
     public SVGBasicElementHandler(SVGLoader svgLoader) {
         this.loader = svgLoader;
@@ -61,8 +190,9 @@ public class SVGBasicElementHandler {
 
         // optionally add a rectangle using the size of the whole drawing
         if (loader.addRootRect) {
-            float height = element.getViewBox().getBaseVal().getHeight();
-            float width = element.getViewBox().getBaseVal().getWidth();
+            SVGRect viewPort = element.getViewBox().getBaseVal();
+            float height = viewPort.getHeight();
+            float width = viewPort.getWidth();
             Rectangle result = new Rectangle(width,  height, null);
             result.setId(element.getId());
             result.setStroke(Color.BLACK);
@@ -79,7 +209,7 @@ public class SVGBasicElementHandler {
     }
 
 
-    // <g>
+    // <svg:g>
     void handleElement(SVGOMGElement element) {
         Group result = new Group();
         result.setId(element.getId());
@@ -89,9 +219,10 @@ public class SVGBasicElementHandler {
             result.getTransforms().add(transformation);
         }
 
-
         loader.parentNode.getChildren().add(result);
         loader.parentNode = result;
+        
+        System.err.println("   XXX" + result.getTransforms());
     }
 
 
@@ -118,6 +249,9 @@ public class SVGBasicElementHandler {
 
         //fxObj.setStroke(Color.VIOLET);
         loader.parentNode.getChildren().add(result);
+        
+        
+        System.err.println("   XXX" + result.getTransforms());
     }
 
 
@@ -355,34 +489,20 @@ public class SVGBasicElementHandler {
     public void handleElement(SVGOMRadialGradientElement e) {
         // Get attributes from SVG node
         String id = e.getId();
-        float focusAngle = e.getFx().getBaseVal().getValue();   // TODO
-        float focusDistance = e.getFy().getBaseVal().getValue();    // TODO
-        float centerX = e.getCx().getBaseVal().getValue();
-        float centerY = e.getCy().getBaseVal().getValue();
-        float radius = e.getR().getBaseVal().getValue();
         List<Stop> stops = getStops(e);
 
-        RadialGradient gradientObject = 
-                new RadialGradient(focusAngle, focusDistance, centerX, centerY, radius, 
-                                   true, CycleMethod.NO_CYCLE, 
-                                   stops);
+        RadialGradient gradientObject = gradientFactory.createRadialGradient(e, stops);
         styleTools.addPaint(id, gradientObject);
+
     }
 
 
     public void handleElement(SVGOMLinearGradientElement e) {
         // Get attributes from SVG node
         String id = e.getId();
-        float startX = e.getX1().getBaseVal().getValue();
-        float startY = e.getY1().getBaseVal().getValue();
-        float endX = e.getX2().getBaseVal().getValue();
-        float endY = e.getY2().getBaseVal().getValue();
         List<Stop> stops = getStops(e);
-
-        LinearGradient gradientObject = 
-                new LinearGradient(startX, startY, endX, endY, 
-                                   true, CycleMethod.NO_CYCLE,
-                                   stops);
+        
+        LinearGradient gradientObject = gradientFactory.createLinearGradient(e, stops);
         styleTools.addPaint(id, gradientObject);
     }
 
@@ -433,7 +553,8 @@ public class SVGBasicElementHandler {
         float stopOpacity = stopOpacityValue.getFloatValue (CSSPrimitiveValue.CSS_NUMBER);
 
         Color stopColor = new Color(red, green, blue, stopOpacity);
+        System.err.println(stopColor);
 
-        return new Stop(offset,  stopColor);
+        return new Stop(offset, stopColor);
     }
 }

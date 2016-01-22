@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javafx.scene.paint.Color;
-import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
@@ -14,8 +13,8 @@ import javafx.scene.transform.Affine;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.anim.dom.SVGStylableElement;
 import org.apache.batik.css.dom.CSSOMComputedStyle;
-import org.apache.batik.css.dom.CSSOMSVGComputedStyle;
 import org.apache.batik.css.dom.CSSOMComputedStyle.ComputedCSSValue;
+import org.apache.batik.css.dom.CSSOMSVGComputedStyle;
 import org.apache.batik.css.dom.CSSOMSVGComputedStyle.ComputedCSSPaintValue;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSStyleDeclaration;
@@ -79,7 +78,19 @@ public class SVGStyleTools {
                 uri = uri.substring("file:#".length());
             }
             result = paints.get(uri);
-            System.err.printf("PAINT: %s=%s\n", uri, result);
+            
+    //        GradientInfo gi = gradients.get(uri);
+    //        System.err.printf("   ** %s\n", gi);
+
+            // ISSUE: We also need to transform the gradient according to the current object's transformation
+
+/*            if (result instanceof RadialGradient) {
+                System.err.printf("PAINT: %s=%s\n", uri, result);
+                RadialGradient dbg = (RadialGradient) result;
+                for (Stop s : dbg.getStops()) {
+                    System.err.printf("    %s\n", s);
+                }
+            }*/
         }
 
         if (val.getPaintType() == SVGPaint.SVG_PAINTTYPE_RGBCOLOR) {
@@ -113,7 +124,7 @@ public class SVGStyleTools {
                 uri = uri.substring("file:#".length());
             }
             result = paints.get(uri);
-            System.err.printf("PAINT: %s=%s\n", uri, result);
+//            System.err.printf("PAINT: %s=%s\n", uri, result);
         }
 
         if (val.getPaintType() == SVGPaint.SVG_PAINTTYPE_RGBCOLOR) {
@@ -139,11 +150,15 @@ public class SVGStyleTools {
      */
     void applyStyle(Shape fxObj, SVGStylableElement element) {
 
-        // stroke
+        // fill
+/**********************************/
         Paint fillColor = getFillColor(element);
         fxObj.setFill(fillColor);
 
-        // fill
+        System.err.println("  TRANS:" + fxObj.getTransforms());
+/**********************************/
+
+        // stroke
         Paint strokeColor = getStrokeColor(element);
         fxObj.setStroke(strokeColor);
 
