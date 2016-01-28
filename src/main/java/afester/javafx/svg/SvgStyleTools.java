@@ -1,8 +1,5 @@
 package afester.javafx.svg;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Shape;
@@ -16,6 +13,8 @@ import org.apache.batik.css.dom.CSSOMComputedStyle;
 import org.apache.batik.css.dom.CSSOMComputedStyle.ComputedCSSValue;
 import org.apache.batik.css.dom.CSSOMSVGComputedStyle;
 import org.apache.batik.css.dom.CSSOMSVGComputedStyle.ComputedCSSPaintValue;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSStyleDeclaration;
 import org.w3c.dom.css.CSSValue;
@@ -25,12 +24,16 @@ import org.w3c.dom.svg.SVGTransform;
 import org.w3c.dom.svg.SVGTransformList;
 import org.w3c.dom.svg.SVGTransformable;
 
-public class SVGStyleTools {
+import java.util.HashMap;
+import java.util.Map;
+
+public class SvgStyleTools {
+    private static final Logger logger = LogManager.getLogger();
 
     protected SVGOMSVGElement svgElement = null;
     private Map<String, Paint> paints = new HashMap<>();
 
-    SVGStyleTools(SVGOMSVGElement svgElement) {
+    SvgStyleTools(SVGOMSVGElement svgElement) {
         this.svgElement = svgElement;
     }
 
@@ -43,7 +46,7 @@ public class SVGStyleTools {
         }
         if (svgTransformations.getNumberOfItems() == 1) {
             SVGTransform svgTrans = svgTransformations.getItem(0);
-            SVGMatrix m = svgTrans.getMatrix();
+            SVGMatrix matrix = svgTrans.getMatrix();
 
             // SVG: matrix(0.67018323,-0.74219568,0.74219568,0.67018323,0,0)
             //         [   a    c    e  ]
@@ -54,7 +57,8 @@ public class SVGStyleTools {
             //         [  myx  myy  myz  ty  ]
             //         [  mzx  mzy  mzz  tz  ]
 
-            fxTrans = new Affine(m.getA(), m.getC(), m.getE(), m.getB(), m.getD(), m.getF());
+            fxTrans = new Affine(matrix.getA(), matrix.getC(), matrix.getE(), 
+                                 matrix.getB(), matrix.getD(), matrix.getF());
         }
 
         return fxTrans;
@@ -66,7 +70,8 @@ public class SVGStyleTools {
         // svgElement.getComputedStyle() takes care of all styling aspects,
         // like inheritance of style attributes or presentation versus CSS styles
         CSSStyleDeclaration style = svgElement.getComputedStyle(obj, null);
-        CSSOMSVGComputedStyle.ComputedCSSPaintValue val = (ComputedCSSPaintValue) style.getPropertyCSSValue("fill");
+        CSSOMSVGComputedStyle.ComputedCSSPaintValue val = 
+                (ComputedCSSPaintValue) style.getPropertyCSSValue("fill");
 
         if (val.getPaintType() == SVGPaint.SVG_PAINTTYPE_NONE) {    // fill=none
             return null;
@@ -78,19 +83,6 @@ public class SVGStyleTools {
                 uri = uri.substring("file:#".length());
             }
             result = paints.get(uri);
-            
-    //        GradientInfo gi = gradients.get(uri);
-    //        System.err.printf("   ** %s\n", gi);
-
-            // ISSUE: We also need to transform the gradient according to the current object's transformation
-
-/*            if (result instanceof RadialGradient) {
-                System.err.printf("PAINT: %s=%s\n", uri, result);
-                RadialGradient dbg = (RadialGradient) result;
-                for (Stop s : dbg.getStops()) {
-                    System.err.printf("    %s\n", s);
-                }
-            }*/
         }
 
         if (val.getPaintType() == SVGPaint.SVG_PAINTTYPE_RGBCOLOR) {
@@ -98,7 +90,8 @@ public class SVGStyleTools {
             float green = val.getGreen().getFloatValue(CSSPrimitiveValue.CSS_NUMBER) / 255;
             float blue = val.getBlue().getFloatValue(CSSPrimitiveValue.CSS_NUMBER) / 255;
     
-            CSSOMComputedStyle.ComputedCSSValue  opacity = (ComputedCSSValue) style.getPropertyCSSValue("fill-opacity");
+            CSSOMComputedStyle.ComputedCSSValue  opacity = 
+                    (ComputedCSSValue) style.getPropertyCSSValue("fill-opacity");
             float alpha = opacity.getFloatValue(CSSPrimitiveValue.CSS_NUMBER);
             result = new Color(red, green, blue, alpha);
         }
@@ -112,7 +105,8 @@ public class SVGStyleTools {
         Paint result = null;
 
         CSSStyleDeclaration style = svgElement.getComputedStyle(obj, null);
-        CSSOMSVGComputedStyle.ComputedCSSPaintValue val = (ComputedCSSPaintValue) style.getPropertyCSSValue("stroke");
+        CSSOMSVGComputedStyle.ComputedCSSPaintValue val = 
+                    (ComputedCSSPaintValue) style.getPropertyCSSValue("stroke");
 
         if (val.getPaintType() == SVGPaint.SVG_PAINTTYPE_NONE) {
             return null;    // stroke=none
@@ -124,7 +118,6 @@ public class SVGStyleTools {
                 uri = uri.substring("file:#".length());
             }
             result = paints.get(uri);
-//            System.err.printf("PAINT: %s=%s\n", uri, result);
         }
 
         if (val.getPaintType() == SVGPaint.SVG_PAINTTYPE_RGBCOLOR) {
@@ -132,7 +125,8 @@ public class SVGStyleTools {
             float green = val.getGreen().getFloatValue(CSSPrimitiveValue.CSS_NUMBER) / 255;
             float blue = val.getBlue().getFloatValue(CSSPrimitiveValue.CSS_NUMBER) / 255;
     
-            CSSOMComputedStyle.ComputedCSSValue opacity = (ComputedCSSValue) style.getPropertyCSSValue("stroke-opacity");
+            CSSOMComputedStyle.ComputedCSSValue opacity = 
+                    (ComputedCSSValue) style.getPropertyCSSValue("stroke-opacity");
             float alpha = opacity.getFloatValue(CSSPrimitiveValue.CSS_NUMBER);
     
             result = new Color(red, green, blue, alpha);
@@ -151,12 +145,8 @@ public class SVGStyleTools {
     void applyStyle(Shape fxObj, SVGStylableElement element) {
 
         // fill
-/**********************************/
         Paint fillColor = getFillColor(element);
         fxObj.setFill(fillColor);
-
-        System.err.println("  TRANS:" + fxObj.getTransforms());
-/**********************************/
 
         // stroke
         Paint strokeColor = getStrokeColor(element);
@@ -164,21 +154,24 @@ public class SVGStyleTools {
 
         // stroke-width
         CSSStyleDeclaration style = svgElement.getComputedStyle(element, null);
-        CSSOMSVGComputedStyle.ComputedCSSValue swidth = (ComputedCSSValue) style.getPropertyCSSValue("stroke-width");
+        CSSOMSVGComputedStyle.ComputedCSSValue swidth = 
+                    (ComputedCSSValue) style.getPropertyCSSValue("stroke-width");
         if (swidth != null) {
             float strokeWidth = 0;
             if (swidth.getPrimitiveType() == CSSPrimitiveValue.CSS_NUMBER) {
-                strokeWidth = swidth.getFloatValue (CSSPrimitiveValue.CSS_NUMBER);
+                strokeWidth = swidth.getFloatValue(CSSPrimitiveValue.CSS_NUMBER);
             } else {
-                strokeWidth = swidth.getFloatValue (CSSPrimitiveValue.CSS_PX);
+                strokeWidth = swidth.getFloatValue(CSSPrimitiveValue.CSS_PX);
             }
 
             fxObj.setStrokeWidth(strokeWidth);
         }
 
         // stroke-dasharray
-        CSSOMSVGComputedStyle.ComputedCSSValue strokeDashArray = (ComputedCSSValue) style.getPropertyCSSValue("stroke-dasharray");
-        if (strokeDashArray != null && strokeDashArray.getCssValueType() == CSSValue.CSS_VALUE_LIST) {
+        CSSOMSVGComputedStyle.ComputedCSSValue strokeDashArray = 
+                (ComputedCSSValue) style.getPropertyCSSValue("stroke-dasharray");
+        if (strokeDashArray != null
+            && strokeDashArray.getCssValueType() == CSSValue.CSS_VALUE_LIST) {
             for (int i = 0;  i < strokeDashArray.getLength();  i++) {
                 double dashLength = strokeDashArray.getValue().item(i).getFloatValue();
                 fxObj.getStrokeDashArray().add(dashLength);            
@@ -186,7 +179,8 @@ public class SVGStyleTools {
         }
 
         // stroke-dashoffset
-        CSSOMSVGComputedStyle.ComputedCSSValue strokeDashOffset = (ComputedCSSValue) style.getPropertyCSSValue("stroke-dashoffset");
+        CSSOMSVGComputedStyle.ComputedCSSValue strokeDashOffset = 
+                (ComputedCSSValue) style.getPropertyCSSValue("stroke-dashoffset");
         if (strokeDashOffset != null) {
             double dashOffset = strokeDashOffset.getValue().getFloatValue();
             fxObj.setStrokeDashOffset(dashOffset);
@@ -198,25 +192,27 @@ public class SVGStyleTools {
         CSSStyleDeclaration style = svgElement.getComputedStyle(obj, null); // obj.getStyle();
 
         String fontFamily = null;
-        CSSOMComputedStyle.ComputedCSSValue val = (ComputedCSSValue) style.getPropertyCSSValue("font-family");
+        CSSOMComputedStyle.ComputedCSSValue val = 
+                    (ComputedCSSValue) style.getPropertyCSSValue("font-family");
         if (val != null) {
             fontFamily = val.getCssText();
         }
 
         float fontSize = 0;
-        CSSOMComputedStyle.ComputedCSSValue val2 = (ComputedCSSValue) style.getPropertyCSSValue("font-size");
+        CSSOMComputedStyle.ComputedCSSValue val2 = 
+                    (ComputedCSSValue) style.getPropertyCSSValue("font-size");
         if (val2 != null) {
             if (val2.getPrimitiveType() == CSSPrimitiveValue.CSS_NUMBER) {
-                fontSize = val2.getFloatValue (CSSPrimitiveValue.CSS_NUMBER);   // https://bugs.launchpad.net/inkscape/+bug/168164
+                fontSize = val2.getFloatValue(CSSPrimitiveValue.CSS_NUMBER); // https://bugs.launchpad.net/inkscape/+bug/168164
             } else {
-                fontSize = val2.getFloatValue (CSSPrimitiveValue.CSS_PX);       // https://bugs.launchpad.net/inkscape/+bug/168164
+                fontSize = val2.getFloatValue(CSSPrimitiveValue.CSS_PX);     // https://bugs.launchpad.net/inkscape/+bug/168164
             }
         }
 
-        System.err.println("FONT: " + fontFamily + "/" + fontSize);
+        logger.debug("Font: {}/{}", fontFamily, fontSize);
         Font font = Font.font(fontFamily, fontSize);
         fxObj.setFont(font);
-        
+
         applyStyle(fxObj, obj);
         
 /*        font-style:normal;
@@ -230,8 +226,8 @@ public class SVGStyleTools {
         paints.put(id,  paintObject);
     }
 
-    public Paint getPaint(String hRef) {
-        return paints.get(hRef);
+    public Paint getPaint(String href) {
+        return paints.get(href);
     }
 
 }
