@@ -1,8 +1,8 @@
 package afester.javafx.examples.svg;
 
+import afester.javafx.components.SnapSlider;
 import afester.javafx.svg.GradientPolicy;
 import afester.javafx.svg.SvgLoader;
-
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -15,8 +15,11 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,10 +29,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 public class SvgLoaderResultViewer extends Application {
 
+    // The SVG image's top node, as returned from the SvgLoader
     private Group svgImage = new Group();
+
+    /* in order to properly scale the svgImage node, we need an additional
+     * intermediate node 
+     */
+    private Group imageLayout = new Group();
+
     private final HBox mainLayout = new HBox();
     private SvgLoader loader = new SvgLoader();
     private String currentFile;
@@ -41,7 +50,27 @@ public class SvgLoaderResultViewer extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("SVGLoader result viewer");
-        
+
+        ListView<String> listPanel = createListPanel();
+        Pane optionsPanel = createOptionsPanel();
+
+        VBox leftPanel = new VBox();
+        leftPanel.getChildren().add(listPanel);
+        leftPanel.getChildren().add(optionsPanel);
+
+        mainLayout.getChildren().add(leftPanel);
+        mainLayout.getChildren().add(imageLayout);
+
+        listPanel.getSelectionModel().select(0);
+
+        // show the generated scene graph
+        Scene scene = new Scene(mainLayout, 800, 600);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+
+    private ListView<String> createListPanel() {
 
         ObservableList<String> ol = FXCollections.observableList(getTestFiles());
         ListView<String> listView = new ListView<String>(ol);
@@ -55,12 +84,16 @@ public class SvgLoaderResultViewer extends Application {
                 }
             }
         );
+        
+        return listView;
+    }
 
-        // ************** Options panel **************/
+    private Pane createOptionsPanel() {
+        // gradient policy
         HBox gradientPolicy = new HBox();
         gradientPolicy.setSpacing(10);
         gradientPolicy.getChildren().add(new Label("Gradient Transformation Policy:"));
-        
+
         ComboBox<GradientPolicy> comboBox = new ComboBox<>();
         comboBox.getItems().addAll(GradientPolicy.values());
         comboBox.setOnAction(e -> {
@@ -70,31 +103,56 @@ public class SvgLoaderResultViewer extends Application {
         gradientPolicy.getChildren().add(comboBox);
         comboBox.getSelectionModel().select(GradientPolicy.USE_SUPPORTED);
 
+        // show/hide viewport rectangle
         CheckBox showViewport = new CheckBox("Show Viewport");
         showViewport.setOnAction(e -> {
             loader.setAddViewboxRect(showViewport.isSelected());
             selectFile(currentFile);
         } );
 
+        // Zoom
+        SnapSlider zoomSlider = new SnapSlider(0.25, 2.0, 1.0);
+        zoomSlider.setShowTickLabels(true);
+        zoomSlider.setShowTickMarks(true);
+        zoomSlider.setMajorTickUnit(0.25);
+        zoomSlider.setMinorTickCount(0);
+        zoomSlider.setLabelFormatter(new StringConverter<Double>() {
+
+            @Override
+            public String toString(Double value) {
+                return String.format("%d %%", (int) (value * 100));
+            }
+
+            @Override
+            public Double fromString(String string) {
+                throw new UnsupportedOperationException();
+            }
+        });
+
+        zoomSlider.finalValueProperty().addListener( (val, oldVal, newVal) -> {
+            setScale((Double) newVal);
+        });
+
+        HBox zoomControl = new HBox();
+        zoomControl.setSpacing(10);
+        zoomControl.getChildren().add(new Label("Zoom:"));
+        zoomControl.getChildren().add(zoomSlider);
+        HBox.setHgrow(zoomSlider, Priority.ALWAYS);
+
+        // build control panel
         VBox controlPanel = new VBox();
+        controlPanel.setSpacing(10);
         controlPanel.setPadding(new Insets(10, 10, 10, 10));
         controlPanel.getChildren().add(gradientPolicy);
         controlPanel.getChildren().add(showViewport);
+        controlPanel.getChildren().add(zoomControl);
+        
+        return controlPanel;
+    }
 
-        VBox leftPanel = new VBox();
-        leftPanel.getChildren().add(listView);
-        leftPanel.getChildren().add(controlPanel);
-        // ************** Options panel **************/
-
-        mainLayout.getChildren().add(leftPanel);
-        mainLayout.getChildren().add(svgImage);
-
-        listView.getSelectionModel().select(0);
-
-        // show the generated scene graph
-        Scene scene = new Scene(mainLayout, 800, 600);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+    private void setScale(Double scale) {
+        svgImage.setScaleX(scale);
+        svgImage.setScaleY(scale);
     }
 
 
@@ -107,9 +165,9 @@ public class SvgLoaderResultViewer extends Application {
             e.printStackTrace();
         }
 
-        mainLayout.getChildren().remove(svgImage);
+        imageLayout.getChildren().remove(svgImage);
         svgImage = loader.loadSvg(svgFile);
-        mainLayout.getChildren().add(svgImage);
+        imageLayout.getChildren().add(svgImage);
     }
 
     
