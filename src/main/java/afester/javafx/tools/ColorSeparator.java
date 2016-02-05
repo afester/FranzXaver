@@ -17,9 +17,9 @@ import javafx.scene.paint.Color;
  */
 public class ColorSeparator {
 
-    /** The source image */
+    /** The source image. */
     private Image sourceImage;
-    
+
     /**
      * Creates a ColorSeparator and specified the input image. 
      *
@@ -111,11 +111,11 @@ public class ColorSeparator {
     /**
      * Brain-dead implementation of a color separator which returns the
      * blue color channel of an image.
-     * 
-     * @deprecated Use getBlueChannel instead
      *
      * @return An image which is identical to the source image, but
      *         contains the blue color channel only. 
+     * 
+     * @deprecated Use getBlueChannel instead
      */
     public Image getBlueChannel1() {
         PixelReader pr = sourceImage.getPixelReader();
