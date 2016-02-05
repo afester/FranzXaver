@@ -11,7 +11,6 @@ import javafx.stage.Stage;
 /**
  * Example for a Region border definition. Just launch this class using a Java8
  * runtime environment. No other dependencies required.
- *
  * See http://www.software-architect.net/blog/article/date/2015/11/14/9-patch-scaling-in-javafx.html
  */
 public class BorderExample extends Application {
