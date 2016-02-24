@@ -8,22 +8,31 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 @Example("Using SvgLoader to render an example image")
 public class TigerExample extends Application {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         launch(args);
     }
 
+    public void run() {
+        start(new Stage());
+    }
+
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         primaryStage.setTitle("SVG Display sample");
 
         // load the sample svg file
-        InputStream svgFile = new FileInputStream("data/Ghostscript_Tiger.svg");
+        InputStream svgFile = null;
+        try {
+            svgFile = new FileInputStream("data/Ghostscript_Tiger.svg");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         SvgLoader loader = new SvgLoader();
         Group svgImage = loader.loadSvg(svgFile);
 
@@ -32,7 +41,7 @@ public class TigerExample extends Application {
         svgImage.setTranslateY(-200);
         svgImage.setScaleX(0.5);
         svgImage.setScaleY(0.5);
-        Scene scene = new Scene(svgImage, 800, 600);
+        Scene scene = new Scene(svgImage);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

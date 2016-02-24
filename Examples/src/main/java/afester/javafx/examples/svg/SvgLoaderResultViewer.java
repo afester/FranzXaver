@@ -48,8 +48,12 @@ public class SvgLoaderResultViewer extends Application {
         launch(args);
     }
 
+    public void run()  {
+        start(new Stage());
+    }
+
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         primaryStage.setTitle("SVGLoader result viewer");
 
         ListView<String> listPanel = createListPanel();

@@ -37,7 +37,7 @@ public class AllExamples extends Application {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        
+
         return result;
     }
 
@@ -50,10 +50,12 @@ public class AllExamples extends Application {
         VBox mainGroup = new VBox();
         mainGroup.setPadding(new Insets(10));
         mainGroup.setSpacing(10);
+        mainGroup.setFillWidth(true);
 
         List<ExampleDef> examples = getExamples();
         for (ExampleDef ed : examples) {
             Button launcher = new Button(ed.getDescription());
+            launcher.setMaxWidth(Double.MAX_VALUE);
             launcher.setOnAction(e -> ed.run());
             mainGroup.getChildren().add(launcher);
         }

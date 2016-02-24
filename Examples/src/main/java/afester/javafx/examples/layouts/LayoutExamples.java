@@ -17,7 +17,6 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
@@ -37,98 +36,73 @@ public class LayoutExamples extends Application {
         launch(args);
     }
 
-    private List<Pane> layouts = new ArrayList<>();
+    //private List<Pane> layouts = new ArrayList<>();
+    HBox hboxLayout = new HBox();
+    VBox vboxLayout = new VBox();
+    FlowPane flowLayout = new FlowPane();
+    GridPane gridLayout = new GridPane();
+    BorderPane borderLayout = new BorderPane();
+    StackPane stackLayout = new StackPane();
+    TilePane tileLayout = new TilePane();
+
+    public void run() {
+        start(new Stage());
+    }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         primaryStage.setTitle("JavaFX layouts samples");
 
         Tab hboxTab = new Tab();
         hboxTab.setText("HBox");
         hboxTab.setClosable(false);
-        HBox hboxLayout = new HBox();
         hboxLayout.setBackground(createBackground(Color.LIGHTGREEN));
-        hboxLayout.getChildren().addAll(createVariableNodes());
         hboxTab.setContent(hboxLayout);
-        layouts.add(hboxLayout);
-        
+
         Tab vboxTab = new Tab();
         vboxTab.setText("VBox");
         vboxTab.setClosable(false);
-        VBox vboxLayout = new VBox();
         vboxLayout.setBackground(createBackground(Color.ORANGE));
-        vboxLayout.getChildren().addAll(createVariableNodes());
         vboxTab.setContent(vboxLayout);
-        layouts.add(vboxLayout);
 
         Tab flowPaneTab = new Tab();
         flowPaneTab.setText("FlowPane");
         flowPaneTab.setClosable(false);
-        FlowPane flowLayout = new FlowPane();
         flowLayout.setBackground(createBackground(Color.LIGHTSKYBLUE));
-        flowLayout.getChildren().addAll(createVariableNodes());
         flowPaneTab.setContent(flowLayout);
-        layouts.add(flowLayout);
 
         Tab gridPaneTab = new Tab("GridPane");
         gridPaneTab.setClosable(false);
-        GridPane gridLayout = new GridPane();
         gridLayout.setBackground(createBackground(Color.LIGHTCORAL));
-        List<Node> contents1 = createVariableNodes();
-        gridLayout.add(contents1.get(0), 0, 0);
-        gridLayout.add(contents1.get(1), 1, 0);
-        gridLayout.add(contents1.get(2), 0, 1, 2, 1);
         gridLayout.setGridLinesVisible(true);
         gridPaneTab.setContent(gridLayout);
-        layouts.add(gridLayout);
 
         Tab borderPaneTab = new Tab();
         borderPaneTab.setText("BorderPane");
         borderPaneTab.setClosable(false);
-        BorderPane borderLayout = new BorderPane();
         borderLayout.setBackground(createBackground(Color.LIGHTYELLOW));
-        List<Node> contents = createVariableNodes();
-        borderLayout.setLeft(contents.get(0));
-        borderLayout.setTop(contents.get(1));
-        borderLayout.setRight(contents.get(2));
-        borderLayout.setBottom(contents.get(3));
-        borderLayout.setCenter(contents.get(4));
         borderPaneTab.setContent(borderLayout);
-        layouts.add(borderLayout);
 
         Tab stackPaneTab = new Tab();
         stackPaneTab.setText("StackPane");
         stackPaneTab.setClosable(false);
-        StackPane stackLayout = new StackPane();
-        stackLayout.getChildren().addAll(createVariableNodes());
         stackLayout.setBackground(createBackground(Color.YELLOW));
         stackPaneTab.setContent(stackLayout);
-        layouts.add(stackLayout);
 
         Tab tilePaneTab = new Tab("TilePane");
         tilePaneTab.setClosable(false);
-        TilePane tileLayout = new TilePane();
-        tileLayout.getChildren().addAll(createVariableNodes());
         tileLayout.setBackground(createBackground(Color.LIGHTGOLDENRODYELLOW));
         tilePaneTab.setContent(tileLayout);
-        layouts.add(tileLayout);
 
+        updateChildren(false);
         TabPane tabPane = new TabPane();
         tabPane.getTabs().addAll(hboxTab, vboxTab, flowPaneTab, gridPaneTab, borderPaneTab, 
                                  stackPaneTab, tilePaneTab);
 
         VBox optionsPanel = new VBox();
         CheckBox componentType = new CheckBox("Use Buttons instead of Rectangles");
-        componentType.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            for (Pane pane : layouts) {
-                pane.getChildren().clear();
-                if (newValue) {
-                    pane.getChildren().addAll(createNodes());
-                } else {
-                    pane.getChildren().addAll(createVariableNodes());
-                }
-            }
-        });
+        componentType.selectedProperty().addListener(
+                (observable, oldValue, newValue) -> updateChildren(newValue) );
         optionsPanel.getChildren().add(componentType);
         optionsPanel.setPadding(new Insets(10));
 
@@ -137,11 +111,52 @@ public class LayoutExamples extends Application {
         mainLayout.setLeft(optionsPanel);
 
         // show the generated scene graph
-        Scene scene = new Scene(mainLayout, 800, 600);
+        Scene scene = new Scene(mainLayout);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
     
+
+    private void updateChildren(boolean useButtons) {
+        hboxLayout.getChildren().clear();
+        hboxLayout.getChildren().addAll(createChildren(useButtons));
+
+        vboxLayout.getChildren().clear();
+        vboxLayout.getChildren().addAll(createChildren(useButtons));
+
+        flowLayout.getChildren().clear();
+        flowLayout.getChildren().addAll(createChildren(useButtons));
+
+        List<Node> contents1 = createChildren(useButtons);
+        gridLayout.getChildren().clear();
+        gridLayout.add(contents1.get(0), 0, 0);
+        gridLayout.add(contents1.get(1), 1, 0);
+        gridLayout.add(contents1.get(2), 0, 1, 2, 1);
+        
+        List<Node> contents = createChildren(useButtons);
+        borderLayout.getChildren().clear();
+        borderLayout.setLeft(contents.get(0));
+        borderLayout.setTop(contents.get(1));
+        borderLayout.setRight(contents.get(2));
+        borderLayout.setBottom(contents.get(3));
+        borderLayout.setCenter(contents.get(4));
+    
+        stackLayout.getChildren().clear();
+        stackLayout.getChildren().addAll(createChildren(useButtons));
+
+        tileLayout.getChildren().clear();
+        tileLayout.getChildren().addAll(createChildren(useButtons));
+    }
+    
+    
+    private List<Node> createChildren(boolean useButtons) {
+        if (useButtons) {
+            return createNodes();
+        }
+        
+        return createVariableNodes();
+    }
+
 
     private Background createBackground(Color col) {
         return new Background(
@@ -149,10 +164,19 @@ public class LayoutExamples extends Application {
     }
 
 
+    private final static String[] buttonTexts = 
+            new String[] {"Node",   "NodeABC",    "NodeX",        "Hello", "Hello World",
+                          "Button", "LongButton", "LongerButton", "X",     "ABCD"};
+
+    /**
+     * Creates a number of buttons with different widths.
+     *
+     * @return A list of Button objects with different widths.
+     */
     private List<Node> createNodes() {
         List<Node> result = new ArrayList<>();
         for (int i = 0;  i < 10;  i++) {
-            result.add(new Button("Node " + i));
+            result.add(new Button(buttonTexts[i] + "Node " + i));
         }
         return result;
     }
