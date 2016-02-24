@@ -1,5 +1,6 @@
 package afester.javafx.examples.svg;
 
+import afester.javafx.examples.Example;
 import afester.javafx.svg.SvgLoader;
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -10,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+@Example("Using SvgLoader to render an example image")
 public class TigerExample extends Application {
 
     public static void main(String[] args) throws IOException {

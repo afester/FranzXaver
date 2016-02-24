@@ -1,5 +1,7 @@
 package afester.javafx.examples.layouts;
 
+import afester.javafx.examples.Example;
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+@Example("Basic JavaFX layout panels")
 public class LayoutExamples extends Application {
 
     public static void main(String[] args) throws IOException {
@@ -127,6 +130,7 @@ public class LayoutExamples extends Application {
             }
         });
         optionsPanel.getChildren().add(componentType);
+        optionsPanel.setPadding(new Insets(10));
 
         BorderPane mainLayout = new BorderPane();
         mainLayout.setCenter(tabPane);
@@ -154,6 +158,7 @@ public class LayoutExamples extends Application {
     }
 
 
+    @SuppressWarnings("serial")
     private static final List<RectParams> nodes = new ArrayList<RectParams>() { {
             add(new RectParams(50, 20, Color.ALICEBLUE));
             add(new RectParams(150, 30, Color.ANTIQUEWHITE));

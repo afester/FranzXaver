@@ -1,5 +1,6 @@
 package afester.javafx.examples.border;
 
+import afester.javafx.examples.Example;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -13,14 +14,19 @@ import javafx.stage.Stage;
  * runtime environment. No other dependencies required.
  * See http://www.software-architect.net/blog/article/date/2015/11/14/9-patch-scaling-in-javafx.html
  */
+@Example("Border definition of a Region")
 public class BorderExample extends Application {
 
     public static void main(String[] args) {
         launch(args);
     }
 
+    public void run() {
+        start(new Stage());
+    }
+
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         Region hello = new Button("Hello World");
         hello.setId("hello");
 

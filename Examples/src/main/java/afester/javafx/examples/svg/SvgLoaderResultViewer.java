@@ -1,6 +1,7 @@
 package afester.javafx.examples.svg;
 
 import afester.javafx.components.SnapSlider;
+import afester.javafx.examples.Example;
 import afester.javafx.svg.GradientPolicy;
 import afester.javafx.svg.SvgLoader;
 import javafx.application.Application;
@@ -28,7 +29,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Example("Using SvgLoader to render an SVG file")
 public class SvgLoaderResultViewer extends Application {
 
     // The SVG image's top node, as returned from the SvgLoader
