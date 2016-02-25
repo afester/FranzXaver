@@ -102,7 +102,7 @@ public class LayoutExamples extends Application {
         VBox optionsPanel = new VBox();
         CheckBox componentType = new CheckBox("Use Buttons instead of Rectangles");
         componentType.selectedProperty().addListener(
-                (observable, oldValue, newValue) -> updateChildren(newValue) );
+            (observable, oldValue, newValue) -> updateChildren(newValue) );
         optionsPanel.getChildren().add(componentType);
         optionsPanel.setPadding(new Insets(10));
 
@@ -164,7 +164,7 @@ public class LayoutExamples extends Application {
     }
 
 
-    private final static String[] buttonTexts = 
+    private static final String[] buttonTexts = 
             new String[] {"Node",   "NodeABC",    "NodeX",        "Hello", "Hello World",
                           "Button", "LongButton", "LongerButton", "X",     "ABCD"};
 

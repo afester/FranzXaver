@@ -42,7 +42,7 @@ public class BorderExample extends Application {
         mainGroup.setPadding(new Insets(10));
         mainGroup.setSpacing(10);
         mainGroup.getChildren().addAll(hello, hello2, hello3);
-        Scene scene = new Scene(mainGroup, 800, 600);
+        Scene scene = new Scene(mainGroup);
         scene.getStylesheets().add("/afester/javafx/examples/border/panelexample.css");
 
         primaryStage.setScene(scene);
