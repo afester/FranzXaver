@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" 
+      codebase="http://host/path/FranzXaver" 
+      href="franzxaver.jnlp">
+    <information>
+        <title>JavaFX examples</title>
+        <vendor>Andreas Fester</vendor>
+        <offline-allowed/>
+    </information>
+    <resources>
+        <!-- Application Resources -->
+        <j2se version="1.8+" href=
+           "http://java.sun.com/products/autodl/j2se"/>
+        <jar href="Examples.jar" main="true" />
+    </resources>
+    <application-desc
+         name="Dynamic Tree Demo Application"
+         main-class="afester.examples.javafx.svg.SvgResultViewer"
+         width="300"
+         height="300">
+     </application-desc>
+     <update check="background"/>
+</jnlp>
