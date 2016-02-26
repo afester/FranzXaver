@@ -101,12 +101,12 @@ public class SvgLoaderResultViewer extends Application {
 
         ComboBox<GradientPolicy> comboBox = new ComboBox<>();
         comboBox.getItems().addAll(GradientPolicy.values());
+        comboBox.getSelectionModel().select(GradientPolicy.USE_SUPPORTED);
         comboBox.setOnAction(e -> {
             loader.setGradientTransformPolicy(comboBox.getSelectionModel().getSelectedItem());
             selectFile(currentFile);
         }); 
         gradientPolicy.getChildren().add(comboBox);
-        comboBox.getSelectionModel().select(GradientPolicy.USE_SUPPORTED);
 
         // show/hide viewport rectangle
         CheckBox showViewport = new CheckBox("Show Viewport");
