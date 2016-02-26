@@ -1,6 +1,7 @@
 package afester.javafx.examples.layouts;
 
-import afester.javafx.examples.Example;
+import java.util.ArrayList;
+import java.util.List;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -23,27 +24,23 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import afester.javafx.examples.Example;
 
 
 @Example("Basic JavaFX layout panels")
 public class LayoutExamples extends Application {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         launch(args);
     }
 
-    //private List<Pane> layouts = new ArrayList<>();
-    HBox hboxLayout = new HBox();
-    VBox vboxLayout = new VBox();
-    FlowPane flowLayout = new FlowPane();
-    GridPane gridLayout = new GridPane();
-    BorderPane borderLayout = new BorderPane();
-    StackPane stackLayout = new StackPane();
-    TilePane tileLayout = new TilePane();
+    private HBox hboxLayout = new HBox();
+    private VBox vboxLayout = new VBox();
+    private FlowPane flowLayout = new FlowPane();
+    private GridPane gridLayout = new GridPane();
+    private BorderPane borderLayout = new BorderPane();
+    private StackPane stackLayout = new StackPane();
+    private TilePane tileLayout = new TilePane();
 
     public void run() {
         start(new Stage());
