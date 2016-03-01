@@ -22,10 +22,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -161,30 +161,30 @@ public class SvgLoaderResultViewer extends Application {
     }
 
 
-    private void selectFile(String string) {
-        currentFile = string;
-        InputStream svgFile = null;
-        try {
-            svgFile = new FileInputStream("data/" + string);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+    private void selectFile(String fileName) {
+        currentFile = fileName;
+        InputStream svgFile = 
+                getClass().getResourceAsStream("../data/" + fileName);
 
         imageLayout.getChildren().remove(svgImage);
         svgImage = loader.loadSvg(svgFile);
         imageLayout.getChildren().add(svgImage);
     }
 
-    
+
     private List<String> getTestFiles() {
         List<String> result = new ArrayList<>();
 
-        File directory = new File("data");
-        String[] files = directory.list();
-        for (String file : files) {
-            if (file.endsWith(".svg")) {
-                result.add(file);
+        InputStream dataLst = 
+                getClass().getResourceAsStream("../data/data.lst");
+        BufferedReader dataFile = new BufferedReader(new InputStreamReader(dataLst));
+        String fileName = null;
+        try {
+            while ( (fileName = dataFile.readLine()) != null) {
+                result.add(fileName);
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return result;
