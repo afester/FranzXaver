@@ -9,6 +9,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.net.URL;
+
 /**
  * Example for a Region border definition. Just launch this class using a Java8
  * runtime environment. No other dependencies required.
@@ -43,7 +45,9 @@ public class BorderExample extends Application {
         mainGroup.setSpacing(10);
         mainGroup.getChildren().addAll(hello, hello2, hello3);
         Scene scene = new Scene(mainGroup);
-        scene.getStylesheets().add("/afester/javafx/examples/border/panelexample.css");
+
+        URL styleSheet = getClass().getResource("panelexample.css");
+        scene.getStylesheets().add(styleSheet.toExternalForm());
 
         primaryStage.setScene(scene);
         primaryStage.show();
