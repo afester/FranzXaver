@@ -1,6 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'eclipse'
+apply from: 'webstart.gradle'
 
 mainClassName = "afester.javafx.examples.svg.SvgLoaderResultViewer"
 
@@ -26,3 +27,13 @@ startScripts {
         delete unixScript
     }
 }
+
+
+wsCreateJnlp {
+    wsJnlpFilename = "franzxaver.jnlp"
+    wsTitle = "JavaFX examples"
+    wsVendor = "Andreas Fester"
+    wsName = "JavaFX sample application and component library"
+    wsMainClass = "afester.javafx.examples.AllExamples"
+}
+
