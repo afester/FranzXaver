@@ -32,6 +32,22 @@ import java.util.List;
 @Example("Using SvgLoader to render an SVG file")
 public class SvgLoaderResultViewer extends Application {
 
+    // The name of the data package (to avoid hard coding of package name)
+    // it seems that "../data" does not work with WebStart - 
+    // an absolute path name works, though.
+    private static String DATA_PACKAGE;
+
+    {
+        String pkgName = SvgLoaderResultViewer.class.getPackage().getName();
+        int last = pkgName.lastIndexOf('.');
+        if (last > 0) {
+            pkgName = pkgName.substring(0, last);
+        }
+        pkgName = "/" + pkgName.replace('.',  '/') + "/data";
+        DATA_PACKAGE = pkgName;
+    }
+
+
     // The SVG image's top node, as returned from the SvgLoader
     private Group svgImage = new Group();
 
@@ -164,7 +180,7 @@ public class SvgLoaderResultViewer extends Application {
     private void selectFile(String fileName) {
         currentFile = fileName;
         InputStream svgFile = 
-                getClass().getResourceAsStream("../data/" + fileName);
+                getClass().getResourceAsStream(DATA_PACKAGE + "/" + fileName);
 
         imageLayout.getChildren().remove(svgImage);
         svgImage = loader.loadSvg(svgFile);
@@ -176,7 +192,7 @@ public class SvgLoaderResultViewer extends Application {
         List<String> result = new ArrayList<>();
 
         InputStream dataLst = 
-                getClass().getResourceAsStream("../data/data.lst");
+                getClass().getResourceAsStream(DATA_PACKAGE + "/data.lst");
         BufferedReader dataFile = new BufferedReader(new InputStreamReader(dataLst));
         String fileName = null;
         try {
