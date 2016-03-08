@@ -3,6 +3,8 @@ apply plugin: 'application'
 apply plugin: 'eclipse'
 apply from: 'webstart.gradle'
 
+version = "0.1-SNAPSHOT"
+
 mainClassName = "afester.javafx.examples.svg.SvgLoaderResultViewer"
 
 repositories {
