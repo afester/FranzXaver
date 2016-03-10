@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" 
+      codebase="http://host/path/FranzXaver">
+    <information>
+        <title>JavaFX examples</title>
+        <vendor>Andreas Fester</vendor>
+        <offline-allowed/>
+    </information>
+
+    <resources>
+        <j2se version="1.8+" href=
+           "http://java.sun.com/products/autodl/j2se"/>
+        <jar href="Examples.jar" main="true" />
+    </resources>
+    <resources>
+      <jar href="FranzXaver.jar"/>
+    </resources>
+
+    <application-desc
+         name="JavaFX sample application and component library"
+         main-class="afester.javafx.examples.AllExamples"
+         width="300"
+         height="300">
+     </application-desc>
+     <update check="background"/>
+</jnlp>

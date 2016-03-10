@@ -1,6 +1,8 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 
+version = project.properties['application.version']
+
 sourceSets {
     test {
        resources {

@@ -1,6 +1,9 @@
 apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'eclipse'
+apply from: 'webstart.gradle'
+
+version = project.properties['application.version']
 
 mainClassName = "afester.javafx.examples.svg.SvgLoaderResultViewer"
 
@@ -19,3 +22,20 @@ dependencies {
     runtime 'org.apache.xmlgraphics:xmlgraphics-commons:2.1'
     runtime 'org.apache.logging.log4j:log4j-core:2.5'
 }
+
+startScripts {
+    doLast {
+        delete windowsScript
+        delete unixScript
+    }
+}
+
+
+wsCreateJnlp {
+    wsJnlpFilename = "franzxaver.jnlp"
+    wsTitle = "JavaFX examples"
+    wsVendor = "Andreas Fester"
+    wsName = "JavaFX sample application and component library"
+    wsMainClass = "afester.javafx.examples.AllExamples"
+}
+

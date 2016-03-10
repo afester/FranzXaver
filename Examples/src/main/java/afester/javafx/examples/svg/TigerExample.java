@@ -7,8 +7,6 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 @Example("Using SvgLoader to render an example image")
@@ -27,12 +25,8 @@ public class TigerExample extends Application {
         primaryStage.setTitle("SVG Display sample");
 
         // load the sample svg file
-        InputStream svgFile = null;
-        try {
-            svgFile = new FileInputStream("data/Ghostscript_Tiger.svg");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        InputStream svgFile = 
+              getClass().getResourceAsStream("/afester/javafx/examples/data/Ghostscript_Tiger.svg");
         SvgLoader loader = new SvgLoader();
         Group svgImage = loader.loadSvg(svgFile);
 
