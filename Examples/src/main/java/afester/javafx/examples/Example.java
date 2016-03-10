@@ -7,8 +7,12 @@ import java.lang.annotation.RetentionPolicy;
 public @interface Example {
 
     /**
-     * @return The value passed to the annotation.
+     * @return A description of this example.
      */
-    String value();
+    String desc();
 
+    /**
+     * @return The category into which this example shall be grouped.
+     */
+    String cat();
 }

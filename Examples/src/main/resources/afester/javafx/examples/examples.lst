@@ -3,3 +3,4 @@ afester.javafx.examples.colorchannels.ColorChannelsExample
 afester.javafx.examples.layouts.LayoutExamples
 afester.javafx.examples.svg.SvgLoaderResultViewer
 afester.javafx.examples.svg.TigerExample
+afester.javafx.examples.animation.counter.AnimatedCounter

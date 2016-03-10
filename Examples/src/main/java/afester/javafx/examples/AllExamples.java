@@ -5,6 +5,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.BufferedReader;
@@ -12,14 +13,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 public class AllExamples extends Application {
-   
 
-    private List<ExampleDef> getExamples() {
-        List<ExampleDef> result = new ArrayList<>();
+
+    private Map<String, List<ExampleDef>> getExamples() {
+        Map<String, List<ExampleDef>> result = new HashMap<>();
 
         InputStream is = getClass().getResourceAsStream("examples.lst");
         BufferedReader bir = new BufferedReader(new InputStreamReader(is));
@@ -31,7 +35,15 @@ public class AllExamples extends Application {
                 Example[] annos = clazz.getAnnotationsByType(Example.class);
                 if (annos.length > 0) {
                     Example exampleAnnotation = annos[0];
-                    result.add(new ExampleDef(className, exampleAnnotation.value()));
+                    String description = exampleAnnotation.desc();
+                    String category = exampleAnnotation.cat();
+
+                    List<ExampleDef> exampleList = result.get(category);
+                    if (exampleList == null) {
+                        exampleList = new ArrayList<>();
+                        result.put(category, exampleList);
+                    }
+                    exampleList.add(new ExampleDef(className, description));
                 }
             }
         } catch (IOException | ClassNotFoundException e) {
@@ -52,12 +64,17 @@ public class AllExamples extends Application {
         mainGroup.setSpacing(10);
         mainGroup.setFillWidth(true);
 
-        List<ExampleDef> examples = getExamples();
-        for (ExampleDef ed : examples) {
-            Button launcher = new Button(ed.getDescription());
-            launcher.setMaxWidth(Double.MAX_VALUE);
-            launcher.setOnAction(e -> ed.run());
-            mainGroup.getChildren().add(launcher);
+        Map<String, List<ExampleDef>> allExamples = getExamples();
+        Set<String> categories = allExamples.keySet();
+        for (String category : categories) {
+            mainGroup.getChildren().add(new Text(category));
+            List<ExampleDef> examples = allExamples.get(category);
+            for (ExampleDef ed : examples) {
+                Button launcher = new Button(ed.getDescription());
+                launcher.setMaxWidth(Double.MAX_VALUE);
+                launcher.setOnAction(e -> ed.run());
+                mainGroup.getChildren().add(launcher);
+            }
         }
 
         Scene scene = new Scene(mainGroup);

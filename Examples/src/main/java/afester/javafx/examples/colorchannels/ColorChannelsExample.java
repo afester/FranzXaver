@@ -17,7 +17,8 @@ import javafx.stage.Stage;
  * Just launch this class using a Java8 runtime environment. 
  * No other dependencies required.
  */
-@Example("Color channel separation")
+@Example(desc = "Color channel separation",
+         cat  = "FranzXaver")
 public class ColorChannelsExample extends Application {
 
     public static void main(String[] args) {
