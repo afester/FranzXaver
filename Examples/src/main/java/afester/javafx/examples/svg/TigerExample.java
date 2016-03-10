@@ -9,7 +9,8 @@ import javafx.stage.Stage;
 
 import java.io.InputStream;
 
-@Example("Using SvgLoader to render an example image")
+@Example(desc = "Using SvgLoader to render an example image",
+         cat  = "FranzXaver")
 public class TigerExample extends Application {
 
     public static void main(String[] args) {

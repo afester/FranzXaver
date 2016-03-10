@@ -16,7 +16,8 @@ import java.net.URL;
  * runtime environment. No other dependencies required.
  * See http://www.software-architect.net/blog/article/date/2015/11/14/9-patch-scaling-in-javafx.html
  */
-@Example("Border definition of a Region")
+@Example(desc = "Border definition of a Region",
+         cat  = "Basic JavaFX")
 public class BorderExample extends Application {
 
     public static void main(String[] args) {

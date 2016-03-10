@@ -1,7 +1,6 @@
 package afester.javafx.examples.layouts;
 
-import java.util.ArrayList;
-import java.util.List;
+import afester.javafx.examples.Example;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -24,10 +23,14 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import afester.javafx.examples.Example;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
-@Example("Basic JavaFX layout panels")
+
+@Example(desc = "Basic JavaFX layout panels",
+         cat  = "Basic JavaFX")
 public class LayoutExamples extends Application {
 
     public static void main(String[] args) {

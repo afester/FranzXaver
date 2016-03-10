@@ -29,7 +29,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-@Example("Using SvgLoader to render an SVG file")
+@Example(desc = "Using SvgLoader to render an SVG file", 
+         cat  = "FranzXaver")
 public class SvgLoaderResultViewer extends Application {
 
     // The name of the data package (to avoid hard coding of package name)
