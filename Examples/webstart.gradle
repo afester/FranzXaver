@@ -18,14 +18,24 @@ task wsCopyFiles(type: Copy, dependsOn: [jar]) {
 // after the jar files have been copied
 task wsSignAll(dependsOn: [wsCopyFiles]) << {
    def libFiles = files { file('build/webstart/lib').listFiles() }
+
+   String keystorePass = project.properties['codesign.keystorePassword']
+   if (keystorePass == null) {
+      keystorePass = ""
+   }
+   String signingAlias = project.properties['codesign.signingAlias']
+   if (signingAlias == null) {
+      signingAlias = ""
+   }
+ 
    libFiles.each { 
       printf("  Signing %s\n", it)
       ant.signjar(
                 jar: it,
                 lazy: 'false',
                 preservelastmodified: 'true',
-                alias: 'selfsigned',
-                storepass: 'password')
+                alias: signingAlias,
+                storepass: keystorePass)
    }
 }
 

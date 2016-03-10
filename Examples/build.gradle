@@ -3,7 +3,7 @@ apply plugin: 'application'
 apply plugin: 'eclipse'
 apply from: 'webstart.gradle'
 
-version = "0.1-SNAPSHOT"
+version = project.properties['application.version']
 
 mainClassName = "afester.javafx.examples.svg.SvgLoaderResultViewer"
 
