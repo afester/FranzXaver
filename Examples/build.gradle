@@ -5,7 +5,7 @@ apply from: 'webstart.gradle'
 
 version = project.properties['application.version']
 
-mainClassName = "afester.javafx.examples.svg.SvgLoaderResultViewer"
+mainClassName = "afester.javafx.examples.AllExamples"
 
 repositories {
     mavenCentral()
