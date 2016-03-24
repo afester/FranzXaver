@@ -2,6 +2,7 @@ apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'eclipse'
 apply from: 'webstart.gradle'
+apply from: 'fxdist.gradle'
 
 version = project.properties['application.version']
 
