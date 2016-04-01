@@ -2,10 +2,11 @@ apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'eclipse'
 apply from: 'webstart.gradle'
+apply from: 'fxdist.gradle'
 
 version = project.properties['application.version']
 
-mainClassName = "afester.javafx.examples.svg.SvgLoaderResultViewer"
+mainClassName = "afester.javafx.examples.AllExamples"
 
 repositories {
     mavenCentral()
