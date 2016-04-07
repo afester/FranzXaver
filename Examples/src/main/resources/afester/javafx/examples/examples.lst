@@ -6,3 +6,4 @@ afester.javafx.examples.svg.TigerExample
 afester.javafx.examples.animation.counter.AnimatedCounter
 afester.javafx.examples.animation.game.DrivingCar
 afester.javafx.examples.animation.game.BouncingBall
+afester.javafx.examples.components.sevensegment.SegmentDisplay

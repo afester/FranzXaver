@@ -1,7 +1,5 @@
 package afester.javafx.components;
 
-import java.io.CharConversionException;
-
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.event.EventHandler;
@@ -9,11 +7,12 @@ import javafx.scene.control.SkinBase;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 
+import java.io.CharConversionException;
 
-public class SevenSegmentPanelSkin extends SkinBase<SevenSegmentPanel> {
 
-   // private SevenSegment[] digits;
-    private FourteenSegment[] digits;
+public class MultiSegmentPanelSkin extends SkinBase<MultiSegmentPanel> {
+
+    private MultiSegment[] digits;
 
     // TODO: why do we need to duplicate the properties here and synchronize
     // them with the control's properties through bind()?
@@ -26,63 +25,72 @@ public class SevenSegmentPanelSkin extends SkinBase<SevenSegmentPanel> {
     //private SimpleObjectProperty<Color> offColor = new SimpleObjectProperty<Color>();
     //private StringProperty text = new SimpleStringProperty();
 
-    // TODO: actually we need a constructor with exactly one parameter (the control) 
-    // (for the skin to be useable in -fx-skin CSS) - how is the code flow then? 
-    // when does the UI need to be initialized? Were do we get the number of digits from?
-    public SevenSegmentPanelSkin(SevenSegmentPanel control, int numberOfDigits) {
-        super(control); // NOTE: SkinBase only has a Control parameter!  ... , new SevenSegmentPanelBehavior(control)));
+    /**
+     * Creates a new skin for a MultiSegmentPanel.
+     *
+     * @param control The MultiSegmentPanel control which uses this skin.
+     */
+    public MultiSegmentPanelSkin(MultiSegmentPanel control) {
+        // NOTE: SkinBase only has a Control parameter!  
+        // ... , new SevenSegmentPanelBehavior(control)));
+        super(control);
 
-        initialize(numberOfDigits);
+        initialize(control.getNumberOfDigits(), control.getSegmentType());
 
         // set current ON color from control and setup listener for future changes
         setOnColor(control.getOnColor());
-        control.onColorProperty().addListener((obs, old, w) -> setOnColor(w));
+        control.onColorProperty().addListener((obs, oldValue, newValue) -> setOnColor(newValue));
 
         // set current OFF color from control and setup listener for future changes
         setOffColor(control.getOffColor());
-        control.offColorProperty().addListener((obs, old, w) -> setOffColor(w));
+        control.offColorProperty().addListener((obs, old, newValue) -> setOffColor(newValue));
 
         // set current PANEL color from control and setup listener for future changes
         setPanelColor(control.getPanelColor());
-        control.panelColorProperty().addListener((obs, old, w) -> setPanelColor(w));
+        control.panelColorProperty().addListener((obs, old, newValue) -> setPanelColor(newValue));
 
         // set current text from control and setup listener for future changes
         setText(control.getText());
-        control.textProperty().addListener((obs, old, w) -> setText(w));
+        control.textProperty().addListener((obs, old, newValue) -> setText(newValue));
     }
 
 
-    private int i = 0;
-    private void initialize(int numberOfDigits) {
+    private int idx = 0;
+
+    private void initialize(int numberOfDigits, String displayType) {
         final HBox displayGroup = new HBox();
         displayGroup.setId("segments");
 
-        //digits = new SevenSegment[numberOfDigits];
-        digits = new FourteenSegment[numberOfDigits];
-        for (i = 0;  i < numberOfDigits;  i++) {
+        digits = new MultiSegment[numberOfDigits];
+        for (idx = 0;  idx < numberOfDigits;  idx++) {
             //digits[i] = new SevenSegment();
-            digits[i] = new FourteenSegment();
-            digits[i].setId("seg" + i);
-            digits[i].getCurrentMaskProperty().addListener(new InvalidationListener() {
+            digits[idx] = new MultiSegment(displayType);
+            digits[idx].setId("seg" + idx);
 
-                private FourteenSegment source = null;
-                { source = digits[i]; }
+            digits[idx].getCurrentMaskProperty().addListener(new InvalidationListener() {
+
+                private MultiSegment source = digits[idx];
 
                 @Override
                 public void invalidated(Observable observable) {
-                    EventHandler<DigitChangeEvent> handler = SevenSegmentPanelSkin.this.getSkinnable().getOnDigitChanged();
+                    EventHandler<DigitChangeEvent> handler =
+                            MultiSegmentPanelSkin.this.getSkinnable().getOnDigitChanged();
                     if (handler != null) {
                         handler.handle(new DigitChangeEvent(source));
                     }
                 }
 
             });
-            displayGroup.getChildren().add(digits[i]);
+
+            displayGroup.getChildren().add(digits[idx]);
         }
         displayGroup.setMaxSize(displayGroup.getMaxWidth(), displayGroup.getPrefHeight());
 
         getChildren().clear();
-        getChildren().add(displayGroup); // !!!! Nodes are added to the Control's children through this getChildren() method inherited from SkinBase!
+
+        // !!!! Nodes are added to the Control's children through this getChildren() 
+        // method inherited from SkinBase!
+        getChildren().add(displayGroup); 
     }
 
 
@@ -92,46 +100,56 @@ public class SevenSegmentPanelSkin extends SkinBase<SevenSegmentPanel> {
 
 
     private void setOnColor(Color col) {
-        //for (SevenSegment s : digits) {
-        for (FourteenSegment s : digits) {
+        for (MultiSegment s : digits) {
             s.setOnColor(col);
         }
     }
 
     private void setOffColor(Color col) {
-        //for (SevenSegment s : digits) {
-        for (FourteenSegment s : digits) {
+        for (MultiSegment s : digits) {
             s.setOffColor(col);
         }
     }
 
     private void setPanelColor(Color col) {
-        //for (SevenSegment s : digits) {
-        for (FourteenSegment s : digits) {
+        for (MultiSegment s : digits) {
             s.setPanelColor(col);
         }
     }
 
+
     private void setText(String text)  {
+        try {
 
-        // TODO: use Java 1.8 chars() method!
-
-        int didx = 0;
-        for (int i = 0;  i < text.length() && didx < digits.length; i++) {
-            char c = text.charAt(i);
-            if (c == '.') {
-                digits[didx-1].setDP(true); // DP is located in previous digit!
-            } else {
-                try {   // TODO
-                    digits[didx].setChar(c);
-                } catch (CharConversionException e) {
-                    e.printStackTrace();
+            // set the text and take care of the decimal point
+            int didx = 0;
+            for (int i = 0;  i < text.length() && didx < digits.length; i++) {
+                char theCharacter = text.charAt(i);
+                if (theCharacter == '.') {
+                    if (didx > 0) {
+                        // DP is located in previous digit
+                        digits[didx - 1].setDp(true);
+                    } else {
+                        digits[didx].setDp(true);
+                        didx++;
+                    }
+                } else {
+                    digits[didx].setChar(theCharacter);
+                    digits[didx].setDp(false);
+                    didx++;
                 }
-                digits[didx].setDP(false);
+            }
+    
+            // clear remaining digits
+            while (didx < digits.length) {
+                digits[didx].setChar(' ');
+                digits[didx].setDp(false);
                 didx++;
             }
-        }
 
+        } catch (CharConversionException e) {
+            e.printStackTrace();
+        }
     }
     
     
