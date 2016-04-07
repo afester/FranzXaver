@@ -1,0 +1,53 @@
+
+#titlePanel {
+	-fx-off-color: #1c2323;
+	-fx-on-color: #8Ed2d5;
+	-fx-panel-color: #171B1A;
+}
+
+#sliderPanel {
+   -fx-on-color: #AAED53;
+   -fx-off-color: #9CA09B;
+   -fx-panel-color: #83948C;
+}
+
+#textPanel {
+   -fx-on-color: #25312D;
+   -fx-off-color: #64706C;
+   -fx-panel-color: #6C7874;
+}
+
+/* Blue */
+/*.seven-segment-panel {
+   -fx-on-color: #1B1C5D;
+   -fx-off-color: #4E6BDB;
+   -fx-panel-color: #5472EA;
+}*/
+
+/* Green */
+/*.seven-segment-panel {
+   -fx-on-color: #AAED53;
+   -fx-off-color: #9CA09B;
+   -fx-panel-color: #83948C;
+}*/
+
+/* Red */
+/*.seven-segment-panel {
+   -fx-on-color: #F4446A;
+   -fx-off-color: #9CA09B;
+   -fx-panel-color: #83948C;
+}*/
+
+/* Red with red filter */
+/*.seven-segment-panel {
+   -fx-on-color: #BC1C1E;
+   -fx-off-color: #371F1E;
+   -fx-background-color: #3F2221;
+}*/
+
+/* LC style */
+/*.seven-segment-panel {
+   -fx-on-color: #25312D;
+   -fx-off-color: #64706C;
+   -fx-panel-color: #6C7874;
+}*/
