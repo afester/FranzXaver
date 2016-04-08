@@ -22,8 +22,8 @@ import java.util.Locale;
 
 
 /**
- * A seven segment display panel which is capable of displaying fixed point
- * numbers and some limited text.
+ * A multi segment display panel which is capable of displaying 
+ * numbers and text, depending on the actual multi segment display type.
  */
 public class MultiSegmentPanel extends Control {
 
