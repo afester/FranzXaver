@@ -46,6 +46,7 @@ public class MultiSegment extends Group {
     private Color onColor;
     private Color offColor;
     private boolean isDp;
+    private boolean isReadOnly = true;  // TODO: Not used in MultiSegmentPanel yet.
 
     private LongProperty currentMaskProperty = new SimpleLongProperty();
 
@@ -107,14 +108,17 @@ public class MultiSegment extends Group {
         for (String id : ids) {
             segments[idx] = (SVGPath) digitNode.lookup("#" + id);
 
-            segments[idx].setOnMouseClicked(new EventHandler<MouseEvent>() {
-                final int segIdx = idx;
-
-                @Override
-                public void handle(MouseEvent event) {
-                    setSegmentEnabled(segIdx, !isSegmentEnabled(segIdx));
-                }
-            });
+            if (!isReadOnly) {
+                // make the segments editable.
+                segments[idx].setOnMouseClicked(new EventHandler<MouseEvent>() {
+                    final int segIdx = idx;
+    
+                    @Override
+                    public void handle(MouseEvent event) {
+                        setSegmentEnabled(segIdx, !isSegmentEnabled(segIdx));
+                    }
+                });
+            }
 
             idx++;
         }
@@ -163,7 +167,9 @@ public class MultiSegment extends Group {
         setDp(this.isDp);
     }
 
-
+    /**
+     * @return The color used for enabled segments. 
+     */
     public Color getOnColor() {
         return onColor;
     }
@@ -180,17 +186,25 @@ public class MultiSegment extends Group {
         setDp(this.isDp);
     }
 
-
+    /**
+     * @return The current color for disabled segments.
+     */
     public Color getOffColor() {
         return offColor;
     }
 
-
+    /**
+     * Sets the panel (background) color of the segment.
+     *
+     * @param col The color to use for the background of the segment.
+     */
     public void setPanelColor(Color col) {
         panel.setFill(col);
     }
 
-    
+    /**
+     * @return The current color used for the background of the segment.
+     */
     public Color getPanelColor() {
         return (Color) panel.getFill();
     }
