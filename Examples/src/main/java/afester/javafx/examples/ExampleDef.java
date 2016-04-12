@@ -16,13 +16,18 @@
 
 package afester.javafx.examples;
 
+import javafx.scene.image.Image;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URL;
+
 
 public class ExampleDef {
 
     private String className;
     private String description;
+    private Image screenShot;
 
     /**
      * Creates a new example definition.
@@ -44,11 +49,28 @@ public class ExampleDef {
         return className;
     }
 
+
     /**
      * @return The description of the example which is defined by this example definition.
      */
     public String getDescription() {
         return description;
+    }
+
+
+    /**
+     * @return An Image with a screenshot of this example. 
+     */
+    public Image getScreenShot() {
+        if (screenShot == null) {
+            String imageName = className.replace(".",  "/") + ".png";
+            URL imageUrl = getClass().getClassLoader().getResource(imageName);
+            if (imageUrl != null) {
+                screenShot = new Image(imageUrl.toString());    
+            }
+        }
+
+        return screenShot;
     }
 
 
@@ -86,5 +108,6 @@ public class ExampleDef {
     public String toString() {
         return String.format("ExampleDef[class=%s, desc=%s]", className, description);
     }
+
 
 }
