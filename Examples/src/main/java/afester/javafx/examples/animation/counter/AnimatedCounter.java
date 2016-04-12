@@ -84,7 +84,7 @@ public class AnimatedCounter extends Application {
         timeline.setCycleCount(Timeline.INDEFINITE);
 
         // Set the stage and show and play the animation
-        stage.setScene(new Scene(vBox, 250, 300));
+        stage.setScene(new Scene(vBox, 100, 100));
         stage.setTitle("Animation Counter");
         stage.show();
         timeline.playFromStart();
