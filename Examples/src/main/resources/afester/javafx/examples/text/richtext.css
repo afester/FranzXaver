@@ -1,0 +1,24 @@
+/* Paragraph styles */
+.redItalic {
+  -fx-font: 40pt "Helvetica";
+  -fx-font-style: italic;
+  -fx-fill: red;
+}
+
+
+.blueBold {
+  -fx-font: 8pt "Helvetica";
+  -fx-fill: blue;
+}
+
+
+.java {
+  -fx-padding: 10px;
+  -fx-font: 12pt "Courier New";
+  -fx-background-color: lightyellow;
+}
+
+/* Inline styles */
+.keyword {
+  -fx-fill: red;
+}
