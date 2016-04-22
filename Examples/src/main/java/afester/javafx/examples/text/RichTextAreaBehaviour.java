@@ -1,5 +1,6 @@
 package afester.javafx.examples.text;
 
+
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
@@ -7,12 +8,12 @@ import javafx.scene.input.MouseEvent;
 public class RichTextAreaBehaviour {
 
     private RichTextArea control;
-    private RichTextAreaSkin view;
+    private RichTextAreaView view;
 
 
     public RichTextAreaBehaviour(RichTextArea control, RichTextAreaSkin skin) {
         this.control = control;
-        this.view = skin;
+        this.view = skin.getTopLevelNode();
 
         System.err.println("SKIN:" + this.view);
 
@@ -26,14 +27,18 @@ public class RichTextAreaBehaviour {
 
     private void mousePressed(MouseEvent e) {
         // e.getTarget(); // the target Node ("Text")
-        
-        view.hit(e.getX(), e.getY());
 
+        CharacterHit hit = view.hit(e.getX(), e.getY());
+        control.moveTo(hit.getInsertionIndex()); // , SelectionPolicy.CLEAR);
+
+        //System.err.println(hit.getIn);
+/*
         e.getX();
         e.getY();
         e.getClickCount();
 
         System.err.printf("Mouse clicked (%f / %f)\n", e.getX(), e.getY());
+*/
     }
 
 
