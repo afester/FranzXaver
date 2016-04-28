@@ -3,28 +3,29 @@ package afester.javafx.examples.text;
 
 import java.net.URL;
 
+import javafx.application.Application;
+import javafx.beans.binding.Bindings;
+import javafx.event.Event;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.text.Font;
+import javafx.stage.Stage;
 import afester.javafx.examples.animation.counter.AnimatedCounter;
 import afester.javafx.examples.text.model.Document;
 import afester.javafx.examples.text.model.Paragraph;
 import afester.javafx.examples.text.model.TextFragment;
-import javafx.application.Application;
-import javafx.beans.binding.Bindings;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
 
 
 public class RichTextExample extends Application {
+
+    private final TextArea structureView = new TextArea();
+    private final RichTextArea rta = new RichTextArea();
 
     public static void main(String[] args) {
         launch(args);
@@ -34,10 +35,28 @@ public class RichTextExample extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        HBox mainLayout = new HBox();
+        GridPane infoPane = createInfoPane(rta);
+        HBox editLayout = new HBox();
+        editLayout.getChildren().addAll(rta, infoPane);
+
+        structureView.setFont(Font.font("Courier New"));
+        structureView.setEditable(false);
+
+        Tab tab = new Tab();
+        tab.setText("Edit");
+        tab.setClosable(false);
+        tab.setContent(editLayout);
+
+        Tab tab4 = new Tab();
+        tab4.setText("View Document Structure");
+        tab4.setClosable(false);
+        tab4.setContent(structureView);
+        tab4.setOnSelectionChanged(e -> activateStructureView(e));
+
+        TabPane tabPane = new TabPane();
+        tabPane.getTabs().addAll(tab, tab4);
 
 /**************************************/
-        RichTextArea rta = new RichTextArea();
 
         Document doc = new Document();
 
@@ -63,41 +82,69 @@ public class RichTextExample extends Application {
         rta.setDocument(doc);
 /**************************************/
 
-        GridPane infoPane = new GridPane();
+        // show the generated scene graph
+        Scene scene = new Scene(tabPane);
+        scene.getStylesheets().add(RichTextExample.class.getResource("richtext.css").toExternalForm());
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+    
 
-        infoPane.add(new Label("Current Paragraph:"), 0, 0);
+    private GridPane createInfoPane(RichTextArea rta) {
+        GridPane infoPane = new GridPane();
+        int row = 0;
+        infoPane.add(new Label("Current Paragraph:"), 0, row);
         TextField pField = new TextField();
         pField.setEditable(false);
-        infoPane.add(pField, 1, 0);
+        infoPane.add(pField, 1, row++);
 
-        infoPane.add(new Label("Current Column:"), 0, 1);
+        infoPane.add(new Label("Current Column:"), 0, row);
         TextField cField = new TextField();
         cField.setEditable(false);
-        infoPane.add(cField, 1, 1);
+        infoPane.add(cField, 1, row++);
 
-        infoPane.add(new Label("Caret position:"), 0, 2);
-        TextField cpField = new TextField();
-        cpField.setEditable(false);
-        infoPane.add(cpField, 1, 2);
-
-        infoPane.add(new Label("Text length:"), 0, 3);
+        infoPane.add(new Label("Text length:"), 0, row);
         TextField lField = new TextField();
         lField.setEditable(false);
-        infoPane.add(lField, 1, 3);
+        infoPane.add(lField, 1, row++);
+
+        infoPane.add(new Label("Anchor:"), 0, row);
+        TextField aField = new TextField();
+        aField.setEditable(false);
+        infoPane.add(aField, 1, row++);
+
+        infoPane.add(new Label("Caret position:"), 0, row);
+        TextField cpField = new TextField();
+        cpField.setEditable(false);
+        infoPane.add(cpField, 1, row++);
+
+        infoPane.add(new Label("Selection:"), 0, row);
+        TextField sField = new TextField();
+        sField.setEditable(false);
+        infoPane.add(sField, 1, row++);
 
         pField.textProperty().bind(Bindings.convert(rta.currentParagraphProperty()));
         cField.textProperty().bind(Bindings.convert(rta.caretColumnProperty()));
         cpField.textProperty().bind(Bindings.convert(rta.caretPositionProperty()));
         lField.textProperty().bind(Bindings.convert(rta.lengthProperty()));
-
-/**************************************/
-
-        mainLayout.getChildren().addAll(rta, infoPane);
+        sField.textProperty().bind(Bindings.convert(rta.selectionProperty()));
+        aField.textProperty().bind(Bindings.convert(rta.anchorProperty()));
         
-        // show the generated scene graph
-        Scene scene = new Scene(mainLayout);
-        scene.getStylesheets().add(RichTextExample.class.getResource("richtext.css").toExternalForm());
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        return infoPane;
+    }
+
+
+    private void activateStructureView(Event e) {
+        Tab tab = (Tab) e.getSource();
+        if (tab.isSelected()) {
+            structureView.clear();
+            Document<String, String> doc = rta.getDocument();
+            for (Paragraph<String, String> p : doc.getParagraphs()) {
+                structureView.appendText(p.toString() + "\n");
+                for (TextFragment<String> t : p.getFragments()) {
+                    structureView.appendText("   " + t.toString() + "\n");
+                }
+            }
+        }
     }
 }

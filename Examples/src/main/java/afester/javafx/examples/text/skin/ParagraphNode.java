@@ -1,11 +1,14 @@
-package afester.javafx.examples.text;
+package afester.javafx.examples.text.skin;
 
 import afester.javafx.examples.text.internal.TextFlowExt;
 import afester.javafx.examples.text.model.Paragraph;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.control.IndexRange;
 import javafx.scene.shape.PathElement;
 
 
@@ -30,6 +33,13 @@ public class ParagraphNode<PS, S> extends TextFlowExt {
     private final BooleanProperty caretVisible = new SimpleBooleanProperty();
     public BooleanProperty caretVisibleProperty() { return caretVisible; }
 
+    // the current selection range of this paragraph
+    private final ObjectProperty<IndexRange> selection = new SimpleObjectProperty<>(new IndexRange(0, 0));
+    public ObjectProperty<IndexRange> selectionProperty() { return selection; }
+    public void setSelection(IndexRange sel) { selection.set(sel); }
+
+    
+    
     private final Caret caret = new Caret();
     //private final Path selectionShape = new Path();
 

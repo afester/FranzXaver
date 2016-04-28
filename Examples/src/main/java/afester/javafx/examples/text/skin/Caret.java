@@ -1,4 +1,4 @@
-package afester.javafx.examples.text;
+package afester.javafx.examples.text.skin;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;

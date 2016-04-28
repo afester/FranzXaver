@@ -1,5 +1,6 @@
-package afester.javafx.examples.text;
+package afester.javafx.examples.text.skin;
 
+import afester.javafx.examples.text.RichTextArea;
 import javafx.scene.control.SkinBase;
 
 /**

@@ -1,33 +1,50 @@
 package afester.javafx.examples.text.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+
+import static afester.javafx.examples.text.model.TwoDimensional.Bias.*;
+import afester.javafx.examples.text.model.TwoDimensional.Position;
 
 public class Paragraph<S, PS> {
 
-    private List<TextFragment<S>> fragments = new ArrayList<>();
+    private final List<TextFragment<S>> segments;
+    private final TwoLevelNavigator navigator;
     private PS paragraphStyle;
 
 
     public Paragraph(PS style) {
-        this.paragraphStyle = style;
+        this(new ArrayList<>(), style);
     }
 
 
-    public void add(TextFragment<S> textFragment) {
-        fragments.add(textFragment);
+    Paragraph(List<TextFragment<S>> segments, PS paragraphStyle) {
+        assert !segments.isEmpty();
+        this.segments = segments;
+        this.paragraphStyle = paragraphStyle;
+        navigator = new TwoLevelNavigator(segments::size,
+                i -> segments.get(i).length());
     }
 
-
+    /**
+     * @return A read only view on the list of segments in this paragraph.
+     */
     public List<TextFragment<S>> getFragments() {
-        return fragments;
+        return Collections.unmodifiableList(segments);
     }
 
-
+    /**
+     * @return The style of this paragraph.
+     */
     public PS getStyle() {
         return paragraphStyle;
     }
 
+    public void add(TextFragment<S> textFragment) {
+        segments.add(textFragment);
+    }
 
     // TODO: Why is length only calculated once????
     private int length = -1;
@@ -38,20 +55,115 @@ public class Paragraph<S, PS> {
      */
     public int length() {
         if (length == -1) {
-            length = fragments.stream().mapToInt(TextFragment::length).sum();
+            length = segments.stream().mapToInt(TextFragment::length).sum();
         }
 
         return length;
     }
 
+    
 
-    @Override
-    public String toString() {
+    public Paragraph<S, PS> concat(Paragraph<S, PS> p) {
+        if(length() == 0) {
+            return p;
+        }
+
+        if(p.length() == 0) {
+            return this;
+        }
+
+        TextFragment<S> left = segments.get(segments.size() - 1);
+        TextFragment<S> right = p.segments.get(0);
+        if (Objects.equals(left.getStyle(), right.getStyle())) {
+            TextFragment<S> segment = left.concat(right);
+            List<TextFragment<S>> segs = new ArrayList<>(segments.size() + p.segments.size() - 1);
+            segs.addAll(segments.subList(0, segments.size() - 1));
+            segs.add(segment);
+            segs.addAll(p.segments.subList(1, p.segments.size()));
+            return new Paragraph<>(segs, paragraphStyle);
+        } else {
+            List<TextFragment<S>> segs = new ArrayList<>(segments.size() + p.segments.size());
+            segs.addAll(segments);
+            segs.addAll(p.segments);
+            return new Paragraph<>(segs, paragraphStyle);
+        }
+    }
+
+
+    /**
+     * @return The text in this paragraph as a single, unstyled text string
+     */
+    public String getText() {
         StringBuilder result = new StringBuilder();
-        for (TextFragment<S> frag : fragments) {
+        for (TextFragment<S> frag : segments) {
             result.append(frag);
         }
 
         return result.toString();
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("Paragraph[style=%s]", paragraphStyle);
+    }
+
+
+    public String dump() {
+        StringBuffer result = new StringBuffer(toString());
+
+        for (TextFragment tf : this.segments) {
+            result.append("\n");
+            result.append("   ");
+            result.append(tf.toString());
+        }
+        result.append("\n");
+        return result.toString();
+    }
+
+
+    /**
+     * Returns a new Paragraph with the given number of characters from the beginning
+     * of this paragraph.
+     *
+     * @param length The character length of the resulting paragraph.
+     * @return A new Paragraph with the first <code>length</code> number of characters
+     *         and the same segment structure.
+     */
+    public Paragraph<S, PS> trim(int length) {
+        if (length >= length()) {
+            return this;
+        }
+
+        Position pos = navigator.offsetToPosition(length, Backward);
+        int segIdx = pos.getMajor();
+        List<TextFragment<S>> segs = new ArrayList<>(segIdx + 1);
+        segs.addAll(segments.subList(0, segIdx));
+        segs.add(segments.get(segIdx).subSequence(0, pos.getMinor()));
+        return new Paragraph<>(segs, paragraphStyle);
+    }
+
+
+    /**
+     * Returns a new Paragraph with the given number of characters from the end
+     * of this paragraph.
+     *
+     * @param start The start index from where to return characters.
+     * @return A new Paragraph with the characters starting at the given start index.
+     */
+    public Paragraph<S, PS> subSequence(int start) {
+        if (start < 0) {
+            throw new IllegalArgumentException("start must not be negative (was: " + start + ")");
+        } else if (start == 0) {
+            return this;
+        } else if (start <= length()) {
+            Position pos = navigator.offsetToPosition(start, Forward);
+            int segIdx = pos.getMajor();
+            List<TextFragment<S>> segs = new ArrayList<>(segments.size() - segIdx);
+            segs.add(segments.get(segIdx).subSequence(pos.getMinor()));
+            segs.addAll(segments.subList(segIdx + 1, segments.size()));
+            return new Paragraph<>(segs, paragraphStyle);
+        } else {
+            throw new IndexOutOfBoundsException(start + " not in [0, " + length() + "]");
+        }
     }
 }

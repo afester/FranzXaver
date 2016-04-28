@@ -1,12 +1,14 @@
 package afester.javafx.examples.text.model;
 
+
+
 /**
  * A single fragment of text with a specific style.
  * This is the smallest building block of a rich text document.
  *
  * @param <S>
  */
-public class TextFragment<S> {
+public class TextFragment<S> implements CharSequence {
 
     // The text of this text fragment
     private String text;
@@ -21,6 +23,11 @@ public class TextFragment<S> {
 
     public TextFragment(String text) {
         this.text = text;
+    }
+
+
+    public TextFragment<S> concat(CharSequence str) {
+        return new TextFragment<S>(text + ((TextFragment) str).getText(), style);
     }
 
 
@@ -49,6 +56,20 @@ public class TextFragment<S> {
 
     @Override
     public String toString() {
-        return text;
+        return String.format("TextFragment[style=%s, text=\"%s\"]", style, text);
+    }
+
+    @Override
+    public char charAt(int index) {
+        return text.charAt(index);
+    }
+
+    @Override
+    public TextFragment<S> subSequence(int start, int end) {
+        return new TextFragment<S>(text.substring(start, end), style);
+    }
+
+    public TextFragment<S> subSequence(int start) {
+        return new TextFragment<S>(text.substring(start), style);
     }
 }

@@ -11,7 +11,7 @@ import javafx.scene.text.TextFlow;
 
 //import org.fxmisc.richtext.TwoLevelNavigator;
 
-import afester.javafx.examples.text.CharacterHit;
+import afester.javafx.examples.text.skin.CharacterHit;
 
 import com.sun.javafx.geom.RectBounds;
 import com.sun.javafx.scene.text.HitInfo;

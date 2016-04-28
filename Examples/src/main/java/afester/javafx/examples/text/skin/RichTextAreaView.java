@@ -1,9 +1,10 @@
-package afester.javafx.examples.text;
+package afester.javafx.examples.text.skin;
 
 import java.net.URL;
 
 import afester.javafx.components.Meter;
 import afester.javafx.examples.animation.counter.AnimatedCounter;
+import afester.javafx.examples.text.RichTextArea;
 import afester.javafx.examples.text.model.Document;
 import afester.javafx.examples.text.model.Paragraph;
 import afester.javafx.examples.text.model.TextFragment;
@@ -192,6 +193,7 @@ public class RichTextAreaView extends Region {
             int idx = paragraphs.getChildren().indexOf(paraNode);
             paraNode.setIndex(idx);
 
+            // caret is visible only in the paragraph with the caret
             control.currentParagraphProperty().addListener(
                     (obs, oldValue, newValue)
                  -> paraNode.caretVisibleProperty().setValue(idx == newValue.intValue()) );
@@ -200,9 +202,13 @@ public class RichTextAreaView extends Region {
             // (TODO: only for current paragraph!! Otherwise paragraphs may contain invalid
             // caret positions)
             paraNode.caretPositionProperty().bind(control.caretColumnProperty());
+                        //hasCaret.flatMap(has -> has
+                        //? area.caretColumnProperty()
 
-                    //hasCaret.flatMap(has -> has
-                    //? area.caretColumnProperty()
+            // keep paragraph selection updated
+            // The selection property of the paragraph is updated from the
+            // control's selectionProperty!
+            // ...
         }
     }
 }
