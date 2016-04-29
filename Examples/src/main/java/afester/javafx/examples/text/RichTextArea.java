@@ -2,7 +2,7 @@ package afester.javafx.examples.text;
 
 import afester.javafx.examples.text.model.Document;
 import afester.javafx.examples.text.model.Paragraph;
-import afester.javafx.examples.text.model.TextFragment;
+import afester.javafx.examples.text.model.StyledText;
 import afester.javafx.examples.text.model.TwoDimensional.Position;
 import afester.javafx.examples.text.skin.RichTextAreaBehaviour;
 import afester.javafx.examples.text.skin.RichTextAreaSkin;
@@ -152,7 +152,7 @@ public class RichTextArea extends Control {
         
         Document doc = new Document();
         Paragraph para = new Paragraph<String, String>("p");
-        para.add(new TextFragment(text));
+        para.add(new StyledText(text, ""));
         doc.add(para);
 
         document.replace(start, end, doc);

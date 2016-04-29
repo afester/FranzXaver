@@ -7,7 +7,7 @@ import afester.javafx.examples.animation.counter.AnimatedCounter;
 import afester.javafx.examples.text.RichTextArea;
 import afester.javafx.examples.text.model.Document;
 import afester.javafx.examples.text.model.Paragraph;
-import afester.javafx.examples.text.model.TextFragment;
+import afester.javafx.examples.text.model.StyledText;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
 import javafx.scene.image.ImageView;
@@ -166,7 +166,7 @@ public class RichTextAreaView extends Region {
                 paraNode.getStyleClass().add(pstyle);
             }
 
-            for (TextFragment<String> fragment : par.getFragments()) {
+            for (StyledText<String> fragment : par.getFragments()) {
                 // RichTextFX uses some internal information from TextFlow through reflection 
                 // to get the clicked character location. We try to use some more "official" 
                 // approach - see 

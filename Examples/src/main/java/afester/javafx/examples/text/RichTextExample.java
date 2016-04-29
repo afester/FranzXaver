@@ -19,7 +19,7 @@ import javafx.stage.Stage;
 import afester.javafx.examples.animation.counter.AnimatedCounter;
 import afester.javafx.examples.text.model.Document;
 import afester.javafx.examples.text.model.Paragraph;
-import afester.javafx.examples.text.model.TextFragment;
+import afester.javafx.examples.text.model.StyledText;
 
 
 public class RichTextExample extends Application {
@@ -61,22 +61,22 @@ public class RichTextExample extends Application {
         Document doc = new Document();
 
         Paragraph<String, String> p1 = new Paragraph<>("h1");
-        p1.add(new TextFragment<String>("Big italic red text", "redItalic"));
-        p1.add(new TextFragment<String>(" little bold blue text", "blueBold"));
+        p1.add(new StyledText<String>("Big italic red text", "redItalic"));
+        p1.add(new StyledText<String>(" little bold blue text", "blueBold"));
         doc.add(p1);
 
         Paragraph<String, String> p2 = new Paragraph<>("p");
-        p2.add(new TextFragment<String>("Lorem Ipsum Blafasel", "redItalic"));
-        p2.add(new TextFragment<String>(" Lorem Ipsum", "blueBold"));
+        p2.add(new StyledText<String>("Lorem Ipsum Blafasel", "redItalic"));
+        p2.add(new StyledText<String>(" Lorem Ipsum", "blueBold"));
         URL imgUrl = AnimatedCounter.class.getResource("1.png");
         // p2.add(new ImageObject(imgUrl));
-        p2.add(new TextFragment<String>(" Blafasel", "blueBold"));
+        p2.add(new StyledText<String>(" Blafasel", "blueBold"));
         doc.add(p2);
 
         Paragraph<String, String> p3 = new Paragraph<>("java");
-        p3.add(new TextFragment<String>("public class Test {\n   public static void "));
-        p3.add(new TextFragment<String>("main", "keyword"));
-        p3.add(new TextFragment<String>("(String[] args) {\n      System.err.println(\"Hello World\");\n   }\n}"));
+        p3.add(new StyledText<String>("public class Test {\n   public static void ", ""));
+        p3.add(new StyledText<String>("main", "keyword"));
+        p3.add(new StyledText<String>("(String[] args) {\n      System.err.println(\"Hello World\");\n   }\n}", ""));
         doc.add(p3);
 
         rta.setDocument(doc);
@@ -141,7 +141,7 @@ public class RichTextExample extends Application {
             Document<String, String> doc = rta.getDocument();
             for (Paragraph<String, String> p : doc.getParagraphs()) {
                 structureView.appendText(p.toString() + "\n");
-                for (TextFragment<String> t : p.getFragments()) {
+                for (StyledText<String> t : p.getFragments()) {
                     structureView.appendText("   " + t.toString() + "\n");
                 }
             }

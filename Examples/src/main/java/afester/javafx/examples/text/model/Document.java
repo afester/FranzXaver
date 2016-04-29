@@ -132,7 +132,7 @@ public class Document<S, PS> {
 
         for (Paragraph<S, PS> p : getParagraphs()) {
             result.append("  " + p + "\n");
-            for (TextFragment<S> t : p.getFragments()) {
+            for (StyledText<S> t : p.getFragments()) {
                 result.append("    " + t + "\n");
             }
         }
