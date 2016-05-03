@@ -11,6 +11,14 @@ public class CellModel {
     private final Color rectColor;
     private final Color bgColor;
 
+    /**
+     * 
+     * @param prefix
+     * @param text
+     * @param color
+     * @param rectColor
+     * @param bgColor
+     */
     public CellModel(String prefix, String text, Color color, Color rectColor, Color bgColor) {
         this.prefix = prefix;
         this.text = text;

@@ -6,7 +6,6 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -19,23 +18,24 @@ public class CellNode implements Cell<CellModel, Node> {
     private Node node;
 
     private static String toCssColor(Color col) {
-        int r = (int)Math.round(col.getRed() * 255.0);
-        int g = (int)Math.round(col.getGreen() * 255.0);
-        int b = (int)Math.round(col.getBlue() * 255.0);
+        int red = (int)Math.round(col.getRed() * 255.0);
+        int green = (int)Math.round(col.getGreen() * 255.0);
+        int blue = (int)Math.round(col.getBlue() * 255.0);
 
-        return String.format("#%02x%02x%02x", r, g, b);
+        return String.format("#%02x%02x%02x", red, green, blue);
     }
+
     private Background createBackground(Color col) {
         return new Background(
                 new BackgroundFill(col, new CornerRadii(0), new Insets(0)));
     }
 
 
-    
+    /**
+     * 
+     * @param contents
+     */
     public CellNode(CellModel contents) {
-        HBox panel = new HBox();
-
-        // panel.setBackground(createBackground(contents.getBgColor()));
 
         HBox prefixBox = new HBox();
         Text prefix = new Text(contents.getPrefix());
@@ -52,6 +52,7 @@ public class CellNode implements Cell<CellModel, Node> {
         Rectangle rect = new Rectangle(14, 14);
         rect.setFill(contents.getRectColor());
 
+        HBox panel = new HBox();
         panel.getChildren().addAll(rect, prefixBox, textBox);
         HBox.setMargin(rect,  new Insets(1, 2, 1, 2));
         

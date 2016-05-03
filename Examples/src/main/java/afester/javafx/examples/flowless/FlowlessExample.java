@@ -1,7 +1,6 @@
 package afester.javafx.examples.flowless;
 
 
-import java.util.Random;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -20,6 +19,7 @@ import javafx.stage.Stage;
 import org.fxmisc.flowless.VirtualFlow;
 import org.fxmisc.flowless.VirtualFlowHit;
 
+import java.util.Random;
 
 
 public class FlowlessExample extends Application {
@@ -38,7 +38,9 @@ public class FlowlessExample extends Application {
     private static Random randomColor = new Random(System.currentTimeMillis());
 
     private static Color randomColor() {
-        return new Color(randomColor.nextFloat(), randomColor.nextFloat(), randomColor.nextFloat(), 1.0);
+        return new Color(randomColor.nextFloat(), 
+                         randomColor.nextFloat(), 
+                         randomColor.nextFloat(), 1.0);
     }
 
     @Override
