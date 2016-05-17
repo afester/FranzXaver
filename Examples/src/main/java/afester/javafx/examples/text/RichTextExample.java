@@ -60,6 +60,18 @@ public class RichTextExample extends Application {
 
         Document doc = new Document();
 
+        Paragraph<String, String> px1 = new Paragraph<>("p");
+        px1.add(new StyledText<String>("Lorem Ipsum\rBlafasel", ""));
+        Paragraph<String, String> px2 = new Paragraph<>("p");
+        px2.add(new StyledText<String>("Lorem Ipsum\nBlafasel", ""));
+        Paragraph<String, String> px3 = new Paragraph<>("p");
+        px3.add(new StyledText<String>("Lorem Ipsum\u2029Blafasel", ""));
+        doc.add(px1);
+        doc.add(px2);
+        doc.add(px3);
+
+        
+        
         Paragraph<String, String> p1 = new Paragraph<>("h1");
         p1.add(new StyledText<String>("Big italic red text", "redItalic"));
         p1.add(new StyledText<String>(" little bold blue text", "blueBold"));
