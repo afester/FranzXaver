@@ -24,32 +24,32 @@ task fxPrepare(type: Copy, dependsOn: [jar]) {
 task fxInit << {
   ant.typedef(name: 'fxApplication',
               classname: 'com.sun.javafx.tools.ant.Application',
-              classpath: '/opt/jdk1.8.0_11/lib/ant-javafx.jar')
+              classpath: "${System.env.JAVA_HOME}/lib/ant-javafx.jar")
   ant.typedef(name: 'fxPlatform',
               classname: 'com.sun.javafx.tools.ant.Platform',
-              classpath: '/opt/jdk1.8.0_11/lib/ant-javafx.jar')
+              classpath: "${System.env.JAVA_HOME}/lib/ant-javafx.jar")
   ant.typedef(name: 'fxResources',
               classname: 'com.sun.javafx.tools.ant.Resources',
-              classpath: '/opt/jdk1.8.0_11/lib/ant-javafx.jar')
+              classpath: "${System.env.JAVA_HOME}/lib/ant-javafx.jar")
   ant.typedef(name: 'fxFileset',
               classname: 'com.sun.javafx.tools.ant.FileSet',
-              classpath: '/opt/jdk1.8.0_11/lib/ant-javafx.jar')
+              classpath: "${System.env.JAVA_HOME}/lib/ant-javafx.jar")
   ant.typedef(name: 'fxFileset',
               classname: 'com.sun.javafx.tools.ant.Preferences',
-              classpath: '/opt/jdk1.8.0_11/lib/ant-javafx.jar')
+              classpath: "${System.env.JAVA_HOME}/lib/ant-javafx.jar")
 
   ant.taskdef(name: 'fxJar',
               classname: 'com.sun.javafx.tools.ant.FXJar',
-              classpath: '/opt/jdk1.8.0_11/lib/ant-javafx.jar')
+              classpath: "${System.env.JAVA_HOME}/lib/ant-javafx.jar")
   ant.taskdef(name: 'fxDeploy',
               classname: 'com.sun.javafx.tools.ant.DeployFXTask',
-              classpath: '/opt/jdk1.8.0_11/lib/ant-javafx.jar')
+              classpath: "${System.env.JAVA_HOME}/lib/ant-javafx.jar")
   ant.taskdef(name: 'fxSignjar',
               classname: 'com.sun.javafx.tools.ant.FXSignJarTask',
-              classpath: '/opt/jdk1.8.0_11/lib/ant-javafx.jar')
+              classpath: "${System.env.JAVA_HOME}/lib/ant-javafx.jar")
   ant.taskdef(name: 'fxCsstobin',
               classname: 'com.sun.javafx.tools.ant.CSSToBinTask',
-              classpath: '/opt/jdk1.8.0_11/lib/ant-javafx.jar')
+              classpath: "${System.env.JAVA_HOME}/lib/ant-javafx.jar")
 }
 
 /*
