@@ -1,0 +1,25 @@
+.column-header {
+    -fx-font-weight: normal;
+}
+
+.column-header .text {
+    -fx-fill: #617882;
+}
+
+
+/* Selects the row header cell itself */
+.row-header {
+    -fx-alignment: center;
+    -fx-font-weight: normal;
+}
+
+
+/* selects the text inside the row header cell */
+.row-header .text {
+    -fx-fill: #617882;
+}
+/*
+.table-row-cell:odd {
+	-fx-background: -fx-control-inner-background;
+}
+*/

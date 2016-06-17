@@ -10,3 +10,4 @@ afester.javafx.examples.animation.game.BouncingBall
 afester.javafx.examples.components.sevensegment.SegmentDisplay
 afester.javafx.examples.components.meter.MeterSample
 afester.javafx.examples.flowless.FlowlessExample
+afester.javafx.examples.table.TableExample
