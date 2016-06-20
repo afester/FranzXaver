@@ -18,9 +18,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Skin;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn.CellDataFeatures;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.Pane;
 import javafx.util.Callback;
 
@@ -185,6 +187,19 @@ public class DynamicTable<S> extends TableView<TableRow<S>> {
                                     return new ReadOnlyObjectWrapper<S>(content);
                                 }
 
+                            });
+
+                    column.setCellFactory(
+                            new Callback< TableColumn<TableRow<S>,S>, TableCell<TableRow<S>,S>>() {
+
+                                @Override
+                                public TableCell<TableRow<S>, S> call(TableColumn<TableRow<S>, S> param) {
+
+                                    // TODO Auto-generated method stub
+                                    return null;
+
+                                }
+                        
                             });
 
                     getColumns().add(column);
