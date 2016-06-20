@@ -4,10 +4,14 @@ import afester.javafx.examples.Example;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
 
 
@@ -40,12 +44,26 @@ public class TableExample extends Application {
         primaryStage.setTitle("JavaFX Table example");
 
         TableView<TableRow> table = new TableView<>();
+        table.setEditable(true);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         TableColumn<TableRow, String> firstNameCol = new TableColumn<>("First Name");
         firstNameCol.setCellValueFactory(
                 new PropertyValueFactory<TableRow,String>("firstName")
             );
+        firstNameCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        firstNameCol.setOnEditCommit(
+            new EventHandler<CellEditEvent<TableRow, String>>() {
+                @Override
+                public void handle(CellEditEvent<TableRow, String> t) {
+                    String newValue = t.getNewValue();
+                    int rowIdx = t.getTablePosition().getRow();
+                    TableRow row = t.getTableView().getItems().get(rowIdx);
+
+                    row.setFirstName(newValue);
+                }
+            }
+        );
 
         TableColumn<TableRow, String> lastNameCol = new TableColumn<>("Last Name");
         lastNameCol.setCellValueFactory(
@@ -57,8 +75,18 @@ public class TableExample extends Application {
                 new PropertyValueFactory<TableRow,String>("email")
             );        
 
-        table.getColumns().addAll(firstNameCol, lastNameCol, emailCol);
 
+        TableColumn<TableRow, Boolean> flagCol = new TableColumn<>("Flag");
+        //lastNameCol.setCellValueFactory(
+        //        new PropertyValueFactory<TableRow,String>("lastName")
+        //    );
+
+        // Note: CheckBoxTableCell does not require to be set to edit mode! 
+        flagCol.setCellFactory(CheckBoxTableCell.forTableColumn(flagCol));
+
+        table.getColumns().addAll(firstNameCol, lastNameCol, emailCol, flagCol);
+
+        
         // set data for the table
         table.setItems(data);
 
