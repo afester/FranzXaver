@@ -2,17 +2,27 @@ package afester.javafx.examples.table.simple;
 
 import afester.javafx.examples.Example;
 import javafx.application.Application;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TableView.TableViewSelectionModel;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 
 /**
@@ -75,23 +85,31 @@ public class TableExample extends Application {
                 new PropertyValueFactory<TableRow,String>("email")
             );        
 
-
         TableColumn<TableRow, Boolean> flagCol = new TableColumn<>("Flag");
-        //lastNameCol.setCellValueFactory(
-        //        new PropertyValueFactory<TableRow,String>("lastName")
-        //    );
+        flagCol.setCellFactory(CheckBoxTableCell.forTableColumn((TableColumn<TableRow, Boolean>)null));
+        flagCol.setCellValueFactory(
+                new PropertyValueFactory<TableRow,Boolean>("flag")
+            );
 
-        // Note: CheckBoxTableCell does not require to be set to edit mode! 
-        flagCol.setCellFactory(CheckBoxTableCell.forTableColumn(flagCol));
-
-        table.getColumns().addAll(firstNameCol, lastNameCol, emailCol, flagCol);
-
+        TableColumn<TableRow, Boolean> inlineEditCol = new TableColumn<>("Edit");
+        inlineEditCol.setCellFactory(LiveTextFieldTableCell.forTableColumn(inlineEditCol));
+        table.getColumns().addAll(firstNameCol, lastNameCol, emailCol, flagCol, inlineEditCol);
         
         // set data for the table
         table.setItems(data);
 
+        VBox layout = new VBox();
+        layout.getChildren().add(table);
+        Button dumpIt = new Button("Dump");
+        dumpIt.setOnAction(e -> {
+            for (TableRow row : data) {
+                System.err.println(row.toString());
+            }
+        });
+        layout.getChildren().add(dumpIt);
+
         // show the generated scene graph
-        Scene scene = new Scene(table);
+        Scene scene = new Scene(layout);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

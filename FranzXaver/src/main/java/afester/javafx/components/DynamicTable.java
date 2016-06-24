@@ -1,4 +1,4 @@
-package afester.javafx.examples.table.array;
+package afester.javafx.components;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,16 +15,18 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.scene.Node;
 import javafx.scene.control.Skin;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn.CellDataFeatures;
+import javafx.scene.control.TablePosition;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.Pane;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 
 
 class TableRow<S> {
@@ -58,10 +60,18 @@ public class DynamicTable<S> extends TableView<TableRow<S>> {
     private boolean hManaged = true;
 
     private TableColumn<TableRow<S>, String> headerColumn; 
+    private StringConverter<S> stringConverter;
+    
 
     public DynamicTable(int columns, int rows) {
 
+        // TODO: The row header column should not scroll!!!!!
+        // however, it looks like this is difficult to implement - see
+        // http://stackoverflow.com/questions/17693136/javafx-how-to-freeze-the-position-of-some-columns-in-tableview
+
         headerColumn = new TableColumn<>();
+        headerColumn.setSortable(false);
+
         // set the style class for the header column -
         // actually, this is the style class for each CELL of the column.
         // Means, the style defined for this class is applied to each TableCell object -
@@ -74,6 +84,25 @@ public class DynamicTable<S> extends TableView<TableRow<S>> {
         headerColumn.setMaxWidth(40);
         headerColumn.setMinWidth(40);
 
+        // Note: getSelectedCells() returns a ObservableList<TablePosition> with a raw TablePosition
+        getSelectionModel().getSelectedCells().addListener( (ListChangeListener.Change<? extends TablePosition> a) -> {
+            TablePosition pos = a.getList().get(0);
+            // pos.getRow();            The row number (int)
+            // pos.getColumn();         The real column index as currently shown (if columns 0 and 1 are switched, column 1 still is at index 0) 
+            // pos.getTableColumn();    The table column
+
+            System.err.printf("CELL: %s/%s, %s%n", pos.getColumn() - 1, pos.getTableColumn().getId(), pos.getRow());
+            
+            this.edit(pos.getRow(), pos.getTableColumn());
+            
+        });
+/*        getSelectionModel().selectedIndexProperty().addListener((a, b, c) -> {
+            System.err.printf("IDX: %s%n        %s%n        %s%n", a, b, c);
+        });
+        getSelectionModel().selectedItemProperty().addListener((a, b, c) -> {
+            System.err.printf("ITM: %s%n        %s%n        %s%n", a, b, c);
+        });
+*/
         headerColumn.setCellValueFactory(
                 new Callback<CellDataFeatures<TableRow<S>, String>, ObservableValue<String>>() {
 
@@ -89,7 +118,7 @@ public class DynamicTable<S> extends TableView<TableRow<S>> {
         getColumns().add(headerColumn);
 
         setColumnCount(columns);
-        setRowCount(5);
+        setRowCount(rows);
 
         // set data for the table
         setItems(data);
@@ -174,7 +203,9 @@ public class DynamicTable<S> extends TableView<TableRow<S>> {
                     String columnHeader = new String(Character.toChars('A' + colIdx-1));
 
                     TableColumn<TableRow<S>, S> column = new TableColumn<>(columnHeader);
+                    column.setPrefWidth(100);
                     column.setId("" + (colIdx-1));
+                    column.setSortable(false);  // TODO: Make configurable from outside
 
                     column.setCellValueFactory(
                             new Callback<CellDataFeatures<TableRow<S>, S>, ObservableValue<S>>() {
@@ -195,12 +226,17 @@ public class DynamicTable<S> extends TableView<TableRow<S>> {
                                 @Override
                                 public TableCell<TableRow<S>, S> call(TableColumn<TableRow<S>, S> param) {
 
-                                    // TODO Auto-generated method stub
-                                    return null;
-
+                                    return new TextFieldTableCell<>(stringConverter);
                                 }
-                        
+
                             });
+
+                    column.setOnEditCommit(e -> {
+                        int rowIdx = e.getTablePosition().getRow();
+                        TableRow<S> row = e.getTableView().getItems().get(rowIdx);
+                        Integer colId = Integer.parseInt(e.getTableColumn().getId());
+                        row.rowData.put(colId, e.getNewValue());
+                     } );
 
                     getColumns().add(column);
             }
@@ -336,5 +372,9 @@ public class DynamicTable<S> extends TableView<TableRow<S>> {
     @Override
     protected Skin<?> createDefaultSkin() {
         return new TableViewSkinX<S>(this);
+    }
+
+    public void setCellConverter(StringConverter<S> stringConverter) {
+        this.stringConverter = stringConverter;
     }
 }
