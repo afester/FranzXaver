@@ -1,5 +1,6 @@
 package afester.javafx.examples.table.simple;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -48,7 +49,7 @@ public class TableRow {
     }
 
     // MANDATORY!!!!!!!
-    public SimpleBooleanProperty flagProperty() {
+    public BooleanProperty flagProperty() {
         return this.flag;
     }
 
