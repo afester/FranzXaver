@@ -2,6 +2,8 @@ package afester.javafx.examples.textfield;
 
 import afester.javafx.examples.Example;
 import javafx.application.Application;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -13,6 +15,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 
@@ -20,6 +23,7 @@ import javafx.stage.Stage;
          cat  = "Basic JavaFX")
 public class TextFieldExample extends Application {
 
+    private StringProperty obs = new SimpleStringProperty("Initial");
 
     public static void main(String[] args) {
         launch(args);
@@ -33,7 +37,9 @@ public class TextFieldExample extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("JavaFX TextField example");
 
-        HBox mainLayout = new HBox();
+        VBox mainLayout = new VBox();
+
+        HBox fieldLayout = new HBox();
 
         TextField textField = new TextField();
         Button button = new Button("X");
@@ -45,8 +51,22 @@ public class TextFieldExample extends Application {
                 button.setDisable(false); 
             }
         });
-        mainLayout.getChildren().addAll(textField, button);
 
+        textField.textProperty().bindBidirectional(obs);
+
+        fieldLayout.getChildren().addAll(textField, button);
+
+        HBox buttons = new HBox();
+        Button clear = new Button("Clear");
+        clear.setOnAction(e -> obs.set("") );
+        Button setVal = new Button("Set value");
+        setVal.setOnAction(e -> obs.set("Hello") );
+        Button dump = new Button("Dump");
+        dump.setOnAction(e -> System.err.println("Current: " + obs.get()));
+        buttons.getChildren().addAll(clear, setVal, dump);
+
+        mainLayout.getChildren().addAll(fieldLayout, buttons);
+        
         // show the generated scene graph
         Scene scene = new Scene(mainLayout);
         primaryStage.setScene(scene);

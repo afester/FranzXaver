@@ -1,6 +1,6 @@
 package afester.javafx.examples.table.simple;
 
-import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -11,6 +11,8 @@ public class LiveTextFieldTableCell<S, T> extends TableCell<S,T> {
 
     private TextField textField;
 
+    private ObservableValue<String> textProperty;
+
 
     /**
      * Creates a new table cell for direct text editing.
@@ -19,7 +21,7 @@ public class LiveTextFieldTableCell<S, T> extends TableCell<S,T> {
      * @return
      */
     public static <S,T> Callback<TableColumn<S,T>, TableCell<S,T>> forTableColumn(
-            TableColumn<TableRow, Boolean> inlineEditCol) {
+            TableColumn<TableRow, String> inlineEditCol) {
         return list -> new LiveTextFieldTableCell<S,T>(); // getSelectedProperty, converter);
     }
 
@@ -39,20 +41,27 @@ public class LiveTextFieldTableCell<S, T> extends TableCell<S,T> {
             setGraphic(null);
         } else {
             setGraphic(textField);
-/*
-            // bind the text field's text property to the cell's text property
-            if (booleanProperty instanceof BooleanProperty) {
-                checkBox.selectedProperty().unbindBidirectional((BooleanProperty)booleanProperty);
+
+            if (textProperty instanceof StringProperty) {
+                textField.textProperty().unbindBidirectional((StringProperty)textProperty);
             }
 
-            ObservableValue<?> obsValue = getSelectedProperty();
-            if (obsValue instanceof BooleanProperty) {
-                booleanProperty = (ObservableValue<Boolean>) obsValue;
+            // get the observable value and bind it to the text property of the text field
+            ObservableValue<?> obsValue = getTableColumn().getCellObservableValue(getIndex());
+            if (obsValue instanceof StringProperty) {
+                textProperty = (ObservableValue<String>) obsValue;
 
-                // checkBox.selectedProperty().bindBidirectional((BooleanProperty)booleanProperty);
-                textField.textProperty().bindBidirectional(other);
+                // NOTE: bindBidirectional updates the text in the text field - 
+                // however, during editing, this also means that the cursor is moved to the
+                // beginning of the text field !!!!!
+                // Hence, for now, we only update in one direction, from the text field 
+                // to the property.
+                // Interesting that a single TextField does not behave like this, if bound
+                // bi directionally ...
+                // unfortunately, the text field is then not updated even initially ... 
+                textField.textProperty().bindBidirectional((StringProperty) textProperty);
+                // ((StringProperty) textProperty).bind(textField.textProperty());
             }
-         */   
         }
     }
 }

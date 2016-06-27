@@ -37,7 +37,7 @@ public class TableExample extends Application {
                     new TableRow("Jacob", "Smith", "jacob.smith@example.com"),
                     new TableRow("Isabella", "Johnson", "isabella.johnson@example.com"),
                     new TableRow("Ethan", "Williams", "ethan.williams@example.com"),
-                    new TableRow("Emma", "Jones", "emma.jones@example.com"),
+                    new TableRow("Emma", "Jones", "emma.jones@example.com", true, "Hello World"),
                     new TableRow("Michael", "Brown", "michael.brown@example.com")
             );
 
@@ -77,22 +77,30 @@ public class TableExample extends Application {
 
         TableColumn<TableRow, String> lastNameCol = new TableColumn<>("Last Name");
         lastNameCol.setCellValueFactory(
-                new PropertyValueFactory<TableRow,String>("lastName")
+                new PropertyValueFactory<TableRow, String>("lastName")
             );
 
         TableColumn<TableRow, String> emailCol = new TableColumn<>("Email");
         emailCol.setCellValueFactory(
-                new PropertyValueFactory<TableRow,String>("email")
+                new PropertyValueFactory<TableRow, String>("email")
             );        
 
         TableColumn<TableRow, Boolean> flagCol = new TableColumn<>("Flag");
         flagCol.setCellFactory(CheckBoxTableCell.forTableColumn((TableColumn<TableRow, Boolean>)null));
         flagCol.setCellValueFactory(
-                new PropertyValueFactory<TableRow,Boolean>("flag")
+                new PropertyValueFactory<TableRow, Boolean>("flag")
             );
 
-        TableColumn<TableRow, Boolean> inlineEditCol = new TableColumn<>("Edit");
+        TableColumn<TableRow, String> inlineEditCol = new TableColumn<>("Edit");
         inlineEditCol.setCellFactory(LiveTextFieldTableCell.forTableColumn(inlineEditCol));
+
+        // sets the obervable factory for the cell value.
+        // In the cell renderer, the corresponding observable can be retrieved through 
+        // getTableColumn().getCellObservableValue(getIndex());
+        inlineEditCol.setCellValueFactory(
+                new PropertyValueFactory<TableRow, String>("comment")
+            );
+
         table.getColumns().addAll(firstNameCol, lastNameCol, emailCol, flagCol, inlineEditCol);
         
         // set data for the table

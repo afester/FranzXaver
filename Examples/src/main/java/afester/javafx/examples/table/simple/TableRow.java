@@ -3,6 +3,8 @@ package afester.javafx.examples.table.simple;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 public class TableRow {
     private final SimpleStringProperty firstName;
@@ -61,8 +63,25 @@ public class TableRow {
         flag.set(newValue);
     }
 
+
+    // MANDATORY!!!!! If omitted, PropertyValueFactory<TableRow, String>("comment")
+    // Creates a ReadOnlyObjectWrapper!!!!!!
+    public StringProperty commentProperty() {
+        return comment;
+    }
+
+    public String getComment() {
+        return comment.get();
+    }
+
+    public void setComment(String value) {
+        comment.set(value);
+    }
+
     @Override
     public String toString() {
-        return String.format("\"%s %s\" <%s>\t%s\t%s", firstName.get(), lastName.get(), email.get(), flag.get(), comment.get());
+        String name = String.format("\"%s %s\"",  firstName.get(), lastName.get());
+        String eMail = String.format("<%s>",  email.get());
+        return String.format("%-20s %-30s %s %s", name, eMail, flag.get(), comment.get());
     }
 }
