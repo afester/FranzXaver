@@ -4,7 +4,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.scene.control.cell.PropertyValueFactory;
 
 public class TableRow {
     private final SimpleStringProperty firstName;
@@ -64,8 +63,8 @@ public class TableRow {
     }
 
 
-    // MANDATORY!!!!! If omitted, PropertyValueFactory<TableRow, String>("comment")
-    // Creates a ReadOnlyObjectWrapper!!!!!!
+    // MANDATORY!!!!! If omitted, PropertyValueFactory<TableRow, String>("comment") 
+    // will create a ReadOnlyObjectWrapper!!!!!!
     public StringProperty commentProperty() {
         return comment;
     }

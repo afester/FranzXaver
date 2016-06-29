@@ -1,7 +1,5 @@
 package afester.javafx.examples.table.simple;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableCell;
@@ -12,9 +10,6 @@ import javafx.util.Callback;
 public class LiveTextFieldTableCell<S, T> extends TableCell<S,T> {
 
     private TextField textField;
-
-    private ObservableValue<String> textProperty = new SimpleStringProperty();
-
 
     /**
      * Creates a new table cell for direct text editing.
@@ -29,9 +24,16 @@ public class LiveTextFieldTableCell<S, T> extends TableCell<S,T> {
 
 
     private LiveTextFieldTableCell() {
-        System.err.println("Create...");
         this.getStyleClass().add("direct-text-field-table-cell");
+
         this.textField = new TextField();
+
+        // Add a listener on the text field to update the observable value
+        textField.textProperty().addListener((obs, oldVal, newVal) -> {
+            ObservableValue<?> obsValue = getTableColumn().getCellObservableValue(getIndex());
+            ((StringProperty) obsValue).set(newVal);
+        });
+
     }
 
 /**
@@ -41,62 +43,43 @@ public class LiveTextFieldTableCell<S, T> extends TableCell<S,T> {
     @Override
     protected void updateItem(T item, boolean empty) {
         super.updateItem(item, empty);
-        System.err.printf("updateItem: %s, %s%n", item, empty);
+
         if (empty) {
             setText(null);
             setGraphic(null);
         } else {
             // That is the problem:
+            // ====================
             // * Whenever the text in the observable changes, then the text is updated in the TextField.
             //   (either by calling setText like here, or implicitly through the bi-directional binding).
+            //
             // * However, when the text is updated, then the cursor is set to the beginning of the text field.
-            // * Also, unfortunately the text is also updated when it is changed from the TextField to the observable value -
-            //   this should probably not happen!
-
-            // The following listener is called when setting the new value of the observable object from the model:
+            //
+            // * Also, unfortunately the text is also updated when it is changed from the TextField to 
+            //   the observable value - this should probably not happen!
+            // 
+            //   The following listener (implemented in TableCell) is called when setting the new value 
+            //   of the observable object from the model:
+            //
             //            private final InvalidationListener tableRowUpdateObserver = value -> {
             //                itemDirty = true;
-            //                requestLayout();      // !!!!!!!!!!!!!!!!!!!!!!!!!
+            //                requestLayout();      // !! This finally calls updateItem()
             //            };
 
-    //        textField.setText(item.toString());
+            // Workaround:
+            // ============
+            // Instead of using a bi-directional binding (which would synchronize the
+            // text field text automatically with the property), we 
+            // * explicitly set the text of the text field here, and at the same time we remember the 
+            //   caret position so that it can be restored afterwards
+            // * explicitly synchronize the property in the data model through a listener
+            //   on the text field's text property
+            
+            int old = textField.getCaretPosition();
+            textField.setText(item.toString());
+            textField.positionCaret(old);
 
             setGraphic(textField);
-
-/*
-            if (textProperty instanceof StringProperty) {
-                textField.textProperty().unbindBidirectional((StringProperty) textProperty);
-            }
-*/
-            // get the observable value and bind it to the text property of the text field
-            ObservableValue<?> obsValue = getTableColumn().getCellObservableValue(getIndex());
-            textField.textProperty().addListener((obs, oldVal, newVal) -> {
-                System.err.println("Setting new value ...");
-                ((StringProperty) obsValue).set(newVal);   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                                                           // calls requestLayout(), see above
-                System.err.println("   Done.");
-            });
-
-//            if (obsValue instanceof StringProperty) {
-//                ((StringProperty) obsValue).bind(textField.textProperty());
-
-/*                textProperty = (ObservableValue<String>) obsValue;
-
-                // NOTE: bindBidirectional updates the text in the text field - 
-                // however, during editing, this also means that the cursor is moved to the
-                // beginning of the text field !!!!!
-                // Hence, for now, we only update in one direction, from the text field 
-                // to the property.
-                // Interesting that a single TextField does not behave like this, if bound
-                // bi directionally ...
-                // unfortunately, the text field is then not updated even initially ...
-                if (!textField.textProperty().isBound()) {
-                    System.err.printf("Binding...%n");
-                    textField.textProperty().bindBidirectional((StringProperty) textProperty);
-                    
-                }
-*/                // ((StringProperty) textProperty).bind(textField.textProperty());
-//            }
         }
     }
 }
