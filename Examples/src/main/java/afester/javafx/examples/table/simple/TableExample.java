@@ -110,6 +110,7 @@ public class TableExample extends Application {
 
         // show the generated scene graph
         Scene scene = new Scene(layout);
+        scene.getStylesheets().add("/afester/javafx/examples/table/simple/tableview.css");
         primaryStage.setScene(scene);
         primaryStage.show();
     }

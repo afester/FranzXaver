@@ -24,7 +24,7 @@ public class LiveTextFieldTableCell<S, T> extends TableCell<S,T> {
 
 
     private LiveTextFieldTableCell() {
-        this.getStyleClass().add("direct-text-field-table-cell");
+        this.getStyleClass().add("live-text-field-table-cell");
 
         this.textField = new TextField();
 
