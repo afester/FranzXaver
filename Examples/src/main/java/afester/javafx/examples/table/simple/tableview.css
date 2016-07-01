@@ -1,6 +1,6 @@
 .live-text-field-table-cell {
 	-fx-control-inner-background: #FFFFE8;	/* highlighted background */
-	-fx-padding: 0px;						/* reduce consumed space */
+	-fx-padding: 1px;						/* reduce consumed space */
 }
 
 .text-field {
@@ -13,9 +13,12 @@
 }
 */
 
-.text-field:focused {
-    -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
-/*	-fx-border-style: dashed;
-	-fx-border-color: red;*/
+.live-text-field-table-cell > .text-input{
+	-fx-background-color: white; /* #FFFFE0;*/	
+    -fx-background-radius: 3, 2;
+}
+
+/* Disable highlighting of currently focused text field */
+.live-text-field-table-cell > .text-input:focused {
+	-fx-background-color: white; /* #FFFFE0;*/ 
 }

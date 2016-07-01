@@ -1,5 +1,6 @@
 package afester.javafx.examples.table.simple;
 
+import afester.javafx.components.LiveTextFieldTableCell;
 import afester.javafx.examples.Example;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -84,7 +85,7 @@ public class TableExample extends Application {
             );
 
         TableColumn<TableRow, String> inlineEditCol = new TableColumn<>("Edit");
-        inlineEditCol.setCellFactory(LiveTextFieldTableCell.forTableColumn(inlineEditCol));
+        inlineEditCol.setCellFactory(LiveTextFieldTableCell.forTableColumn());
 
         // sets the obervable factory for the cell value.
         // In the cell renderer, the corresponding observable can be retrieved through 

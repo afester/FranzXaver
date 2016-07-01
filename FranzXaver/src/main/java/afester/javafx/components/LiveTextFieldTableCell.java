@@ -1,4 +1,4 @@
-package afester.javafx.examples.table.simple;
+package afester.javafx.components;
 
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
@@ -17,9 +17,8 @@ public class LiveTextFieldTableCell<S, T> extends TableCell<S,T> {
      * @param inlineEditCol
      * @return
      */
-    public static <S,T> Callback<TableColumn<S,T>, TableCell<S,T>> forTableColumn(
-            TableColumn<TableRow, String> inlineEditCol) {
-        return list -> new LiveTextFieldTableCell<S,T>(); // getSelectedProperty, converter);
+    public static <S,T> Callback<TableColumn<S,T>, TableCell<S,T>> forTableColumn() {
+        return list -> new LiveTextFieldTableCell<S,T>();
     }
 
 
