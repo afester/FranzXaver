@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import afester.javafx.examples.Example;
+
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -18,8 +19,9 @@ import javafx.stage.Stage;
 
 /**
  * This is a standard TableView example based on http://docs.oracle.com/javafx/2/ui_controls/table-view.htm
+ * It uses a Map as the data model.
  */
-@Example(desc = "Standard Table example",
+@Example(desc = "Map based Table",
          cat  = "Basic JavaFX")
 public class TableExample extends Application {
 

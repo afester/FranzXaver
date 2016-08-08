@@ -1,20 +1,15 @@
 package afester.javafx.examples.table.dynamic;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import afester.javafx.components.DynamicTable;
 import afester.javafx.examples.Example;
+
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
-import javafx.scene.control.TableView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -56,10 +51,11 @@ class CellContent {
 
 
 /**
- * Simple dynamic table
+ * Simple dynamic table.
+ * Uses the DynamicTable component from FranzXaver.
  */
-@Example(desc = "Array Table example",
-         cat  = "Basic JavaFX")
+@Example(desc = "Dynamic Table",
+         cat  = "FranzXaver")
 public class TableExample extends Application {
 
     public static void main(String[] args) {

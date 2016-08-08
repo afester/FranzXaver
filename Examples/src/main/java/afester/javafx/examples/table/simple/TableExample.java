@@ -2,6 +2,7 @@ package afester.javafx.examples.table.simple;
 
 import afester.javafx.components.LiveTextFieldTableCell;
 import afester.javafx.examples.Example;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,9 +21,10 @@ import javafx.stage.Stage;
 
 /**
  * This is a standard TableView example based on http://docs.oracle.com/javafx/2/ui_controls/table-view.htm
+ * In addition it contains one row where the cells are live editable
  */
-@Example(desc = "Standard Table example",
-         cat  = "Basic JavaFX")
+@Example(desc = "Live editable Table",
+         cat  = "FranzXaver")
 public class TableExample extends Application {
 
     private final ObservableList<TableRow> data =
