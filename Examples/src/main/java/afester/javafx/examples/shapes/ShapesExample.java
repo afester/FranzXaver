@@ -3,7 +3,10 @@ package afester.javafx.examples.shapes;
 import afester.javafx.examples.Example;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Slider;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -29,7 +32,9 @@ public class ShapesExample extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("JavaFX shapes example");
 
-        Pane mainLayout = new Pane();
+        BorderPane mainLayout = new BorderPane();
+        
+        Pane drawPane = new Pane();
 
         Rectangle rect = new Rectangle(50, 150, 100, 130);
         rect.setStroke(Color.AQUA);
@@ -56,10 +61,26 @@ public class ShapesExample extends Application {
         arrow.setStroke(Color.BLUE);
         arrow.setFill(Color.YELLOW);
 
-        ArrowLine line2 = new ArrowLine(50, 300, 200, 400);
+        ArrowLine line2 = new ArrowLine(200, 200, 300, 300);
         line2.setStroke(Color.DARKRED);
 
-        mainLayout.getChildren().addAll(rect, circ, line, tri, arrow, line2);
+        drawPane.getChildren().addAll(rect, circ, line, tri, arrow, line2);
+
+        VBox controls = new VBox();
+        Slider s = new Slider(0, 360, 0);
+        s.valueProperty().addListener((a, b, newVal) -> {
+            double angle = Math.toRadians(newVal.doubleValue());
+            double x = 200 + Math.cos(angle) * 150;
+            double y = 200 + Math.sin(angle + Math.PI) * 150;
+
+            line2.setEndX(x);
+            line2.setEndY(y);
+            System.err.printf("%s / %s%n", x, y);
+        });
+        controls.getChildren().add(s);
+
+        mainLayout.setBottom(controls);
+        mainLayout.setCenter(drawPane);
 
         // show the generated scene graph
         Scene scene = new Scene(mainLayout);
