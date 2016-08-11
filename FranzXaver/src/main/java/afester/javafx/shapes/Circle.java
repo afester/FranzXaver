@@ -1,4 +1,4 @@
-package afester.javafx.examples.shapes;
+package afester.javafx.shapes;
 
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Paint;

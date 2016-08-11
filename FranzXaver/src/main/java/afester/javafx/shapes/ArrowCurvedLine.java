@@ -1,22 +1,13 @@
-package afester.javafx.examples.shapes;
+package afester.javafx.shapes;
 
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.CubicCurveTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
 
-public class ArrowCurvedLine extends Path implements EditableShape {
-    private Arrow start = new Arrow();
-    private Arrow end = new Arrow();
-    private MoveTo moveTo = new MoveTo();
+public class ArrowCurvedLine extends ArrowLine  {
+
     private CubicCurveTo curveTo = new CubicCurveTo();
-
     private Orientation orientation;
-    private static int count = 0;
-    private double startX, startY, endX, endY;
-    double startLength, startAngle;
-    double endLength, endAngle;
 
     public ArrowCurvedLine(double startX, double startY, double endX, double endY) {
         this.startX = startX;
@@ -26,17 +17,18 @@ public class ArrowCurvedLine extends Path implements EditableShape {
 
         update();
     }
+    private static int count = 0;
 
     private void update() {
         System.err.printf("update(%s, %s)%n", count++, orientation);
 
         if (orientation == Orientation.HORIZONTAL) {
             if (startX > endX) {
-                start.setPosition(startX, startY, 90, ArrowStyle.OPEN, startLength, startAngle);
-                end.setPosition(endX, endY, 270, ArrowStyle.OPEN, endLength, endAngle);
+                start.setPosition(startX, startY, 90, startStyle);
+                end.setPosition(endX, endY, 270, endStyle);
             } else {
-                start.setPosition(startX, startY, 270, ArrowStyle.OPEN, endLength, endAngle);
-                end.setPosition(endX, endY, 90, ArrowStyle.OPEN, endLength, endAngle);
+                start.setPosition(startX, startY, 270, startStyle);
+                end.setPosition(endX, endY, 90, endStyle);
             }
             curveTo.setControlX1((end.getConnX() + start.getConnX()) / 2);
             curveTo.setControlY1(start.getConnY());
@@ -44,11 +36,11 @@ public class ArrowCurvedLine extends Path implements EditableShape {
             curveTo.setControlY2(end.getConnY());
         } else {
             if (endY > startY) {
-                start.setPosition(startX, startY, 0, ArrowStyle.OPEN, endLength, endAngle);
-                end.setPosition(endX, endY, 180, ArrowStyle.OPEN, endLength, endAngle);
+                start.setPosition(startX, startY, 0, startStyle);
+                end.setPosition(endX, endY, 180, endStyle);
             } else {
-                start.setPosition(startX, startY, 180, ArrowStyle.OPEN, endLength, endAngle);
-                end.setPosition(endX, endY, 0, ArrowStyle.OPEN, endLength, endAngle);
+                start.setPosition(startX, startY, 180, startStyle);
+                end.setPosition(endX, endY, 0, endStyle);
             }
             curveTo.setControlX1(start.getConnX());
             curveTo.setControlY1((end.getConnY() + start.getConnY()) / 2);
@@ -62,9 +54,9 @@ public class ArrowCurvedLine extends Path implements EditableShape {
         curveTo.setY(end.getConnY());
 
         // reset path elements
-        getElements().setAll(moveTo, curveTo);
-        getElements().addAll(start.getElements());
-        getElements().addAll(end.getElements());
+//        getElements().setAll(moveTo, curveTo);
+//        getElements().addAll(start.getElements());
+//        getElements().addAll(end.getElements());
     }
 
 

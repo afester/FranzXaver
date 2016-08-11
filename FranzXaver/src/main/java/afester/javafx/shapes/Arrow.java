@@ -1,4 +1,4 @@
-package afester.javafx.examples.shapes;
+package afester.javafx.shapes;
 
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
@@ -22,33 +22,31 @@ public class Arrow extends Path implements EditableShape {
     private Point2D head = null;    // the head of the arrow
     private Point2D tail1 = null;   // the first tail point of the arrow
     private Point2D tail2 = null;   // the second tail point of the arrow
-    private Point2D conn = null;    // the connection point for the line
+    private Point2D conn = new Point2D(0, 0);    // the connection point for the line
     private Rotate rotation = null;
 
-    private double length = 15;
-    private double angle = 45;
+    private ArrowStyle style = new ArrowStyle(ArrowShape.OPEN, 15, 45);
 
-    public Arrow(double x, double y, double rot, ArrowStyle style, double length, double angle) {
-        setPosition(x, y, rot, style, length, angle);
+    public Arrow(double x, double y, double rot, ArrowStyle style) {
+        setPosition(x, y, rot, style);
     }
 
     public Arrow() {
-        this(0, 0, 0, ArrowStyle.OPEN, 0, 0);
+        this(0, 0, 0, new ArrowStyle(ArrowShape.NONE, 0, 0));
     }
 
 
-    public void setPosition(double x, double y, double rot, ArrowStyle style, double length, double angle) {
-        this.angle = angle;
-        this.length = length;
+    public void setPosition(double x, double y, double rot, ArrowStyle style) {
+        this.style = style;
 
         head = new Point2D(x, y);
 
-        double dx = length * Math.tan(Math.toRadians(angle/2));
+        double dx = style.getLength() * Math.tan(Math.toRadians(style.getAngle() / 2));
         rotation = new Rotate(rot, x, y);
-        tail1 = rotation.transform(x - dx, y + length);
-        tail2 = rotation.transform(x + dx, y + length);
+        tail1 = rotation.transform(x - dx, y + style.getLength());
+        tail2 = rotation.transform(x + dx, y + style.getLength());
 
-        switch(style) {
+        switch(style.getShape()) {
             case OPEN   : createOpenArrow();   break;
             case CLOSED : createClosedArrow(); break;
             case TAILED : createTailedArrow(); break;
@@ -56,6 +54,7 @@ public class Arrow extends Path implements EditableShape {
                           setFill(Color.BLACK);
                           break;
             case NONE   : getElements().clear();
+                          conn = new Point2D(x, y);
                           break;
         }
     }
@@ -70,7 +69,7 @@ public class Arrow extends Path implements EditableShape {
 
 
     private void createClosedArrow() {
-        conn = rotation.transform(new Point2D(head.getX(), head.getY() + length));
+        conn = rotation.transform(new Point2D(head.getX(), head.getY() + style.getLength()));
 
         MoveTo start = new MoveTo(head.getX(), head.getY());
         LineTo first = new LineTo(tail1.getX(), tail1.getY());
@@ -91,7 +90,7 @@ public class Arrow extends Path implements EditableShape {
     }
 
     private void createTailedArrow() {
-        conn = rotation.transform(new Point2D(head.getX(), head.getY() + length/2));
+        conn = rotation.transform(new Point2D(head.getX(), head.getY() + style.getLength() * 0.75));
 
         MoveTo start = new MoveTo(head.getX(), head.getY());
         LineTo first = new LineTo(tail1.getX(), tail1.getY());
