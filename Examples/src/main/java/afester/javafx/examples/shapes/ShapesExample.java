@@ -3,6 +3,8 @@ package afester.javafx.examples.shapes;
 import afester.javafx.components.GraphicalComboBox;
 import afester.javafx.examples.Example;
 import afester.javafx.shapes.Arrow;
+import afester.javafx.shapes.ArrowCurvedLine;
+import afester.javafx.shapes.ArrowLine;
 import afester.javafx.shapes.ArrowShape;
 import afester.javafx.shapes.ArrowStraightLine;
 import afester.javafx.shapes.ArrowStyle;
@@ -13,7 +15,9 @@ import afester.javafx.shapes.LineDash;
 import afester.javafx.shapes.Triangle;
 import javafx.application.Application;
 import javafx.geometry.Point2D;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.BorderPane;
@@ -70,52 +74,73 @@ public class ShapesExample extends Application {
         tri.setFill(Color.YELLOW);
         tri.setOnMouseClicked( e-> setSelected((EditableShape) e.getSource())  );
 
-        Arrow arrow = new Arrow(300, 100, 90, new ArrowStyle(ArrowShape.CLOSED, 20, 30));
+        Arrow arrow = new Arrow(300, 100, 90, new ArrowStyle(ArrowShape.CLOSED, 20, 30, false));
         arrow.setStroke(Color.BLUE);
         arrow.setFill(Color.YELLOW);
 
         ArrowStraightLine line2 = new ArrowStraightLine(200, 200, 300, 300);
-        //ArrowCurvedLine line2 = new ArrowCurvedLine(200, 200, 300, 300);
-        //line2.setStroke(Color.BLUE);
-        // line2.setFill(Color.BLACK);
 
         final Point2D center = new Point2D(200, 200);
         Circle centerCirc = new Circle(center.getX(), center.getY(), 3);
         centerCirc.setStroke(Color.RED);
-        drawPane.getChildren().addAll(rect, circ, line, tri, arrow, line2, centerCirc);
+
+        updateLine(line2, center, 45);
+
+        ArrowCurvedLine line3 = new ArrowCurvedLine(400, 200, 300, 300);
+
+        final Point2D center2 = new Point2D(400, 200);
+        Circle centerCirc2 = new Circle(center2.getX(), center2.getY(), 3);
+        centerCirc2.setStroke(Color.RED);
+
+        updateLine(line3, center2, 45);
+
+        drawPane.getChildren().addAll(rect, circ, line, tri, arrow, 
+                                      line2, centerCirc, 
+                                      line3, centerCirc2);
 
         VBox bottomPanel = new VBox();
 
         HBox controls = new HBox();
-        Slider s = new Slider(0, 360, 0);
+        Slider s = new Slider(0, 360, 45);
         s.valueProperty().addListener((a, b, newVal) -> {
-            double angle = Math.toRadians(newVal.doubleValue());
-            double x1 = center.getX() + Math.cos(angle) * 75;
-            double y1 = center.getY() + Math.sin(angle + Math.PI) * 75;
-            double x2 = center.getX() - Math.cos(angle) * 75;
-            double y2 = center.getY() - Math.sin(angle + Math.PI) * 75;
-
-            if (angle >= Math.PI/4 && angle <= (Math.PI/2 + Math.PI/4)) {
-            //    line2.setDirection(Orientation.VERTICAL);
-            } else {
-            //    line2.setDirection(Orientation.HORIZONTAL);
-            }
-            line2.setStartX(x1);
-            line2.setStartY(y1);
-            line2.setEndX(x2);
-            line2.setEndY(y2);
+            updateLine(line2, center, newVal.doubleValue());
+            updateLine(line3, center2, newVal.doubleValue());
         });
         bottomPanel.getChildren().add(s);
 
-        ComboBox<ArrowShape> startShape = new GraphicalComboBox<>(item -> {
+        final ArrowStyle[] allStyles = {
+                null,
+                new ArrowStyle(ArrowShape.OPEN, 10, 30, false),
+                new ArrowStyle(ArrowShape.CLOSED, 10, 30, false),
+                new ArrowStyle(ArrowShape.TAILED, 10, 30, false),
+                new ArrowStyle(ArrowShape.DIAMOND, 10, 30, false),
+                new ArrowStyle(ArrowShape.CLOSED, 10, 30, true),
+                new ArrowStyle(ArrowShape.TAILED, 10, 30, true),
+                new ArrowStyle(ArrowShape.DIAMOND, 10, 30, true),
+                new ArrowStyle(ArrowShape.OPEN, 10, 45, false),
+                new ArrowStyle(ArrowShape.CLOSED, 10, 45, false),
+                new ArrowStyle(ArrowShape.TAILED, 10, 45, false),
+                new ArrowStyle(ArrowShape.CLOSED, 10, 45, true),
+                new ArrowStyle(ArrowShape.TAILED, 10, 45, true),
+                new ArrowStyle(ArrowShape.DIAMOND, 10, 45, true),
+                new ArrowStyle(ArrowShape.OPEN, 10, 90, false),
+                new ArrowStyle(ArrowShape.CLOSED, 10, 90, false),
+                new ArrowStyle(ArrowShape.TAILED, 10, 90, false),
+                new ArrowStyle(ArrowShape.CLOSED, 10, 90, true),
+                new ArrowStyle(ArrowShape.TAILED, 10, 90, true),
+        };
+        ComboBox<ArrowStyle> startShape = new GraphicalComboBox<>(item -> {
             final ArrowStraightLine startLine =  new ArrowStraightLine(0, 0, 20, 0);
-            startLine.setStartArrow(new ArrowStyle(item, 10, 30));
-            startLine.setEndArrow(new ArrowStyle(ArrowShape.NONE, 10, 30));
+            startLine.setStartArrow(item);
+            startLine.setEndArrow(null);
             return startLine;
         });
-        startShape.getItems().addAll(ArrowShape.values());
+        startShape.getItems().addAll(allStyles);
         startShape.getSelectionModel().selectedItemProperty().addListener(
-                (source, oldItem, newItem) -> line2.setStartArrow(new ArrowStyle(newItem, 20, 30)) );
+                (source, oldItem, newItem) -> {
+                    line2.setStartArrow(newItem) ;   
+                    line3.setStartArrow(newItem) ;
+                });
 
         ComboBox<LineDash> lineStyle = new GraphicalComboBox<>(item -> {
             final Line lineDash =  new Line(0, 0, 50, 0);
@@ -124,17 +149,24 @@ public class ShapesExample extends Application {
         });
         lineStyle.getItems().addAll(LineDash.values());
         lineStyle.getSelectionModel().selectedItemProperty().addListener(
-                (source, oldItem, newItem) -> line2.getStrokeDashArray().setAll(newItem.getDashArray()) );
+                (source, oldItem, newItem) -> 
+                {
+                    line2.getStrokeDashArray().setAll(newItem.getDashArray()); 
+                    line3.getStrokeDashArray().setAll(newItem.getDashArray()); 
+                } );
 
         ComboBox<ArrowShape> endShape = new GraphicalComboBox<>(item -> {
             final ArrowStraightLine startLine =  new ArrowStraightLine(0, 0, 20, 0);
-            startLine.setStartArrow(new ArrowStyle(ArrowShape.NONE, 10, 30));
-            startLine.setEndArrow(new ArrowStyle(item, 10, 30));
+            startLine.setStartArrow(null); // new ArrowStyle(ArrowShape.NONE, 10, 30, false));
+            startLine.setEndArrow(new ArrowStyle(item, 10, 30, false));
             return startLine;
         });
         endShape.getItems().addAll(ArrowShape.values());
         endShape.getSelectionModel().selectedItemProperty().addListener(
-                (source, oldItem, newItem) -> line2.setEndArrow(new ArrowStyle(newItem, 20, 30)) );
+                (source, oldItem, newItem) ->{
+                    line2.setEndArrow(new ArrowStyle(newItem, 20, 30, false)); 
+                    line3.setEndArrow(new ArrowStyle(newItem, 20, 30, false));
+               } );
 
         ComboBox<Double> lineWidth = new GraphicalComboBox<>(item -> {
             final Line lineView=  new Line(0, 0, 50, 0);
@@ -143,12 +175,20 @@ public class ShapesExample extends Application {
         });
         lineWidth.getItems().addAll(1.0, 3.0, 5.0, 7.0, 10.0);
         lineWidth.getSelectionModel().selectedItemProperty().addListener(
-                (source, oldItem, newItem) -> line2.setStrokeWidth(newItem));
+                (source, oldItem, newItem) -> {
+                    line2.setStrokeWidth(newItem);
+                    line3.setStrokeWidth(newItem);
+                });
+
+        CheckBox isFilled = new CheckBox("Filled");
+        isFilled.selectedProperty().addListener(
+                (source, oldValue, newValue) -> System.err.println("Filled: " + newValue) ); 
 
         controls.getChildren().add(startShape);
         controls.getChildren().add(lineStyle);
         controls.getChildren().add(endShape);
         controls.getChildren().add(lineWidth);
+        controls.getChildren().add(isFilled);
         bottomPanel.getChildren().add(controls);
 
         mainLayout.setBottom(bottomPanel);
@@ -160,6 +200,27 @@ public class ShapesExample extends Application {
         primaryStage.show();
     }
 
+
+    private void updateLine(ArrowLine line, Point2D center, double newVal) {
+        double angle = Math.toRadians(newVal);
+        double x1 = Math.cos(angle) * 75;
+        double y1 = Math.sin(angle + Math.PI) * 75;
+        double x2 = Math.cos(angle) * 75;
+        double y2 = Math.sin(angle + Math.PI) * 75;
+
+        if (line instanceof ArrowCurvedLine) {
+            if (angle >= Math.PI/4 && angle <= (Math.PI/2 + Math.PI/4)) {
+                ((ArrowCurvedLine) line).setDirection(Orientation.VERTICAL);
+            } else {
+                ((ArrowCurvedLine) line).setDirection(Orientation.HORIZONTAL);
+            }
+        }
+
+        line.setStartX(center.getX() + x1);
+        line.setStartY(center.getY() + y1);
+        line.setEndX(center.getX() - x2);
+        line.setEndY(center.getY() - y2);
+    }
 
     private void setSelected(EditableShape es) {
         System.err.println("Selected: " + es);

@@ -1,12 +1,14 @@
 package afester.javafx.shapes;
 
+import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
-import javafx.scene.shape.CubicCurveTo;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.CubicCurve;
 
 public class ArrowCurvedLine extends ArrowLine  {
 
-    private CubicCurveTo curveTo = new CubicCurveTo();
+    private CubicCurve curve = new CubicCurve();
     private Orientation orientation;
 
     public ArrowCurvedLine(double startX, double startY, double endX, double endY) {
@@ -15,11 +17,16 @@ public class ArrowCurvedLine extends ArrowLine  {
         this.endX = endX;
         this.endY = endY;
 
+        curve.setFill(null);
+        curve.setStroke(Color.BLACK);
+
         update();
     }
     private static int count = 0;
 
-    private void update() {
+    
+    @Override
+    protected void update() {
         System.err.printf("update(%s, %s)%n", count++, orientation);
 
         if (orientation == Orientation.HORIZONTAL) {
@@ -30,10 +37,10 @@ public class ArrowCurvedLine extends ArrowLine  {
                 start.setPosition(startX, startY, 270, startStyle);
                 end.setPosition(endX, endY, 90, endStyle);
             }
-            curveTo.setControlX1((end.getConnX() + start.getConnX()) / 2);
-            curveTo.setControlY1(start.getConnY());
-            curveTo.setControlX2((end.getConnX() + start.getConnX()) / 2);
-            curveTo.setControlY2(end.getConnY());
+            curve.setControlX1((end.getConnX() + start.getConnX()) / 2);
+            curve.setControlY1(start.getConnY());
+            curve.setControlX2((end.getConnX() + start.getConnX()) / 2);
+            curve.setControlY2(end.getConnY());
         } else {
             if (endY > startY) {
                 start.setPosition(startX, startY, 0, startStyle);
@@ -42,21 +49,19 @@ public class ArrowCurvedLine extends ArrowLine  {
                 start.setPosition(startX, startY, 180, startStyle);
                 end.setPosition(endX, endY, 0, endStyle);
             }
-            curveTo.setControlX1(start.getConnX());
-            curveTo.setControlY1((end.getConnY() + start.getConnY()) / 2);
-            curveTo.setControlX2(end.getConnX());
-            curveTo.setControlY2((end.getConnY() + start.getConnY()) / 2);
+            curve.setControlX1(start.getConnX());
+            curve.setControlY1((end.getConnY() + start.getConnY()) / 2);
+            curve.setControlX2(end.getConnX());
+            curve.setControlY2((end.getConnY() + start.getConnY()) / 2);
         }
 
-        moveTo.setX(start.getConnX());
-        moveTo.setY(start.getConnY());
-        curveTo.setX(end.getConnX());
-        curveTo.setY(end.getConnY());
+        curve.setStartX(start.getConnX());
+        curve.setStartY(start.getConnY());
+        curve.setEndX(end.getConnX());
+        curve.setEndY(end.getConnY());
 
         // reset path elements
-//        getElements().setAll(moveTo, curveTo);
-//        getElements().addAll(start.getElements());
-//        getElements().addAll(end.getElements());
+        getChildren().setAll(curve, start, end);
     }
 
 
@@ -93,6 +98,17 @@ public class ArrowCurvedLine extends ArrowLine  {
 
     public Point2D[] getEditHandles() {
         return null;
+    }
+
+    public void setStrokeWidth(Double newWidth) {
+        curve.setStrokeWidth(newWidth);
+        start.setStrokeWidth(newWidth);
+        end.setStrokeWidth(newWidth);
+    }
+
+
+    public ObservableList<Double> getStrokeDashArray() {
+        return curve.getStrokeDashArray();
     }
 
     @Override
