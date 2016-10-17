@@ -5,6 +5,10 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+/**
+ * A sample container for table row data.
+ *
+ */
 public class TableRow {
     private final SimpleStringProperty firstName;
     private final SimpleStringProperty lastName;

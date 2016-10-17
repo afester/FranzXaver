@@ -1,0 +1,52 @@
+.column-header {
+    -fx-font-weight: normal;
+}
+
+.column-header .text {
+    -fx-fill: #617882;
+}
+
+
+/* Selects the row header cell itself */
+.row-header {
+    -fx-alignment: center;
+    -fx-font-weight: normal;
+}
+
+
+/* selects the text inside the row header cell */
+.row-header .text {
+    -fx-fill: #617882;
+}
+/*
+.table-row-cell:odd {
+	-fx-background: -fx-control-inner-background;
+}
+*/
+
+
+.live-text-field-table-cell {
+	-fx-control-inner-background: #FFFFE8;	/* highlighted background */
+	-fx-padding: 1px;						/* reduce consumed space */
+}
+
+.text-field {
+    /*-fx-text-box-border: transparent;*/
+}
+
+/* just a test - background of cell is red while the mouse button is pressed */
+/*.live-text-field-table-cell:pressed {
+	-fx-control-inner-background: red;
+}
+*/
+
+.live-text-field-table-cell > .text-input{
+	-fx-background-color: white; /* #FFFFE0;*/	
+    -fx-background-radius: 3, 2;
+    -fx-padding: 0px;						/* reduce consumed space */
+}
+
+/* Disable highlighting of currently focused text field */
+.live-text-field-table-cell > .text-input:focused {
+	-fx-background-color: #FFFFE0; 
+}

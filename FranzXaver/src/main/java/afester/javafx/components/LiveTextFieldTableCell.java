@@ -1,5 +1,6 @@
 package afester.javafx.components;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableCell;
@@ -31,6 +32,7 @@ public class LiveTextFieldTableCell<S, T> extends TableCell<S,T> {
         textField.textProperty().addListener((obs, oldVal, newVal) -> {
             ObservableValue<?> obsValue = getTableColumn().getCellObservableValue(getIndex());
             ((StringProperty) obsValue).set(newVal);
+            // ((ReadOnlyObjectWrapper) obsValue).setValue(newVal);
         });
 
     }
@@ -43,7 +45,7 @@ public class LiveTextFieldTableCell<S, T> extends TableCell<S,T> {
     protected void updateItem(T item, boolean empty) {
         super.updateItem(item, empty);
 
-        if (empty) {
+        if (empty || item == null) {
             setText(null);
             setGraphic(null);
         } else {

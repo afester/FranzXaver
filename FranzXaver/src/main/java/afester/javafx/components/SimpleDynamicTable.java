@@ -8,7 +8,6 @@ import com.sun.javafx.scene.control.skin.VirtualFlow;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -17,17 +16,16 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Skin;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn.CellDataFeatures;
-import javafx.scene.control.TablePosition;
 import javafx.scene.layout.Pane;
+import javafx.scene.control.TablePosition;
+import javafx.scene.control.TableView;
 import javafx.util.Callback;
-import javafx.util.StringConverter;
 
 
-public class DynamicTable<S> extends TableView<IndexedTableRow<S>> {
+public class SimpleDynamicTable extends TableView<IndexedTableRow<String>> {
 
-    private ObservableList<IndexedTableRow<S>> data = FXCollections.observableArrayList();
+    private ObservableList<IndexedTableRow<String>> data = FXCollections.observableArrayList();
 
     private boolean isShowHeader = true;
     private Pane rowHeader = null;
@@ -36,30 +34,10 @@ public class DynamicTable<S> extends TableView<IndexedTableRow<S>> {
     private double hPrefHeight = -1;
     private boolean hManaged = true;
 
-    private TableColumn<IndexedTableRow<S>, String> headerColumn; 
-    private StringConverter<S> stringConverter;
+    //private StringConverter<S> stringConverter;
     
 
-    public DynamicTable(int columns, int rows) {
-
-        // TODO: The row header column should not scroll!!!!!
-        // however, it looks like this is difficult to implement - see
-        // http://stackoverflow.com/questions/17693136/javafx-how-to-freeze-the-position-of-some-columns-in-tableview
-
-        headerColumn = new TableColumn<>();
-        headerColumn.setSortable(false);
-
-        // set the style class for the header column -
-        // actually, this is the style class for each CELL of the column.
-        // Means, the style defined for this class is applied to each TableCell object -
-        // the TableColumn is NOT a JavaFX scene graph node!
-
-        // for now, we simply take the style from the column header!
-        // in addition, we allow to overwrite styles through the "row-header" class.
-        headerColumn.getStyleClass().addAll("column-header", "row-header");
-        headerColumn.setPrefWidth(40);
-        headerColumn.setMaxWidth(40);
-        headerColumn.setMinWidth(40);
+    public SimpleDynamicTable(int columns, int rows) {
 
         // Note: getSelectedCells() returns a ObservableList<TablePosition> with a raw TablePosition
         getSelectionModel().getSelectedCells().addListener( (ListChangeListener.Change<? extends TablePosition> a) -> {
@@ -73,33 +51,14 @@ public class DynamicTable<S> extends TableView<IndexedTableRow<S>> {
             this.edit(pos.getRow(), pos.getTableColumn());
             
         });
-/*        getSelectionModel().selectedIndexProperty().addListener((a, b, c) -> {
-            System.err.printf("IDX: %s%n        %s%n        %s%n", a, b, c);
-        });
-        getSelectionModel().selectedItemProperty().addListener((a, b, c) -> {
-            System.err.printf("ITM: %s%n        %s%n        %s%n", a, b, c);
-        });
-*/
-        headerColumn.setCellValueFactory(
-                new Callback<CellDataFeatures<IndexedTableRow<S>, String>, ObservableValue<String>>() {
-
-                @Override
-                public ObservableValue<String> call(CellDataFeatures<IndexedTableRow<S>, String> param) {
-                    int row = param.getValue().getRowNumber();
-                    String content = String.format("%d", row);
-                    return new ReadOnlyStringWrapper(content);
-                }
-
-            });
-
-        getColumns().add(headerColumn);
 
         setColumnCount(columns);
         setRowCount(rows);
-
+        setShowColumnHeader(false);
+        
         // set data for the table
         setItems(data);
-
+        
         widthProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> ov, Number t, Number t1) {
@@ -110,6 +69,70 @@ public class DynamicTable<S> extends TableView<IndexedTableRow<S>> {
                 }
             }
         });
+    }
+
+
+    public void setValue(int column, int row, String value) {
+        data.get(row).setValue(column, value);
+    }
+
+    public void setRowCount(int newValue) {
+        if (newValue < data.size()) {
+            data.remove(newValue, data.size());
+        } else if (newValue > data.size()) {
+            for (int rowIdx = data.size();  rowIdx < newValue;  rowIdx++) {
+                IndexedTableRow<String> dataRow = new IndexedTableRow<>(rowIdx+1);
+                
+                data.add(dataRow);
+            }
+        }
+
+        visibleRowCount.set(newValue);
+    }
+
+    public void setColumnCount(int newValue) {
+        //newValue++; // first column is column header
+
+        if (newValue < getColumns().size()) {
+            getColumns().remove(newValue,  getColumns().size());
+        } else if (newValue > getColumns().size()) {
+
+            for (int colIdx = getColumns().size();  colIdx < newValue;  colIdx++) {
+                    // TODO: at most 26
+                    //String columnHeader = new String(Character.toChars('A' + colIdx));
+
+                    TableColumn<IndexedTableRow<String>, String> column = new TableColumn<>(); // columnHeader);
+                    column.setPrefWidth(100);
+                    column.setId("" + colIdx);
+                    column.setSortable(false);  // TODO: Make configurable from outside
+
+                    column.setCellValueFactory(
+                            new Callback<CellDataFeatures<IndexedTableRow<String>, String>, ObservableValue<String>>() {
+
+                                @Override
+                                public ObservableValue<String> call(CellDataFeatures<IndexedTableRow<String>, String> param) {
+                                    IndexedTableRow<String> row = param.getValue();
+                                    Integer colId = Integer.parseInt(param.getTableColumn().getId());
+                                    String content = row.getValue(colId);
+                                    if (content == null) {
+                                        content = "";
+                                    }
+                                    return new ReadOnlyObjectWrapper<String>(content);
+                                }
+
+                            });
+
+                    column.setCellFactory(LiveTextFieldTableCell.forTableColumn());
+
+                    getColumns().add(column);
+            }
+        }
+    }
+
+
+    public void setShowColumnHeader(boolean flag) {
+        this.isShowHeader = flag;
+        toggleHeader();
     }
 
     private void toggleHeader() {
@@ -139,99 +162,15 @@ public class DynamicTable<S> extends TableView<IndexedTableRow<S>> {
             rowHeader.setVisible(false);
         }
     }
-
-
-    public void setValue(int column, int row, S value) {
-        data.get(row).setValue(column, value);
-    }
-
-    public void setShowColumnHeader(boolean flag) {
-        this.isShowHeader = flag;
-        toggleHeader();
-    }
-
-    public void setShowRowHeader(boolean flag) {
-        System.err.printf("", flag);
-        headerColumn.setVisible(flag);
-    }
-
-    public void setRowCount(int newValue) {
-        if (newValue < data.size()) {
-            data.remove(newValue, data.size());
-        } else if (newValue > data.size()) {
-            for (int rowIdx = data.size();  rowIdx < newValue;  rowIdx++) {
-                IndexedTableRow<S> dataRow = new IndexedTableRow<>(rowIdx+1);
-                data.add(dataRow);
-            }
-        }
-
-        visibleRowCount.set(newValue);
-    }
-
-    public void setColumnCount(int newValue) {
-        newValue++; // first column is column header
-
-        if (newValue < getColumns().size()) {
-            getColumns().remove(newValue,  getColumns().size());
-        } else if (newValue > getColumns().size()) {
-
-            for (int colIdx = getColumns().size();  colIdx < newValue;  colIdx++) {
-                    // TODO: at most 26
-                    String columnHeader = new String(Character.toChars('A' + colIdx-1));
-
-                    TableColumn<IndexedTableRow<S>, S> column = new TableColumn<>(columnHeader);
-                    column.setPrefWidth(100);
-                    column.setId("" + (colIdx-1));
-                    column.setSortable(false);  // TODO: Make configurable from outside
-
-                    column.setCellValueFactory(
-                            new Callback<CellDataFeatures<IndexedTableRow<S>, S>, ObservableValue<S>>() {
-
-                                @Override
-                                public ObservableValue<S> call(CellDataFeatures<IndexedTableRow<S>, S> param) {
-                                    IndexedTableRow<S> row = param.getValue();
-                                    Integer colId = Integer.parseInt(param.getTableColumn().getId());
-                                    S content = row.getValue(colId);
-                                    return new ReadOnlyObjectWrapper<S>(content);
-                                }
-
-                            });
-/*
-                    column.setCellFactory(
-                            new Callback< TableColumn<TableRow<S>,S>, TableCell<TableRow<S>,S>>() {
-
-                                @Override
-                                public TableCell<TableRow<S>, S> call(TableColumn<TableRow<S>, S> param) {
-
-                                    return new TextFieldTableCell<>(stringConverter);
-                                }
-
-                            });
-*/
-                    column.setCellFactory(LiveTextFieldTableCell.forTableColumn());
-/*
-                    column.setOnEditCommit(e -> {
-                        int rowIdx = e.getTablePosition().getRow();
-                        TableRow<S> row = e.getTableView().getItems().get(rowIdx);
-                        Integer colId = Integer.parseInt(e.getTableColumn().getId());
-                        row.rowData.put(colId, e.getNewValue());
-                     } );
-*/
-                    getColumns().add(column);
-            }
-        }
-    }
-
-    
     
     // http://stackoverflow.com/questions/26298337/tableview-adjust-number-of-visible-rows/26364210#26364210
     private IntegerProperty visibleRowCount = new SimpleIntegerProperty(this, "visibleRowCount", 10);
     public IntegerProperty visibleRowCountProperty() {  return visibleRowCount; }
 
 
-    public static class TableViewSkinX<T> extends TableViewSkin<IndexedTableRow<T>> {
+    public static class TableViewSkinY extends TableViewSkin<IndexedTableRow<String>> {
 
-        public TableViewSkinX(DynamicTable<T> tableView) {
+        public TableViewSkinY(SimpleDynamicTable tableView) {
             super(tableView);
             registerChangeListener(tableView.visibleRowCountProperty(), "VISIBLE_ROW_COUNT");
             handleControlPropertyChanged("VISIBLE_ROW_COUNT");
@@ -252,7 +191,7 @@ public class DynamicTable<S> extends TableView<IndexedTableRow<S>> {
          * Returns the visibleRowCount value of the table.
          */
         private int getVisibleRowCount() {
-            int result = ((DynamicTable<T>) getSkinnable()).visibleRowCountProperty().get();
+            int result = ((SimpleDynamicTable) getSkinnable()).visibleRowCountProperty().get();
             System.err.printf("getVisibleRowCount() = %s%n", result);
             
             return result;
@@ -350,10 +289,6 @@ public class DynamicTable<S> extends TableView<IndexedTableRow<S>> {
 
     @Override
     protected Skin<?> createDefaultSkin() {
-        return new TableViewSkinX<S>(this);
-    }
-
-    public void setCellConverter(StringConverter<S> stringConverter) {
-        this.stringConverter = stringConverter;
+        return new TableViewSkinY(this);
     }
 }
