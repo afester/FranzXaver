@@ -4,6 +4,7 @@ afester.javafx.examples.layouts.LayoutExamples
 afester.javafx.examples.charts.LinechartExample
 afester.javafx.examples.svg.SvgLoaderResultViewer
 afester.javafx.examples.svg.TigerExample
+afester.javafx.examples.svg.SvgOnButton
 afester.javafx.examples.animation.counter.AnimatedCounter
 afester.javafx.examples.animation.game.DrivingCar
 afester.javafx.examples.animation.game.BouncingBall
