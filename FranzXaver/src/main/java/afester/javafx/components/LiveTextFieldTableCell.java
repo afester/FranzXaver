@@ -12,10 +12,7 @@ public class LiveTextFieldTableCell<S, T> extends TableCell<S,T> {
     private TextField textField;
 
     /**
-     * Creates a new table cell for direct text editing.
-     *
-     * @param inlineEditCol
-     * @return
+     * @return A new table cell for inline text editing.
      */
     public static <S,T> Callback<TableColumn<S,T>, TableCell<S,T>> forTableColumn() {
         return list -> new LiveTextFieldTableCell<S,T>();

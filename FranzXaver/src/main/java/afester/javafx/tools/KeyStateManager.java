@@ -41,9 +41,9 @@ import java.util.Stack;
  * </ul>
  * then the following events are delivered:
  *
- * <ul><li>KeyStateEvent(CURSOR_DOWN)   => now CURSOR_DOWN is active</li>
- * <li>KeyStateEvent(CURSOR_LEFT)   => now CURSOR_LEFT is active</li>
- * <li>KeyStateEvent(null)          => no key is active anymore.</li>
+ * <ul><li>KeyStateEvent(CURSOR_DOWN)   =&gt; now CURSOR_DOWN is active</li>
+ * <li>KeyStateEvent(CURSOR_LEFT)   =&gt; now CURSOR_LEFT is active</li>
+ * <li>KeyStateEvent(null)          =&gt; no key is active anymore.</li>
  * </ul>
  * The KeyStateManager does not yet support tracking more than one key at the same time -
  * even though all currently pressed keys are known inside the KeyStateManager.
