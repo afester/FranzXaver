@@ -1,0 +1,37 @@
+
+
+#chart1 {
+	-fx-background-color: #A5FF7F;
+}
+
+#chart1 .default-color0.chart-series-line { 
+	-fx-stroke: black; 
+}
+
+/* chart color */
+#chart2 .default-color0.chart-series-line { 
+	-fx-stroke: #37EFC9; 
+}
+#chart2 .default-color1.chart-series-line { 
+	-fx-stroke: white; 
+}
+
+/* chart background  */
+#chart2 .chart-plot-background {
+    -fx-background-color: #22B4B3;
+}
+
+/* grid line colors */
+#chart2 .chart-vertical-grid-lines {
+    -fx-stroke: #15999D;
+}
+#chart2 .chart-horizontal-grid-lines {
+    -fx-stroke: #15999D;
+}
+
+.chart-vertical-zero-line {
+	-fx-stroke: #15999D;
+}
+.chart-horizontal-zero-line {
+	-fx-stroke: #15999D;
+}

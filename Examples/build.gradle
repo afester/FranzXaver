@@ -1,8 +1,12 @@
 apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'eclipse'
+apply from: 'webstart.gradle'
+apply from: 'fxdist.gradle'
 
-mainClassName = "afester.javafx.examples.svg.SvgLoaderResultViewer"
+version = project.properties['application.version']
+
+mainClassName = "afester.javafx.examples.AllExamples"
 
 repositories {
     mavenCentral()
@@ -10,6 +14,7 @@ repositories {
 
 dependencies {
     compile project (":FranzXaver")
+    compile 'org.fxmisc.flowless:flowless:0.4.7'
 
     runtime 'org.apache.xmlgraphics:batik-dom:1.8'
     runtime 'org.apache.xmlgraphics:batik-anim:1.8'
@@ -19,3 +24,20 @@ dependencies {
     runtime 'org.apache.xmlgraphics:xmlgraphics-commons:2.1'
     runtime 'org.apache.logging.log4j:log4j-core:2.5'
 }
+
+startScripts {
+    doLast {
+        delete windowsScript
+        delete unixScript
+    }
+}
+
+
+wsCreateJnlp {
+    wsJnlpFilename = "franzxaver.jnlp"
+    wsTitle = "JavaFX examples"
+    wsVendor = "Andreas Fester"
+    wsName = "JavaFX sample application and component library"
+    wsMainClass = "afester.javafx.examples.AllExamples"
+}
+

@@ -1,0 +1,24 @@
+.live-text-field-table-cell {
+	-fx-control-inner-background: #FFFFE8;	/* highlighted background */
+	-fx-padding: 1px;						/* reduce consumed space */
+}
+
+.text-field {
+    /*-fx-text-box-border: transparent;*/
+}
+
+/* just a test - background of cell is red while the mouse button is pressed */
+/*.live-text-field-table-cell:pressed {
+	-fx-control-inner-background: red;
+}
+*/
+
+.live-text-field-table-cell > .text-input{
+	-fx-background-color: white; /* #FFFFE0;*/	
+    -fx-background-radius: 3, 2;
+}
+
+/* Disable highlighting of currently focused text field */
+.live-text-field-table-cell > .text-input:focused {
+	-fx-background-color: white; /* #FFFFE0;*/ 
+}

@@ -1,0 +1,111 @@
+/**
+ * Java WebStart distribution plugin.
+ * Based on http://www.apprenticeshipnotes.org/2013/01/generating-webstart-files-using-gradle.html
+ */
+
+// This task copies all project jar files and the 
+// dependencies into the build/webstart/lib folder
+// by using the build directory we make sure that a "clean"
+// also removes those files.
+task wsCopyFiles(type: Copy, dependsOn: [jar]) {
+    from configurations.runtime
+    from("build/libs")
+    into("build/webstart/lib")
+    include('*.jar')
+}
+
+// This task signs all files below build/webstart/lib,
+// after the jar files have been copied
+task wsSignAll(dependsOn: [wsCopyFiles]) << {
+   def libFiles = files { file('build/webstart/lib').listFiles() }
+
+   String keystorePass = project.properties['codesign.keystorePassword']
+   if (keystorePass == null) {
+      keystorePass = ""
+   }
+   String signingAlias = project.properties['codesign.signingAlias']
+   if (signingAlias == null) {
+      signingAlias = ""
+   }
+ 
+   libFiles.each { 
+      printf("  Signing %s\n", it)
+      ant.signjar(
+                jar: it,
+                lazy: 'false',
+                preservelastmodified: 'true',
+                alias: signingAlias,
+                storepass: keystorePass)
+   }
+}
+
+// Configuration:
+//   wsJnlpFilename
+//   wsTitle
+//   wsVendor
+//   wsMainClass
+//   wsWidth
+//   wsHeight
+
+task wsCreateJnlp(dependsOn: [wsCopyFiles]) {
+   ext.wsJnlpFilename = "${project.name}.jnlp"
+   ext.wsTitle = "Webstart Application"
+   ext.wsVendor = "Vendor"
+   ext.wsName = "Sample Webstart Application"
+   ext.wsMainClass = "com.example.WebStart"
+
+   doLast {
+      String destFile = "$buildDir/webstart/$wsJnlpFilename"
+      printf("  Creating %s\n", destFile)
+      File jnlpFile = new File(destFile)
+      PrintWriter dest = new PrintWriter(jnlpFile)
+
+      dest.printf("""<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+"
+      codebase="http://server/path">
+
+   <information>
+     <title>${wsTitle}</title>
+     <vendor>${wsVendor}</vendor>
+     <offline-allowed/>
+   </information>
+
+""")
+
+      def resources = files { file('build/webstart/lib').listFiles() }
+      resources.each {
+          dest.printf("   <resources>\n")
+          dest.printf("      <jar href=\"lib/%s\"/>\n", it.name);
+          dest.printf("   </resources>\n")
+      }
+
+      dest.printf("""
+   <security>
+      <all-permissions/>
+   </security>
+
+   <application-desc
+         name="${wsName}"
+         main-class="${wsMainClass}"
+         width="300"
+         height="300">
+   </application-desc>
+   <update check="background"/>
+</jnlp>
+""")
+
+      dest.close()
+   }
+}
+
+
+task wsDist(type: Zip, dependsOn: [wsCreateJnlp, wsSignAll]) {
+   from 'build/webstart'
+   include '**/*'
+   archiveName = "${project.name}Webstart.zip"   // default directory is "build/distributions"
+   description = "Bundles the project as a WebStart application."
+
+   doFirst {
+      printf("  $buildDir/distributions/$archiveName\n")
+   }
+}

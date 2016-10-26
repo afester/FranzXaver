@@ -1,3 +1,19 @@
+/*
+ * Copyright 2016 Andreas Fester
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package afester.javafx.examples.svg;
 
 import afester.javafx.components.SnapSlider;
@@ -22,15 +38,32 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-@Example("Using SvgLoader to render an SVG file")
+@Example(desc = "Using SvgLoader to render an SVG file", 
+         cat  = "FranzXaver")
 public class SvgLoaderResultViewer extends Application {
+
+    // The name of the data package (to avoid hard coding of package name)
+    // it seems that "../data" does not work with WebStart - 
+    // an absolute path name works, though.
+    private static String DATA_PACKAGE;
+
+    {
+        String pkgName = SvgLoaderResultViewer.class.getPackage().getName();
+        int last = pkgName.lastIndexOf('.');
+        if (last > 0) {
+            pkgName = pkgName.substring(0, last);
+        }
+        pkgName = "/" + pkgName.replace('.',  '/') + "/data";
+        DATA_PACKAGE = pkgName;
+    }
+
 
     // The SVG image's top node, as returned from the SvgLoader
     private Group svgImage = new Group();
@@ -161,30 +194,30 @@ public class SvgLoaderResultViewer extends Application {
     }
 
 
-    private void selectFile(String string) {
-        currentFile = string;
-        InputStream svgFile = null;
-        try {
-            svgFile = new FileInputStream("data/" + string);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+    private void selectFile(String fileName) {
+        currentFile = fileName;
+        InputStream svgFile = 
+                getClass().getResourceAsStream(DATA_PACKAGE + "/" + fileName);
 
         imageLayout.getChildren().remove(svgImage);
         svgImage = loader.loadSvg(svgFile);
         imageLayout.getChildren().add(svgImage);
     }
 
-    
+
     private List<String> getTestFiles() {
         List<String> result = new ArrayList<>();
 
-        File directory = new File("data");
-        String[] files = directory.list();
-        for (String file : files) {
-            if (file.endsWith(".svg")) {
-                result.add(file);
+        InputStream dataLst = 
+                getClass().getResourceAsStream(DATA_PACKAGE + "/data.lst");
+        BufferedReader dataFile = new BufferedReader(new InputStreamReader(dataLst));
+        String fileName = null;
+        try {
+            while ( (fileName = dataFile.readLine()) != null) {
+                result.add(fileName);
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return result;

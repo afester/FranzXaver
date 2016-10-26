@@ -1,0 +1,16 @@
+afester.javafx.examples.border.BorderExample
+afester.javafx.examples.colorchannels.ColorChannelsExample
+afester.javafx.examples.layouts.LayoutExamples
+afester.javafx.examples.charts.LinechartExample
+afester.javafx.examples.svg.SvgLoaderResultViewer
+afester.javafx.examples.svg.TigerExample
+afester.javafx.examples.svg.SvgOnButton
+afester.javafx.examples.animation.counter.AnimatedCounter
+afester.javafx.examples.animation.game.DrivingCar
+afester.javafx.examples.animation.game.BouncingBall
+afester.javafx.examples.components.sevensegment.SegmentDisplay
+afester.javafx.examples.components.meter.MeterSample
+afester.javafx.examples.flowless.FlowlessExample
+afester.javafx.examples.table.dynamic.TableExample
+afester.javafx.examples.table.map.TableExample
+afester.javafx.examples.table.simple.TableExample
