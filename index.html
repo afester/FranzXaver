@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>FranzXaver by afester</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+	
+	<style>
+.wrapper {
+    width: 960px;
+}
+
+header {
+    width: 370px;
+}
+
+header ul {
+    width: 360px;
+}
+
+header li {
+    width: 119px;
+}
+
+	</style>
+  </head>
+
+  <body>
+    <div class="wrapper">
+
+      <header>
+		<img src="logo.png"/>
+
+        <p class="view"><a href="https://github.com/afester/FranzXaver">View the Project on GitHub <small>afester/FranzXaver</small></a></p>
+
+        <ul>
+          <li><a href="https://github.com/afester/FranzXaver/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/afester/FranzXaver/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/afester/FranzXaver">View On <strong>GitHub</strong></a></li>
+        </ul>
+
+		<ul>
+		  <li style="width:179px"><a href="FranzXaver/build/docs/javadoc/index.html">View JavaDoc <strong>Library API</strong></a></li>
+		  <li style="width:179px; border-right: none"><a href="Examples/build/docs/javadoc/index.html">View JavaDoc <strong>Examples</strong></a></li>
+		</ul>
+
+      </header>
+
+      <section>
+		<h3>What is it?</h3>
+
+		<p>FranzXaver is a library of JavaFX components and tools, and also includes a collection of JavaFX example applications. 
+Some of the examples are pure JavaFX API examples, others are using the components provided by the FranzXaver library.</p>
+
+		<h3>Where does the project name come from?</h3>
+
+		<p>I did not want to create yet another "MyJavaFXExamples", "JavaFXComponents" or similar project. The street where I live 
+is named after an ambassador from the Baden region in Germany, Franz Xaver Honold. Since his first name initials match the 
+FX in JavaFX, I choose to name this project after him.</p>
+
+		<h3>Which components are currently available?</h3>
+
+		<ul>
+			<li><p><a href="wiki/SvgLoader">SvgLoader</a> - An Apache Batik based SVG loader which reads svg files and returns a JavaFX scene graph according to the svg file. With this library, its possible to author JavaFX components with an SVG authoring tool like Inkscape and create new controls based on the svg file.</p></li>
+			<li><p>SnapSlider - a <a href="https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/Slider.html"><code>javafx.scene.control.Slider</code></a> based component which makes sure that the final slider value is properly delivered to the application.</p></li>
+			<li><p>ColorSeparator - a tool class which separates a given JavaFX image into its color channels and returns distinct images for each color channel.</p></li>
+			<li><p>Meter - an example for a custom control which uses the SvgLoader to implement an analog meter.</p></li>
+			<li><p>MultiSegmentPanel - an example for a custom control which uses the SvgLoader to implement a 7 segment and a 14 segment display.</p></li>
+		</ul>
+
+		<h3>Which examples are currently available?</h3>
+
+		<ul>
+		<li><p><code>afester.javafx.examples.border.BorderExample</code> - An example which demonstrates how to add a border to a JavaFX node, including 9-patch scaling. See <a href="http://www.software-architect.net/blog/article/date/2015/11/14/9-patch-scaling-in-javafx.html">9-patch scaling in JavaFX</a> for more information.</p></li>
+		<li><p><code>afester.javafx.examples.colorchannels.ColorChannelsExample</code> - An example which shows how to separate an image into its red, green and blue color channels. See <a href="http://www.software-architect.net/blog/article/date/2015/11/20/separating-color-channels-in-javafx.html">Separating color channels in JavaFX</a> for more information.</p></li>
+		<li><p><code>afester.javafx.examples.svg.SvgLoaderResultViewer</code> - An application which shows the result of a scene graph which has been loaded with the SVG loader. The svg file can be selected from the file system, and the result can be scaled.</p></li>
+		<li><p><code>afester.javafx.examples.layouts.LayoutExamples</code> - An example which shows the different layout algorithms (panes) supported by JavaFX.</p></li>
+		<li><p><code>afester.javafx.examples.svg.TigerExample</code> - The most simple SVG example which loads an SVG file and renders it as a JavaFX scene graph.</p></li>
+		<li><p><code>afester.javafx.examples.animation.counter.AnimatedCounter</code> - An example which animates a sequence of bitmap graphics to show a count down counter.</p></li>
+		<li><p><code>afester.javafx.examples.animation.game.DrivingCar</code> - An example which shows a simple animation of a driving car where the car can be controlled with the cursor keys (speed and left/right).</p></li>
+		<li><p><code>afester.javafx.examples.animation.game.BouncingBall</code> - An example which shows an animated ball which can be bounced through a platform which can be moved with the cursor keys.</p></li>
+		<li><p><code>afester.javafx.examples.components.sevensegment.SegmentDisplay</code> - An example which shows stylable 7-segment and 14-segment displays.</p></li>
+		<li><p><code>afester.javafx.examples.components.meter.MeterSample</code> - An example which shows the analog meter.</p></li>
+		</ul>
+      </section>
+
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/afester">afester</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
