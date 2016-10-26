@@ -1,6 +1,11 @@
 .gradle
-Examples
+.classpath
+.gitignore
+.project
+.settings
 FranzXaver
 classes
 libs
 tmp
+build
+bin
