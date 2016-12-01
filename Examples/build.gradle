@@ -15,6 +15,7 @@ repositories {
 dependencies {
     compile project (":FranzXaver")
     compile 'org.fxmisc.flowless:flowless:0.4.7'
+	compile files('../../RichTextFX/richtextfx/build/libs/richtextfx-fat-1.0.0-SNAPSHOT.jar')
 
     runtime 'org.apache.xmlgraphics:batik-dom:1.8'
     runtime 'org.apache.xmlgraphics:batik-anim:1.8'
