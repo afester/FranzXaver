@@ -23,13 +23,18 @@ import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
+import javafx.event.Event;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.IndexRange;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
@@ -87,6 +92,7 @@ public class RichText extends Application {
     }
 
     private Stage mainStage;
+    private TextArea structureView;
 
     private final SuspendableNo updatingToolbar = new SuspendableNo();
 
@@ -94,6 +100,51 @@ public class RichText extends Application {
     public void start(Stage primaryStage) {
         mainStage = primaryStage;
 
+        structureView = new TextArea();
+        Parent editor = createEditorPanel();
+
+        Tab tab = new Tab();
+        tab.setText("Edit");
+        tab.setClosable(false);
+        tab.setOnSelectionChanged(e -> { area.requestFocus(); } );
+        tab.setContent(editor);
+
+        Tab tab2 = new Tab();
+        tab2.setText("View Structure");
+        tab2.setClosable(false);
+        tab2.setOnSelectionChanged(e -> refreshStructureView(e));
+        tab2.setContent(structureView);
+
+        Tab tab3 = new Tab();
+        tab3.setText("View XML");
+        tab3.setClosable(false);
+
+        TabPane tabPane = new TabPane();
+        tabPane.getTabs().addAll(tab, tab2, tab3);
+
+        Scene scene = new Scene(tabPane, 600, 400);
+        scene.getStylesheets().add(RichText.class.getResource("rich-text.css").toExternalForm());
+        primaryStage.setScene(scene);
+        area.requestFocus();
+        primaryStage.setTitle("Rich Text Demo");
+        primaryStage.show();
+    }
+
+
+    private void refreshStructureView(Event e) {
+        structureView.clear();
+
+        structureView.appendText("StyledDocument\n");
+        for (Paragraph<?, ?, ?> p : area.getDocument().getParagraphs()) {
+            structureView.appendText("   " + p + "\n");
+            for (Object s : p.getSegments()) {
+                structureView.appendText("      " + s + "\n");
+            }
+        }
+    }
+
+
+    private Parent createEditorPanel() {
         Button loadBtn = createButton("loadfile", this::loadDocument, "Load document");
         Button saveBtn = createButton("savefile", this::saveDocument, "Save document");
         CheckBox wrapToggle = new CheckBox("Wrap");
@@ -275,16 +326,11 @@ public class RichText extends Application {
         panel2.getChildren().addAll(sizeCombo, familyCombo, textColorPicker, backgroundColorPicker);
 
         VirtualizedScrollPane<GenericStyledArea<ParStyle, Either<StyledText<TextStyle>,CustomObject<TextStyle>>, TextStyle>> vsPane = new VirtualizedScrollPane<>(area);
-        VBox vbox = new VBox();
+        VBox editorPanel = new VBox();
         VBox.setVgrow(vsPane, Priority.ALWAYS);
-        vbox.getChildren().addAll(panel1, panel2, vsPane);
-
-        Scene scene = new Scene(vbox, 600, 400);
-        scene.getStylesheets().add(RichText.class.getResource("rich-text.css").toExternalForm());
-        primaryStage.setScene(scene);
-        area.requestFocus();
-        primaryStage.setTitle("Rich Text Demo");
-        primaryStage.show();
+        editorPanel.getChildren().addAll(panel1, panel2, vsPane);
+        
+        return editorPanel;
     }
 
 

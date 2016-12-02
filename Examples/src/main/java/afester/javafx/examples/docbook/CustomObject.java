@@ -2,7 +2,6 @@ package afester.javafx.examples.docbook;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -34,24 +33,37 @@ public abstract class CustomObject<S> {
 
             @Override
             public void encode(DataOutputStream os, CustomObject<S> seg) throws IOException {
+                String typeId = seg.getClass().getName();
+                System.err.println(typeId);
+                Codec.STRING_CODEC.encode(os, typeId);
                 seg.encode(os);
-//                // external path rep should use forward slashes only
-//                String externalPath = i.imagePath.replace("\\", "/");
-//                Codec.STRING_CODEC.encode(os, externalPath);
-//                styleCodec.encode(os, i.style);
             }
 
             @Override
             public CustomObject<S> decode(DataInputStream is) throws IOException {
-                // Sanitize path - make sure that forward slashes only are used
-                String imagePath = Codec.STRING_CODEC.decode(is);
-                imagePath = imagePath.replace("\\",  "/");
-                S style = styleCodec.decode(is);
-                return new LinkedImage<>(imagePath, style);
+                String typeId = Codec.STRING_CODEC.decode(is);
+                System.err.println("TYPE ID:" + typeId);
+                try {
+                    @SuppressWarnings("unchecked")
+                    Class<? extends CustomObject<S>> clazz = (Class<? extends CustomObject<S>>) Class.forName(typeId);
+
+                    CustomObject<S> object = clazz.newInstance();
+                    object.decode(is);
+                    return object;
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+                return null;
             }
 
         };
     }
+
+
 
 
     public static class CustomObjectOps<S> implements SegmentOps<CustomObject<S>, S> {
@@ -76,6 +88,11 @@ public abstract class CustomObject<S> {
             @Override
             public String toString() {
                 return "EmptyCustomObject";
+            }
+
+            @Override
+            protected void decode(DataInputStream is) {
+                throw new UnsupportedOperationException();
             }};
 
         public CustomObjectOps(S defaultStyle) {
@@ -148,11 +165,18 @@ public abstract class CustomObject<S> {
     private final S style;
 
     /**
+     * Default constructor for deserialization.
+     */
+    protected CustomObject() {
+        this.style = null;
+    }
+
+    /**
      * Creates a new linked image object.
      *
      * @param style The text style to apply to the corresponding segment.
      */
-    public CustomObject(S style) {
+    protected CustomObject(S style) {
         this.style = style;
     }
 
@@ -167,4 +191,6 @@ public abstract class CustomObject<S> {
     public abstract Node createNode();
 
     public abstract void encode(DataOutputStream os) throws IOException;
+    
+    protected abstract void decode(DataInputStream is) throws IOException;
 }
