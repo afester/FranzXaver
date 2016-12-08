@@ -5,20 +5,67 @@
     -fx-background-repeat: no-repeat;
 }
 
-.button.loadfile { -fx-background-image: url(loadfile.png); }
-.button.savefile { -fx-background-image: url(savefile.png); }
-.button.undo { -fx-background-image: url(undo.png); }
-.button.redo { -fx-background-image: url(redo.png); }
-.button.cut { -fx-background-image: url(cut.png); }
-.button.copy { -fx-background-image: url(copy.png); }
-.button.paste { -fx-background-image: url(paste.png); }
-.button.bold { -fx-background-image: url(bold.png); }
-.button.italic { -fx-background-image: url(italic.png); }
-.button.underline { -fx-background-image: url(underline.png); }
-.button.strikethrough { -fx-background-image: url(strikethrough.png); }
-.button.insertimage { -fx-background-image: url(insertimage.png); }
+.button.loadfile 		 { -fx-background-image: url(icons/loadfile.png); }
+.button.savefile 		 { -fx-background-image: url(icons/file-save.png); }
+.button.viewnonprintable { -fx-background-image: url(icons/view-nonprintable.png); }
+.button.undo 			 { -fx-background-image: url(icons/edit-undo.png); }
+.button.redo 			 { -fx-background-image: url(icons/edit-redo.png); }
+.button.back			 { -fx-background-image: url(icons/view-back.png); }
+.button.forward			 { -fx-background-image: url(icons/view-forward.png); }
+.button.insertimage 	 { -fx-background-image: url(icons/edit-insert-image.png); }
+.button.insertformula 	 { -fx-background-image: url(icons/edit-insert-formula.png); }
+.button.search           { -fx-background-image: url(icons/search-global-start.png); }
+.button.cut 			 { -fx-background-image: url(icons/cut.png); }
+.button.copy 			 { -fx-background-image: url(icons/copy.png); }
+.button.paste 			 { -fx-background-image: url(icons/paste.png); }
+
+.button.keyword   { -fx-background-image: url(icons/format-keyword.png); }
+.button.weblink   { -fx-background-image: url(icons/format-link.png); }
+.button.emphasize { -fx-background-image: url(icons/format-text-emphasized.png); }
+.button.highlight { -fx-background-image: url(icons/format-text-highlight.png); }
+.button.code 	  { -fx-background-image: url(icons/format-text-code.png); }
+
+.button.formatparagraph	 { -fx-background-image: url(icons/format-text-paragraph.png); }
+.button.formatheader	 { -fx-background-image: url(icons/format-text-header.png); }
+.button.formatlist 		 { -fx-background-image: url(icons/format-list-unordered.png); }
+.button.formatcode		 { -fx-background-image: url(icons/format-text-code.png); }
+.button.indentmore		 { -fx-background-image: url(icons/format-indent-more.png); }
+.button.indentless 		 { -fx-background-image: url(icons/format-indent-less.png); }
 
 .toggle-button.align-left { -fx-background-image: url(align-left.png); }
 .toggle-button.align-center { -fx-background-image: url(align-center.png); }
 .toggle-button.align-right { -fx-background-image: url(align-right.png); }
 .toggle-button.align-justify { -fx-background-image: url(align-justify.png); }
+
+
+.bold { -fx-font-weight: bold; }
+.italic { -fx-background-color: green; }
+.highlight { -rtfx-background-color: yellow; }
+
+
+.toolAreaTitle {
+	-fx-fill : #3E6AAA; 					/* Toolbox title text color */
+}
+
+.titleBg { 
+	-fx-background-color : #C1D9F1;			/* Toolbox title background color */
+	-fx-background-radius: 5px 5px 0px 0px;
+}
+
+.toolArea {
+	-fx-background-color : #D6E5F3;			/* Toolbox background color */ 
+	-fx-background-radius: 5px;
+
+	-fx-border-style: solid;				/* Toolbox border style */
+	-fx-border-width: 1px;
+	-fx-border-color: #6D6AB7;
+	-fx-border-radius: 5px;
+}
+
+.editorContainer {
+	-fx-background-color: white;
+	-fx-border-color: #C1D9F1;
+	-fx-border-style: solid;
+	-fx-border-width: 1px;
+	-fx-padding: 5px;
+}

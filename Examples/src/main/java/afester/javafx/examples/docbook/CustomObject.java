@@ -28,7 +28,7 @@ public abstract class CustomObject<S> {
 
             @Override
             public String getName() {
-                return "LinkedImage<" + styleCodec.getName() + ">";
+                return "CustomObject<" + styleCodec.getName() + ">";
             }
 
             @Override

@@ -102,7 +102,7 @@ class ParStyle {
         });
 
         backgroundColor.ifPresent(color -> {
-            sb.append("-fx-background-color: " + TextStyle.cssColor(color) + ";");
+//            sb.append("-fx-background-color: " + TextStyle.cssColor(color) + ";");
         });
 
         return sb.toString();

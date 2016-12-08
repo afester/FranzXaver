@@ -24,6 +24,10 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.event.Event;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -38,11 +42,16 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -81,9 +90,12 @@ public class RichText extends Application {
                     ParStyle.EMPTY,                                                 // default paragraph style
                     (paragraph, style) -> paragraph.setStyle(style.toCss()),        // paragraph style setter
 
-                    TextStyle.EMPTY.updateFontSize(12).updateFontFamily("Serif").updateTextColor(Color.BLACK),  // default segment style
+                    TextStyle.EMPTY, // .updateFontSize(12).updateFontFamily("Serif").updateTextColor(Color.BLACK),  // default segment style
                     styledTextOps._or(linkedImageOps),                                                          // segment operations
-                    seg -> createNode(seg, (text, style) -> text.setStyle(style.toCss())));                     // Node creator and segment style setter
+                    seg -> createNode(seg,
+                                      (text, style) -> { 
+                                          Object xyz = style.getStyles();
+                                          text.getStyleClass().addAll(style.getStyles()); } )); //  setStyle(style.toCss())));                     // Node creator and segment style setter
     {
         area.setWrapText(true);
         area.setStyleCodecs(
@@ -147,41 +159,56 @@ public class RichText extends Application {
     private Parent createEditorPanel() {
         Button loadBtn = createButton("loadfile", this::loadDocument, "Load document");
         Button saveBtn = createButton("savefile", this::saveDocument, "Save document");
-        CheckBox wrapToggle = new CheckBox("Wrap");
-        wrapToggle.setSelected(true);
-        area.wrapTextProperty().bind(wrapToggle.selectedProperty());
-        Button undoBtn = createButton("undo", area::undo);
-        Button redoBtn = createButton("redo", area::redo);
-        Button cutBtn = createButton("cut", area::cut);
-        Button copyBtn = createButton("copy", area::copy);
-        Button pasteBtn = createButton("paste", area::paste);
-        Button boldBtn = createButton("bold", this::toggleBold);
-        Button italicBtn = createButton("italic", this::toggleItalic);
-        Button underlineBtn = createButton("underline", this::toggleUnderline);
-        Button strikeBtn = createButton("strikethrough", this::toggleStrikethrough);
-        Button insertImageBtn = createButton("insertimage", this::insertImage, "Insert Image");
-        ToggleGroup alignmentGrp = new ToggleGroup();
-        ToggleButton alignLeftBtn = createToggleButton(alignmentGrp, "align-left", this::alignLeft);
-        ToggleButton alignCenterBtn = createToggleButton(alignmentGrp, "align-center", this::alignCenter);
-        ToggleButton alignRightBtn = createToggleButton(alignmentGrp, "align-right", this::alignRight);
-        ToggleButton alignJustifyBtn = createToggleButton(alignmentGrp, "align-justify", this::alignJustify);
-        ColorPicker paragraphBackgroundPicker = new ColorPicker();
-        ComboBox<Integer> sizeCombo = new ComboBox<>(FXCollections.observableArrayList(5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 20, 22, 24, 28, 32, 36, 40, 48, 56, 64, 72));
-        sizeCombo.getSelectionModel().select(Integer.valueOf(12));
-        ComboBox<String> familyCombo = new ComboBox<>(FXCollections.observableList(Font.getFamilies()));
-        familyCombo.getSelectionModel().select("Serif");
-        ColorPicker textColorPicker = new ColorPicker(Color.BLACK);
-        ColorPicker backgroundColorPicker = new ColorPicker();
+        Button nonPrintableBtn = createButton("viewnonprintable", this::saveDocument, "View non printable characters");
+//        CheckBox wrapToggle = new CheckBox("Wrap");
+//        wrapToggle.setSelected(true);
+//        area.wrapTextProperty().bind(wrapToggle.selectedProperty());
+        Button undoBtn = createButton("undo", area::undo, "Undo last action");
+        Button redoBtn = createButton("redo", area::redo, "Redo last undone action");
+        Button backBtn = createButton("back", area::redo, "");
+        Button forwardBtn = createButton("forward", area::redo, "");
+        Button insertimageBtn = createButton("insertimage", area::redo, "");
+        Button insertformulaBtn = createButton("insertformula", area::redo, "");
+        Button searchBtn = createButton("search", area::redo, "");
+        Button cutBtn = createButton("cut", area::cut, "");
+        Button copyBtn = createButton("copy", area::copy, "");
+        Button pasteBtn = createButton("paste", area::paste, "");
 
-        paragraphBackgroundPicker.setTooltip(new Tooltip("NonEmptyParagraph background"));
-        textColorPicker.setTooltip(new Tooltip("Text color"));
-        backgroundColorPicker.setTooltip(new Tooltip("Text background"));
+        Button keywordBtn = createButton("keyword", this::toggleBold, "");
+        Button weblinkBtn = createButton("weblink", this::toggleItalic, "");
+        Button emphasizeBtn = createButton("emphasize", this::toggleHighlight, "");
+        Button highlightBtn = createButton("highlight", this::toggleStrikethrough, "");
+        Button codeBtn = createButton("code", this::toggleStrikethrough, "");
 
-        paragraphBackgroundPicker.valueProperty().addListener((o, old, color) -> updateParagraphBackground(color));
-        sizeCombo.setOnAction(evt -> updateFontSize(sizeCombo.getValue()));
-        familyCombo.setOnAction(evt -> updateFontFamily(familyCombo.getValue()));
-        textColorPicker.valueProperty().addListener((o, old, color) -> updateTextColor(color));
-        backgroundColorPicker.valueProperty().addListener((o, old, color) -> updateBackgroundColor(color));
+        Button formatparagraphBtn = createButton("formatparagraph", this::toggleStrikethrough, "");
+        Button formatheaderBtn = createButton("formatheader", this::toggleStrikethrough, "");
+        Button formatlistBtn = createButton("formatlist", this::toggleStrikethrough, "");
+        Button formatcodeBtn = createButton("formatcode", this::toggleStrikethrough, "");
+        Button indentmoreBtn = createButton("indentmore", this::toggleStrikethrough, "");
+        Button indentlessBtn = createButton("indentless", this::toggleStrikethrough, "");
+
+//        ToggleGroup alignmentGrp = new ToggleGroup();
+//        ToggleButton alignLeftBtn = createToggleButton(alignmentGrp, "align-left", this::alignLeft);
+//        ToggleButton alignCenterBtn = createToggleButton(alignmentGrp, "align-center", this::alignCenter);
+//        ToggleButton alignRightBtn = createToggleButton(alignmentGrp, "align-right", this::alignRight);
+//        ToggleButton alignJustifyBtn = createToggleButton(alignmentGrp, "align-justify", this::alignJustify);
+//        ColorPicker paragraphBackgroundPicker = new ColorPicker();
+//        ComboBox<Integer> sizeCombo = new ComboBox<>(FXCollections.observableArrayList(5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 20, 22, 24, 28, 32, 36, 40, 48, 56, 64, 72));
+//        sizeCombo.getSelectionModel().select(Integer.valueOf(12));
+//        ComboBox<String> familyCombo = new ComboBox<>(FXCollections.observableList(Font.getFamilies()));
+//        familyCombo.getSelectionModel().select("Serif");
+//        ColorPicker textColorPicker = new ColorPicker(Color.BLACK);
+//        ColorPicker backgroundColorPicker = new ColorPicker();
+//
+//        paragraphBackgroundPicker.setTooltip(new Tooltip("NonEmptyParagraph background"));
+//        textColorPicker.setTooltip(new Tooltip("Text color"));
+//        backgroundColorPicker.setTooltip(new Tooltip("Text background"));
+//
+//        paragraphBackgroundPicker.valueProperty().addListener((o, old, color) -> updateParagraphBackground(color));
+//        sizeCombo.setOnAction(evt -> updateFontSize(sizeCombo.getValue()));
+//        familyCombo.setOnAction(evt -> updateFontFamily(familyCombo.getValue()));
+//        textColorPicker.valueProperty().addListener((o, old, color) -> updateTextColor(color));
+//        backgroundColorPicker.valueProperty().addListener((o, old, color) -> updateBackgroundColor(color));
 
         undoBtn.disableProperty().bind(Bindings.not(area.undoAvailableProperty()));
         redoBtn.disableProperty().bind(Bindings.not(area.redoAvailableProperty()));
@@ -209,30 +236,32 @@ public class RichText extends Application {
                 IndexRange selection = area.getSelection();
                 if(selection.getLength() != 0) {
                     StyleSpans<TextStyle> styles = area.getStyleSpans(selection);
-                    bold = styles.styleStream().anyMatch(s -> s.bold.orElse(false));
-                    italic = styles.styleStream().anyMatch(s -> s.italic.orElse(false));
-                    underline = styles.styleStream().anyMatch(s -> s.underline.orElse(false));
-                    strike = styles.styleStream().anyMatch(s -> s.strikethrough.orElse(false));
-                    int[] sizes = styles.styleStream().mapToInt(s -> s.fontSize.orElse(-1)).distinct().toArray();
-                    fontSize = sizes.length == 1 ? sizes[0] : -1;
-                    String[] families = styles.styleStream().map(s -> s.fontFamily.orElse(null)).distinct().toArray(String[]::new);
-                    fontFamily = families.length == 1 ? families[0] : null;
-                    Color[] colors = styles.styleStream().map(s -> s.textColor.orElse(null)).distinct().toArray(Color[]::new);
-                    textColor = colors.length == 1 ? colors[0] : null;
-                    Color[] backgrounds = styles.styleStream().map(s -> s.backgroundColor.orElse(null)).distinct().toArray(i -> new Color[i]);
-                    backgroundColor = backgrounds.length == 1 ? backgrounds[0] : null;
+//
+//                    bold = styles.styleStream().anyMatch(s -> s.bold.orElse(false));
+//                    italic = styles.styleStream().anyMatch(s -> s.italic.orElse(false));
+//                    underline = styles.styleStream().anyMatch(s -> s.underline.orElse(false));
+//                    strike = styles.styleStream().anyMatch(s -> s.strikethrough.orElse(false));
+//                    int[] sizes = styles.styleStream().mapToInt(s -> s.fontSize.orElse(-1)).distinct().toArray();
+//                    fontSize = sizes.length == 1 ? sizes[0] : -1;
+//                    String[] families = styles.styleStream().map(s -> s.fontFamily.orElse(null)).distinct().toArray(String[]::new);
+//                    fontFamily = families.length == 1 ? families[0] : null;
+//                    Color[] colors = styles.styleStream().map(s -> s.textColor.orElse(null)).distinct().toArray(Color[]::new);
+//                    textColor = colors.length == 1 ? colors[0] : null;
+//                    Color[] backgrounds = styles.styleStream().map(s -> s.backgroundColor.orElse(null)).distinct().toArray(i -> new Color[i]);
+//                    backgroundColor = backgrounds.length == 1 ? backgrounds[0] : null;
                 } else {
                     int p = area.getCurrentParagraph();
                     int col = area.getCaretColumn();
                     TextStyle style = area.getStyleAtPosition(p, col);
-                    bold = style.bold.orElse(false);
-                    italic = style.italic.orElse(false);
-                    underline = style.underline.orElse(false);
-                    strike = style.strikethrough.orElse(false);
-                    fontSize = style.fontSize.orElse(-1);
-                    fontFamily = style.fontFamily.orElse(null);
-                    textColor = style.textColor.orElse(null);
-                    backgroundColor = style.backgroundColor.orElse(null);
+
+//                    bold = style.bold.orElse(false);
+//                    italic = style.italic.orElse(false);
+//                    underline = style.underline.orElse(false);
+//                    strike = style.strikethrough.orElse(false);
+//                    fontSize = style.fontSize.orElse(-1);
+//                    fontFamily = style.fontFamily.orElse(null);
+//                    textColor = style.textColor.orElse(null);
+//                    backgroundColor = style.backgroundColor.orElse(null);
                 }
 
                 int startPar = area.offsetToPosition(selection.getStart(), Forward).getMajor();
@@ -248,88 +277,105 @@ public class RichText extends Application {
                 Optional<Color> paragraphBackground = paragraphBackgrounds.length == 1 ? paragraphBackgrounds[0] : Optional.empty();
 
                 updatingToolbar.suspendWhile(() -> {
-                    if(bold) {
-                        if(!boldBtn.getStyleClass().contains("pressed")) {
-                            boldBtn.getStyleClass().add("pressed");
-                        }
-                    } else {
-                        boldBtn.getStyleClass().remove("pressed");
-                    }
-
-                    if(italic) {
-                        if(!italicBtn.getStyleClass().contains("pressed")) {
-                            italicBtn.getStyleClass().add("pressed");
-                        }
-                    } else {
-                        italicBtn.getStyleClass().remove("pressed");
-                    }
-
-                    if(underline) {
-                        if(!underlineBtn.getStyleClass().contains("pressed")) {
-                            underlineBtn.getStyleClass().add("pressed");
-                        }
-                    } else {
-                        underlineBtn.getStyleClass().remove("pressed");
-                    }
-
-                    if(strike) {
-                        if(!strikeBtn.getStyleClass().contains("pressed")) {
-                            strikeBtn.getStyleClass().add("pressed");
-                        }
-                    } else {
-                        strikeBtn.getStyleClass().remove("pressed");
-                    }
-
-                    if(alignment.isPresent()) {
-                        TextAlignment al = alignment.get();
-                        switch(al) {
-                            case LEFT: alignmentGrp.selectToggle(alignLeftBtn); break;
-                            case CENTER: alignmentGrp.selectToggle(alignCenterBtn); break;
-                            case RIGHT: alignmentGrp.selectToggle(alignRightBtn); break;
-                            case JUSTIFY: alignmentGrp.selectToggle(alignJustifyBtn); break;
-                        }
-                    } else {
-                        alignmentGrp.selectToggle(null);
-                    }
-
-                    paragraphBackgroundPicker.setValue(paragraphBackground.orElse(null));
-
-                    if(fontSize != -1) {
-                        sizeCombo.getSelectionModel().select(fontSize);
-                    } else {
-                        sizeCombo.getSelectionModel().clearSelection();
-                    }
-
-                    if(fontFamily != null) {
-                        familyCombo.getSelectionModel().select(fontFamily);
-                    } else {
-                        familyCombo.getSelectionModel().clearSelection();
-                    }
-
-                    if(textColor != null) {
-                        textColorPicker.setValue(textColor);
-                    }
-
-                    backgroundColorPicker.setValue(backgroundColor);
+//                    if(bold) {
+//                        if(!boldBtn.getStyleClass().contains("pressed")) {
+//                            boldBtn.getStyleClass().add("pressed");
+//                        }
+//                    } else {
+//                        boldBtn.getStyleClass().remove("pressed");
+//                    }
+//
+//                    if(italic) {
+//                        if(!italicBtn.getStyleClass().contains("pressed")) {
+//                            italicBtn.getStyleClass().add("pressed");
+//                        }
+//                    } else {
+//                        italicBtn.getStyleClass().remove("pressed");
+//                    }
+//
+//                    if(underline) {
+//                        if(!underlineBtn.getStyleClass().contains("pressed")) {
+//                            underlineBtn.getStyleClass().add("pressed");
+//                        }
+//                    } else {
+//                        underlineBtn.getStyleClass().remove("pressed");
+//                    }
+//
+//                    if(strike) {
+//                        if(!strikeBtn.getStyleClass().contains("pressed")) {
+//                            strikeBtn.getStyleClass().add("pressed");
+//                        }
+//                    } else {
+//                        strikeBtn.getStyleClass().remove("pressed");
+//                    }
+//
+//                    if(alignment.isPresent()) {
+//                        TextAlignment al = alignment.get();
+//                        switch(al) {
+//                            case LEFT: alignmentGrp.selectToggle(alignLeftBtn); break;
+//                            case CENTER: alignmentGrp.selectToggle(alignCenterBtn); break;
+//                            case RIGHT: alignmentGrp.selectToggle(alignRightBtn); break;
+//                            case JUSTIFY: alignmentGrp.selectToggle(alignJustifyBtn); break;
+//                        }
+//                    } else {
+//                        alignmentGrp.selectToggle(null);
+//                    }
+//
+//                    paragraphBackgroundPicker.setValue(paragraphBackground.orElse(null));
+//
+//                    if(fontSize != -1) {
+//                        sizeCombo.getSelectionModel().select(fontSize);
+//                    } else {
+//                        sizeCombo.getSelectionModel().clearSelection();
+//                    }
+//
+//                    if(fontFamily != null) {
+//                        familyCombo.getSelectionModel().select(fontFamily);
+//                    } else {
+//                        familyCombo.getSelectionModel().clearSelection();
+//                    }
+//
+//                    if(textColor != null) {
+//                        textColorPicker.setValue(textColor);
+//                    }
+//
+//                    backgroundColorPicker.setValue(backgroundColor);
                 });
             }
         });
 
-        HBox panel1 = new HBox(3.0);
-        HBox panel2 = new HBox(3.0);
-        panel1.getChildren().addAll(
-                loadBtn, saveBtn,
-                wrapToggle, undoBtn, redoBtn, cutBtn, copyBtn, pasteBtn,
-                boldBtn, italicBtn, underlineBtn, strikeBtn,
-                alignLeftBtn, alignCenterBtn, alignRightBtn, alignJustifyBtn, insertImageBtn,
-                paragraphBackgroundPicker);
-        panel2.getChildren().addAll(sizeCombo, familyCombo, textColorPicker, backgroundColorPicker);
+        HBox toolBar = new HBox();
+        toolBar.setSpacing(5);                      // space between each of the TitledToolbars
 
-        VirtualizedScrollPane<GenericStyledArea<ParStyle, Either<StyledText<TextStyle>,CustomObject<TextStyle>>, TextStyle>> vsPane = new VirtualizedScrollPane<>(area);
-        VBox editorPanel = new VBox();
+        TitledToolbar actionToolbar = new TitledToolbar("Actions");
+        actionToolbar.addButtons(loadBtn, saveBtn, nonPrintableBtn, undoBtn, redoBtn, backBtn, 
+                                 forwardBtn, insertimageBtn, insertformulaBtn, searchBtn, cutBtn, copyBtn, pasteBtn);
+
+        TitledToolbar textStyleToolbar = new TitledToolbar("Text style");
+        textStyleToolbar.addButtons(keywordBtn, weblinkBtn, emphasizeBtn, highlightBtn, codeBtn);
+
+        TitledToolbar blockStyleToolbar = new TitledToolbar("Block style");
+        blockStyleToolbar.addButtons(formatparagraphBtn,formatheaderBtn,formatlistBtn,formatcodeBtn,indentmoreBtn,indentlessBtn);
+
+        toolBar.getChildren().addAll(actionToolbar, textStyleToolbar, blockStyleToolbar);
+
+
+        VirtualizedScrollPane<GenericStyledArea<ParStyle, Either<StyledText<TextStyle>,CustomObject<TextStyle>>, TextStyle>> vsPane = 
+                new VirtualizedScrollPane<>(area);
         VBox.setVgrow(vsPane, Priority.ALWAYS);
-        editorPanel.getChildren().addAll(panel1, panel2, vsPane);
-        
+
+        VBox editorPanel = new VBox();
+        editorPanel.setPadding(new Insets(5));  // distance to children - space around the toolbox area and the editor pane
+        editorPanel.setSpacing(5);              // space between toolbar area and editor pane
+
+        // vsPane.setPadding(new Insets(5)); // does not work - need to add another container around the vsPane
+        VBox c1 = new VBox();
+        VBox.setVgrow(c1, Priority.ALWAYS);
+        c1.getChildren().add(vsPane);
+        c1.getStyleClass().add("editorContainer");
+
+        editorPanel.getChildren().addAll(toolBar, c1);
+
         return editorPanel;
     }
 
@@ -377,19 +423,19 @@ public class RichText extends Application {
     }
 
     private void toggleBold() {
-        updateStyleInSelection(spans -> TextStyle.bold(!spans.styleStream().allMatch(style -> style.bold.orElse(false))));
+        updateStyleInSelection("bold", spans -> !spans.styleStream().allMatch(style -> style.contains("bold")));
     }
 
     private void toggleItalic() {
-        updateStyleInSelection(spans -> TextStyle.italic(!spans.styleStream().allMatch(style -> style.italic.orElse(false))));
+        updateStyleInSelection("italic", spans -> !spans.styleStream().allMatch(style -> style.contains("italic")));
     }
 
-    private void toggleUnderline() {
-        updateStyleInSelection(spans -> TextStyle.underline(!spans.styleStream().allMatch(style -> style.underline.orElse(false))));
+    private void toggleHighlight() {
+        updateStyleInSelection("highlight", spans -> !spans.styleStream().allMatch(style -> style.contains("highlight")));
     }
 
     private void toggleStrikethrough() {
-        updateStyleInSelection(spans -> TextStyle.strikethrough(!spans.styleStream().allMatch(style -> style.strikethrough.orElse(false))));
+//        updateStyleInSelection(spans -> TextStyle.strikethrough(!spans.styleStream().allMatch(style -> style.strikethrough.orElse(false))));
     }
 
     private void alignLeft() {
@@ -493,12 +539,13 @@ public class RichText extends Application {
         }
     }
 
-    private void updateStyleInSelection(Function<StyleSpans<TextStyle>, TextStyle> mixinGetter) {
+    private void updateStyleInSelection(String modStyle, Function<StyleSpans<TextStyle>, Boolean> mixinGetter) {
         IndexRange selection = area.getSelection();
         if(selection.getLength() != 0) {
             StyleSpans<TextStyle> styles = area.getStyleSpans(selection);
-            TextStyle mixin = mixinGetter.apply(styles);
-            StyleSpans<TextStyle> newStyles = styles.mapStyles(style -> style.updateWith(mixin));
+            Boolean mixin = mixinGetter.apply(styles);
+            System.err.println("  MIXIN:" + mixin);
+            StyleSpans<TextStyle> newStyles = styles.mapStyles(style -> style.updateWith(modStyle, mixin.booleanValue()));
             area.setStyleSpans(selection.getStart(), newStyles);
         }
     }
@@ -507,8 +554,8 @@ public class RichText extends Application {
         IndexRange selection = area.getSelection();
         if (selection.getLength() != 0) {
             StyleSpans<TextStyle> styles = area.getStyleSpans(selection);
-            StyleSpans<TextStyle> newStyles = styles.mapStyles(style -> style.updateWith(mixin));
-            area.setStyleSpans(selection.getStart(), newStyles);
+//            StyleSpans<TextStyle> newStyles = styles.mapStyles(style -> style.updateWith(mixin));
+//            area.setStyleSpans(selection.getStart(), newStyles);
         }
     }
 
@@ -527,27 +574,27 @@ public class RichText extends Application {
     }
 
     private void updateFontSize(Integer size) {
-        if(!updatingToolbar.get()) {
-            updateStyleInSelection(TextStyle.fontSize(size));
-        }
+//        if(!updatingToolbar.get()) {
+//            updateStyleInSelection(TextStyle.fontSize(size));
+//        }
     }
 
     private void updateFontFamily(String family) {
-        if(!updatingToolbar.get()) {
-            updateStyleInSelection(TextStyle.fontFamily(family));
-        }
+//        if(!updatingToolbar.get()) {
+//            updateStyleInSelection(TextStyle.fontFamily(family));
+//        }
     }
 
     private void updateTextColor(Color color) {
-        if(!updatingToolbar.get()) {
-            updateStyleInSelection(TextStyle.textColor(color));
-        }
+//        if(!updatingToolbar.get()) {
+//            updateStyleInSelection(TextStyle.textColor(color));
+//        }
     }
 
     private void updateBackgroundColor(Color color) {
-        if(!updatingToolbar.get()) {
-            updateStyleInSelection(TextStyle.backgroundColor(color));
-        }
+//        if(!updatingToolbar.get()) {
+//            updateStyleInSelection(TextStyle.backgroundColor(color));
+//        }
     }
 
     private void updateParagraphBackground(Color color) {
