@@ -6,55 +6,21 @@
 
 package afester.javafx.examples.docbook;
 
-import static org.fxmisc.richtext.model.TwoDimensional.Bias.*;
+import static org.fxmisc.richtext.model.TwoDimensional.Bias.Backward;
+import static org.fxmisc.richtext.model.TwoDimensional.Bias.Forward;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-
-import javafx.application.Application;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
-import javafx.collections.FXCollections;
-import javafx.event.Event;
-import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.IndexRange;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.Tooltip;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.GenericStyledArea;
@@ -72,6 +38,29 @@ import org.reactfx.util.Either;
 import org.reactfx.util.Tuple2;
 
 import afester.javafx.examples.docbook.CustomObject.CustomObjectOps;
+import javafx.application.Application;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.event.Event;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.IndexRange;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 public class RichText extends Application {
 
@@ -88,14 +77,14 @@ public class RichText extends Application {
     private final GenericStyledArea<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> area =
             new GenericStyledArea<>(
                     ParStyle.EMPTY,                                                 // default paragraph style
-                    (paragraph, style) -> paragraph.setStyle(style.toCss()),        // paragraph style setter
+                    (paragraph, style) -> paragraph.getStyleClass().addAll(style.getStyles()), //  setStyle(style.toCss()),        // paragraph style setter
 
-                    TextStyle.EMPTY, // .updateFontSize(12).updateFontFamily("Serif").updateTextColor(Color.BLACK),  // default segment style
-                    styledTextOps._or(linkedImageOps),                                                          // segment operations
+                    TextStyle.EMPTY,                                                // default segment style
+                    styledTextOps._or(linkedImageOps),                              // segment operations
                     seg -> createNode(seg,
                                       (text, style) -> { 
                                           Object xyz = style.getStyles();
-                                          text.getStyleClass().addAll(style.getStyles()); } )); //  setStyle(style.toCss())));                     // Node creator and segment style setter
+                                          text.getStyleClass().addAll(style.getStyles()); } )); // Node creator and segment style setter
     {
         area.setWrapText(true);
         area.setStyleCodecs(
@@ -134,7 +123,7 @@ public class RichText extends Application {
         TabPane tabPane = new TabPane();
         tabPane.getTabs().addAll(tab, tab2, tab3);
 
-        Scene scene = new Scene(tabPane, 600, 400);
+        Scene scene = new Scene(tabPane, 1024, 600);
         scene.getStylesheets().add(RichText.class.getResource("rich-text.css").toExternalForm());
         primaryStage.setScene(scene);
         area.requestFocus();
@@ -160,32 +149,46 @@ public class RichText extends Application {
         Button loadBtn = createButton("loadfile", this::loadDocument, "Load document");
         Button saveBtn = createButton("savefile", this::saveDocument, "Save document");
         Button nonPrintableBtn = createButton("viewnonprintable", this::saveDocument, "View non printable characters");
-//        CheckBox wrapToggle = new CheckBox("Wrap");
-//        wrapToggle.setSelected(true);
-//        area.wrapTextProperty().bind(wrapToggle.selectedProperty());
         Button undoBtn = createButton("undo", area::undo, "Undo last action");
         Button redoBtn = createButton("redo", area::redo, "Redo last undone action");
         Button backBtn = createButton("back", area::redo, "");
         Button forwardBtn = createButton("forward", area::redo, "");
         Button insertimageBtn = createButton("insertimage", area::redo, "");
         Button insertformulaBtn = createButton("insertformula", area::redo, "");
-        Button searchBtn = createButton("search", area::redo, "");
-        Button cutBtn = createButton("cut", area::cut, "");
-        Button copyBtn = createButton("copy", area::copy, "");
-        Button pasteBtn = createButton("paste", area::paste, "");
+        Button searchBtn = createButton("search", area::redo, "Search");
+        Button cutBtn = createButton("cut", area::cut, "Cut");
+        Button copyBtn = createButton("copy", area::copy, "Copy");
+        Button pasteBtn = createButton("paste", area::paste, "Paste");
 
-        Button keywordBtn = createButton("keyword", this::toggleBold, "");
-        Button weblinkBtn = createButton("weblink", this::toggleItalic, "");
-        Button emphasizeBtn = createButton("emphasize", this::toggleHighlight, "");
-        Button highlightBtn = createButton("highlight", this::toggleStrikethrough, "");
-        Button codeBtn = createButton("code", this::toggleStrikethrough, "");
+        Button keywordBtn = createButton("keyword",     this::toggleKeyword,   "Format as Keyword");
+        Button weblinkBtn = createButton("weblink",     this::toggleWeblink,   "Format as web link");
+        Button emphasizeBtn = createButton("emphasize", this::toggleEmphasize, "Format as emphasized");
+        Button highlightBtn = createButton("highlight", this::toggleHighlight, "Format as highlighted");
+        Button codeBtn = createButton("code",           this::toggleCode,      "Format as Code");
 
-        Button formatparagraphBtn = createButton("formatparagraph", this::toggleStrikethrough, "");
-        Button formatheaderBtn = createButton("formatheader", this::toggleStrikethrough, "");
-        Button formatlistBtn = createButton("formatlist", this::toggleStrikethrough, "");
-        Button formatcodeBtn = createButton("formatcode", this::toggleStrikethrough, "");
-        Button indentmoreBtn = createButton("indentmore", this::toggleStrikethrough, "");
-        Button indentlessBtn = createButton("indentless", this::toggleStrikethrough, "");
+        IconDropDown formatparagraphBtn = new IconDropDown("formatparagraph");
+        formatparagraphBtn.addItem("Standard");
+        formatparagraphBtn.addItem("Tip");
+        formatparagraphBtn.addItem("Warning");
+        formatparagraphBtn.addItem("Quotation");
+        IconDropDown formatheaderBtn = new IconDropDown("formatheader");
+        formatheaderBtn.addItem("Title 1");
+        formatheaderBtn.addItem("Title 2");
+        formatheaderBtn.addItem("Title 3");
+        IconDropDown formatlistBtn = new IconDropDown("formatlist");
+        formatlistBtn.addItem("Unordered List");
+        formatlistBtn.addItem("Ordered List");
+        IconDropDown formatcodeBtn = new IconDropDown("formatcode");
+        formatcodeBtn.addItem("C++");
+        formatcodeBtn.addItem("Java");
+        formatcodeBtn.addItem("Python");
+        formatcodeBtn.addItem("SQL");
+        formatcodeBtn.addItem("XML");
+        formatcodeBtn.addItem("Bash");
+        formatcodeBtn.addItem("Generic");
+
+        Button indentlessBtn = createButton("indentless", this::indentLess, "");
+        Button indentmoreBtn = createButton("indentmore", this::indentMore, "");
 
 //        ToggleGroup alignmentGrp = new ToggleGroup();
 //        ToggleButton alignLeftBtn = createToggleButton(alignmentGrp, "align-left", this::alignLeft);
@@ -268,13 +271,13 @@ public class RichText extends Application {
                 int endPar = area.offsetToPosition(selection.getEnd(), Backward).getMajor();
                 List<Paragraph<ParStyle, Either<StyledText<TextStyle>,CustomObject<TextStyle>>, TextStyle>> pars = area.getParagraphs().subList(startPar, endPar + 1);
 
-                @SuppressWarnings("unchecked")
-                Optional<TextAlignment>[] alignments = pars.stream().map(p -> p.getParagraphStyle().alignment).distinct().toArray(Optional[]::new);
-                Optional<TextAlignment> alignment = alignments.length == 1 ? alignments[0] : Optional.empty();
-
-                @SuppressWarnings("unchecked")
-                Optional<Color>[] paragraphBackgrounds = pars.stream().map(p -> p.getParagraphStyle().backgroundColor).distinct().toArray(Optional[]::new);
-                Optional<Color> paragraphBackground = paragraphBackgrounds.length == 1 ? paragraphBackgrounds[0] : Optional.empty();
+//                @SuppressWarnings("unchecked")
+//                Optional<TextAlignment>[] alignments = pars.stream().map(p -> p.getParagraphStyle().alignment).distinct().toArray(Optional[]::new);
+//                Optional<TextAlignment> alignment = alignments.length == 1 ? alignments[0] : Optional.empty();
+//
+//                @SuppressWarnings("unchecked")
+//                Optional<Color>[] paragraphBackgrounds = pars.stream().map(p -> p.getParagraphStyle().backgroundColor).distinct().toArray(Optional[]::new);
+//                Optional<Color> paragraphBackground = paragraphBackgrounds.length == 1 ? paragraphBackgrounds[0] : Optional.empty();
 
                 updatingToolbar.suspendWhile(() -> {
 //                    if(bold) {
@@ -350,12 +353,15 @@ public class RichText extends Application {
         TitledToolbar actionToolbar = new TitledToolbar("Actions");
         actionToolbar.addButtons(loadBtn, saveBtn, nonPrintableBtn, undoBtn, redoBtn, backBtn, 
                                  forwardBtn, insertimageBtn, insertformulaBtn, searchBtn, cutBtn, copyBtn, pasteBtn);
+        HBox.setHgrow(actionToolbar, Priority.ALWAYS);
 
         TitledToolbar textStyleToolbar = new TitledToolbar("Text style");
         textStyleToolbar.addButtons(keywordBtn, weblinkBtn, emphasizeBtn, highlightBtn, codeBtn);
+        HBox.setHgrow(textStyleToolbar, Priority.ALWAYS);
 
         TitledToolbar blockStyleToolbar = new TitledToolbar("Block style");
-        blockStyleToolbar.addButtons(formatparagraphBtn,formatheaderBtn,formatlistBtn,formatcodeBtn,indentmoreBtn,indentlessBtn);
+        blockStyleToolbar.addButtons(formatparagraphBtn,formatheaderBtn,formatlistBtn,formatcodeBtn,indentlessBtn,indentmoreBtn);
+        HBox.setHgrow(blockStyleToolbar, Priority.ALWAYS);
 
         toolBar.getChildren().addAll(actionToolbar, textStyleToolbar, blockStyleToolbar);
 
@@ -389,10 +395,6 @@ public class RichText extends Application {
         }
     }
 
-    @Deprecated
-    private Button createButton(String styleClass, Runnable action) {
-        return createButton(styleClass, action, null);
-    }
 
     private Button createButton(String styleClass, Runnable action, String toolTip) {
         Button button = new Button();
@@ -401,8 +403,8 @@ public class RichText extends Application {
             action.run();
             area.requestFocus();
         });
-        button.setPrefWidth(20);
-        button.setPrefHeight(20);
+        button.setPrefWidth(30);
+        button.setPrefHeight(30);
         if (toolTip != null) {
             button.setTooltip(new Tooltip(toolTip));
         }
@@ -422,37 +424,37 @@ public class RichText extends Application {
         return button;
     }
 
-    private void toggleBold() {
-        updateStyleInSelection("bold", spans -> !spans.styleStream().allMatch(style -> style.contains("bold")));
+    
+    
+
+    private void toggleKeyword() {
+        //updateStyleInSelection("bold", spans -> !spans.styleStream().allMatch(style -> style.contains("bold")));
     }
 
-    private void toggleItalic() {
-        updateStyleInSelection("italic", spans -> !spans.styleStream().allMatch(style -> style.contains("italic")));
+    private void toggleWeblink() {
+        //updateStyleInSelection("italic", spans -> !spans.styleStream().allMatch(style -> style.contains("italic")));
+    }
+
+    private void toggleEmphasize() {
+//      updateStyleInSelection(spans -> TextStyle.strikethrough(!spans.styleStream().allMatch(style -> style.strikethrough.orElse(false))));
     }
 
     private void toggleHighlight() {
         updateStyleInSelection("highlight", spans -> !spans.styleStream().allMatch(style -> style.contains("highlight")));
     }
 
-    private void toggleStrikethrough() {
-//        updateStyleInSelection(spans -> TextStyle.strikethrough(!spans.styleStream().allMatch(style -> style.strikethrough.orElse(false))));
+    private void toggleCode() {
+//      updateStyleInSelection(spans -> TextStyle.strikethrough(!spans.styleStream().allMatch(style -> style.strikethrough.orElse(false))));
     }
 
-    private void alignLeft() {
-        updateParagraphStyleInSelection(ParStyle.alignLeft());
+    private void indentLess() {
+//      updateStyleInSelection(spans -> TextStyle.strikethrough(!spans.styleStream().allMatch(style -> style.strikethrough.orElse(false))));
     }
 
-    private void alignCenter() {
-        updateParagraphStyleInSelection(ParStyle.alignCenter());
+    private void indentMore() {
+//      updateStyleInSelection(spans -> TextStyle.strikethrough(!spans.styleStream().allMatch(style -> style.strikethrough.orElse(false))));
     }
 
-    private void alignRight() {
-        updateParagraphStyleInSelection(ParStyle.alignRight());
-    }
-
-    private void alignJustify() {
-        updateParagraphStyleInSelection(ParStyle.alignJustify());
-    }
 
     private void loadDocument() {
         String initialDir = System.getProperty("user.dir");
@@ -462,7 +464,8 @@ public class RichText extends Application {
         File selectedFile = fileChooser.showOpenDialog(mainStage);
         if (selectedFile != null) {
             area.clear();
-            load(selectedFile);
+            //load(selectedFile);
+            loadXML(selectedFile);
         }
     }
 
@@ -485,6 +488,47 @@ public class RichText extends Application {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void loadXML(File file) {
+        DocbookImporter di = new DocbookImporter("", "");
+        try (InputStream is = new FileInputStream(file)){
+            di.importFromFile(is, new DocbookHandler() {
+
+                @Override
+                public void addTitle(int level, String title) {
+                    ParStyle pStyle = ParStyle.EMPTY.updateWith("h"  + level, true);
+                    TextStyle tStyle = TextStyle.EMPTY.updateWith("h"  + level, true);
+
+                    StyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> doc = 
+                    ReadOnlyStyledDocument.<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle>
+                                fromString(title + "\n", pStyle, tStyle, styledTextOps._or(linkedImageOps));
+
+                    area.append(doc);
+                }
+
+                @Override
+                public void addParagraph(String content) {
+                    ParStyle pStyle = ParStyle.EMPTY;
+                    TextStyle tStyle = TextStyle.EMPTY;
+
+                    StyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> doc = 
+                    ReadOnlyStyledDocument.<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle>
+                                fromString(content + "\n", pStyle, tStyle, styledTextOps._or(linkedImageOps));
+
+                    area.append(doc);
+                }
+
+                @Override
+                public void addCode(String content) {
+                    System.err.printf("CODE[%s]%n", content);
+                }
+            });
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e1) {
+            e1.printStackTrace();
         }
     }
 
@@ -570,7 +614,7 @@ public class RichText extends Application {
     }
 
     private void updateParagraphStyleInSelection(ParStyle mixin) {
-        updateParagraphStyleInSelection(style -> style.updateWith(mixin));
+//        updateParagraphStyleInSelection(style -> style.updateWith(mixin));
     }
 
     private void updateFontSize(Integer size) {
@@ -599,7 +643,7 @@ public class RichText extends Application {
 
     private void updateParagraphBackground(Color color) {
         if(!updatingToolbar.get()) {
-            updateParagraphStyleInSelection(ParStyle.backgroundColor(color));
+//            updateParagraphStyleInSelection(ParStyle.backgroundColor(color));
         }
     }
 }

@@ -4,6 +4,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
@@ -21,7 +22,7 @@ public class TitledToolbar extends VBox {
         xy.setAlignment(Pos.TOP_CENTER);
         titleNode.getStyleClass().add("toolAreaTitle");
 
-        toolButtons.setSpacing(5);
+        //toolButtons.setSpacing(5);
         toolButtons.setPadding(new Insets(5, 5, 5, 5));
 
         getChildren().addAll(xy, toolButtons);
