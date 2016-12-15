@@ -20,9 +20,12 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
 
     
     
-    private String content = "";    // TODO: use StringBuffer?
+    private StringBuffer content = null;
     private int sectionLevel = 0;
     private DocbookHandler handler;
+    private int listLevel = 0;
+    private String language = "";
+    private String paraStyle = null;
 
     public Handler(String contentPath, DocbookHandler handler) {
         this.handler = handler;
@@ -41,7 +44,7 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
             sectionLevel += 1;
         }
         else if (name.equals("itemizedlist")) {  // create a List node and set it as current parent
-            // self.listLevel += 1
+            listLevel++;
             // curList = List(('itemizedlist', 'level', str(self.listLevel)))
             // parent = self.nodeStack[-1]
             // parent.add(curList)
@@ -58,12 +61,15 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
 
         // These contain <para> elements, but already define the paragraph style:
         else if (name.equals("blockquote")) {
+            paraStyle = "blockquote";
             // self.paraStyle = ('blockquote', None, None)
         }
         else if (name.equals("tip")) {
+            paraStyle = "tip";
             // self.paraStyle = ('tip', None, None)
         }
         else if (name.equals("warning")) {
+            paraStyle = "warning";
             // self.paraStyle = ('warning', None, None)
         }
         else if (name.equals("title")) { // create a title paragraph and set it as current parent
@@ -73,26 +79,27 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
             //    self.nodeStack.append(para)   # push()
             //    parent.add(para)
             }
-            content = "";
+            content = new StringBuffer();
         }
         else if (name.equals("para")) {  // # a paragraph contains only fragments
-            //if self.paraStyle is None:
-            //    self.paraStyle = ('para', None, None)
+            if (paraStyle == null) {
+                paraStyle = "para";
+            }
             //para = Paragraph(0, self.paraStyle)
 
             //parent = self.nodeStack[-1]                    # top()
             //self.nodeStack.append(para)   # push()
             //parent.add(para)
-            content = "";       // start collecting content
+            content = new StringBuffer();   // start collecting content
             //self.currentStyle = None    # no specific style currently
         }
         else if (name.equals("programlisting")) {    //  # a program listing contains verbatim text only
-            String language = attributes.getValue("language");
+            language = attributes.getValue("language");
             //para = Paragraph(0, ('programlisting', 'language', language))
             //parent = self.nodeStack[-1]                    # top()
             //self.nodeStack.append(para)   # push()
             //parent.add(para)
-            content = "";           // start collecting content
+            content = new StringBuffer();   // start collecting content
             //self.currentStyle = None    # no specific style currently
         }
         else if (name.equals("screen")) {    // a screen contains verbatim text only
@@ -100,7 +107,7 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
             //parent = self.nodeStack[-1]                    # top()
             //self.nodeStack.append(para)   # push()
             //parent.add(para)
-            content = "";               // start collecting content
+            content = new StringBuffer();   // start collecting content
             //self.currentStyle = None    # no specific style currently
         }
 
@@ -178,8 +185,7 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
             //    frag = TextFragment(self.currentStyle)
             //    frag.setText(self.content)
             //    parent.add(frag)
-
-            content = "";
+            content.setLength(0);
         }
     }
 
@@ -188,11 +194,9 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
     public void characters(char[] ch, int start, int length)
             throws SAXException {
 
-        String data = new String(ch, start, length);
         if (content != null) {
-            content = content + data;
+            content.append(ch, start, length);
         }
-
     }
 
     @Override
@@ -210,7 +214,7 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
             // self.nodeStack = self.nodeStack[0:-1]     # pop()
             content = null;
             // self.currentStyle = None
-            // self.listLevel -= 1
+            listLevel--;
         }
         else if (name.equals("mediaobject")) {
         }
@@ -237,31 +241,30 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
             //    frag.setText(self.content)
             //    parent.add(frag)
                 System.err.println("TITLE:" + content);
-                handler.addTitle(0, content);
+                handler.addParagraph(content.toString(), "h" + sectionLevel);
             }
             content = null;
         }
         else if (name.equals("para")) {
-            if (!content.isEmpty()) {
+            if (content.length() > 0) {
             //    parent = self.nodeStack[-1]
 
              //   frag = TextFragment(self.currentStyle)
             //    frag.setText(self.content)
-                System.err.println("FRAG:" + content);
-                handler.addParagraph(content);
+                handler.addParagraph(content.toString(), paraStyle);
                 content = null;
 
             //    parent.add(frag)
             //    self.currentStyle = None            # todo: nested styles support (needs yet another stack ...)
-            //    self.paraStyle = None
+                paraStyle = null;
             }
 
             // self.nodeStack = self.nodeStack[0:-1]     # pop()
         }
         else if (name.equals("programlisting")) {
-            if (!content.isEmpty()) {
+            if (content.length() > 0) {
                 System.err.println("CODE:" + content);
-                handler.addCode(content);
+                handler.addCode(content.toString(), language);
             //    parent = self.nodeStack[-1]
 
             //    frag = TextFragment(self.currentStyle)
@@ -275,8 +278,8 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
             //self.nodeStack = self.nodeStack[0:-1]     # pop()
         }
         else if (name.equals("screen")) {
-            if (!content.isEmpty()) {
-                System.err.println("SCREEN:" + content);
+            if (content.length() > 0) {
+                handler.addParagraph(content.toString(), "screen");
             //    parent = self.nodeStack[-1]
 
             //    frag = TextFragment(self.currentStyle)
@@ -295,18 +298,18 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
 
             //frag = TextFragment(self.currentStyle)
             //frag.setText(self.content)
-            content = "";
+            content = new StringBuffer();
             //parent.add(frag)
             //self.currentStyle = None                # todo: nested styles support (needs yet another stack ...)
         }
-        else if (name.equals("code")) {
+        else if (name.equals("code")) { // inline code
             //parent = self.nodeStack[-1]
 
             System.err.println("<tt>" + content + "</tt>");
 
             //frag = TextFragment(self.currentStyle)
             //frag.setText(self.content)
-            content = "";
+            content = new StringBuffer();
             //parent.add(frag)
             //self.currentStyle = None                # todo: nested styles support (needs yet another stack ...)
         }
@@ -348,7 +351,7 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
             //parent.add(frag)
 
             //self.currentStyle = None                # todo: nested styles support (needs yet another stack ...)
-            content = "";
+            content = new StringBuffer();
         }
     }
 

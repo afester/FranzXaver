@@ -27,6 +27,7 @@ import org.fxmisc.richtext.GenericStyledArea;
 import org.fxmisc.richtext.StyledTextArea;
 import org.fxmisc.richtext.TextExt;
 import org.fxmisc.richtext.model.Codec;
+import org.fxmisc.richtext.model.ListItem;
 import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.ReadOnlyStyledDocument;
 import org.fxmisc.richtext.model.StyleSpans;
@@ -58,7 +59,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -82,9 +82,7 @@ public class RichText extends Application {
                     TextStyle.EMPTY,                                                // default segment style
                     styledTextOps._or(linkedImageOps),                              // segment operations
                     seg -> createNode(seg,
-                                      (text, style) -> { 
-                                          Object xyz = style.getStyles();
-                                          text.getStyleClass().addAll(style.getStyles()); } )); // Node creator and segment style setter
+                                      (text, style) -> text.getStyleClass().addAll(style.getStyles()) )); // Node creator and segment style setter
     {
         area.setWrapText(true);
         area.setStyleCodecs(
@@ -129,6 +127,8 @@ public class RichText extends Application {
         area.requestFocus();
         primaryStage.setTitle("Rich Text Demo");
         primaryStage.show();
+        
+        loadXML(new File("data/Sample%20Page.xml"));
     }
 
 
@@ -136,10 +136,14 @@ public class RichText extends Application {
         structureView.clear();
 
         structureView.appendText("StyledDocument\n");
-        for (Paragraph<?, ?, ?> p : area.getDocument().getParagraphs()) {
-            structureView.appendText("   " + p + "\n");
-            for (Object s : p.getSegments()) {
-                structureView.appendText("      " + s + "\n");
+        for (Paragraph<ParStyle, Either<StyledText<TextStyle>,CustomObject<TextStyle>>, TextStyle> p : area.getDocument().getParagraphs()) {
+            structureView.appendText("   Paragraph[" + p.getParagraphStyle() + "]\n");
+            for (Either<StyledText<TextStyle>, CustomObject<TextStyle>> s : p.getSegments()) {
+                if (s.isLeft()) {
+                    structureView.appendText("      " + s.getLeft() + "\n");    
+                } else {
+                    structureView.appendText("      " + s.getRight() + "\n");
+                }
             }
         }
     }
@@ -448,11 +452,42 @@ public class RichText extends Application {
     }
 
     private void indentLess() {
-//      updateStyleInSelection(spans -> TextStyle.strikethrough(!spans.styleStream().allMatch(style -> style.strikethrough.orElse(false))));
+        int pIdx = area.getCurrentParagraph();
+        Paragraph<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> paragraph = area.getParagraph(pIdx);
+        Optional<ListItem> li = paragraph.getListItem();
+
+        if (li.isPresent()) {
+            ListItem newItem = null;
+            int level = li.get().getLevel() - 1;
+            if (level != 0) {
+                newItem = new ListItem(level);
+            }
+
+            area.setParagraphList(pIdx, newItem);
+    
+            // Force recreation of the ParagraphBox ... (TODO)
+            updateParagraphStyleInSelection(ParStyle.EMPTY); 
+            // updateParagraphStyleInSelection(ParStyle.backgroundColor(Color.WHITE));
+        }
+
     }
 
     private void indentMore() {
-//      updateStyleInSelection(spans -> TextStyle.strikethrough(!spans.styleStream().allMatch(style -> style.strikethrough.orElse(false))));
+        System.err.println("INDENT MORE");
+
+        int pIdx = area.getCurrentParagraph();
+        Paragraph<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> paragraph = area.getParagraph(pIdx);
+        Optional<ListItem> li = paragraph.getListItem();
+
+        int level = 1;
+        if (li.isPresent()) {
+            level = li.get().getLevel() + 1;
+        }
+        area.setParagraphList(pIdx, new ListItem(level));
+
+        // Force recreation of the ParagraphBox ...
+        updateParagraphStyleInSelection(ParStyle.EMPTY.updateWith("bold", true)); //  backgroundColor(Color.YELLOW));
+        updateParagraphStyleInSelection(ParStyle.EMPTY.updateWith("bold", false)); //  backgroundColor(Color.YELLOW)););
     }
 
 
@@ -497,21 +532,9 @@ public class RichText extends Application {
             di.importFromFile(is, new DocbookHandler() {
 
                 @Override
-                public void addTitle(int level, String title) {
-                    ParStyle pStyle = ParStyle.EMPTY.updateWith("h"  + level, true);
-                    TextStyle tStyle = TextStyle.EMPTY.updateWith("h"  + level, true);
-
-                    StyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> doc = 
-                    ReadOnlyStyledDocument.<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle>
-                                fromString(title + "\n", pStyle, tStyle, styledTextOps._or(linkedImageOps));
-
-                    area.append(doc);
-                }
-
-                @Override
-                public void addParagraph(String content) {
-                    ParStyle pStyle = ParStyle.EMPTY;
-                    TextStyle tStyle = TextStyle.EMPTY;
+                public void addParagraph(String content, String style) {
+                    ParStyle pStyle = ParStyle.EMPTY.updateWith(style, true);
+                    TextStyle tStyle = TextStyle.EMPTY.updateWith(style, true);
 
                     StyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> doc = 
                     ReadOnlyStyledDocument.<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle>
@@ -521,8 +544,15 @@ public class RichText extends Application {
                 }
 
                 @Override
-                public void addCode(String content) {
-                    System.err.printf("CODE[%s]%n", content);
+                public void addCode(String content, String language) {
+                    ParStyle pStyle = ParStyle.EMPTY.updateWith("programlisting", true).updateWith(language, true);
+                    TextStyle tStyle = TextStyle.EMPTY.updateWith("programlisting", true).updateWith(language, true);
+
+                    StyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> doc = 
+                    ReadOnlyStyledDocument.<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle>
+                                fromString(content + "\n", pStyle, tStyle, styledTextOps._or(linkedImageOps));
+
+                    area.append(doc);
                 }
             });
         } catch (FileNotFoundException e) {

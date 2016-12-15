@@ -2,9 +2,9 @@ package afester.javafx.examples.docbook;
 
 public interface DocbookHandler {
 
-    void addTitle(int level, String title);
+//    void addTitle(int level, String title);
 
-    void addParagraph(String content);
+    void addParagraph(String content, String string);
 
-    void addCode(String content);
+    void addCode(String content, String language);
 }

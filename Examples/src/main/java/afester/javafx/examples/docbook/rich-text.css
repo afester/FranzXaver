@@ -39,10 +39,6 @@
 .toggle-button.align-right { -fx-background-image: url(align-right.png); }
 .toggle-button.align-justify { -fx-background-image: url(align-justify.png); }
 
-.h0 { -fx-font-size: 18pt; -fx-stroke: gray; -fx-padding: 10px; -fx-border-insets: 10px; } 
-.emphasized{ -fx-font-weight: bold; }
-.highlight { -rtfx-background-color: yellow; }
-
 .toolAreaTitle {
 	-fx-fill : #3E6AAA; 					/* Toolbox title text color */
 }
@@ -69,3 +65,139 @@
 	-fx-border-width: 1px;
 	-fx-padding: 5px;
 }
+
+
+
+.h1 {
+/*	-fx-padding: 10px;
+	-fx-border-insets: 10px;*/
+	-fx-font-size: 18pt;
+	-fx-fill: black;
+}
+
+
+.h2 {
+/*	-fx-padding: 10px;
+	-fx-border-insets: 10px;*/
+	-fx-font-size: 16pt;
+	-fx-fill: black;
+}
+
+
+.h3 {
+/*	-fx-padding: 10px;
+	-fx-border-insets: 10px;*/
+	-fx-font-size: 12pt;
+	-fx-fill: black;
+	-fx-font-weight: bold;
+}
+
+
+
+.para {
+/*	margin-top: 3px;
+	margin-bottom: 3px;*/
+	-fx-font-family: "sans-serif";
+	-fx-font-size: 10pt;
+}
+
+
+.tip {
+/*	margin-top: 3px;
+	margin-bottom: 3px;
+	margin-left: 20px;
+*/
+	-fx-background-color: #e4e4e4;
+	-fx-fill: #000000;
+	-fx-font-family: "sans-serif";
+	-fx-font-size: 10pt;
+	-fx-font-style: italic;
+}
+
+
+.warning {
+/*	margin-top: 15px;
+	margin-bottom: 15px;
+	margin-left: 20px;*/
+	-fx-background-color: #ffffff;
+	-fx-fill: #ff0000;
+	-fx-font-family: "sans-serif";
+	-fx-font-size: 12pt;
+	-fx-font-style: italic;
+}
+
+
+.blockquote {
+/*	        margin-top: 3px;
+        margin-bottom: 3px;
+        margin-left: 20px;*/
+        /*background-color: #caddff;*/
+    
+    -fx-fill: #000000;
+    -fx-font-family: "sans-serif";
+	-fx-font-size: 10pt;
+	-fx-font-style: italic;
+
+	-fx-border-style: solid;
+	-fx-border-width: 0px 0px 0px 1px;
+	-fx-border-color: red;
+}
+
+.programlisting.cpp {
+/*   margin-left: 5px; */
+   -fx-background-color: #f0f0f0;
+   -fx-fill: black;
+   -fx-font-family: "monospace";
+   font-size: 10pt;
+   font-weight: bold;
+}
+
+.programlisting.java {
+/*        white-space: pre; 
+
+        margin-top: 5px;
+        margin-right: 5px;
+        margin-bottom: 5px;
+        margin-left: 5px;*/
+
+	-fx-background-color: #0000ff;
+	-fx-fill: yellow;
+
+    -fx-font-family: "monospace";
+    -fx-font-size: 10pt;
+    -fx-font-weight: bold;
+}
+
+.programlisting.xml {
+/*        white-space: pre;
+
+        margin-top: 5px;
+        margin-right: 5px;
+        margin-bottom: 5px;
+        margin-left: 5px;
+*/
+	-fx-background-color: #f0f0f0;
+	-fx-fill: #800000;
+	-fx-font-family: "monospace";
+	-fx-font-size: 10pt;
+}
+
+.screen {
+/*        white-space: pre;
+
+        margin-top: 5px;
+        margin-right: 5px;
+        margin-bottom: 5px;
+        margin-left: 5px;*/
+
+	-fx-background-color: #808080;
+    -fx-fill: #80ff80;
+    -fx-font-family: "monospace";
+    -fx-font-size: 10pt;
+}
+
+
+.emphasized{ -fx-font-weight: bold; }
+
+.highlight { -rtfx-background-color: yellow; }
+

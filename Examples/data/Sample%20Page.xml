@@ -43,7 +43,9 @@
 
     <section>
       <title>A quotation</title>
-      <blockquote><para>This section shows how a quotation looks like.</para></blockquote>
+      <blockquote><para>This section shows how a quotation looks like.
+It can even span
+multiple paragraphs (Lines).</para></blockquote>
     </section>
 
     <section>
