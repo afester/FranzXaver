@@ -464,17 +464,10 @@ public class RichText extends Application {
             }
 
             area.setParagraphList(pIdx, newItem);
-    
-            // Force recreation of the ParagraphBox ... (TODO)
-            updateParagraphStyleInSelection(ParStyle.EMPTY); 
-            // updateParagraphStyleInSelection(ParStyle.backgroundColor(Color.WHITE));
         }
-
     }
 
     private void indentMore() {
-        System.err.println("INDENT MORE");
-
         int pIdx = area.getCurrentParagraph();
         Paragraph<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> paragraph = area.getParagraph(pIdx);
         Optional<ListItem> li = paragraph.getListItem();
@@ -484,10 +477,6 @@ public class RichText extends Application {
             level = li.get().getLevel() + 1;
         }
         area.setParagraphList(pIdx, new ListItem(level));
-
-        // Force recreation of the ParagraphBox ...
-        updateParagraphStyleInSelection(ParStyle.EMPTY.updateWith("bold", true)); //  backgroundColor(Color.YELLOW));
-        updateParagraphStyleInSelection(ParStyle.EMPTY.updateWith("bold", false)); //  backgroundColor(Color.YELLOW)););
     }
 
 
