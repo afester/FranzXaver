@@ -26,9 +26,11 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
     private int listLevel = 0;
     private String language = "";
     private String paraStyle = null;
+    private final String contentPath;
 
     public Handler(String contentPath, DocbookHandler handler) {
         this.handler = handler;
+        this.contentPath = contentPath;
     }
 
 
@@ -176,6 +178,9 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
             //frag = ImageFragment()
             //frag.setImage(imageFile)
             //parent.add(frag)
+            
+            String imagePath = attributes.getValue("fileref");
+            handler.addImage(contentPath + "/" + imagePath);
         }
         else if (name.equals("mathphrase")) {
             //parent = self.nodeStack[-1]
@@ -241,7 +246,7 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
             //    frag.setText(self.content)
             //    parent.add(frag)
                 System.err.println("TITLE:" + content);
-                handler.addParagraph(content.toString(), "h" + sectionLevel);
+                handler.addParagraph(content.toString(), "h" + sectionLevel, 0);
             }
             content = null;
         }
@@ -251,7 +256,7 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
 
              //   frag = TextFragment(self.currentStyle)
             //    frag.setText(self.content)
-                handler.addParagraph(content.toString(), paraStyle);
+                handler.addParagraph(content.toString(), paraStyle, listLevel);
                 content = null;
 
             //    parent.add(frag)
@@ -279,7 +284,7 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
         }
         else if (name.equals("screen")) {
             if (content.length() > 0) {
-                handler.addParagraph(content.toString(), "screen");
+                handler.addParagraph(content.toString(), "screen", listLevel);
             //    parent = self.nodeStack[-1]
 
             //    frag = TextFragment(self.currentStyle)

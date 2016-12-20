@@ -137,7 +137,7 @@ public class RichText extends Application {
 
         structureView.appendText("StyledDocument\n");
         for (Paragraph<ParStyle, Either<StyledText<TextStyle>,CustomObject<TextStyle>>, TextStyle> p : area.getDocument().getParagraphs()) {
-            structureView.appendText("   Paragraph[" + p.getParagraphStyle() + "]\n");
+            structureView.appendText(String.format("   Paragraph[list=%s, style=%s]%n", p.getListItem(), p.getParagraphStyle()));
             for (Either<StyledText<TextStyle>, CustomObject<TextStyle>> s : p.getSegments()) {
                 if (s.isLeft()) {
                     structureView.appendText("      " + s.getLeft() + "\n");    
@@ -516,18 +516,22 @@ public class RichText extends Application {
     }
 
     private void loadXML(File file) {
-        DocbookImporter di = new DocbookImporter("", "");
+        DocbookImporter di = new DocbookImporter("data", "");
         try (InputStream is = new FileInputStream(file)){
             di.importFromFile(is, new DocbookHandler() {
 
                 @Override
-                public void addParagraph(String content, String style) {
+                public void addParagraph(String content, String style, int listLevel) {
                     ParStyle pStyle = ParStyle.EMPTY.updateWith(style, true);
                     TextStyle tStyle = TextStyle.EMPTY.updateWith(style, true);
 
+                    ListItem li = null;
+                    if(listLevel > 0) {
+                        li = new ListItem(listLevel);
+                    }
                     StyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> doc = 
                     ReadOnlyStyledDocument.<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle>
-                                fromString(content + "\n", pStyle, tStyle, styledTextOps._or(linkedImageOps));
+                                fromString(content + "\n", pStyle, tStyle, styledTextOps._or(linkedImageOps), li);
 
                     area.append(doc);
                 }
@@ -542,6 +546,15 @@ public class RichText extends Application {
                                 fromString(content + "\n", pStyle, tStyle, styledTextOps._or(linkedImageOps));
 
                     area.append(doc);
+                }
+
+                @Override
+                public void addImage(String imagePath) {
+                    System.err.println("Adding Image:" + imagePath);
+                    ReadOnlyStyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> ros =
+                            ReadOnlyStyledDocument.fromSegment(Either.right(new LinkedImage<>(imagePath, TextStyle.EMPTY)),
+                                                               ParStyle.EMPTY, TextStyle.EMPTY, area.getSegOps());
+                    area.append(ros);
                 }
             });
         } catch (FileNotFoundException e) {
