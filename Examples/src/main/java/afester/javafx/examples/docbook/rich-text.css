@@ -39,6 +39,21 @@
 .toggle-button.align-right { -fx-background-image: url(align-right.png); }
 .toggle-button.align-justify { -fx-background-image: url(align-justify.png); }
 
+/* -fx-border-insets only works when a border is defined!!!! */
+.paragraph-text {
+	-fx-border-style: solid;
+	-fx-border-width: 0px;
+	-fx-border-color: #808080;
+}
+
+/*DEBUG
+.text-border {
+	-fx-border-style: dashed;
+	-fx-border-width: 1px;
+	-fx-border-color: red;
+}
+*/
+
 .toolAreaTitle {
 	-fx-fill : #3E6AAA; 					/* Toolbox title text color */
 }
@@ -69,44 +84,36 @@
 
 
 .h1 {
-/*	-fx-padding: 10px;
-	-fx-border-insets: 10px;*/
+	/*-fx-border-insets: 18px 0px 5px 0px;	/* trbl ONLY WORKS WHEN A BORDER IS DEFINED!!!!! */
+
 	-fx-font-size: 18pt;
 	-fx-fill: black;
 }
 
 
 .h2 {
-/*	-fx-padding: 10px;
-	-fx-border-insets: 10px;*/
+	-fx-border-insets: 14px 0px 3px 0px;	/* trbl */
 	-fx-font-size: 16pt;
 	-fx-fill: black;
 }
 
 
 .h3 {
-/*	-fx-padding: 10px;
-	-fx-border-insets: 10px;*/
+	-fx-border-insets: 10px 0px 3px 0px;	/* trbl */
 	-fx-font-size: 12pt;
 	-fx-fill: black;
 	-fx-font-weight: bold;
 }
 
 
-
 .para {
-/*	margin-top: 3px;
-	margin-bottom: 3px;*/
 	-fx-font-family: "sans-serif";
 	-fx-font-size: 10pt;
 }
 
 
 .tip {
-/*	margin-top: 3px;
-	margin-bottom: 3px;
-	margin-left: 20px;
-*/
+	-fx-border-insets: 0px 0px 0px 20px;	/* trbl */
 	-fx-background-color: #e4e4e4;
 	-fx-fill: #000000;
 	-fx-font-family: "sans-serif";
@@ -116,9 +123,7 @@
 
 
 .warning {
-/*	margin-top: 15px;
-	margin-bottom: 15px;
-	margin-left: 20px;*/
+	-fx-border-insets: 0px 0px 0px 20px;	/* trbl */
 	-fx-background-color: #ffffff;
 	-fx-fill: #ff0000;
 	-fx-font-family: "sans-serif";
@@ -128,23 +133,19 @@
 
 
 .blockquote {
-/*	        margin-top: 3px;
-        margin-bottom: 3px;
-        margin-left: 20px;*/
-        /*background-color: #caddff;*/
-    
+	-fx-border-insets: 0px 0px 0px 20px;	/* trbl */
     -fx-fill: #000000;
     -fx-font-family: "sans-serif";
 	-fx-font-size: 10pt;
 	-fx-font-style: italic;
-
 	-fx-border-style: solid;
 	-fx-border-width: 0px 0px 0px 1px;
 	-fx-border-color: red;
 }
 
+
 .programlisting.cpp {
-/*   margin-left: 5px; */
+   -fx-border-insets: 0px 0px 0px 5px;	/* trbl */
    -fx-background-color: #f0f0f0;
    -fx-fill: black;
    -fx-font-family: "monospace";
@@ -153,13 +154,7 @@
 }
 
 .programlisting.java {
-/*        white-space: pre; 
-
-        margin-top: 5px;
-        margin-right: 5px;
-        margin-bottom: 5px;
-        margin-left: 5px;*/
-
+	-fx-border-insets: 0px 0px 0px 5px;	/* trbl */
 	-fx-background-color: #0000ff;
 	-fx-fill: yellow;
 
@@ -169,13 +164,7 @@
 }
 
 .programlisting.xml {
-/*        white-space: pre;
-
-        margin-top: 5px;
-        margin-right: 5px;
-        margin-bottom: 5px;
-        margin-left: 5px;
-*/
+	-fx-border-insets: 0px 0px 0px 5px;	/* trbl */
 	-fx-background-color: #f0f0f0;
 	-fx-fill: #800000;
 	-fx-font-family: "monospace";
@@ -183,13 +172,7 @@
 }
 
 .screen {
-/*        white-space: pre;
-
-        margin-top: 5px;
-        margin-right: 5px;
-        margin-bottom: 5px;
-        margin-left: 5px;*/
-
+	-fx-border-insets: 0px 0px 0px 5px;	/* trbl */
 	-fx-background-color: #808080;
     -fx-fill: #80ff80;
     -fx-font-family: "monospace";
@@ -197,7 +180,30 @@
 }
 
 
-.emphasized{ -fx-font-weight: bold; }
+.emphasis {
+	-fx-font-weight: bold;
+}
 
-.highlight { -rtfx-background-color: yellow; }
+.highlight {
+	-rtfx-background-color: yellow;
+}
 
+.link {
+    -fx-fill: blue;
+    -rtfx-underline-color: blue;
+    -rtfx-underline-width: 1px;
+}
+
+.olink {
+	-rtfx-background-color: #dcdcdc;
+    -fx-fill: blue;
+    -rtfx-underline-color: blue;
+    -rtfx-underline-width: 1px;
+}
+
+.code{
+    -fx-font-family: "monospace";
+    -fx-font-size: 10pt;
+	-rtfx-background-color: #e8e8e8;
+    -fx-fill: green;
+}

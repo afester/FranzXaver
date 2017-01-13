@@ -76,11 +76,11 @@ public class RichText extends Application {
 
     private final GenericStyledArea<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> area =
             new GenericStyledArea<>(
-                    ParStyle.EMPTY,                                                 // default paragraph style
-                    (paragraph, style) -> paragraph.getStyleClass().addAll(style.getStyles()), //  setStyle(style.toCss()),        // paragraph style setter
+                    ParStyle.EMPTY,                                                                       // default paragraph style
+                    (paragraph, style) -> paragraph.getStyleClass().addAll(style.getStyles()),            // paragraph style setter
 
-                    TextStyle.EMPTY,                                                // default segment style
-                    styledTextOps._or(linkedImageOps),                              // segment operations
+                    TextStyle.EMPTY,                                                                      // default segment style
+                    styledTextOps._or(linkedImageOps),                                                    // segment operations
                     seg -> createNode(seg,
                                       (text, style) -> text.getStyleClass().addAll(style.getStyles()) )); // Node creator and segment style setter
     {
@@ -129,6 +129,7 @@ public class RichText extends Application {
         primaryStage.show();
         
         loadXML(new File("data/Sample%20Page.xml"));
+        //loadXML(new File("data/emptylist.xml"));
     }
 
 
@@ -460,7 +461,7 @@ public class RichText extends Application {
             ListItem newItem = null;
             int level = li.get().getLevel() - 1;
             if (level != 0) {
-                newItem = new ListItem(level);
+                newItem = new ListItem(level, true);
             }
 
             area.setParagraphList(pIdx, newItem);
@@ -476,7 +477,7 @@ public class RichText extends Application {
         if (li.isPresent()) {
             level = li.get().getLevel() + 1;
         }
-        area.setParagraphList(pIdx, new ListItem(level));
+        area.setParagraphList(pIdx, new ListItem(level, true));
     }
 
 
@@ -520,33 +521,33 @@ public class RichText extends Application {
         try (InputStream is = new FileInputStream(file)){
             di.importFromFile(is, new DocbookHandler() {
 
-                @Override
-                public void addParagraph(String content, String style, int listLevel) {
-                    ParStyle pStyle = ParStyle.EMPTY.updateWith(style, true);
-                    TextStyle tStyle = TextStyle.EMPTY.updateWith(style, true);
-
-                    ListItem li = null;
-                    if(listLevel > 0) {
-                        li = new ListItem(listLevel);
-                    }
-                    StyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> doc = 
-                    ReadOnlyStyledDocument.<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle>
-                                fromString(content + "\n", pStyle, tStyle, styledTextOps._or(linkedImageOps), li);
-
-                    area.append(doc);
-                }
-
-                @Override
-                public void addCode(String content, String language) {
-                    ParStyle pStyle = ParStyle.EMPTY.updateWith("programlisting", true).updateWith(language, true);
-                    TextStyle tStyle = TextStyle.EMPTY.updateWith("programlisting", true).updateWith(language, true);
-
-                    StyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> doc = 
-                    ReadOnlyStyledDocument.<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle>
-                                fromString(content + "\n", pStyle, tStyle, styledTextOps._or(linkedImageOps));
-
-                    area.append(doc);
-                }
+//                @Override
+//                public void addParagraph(String content, String style, int listLevel) {
+//                    ParStyle pStyle = ParStyle.EMPTY.updateWith(style, true);
+//                    TextStyle tStyle = TextStyle.EMPTY.updateWith(style, true);
+//
+//                    ListItem li = null;
+//                    if(listLevel > 0) {
+//                        li = new ListItem(listLevel);
+//                    }
+//                    StyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> doc = 
+//                    ReadOnlyStyledDocument.<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle>
+//                                fromString(content /*+ "\n"*/, pStyle, tStyle, styledTextOps._or(linkedImageOps), li);
+//
+//                    area.append(doc);
+//                }
+//
+//                @Override
+//                public void addCode(String content, String language) {
+//                    ParStyle pStyle = ParStyle.EMPTY.updateWith("programlisting", true).updateWith(language, true);
+//                    TextStyle tStyle = TextStyle.EMPTY.updateWith("programlisting", true).updateWith(language, true);
+//
+//                    StyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> doc = 
+//                    ReadOnlyStyledDocument.<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle>
+//                                fromString(content + "\n", pStyle, tStyle, styledTextOps._or(linkedImageOps));
+//
+//                    area.append(doc);
+//                }
 
                 @Override
                 public void addImage(String imagePath) {
@@ -555,6 +556,36 @@ public class RichText extends Application {
                             ReadOnlyStyledDocument.fromSegment(Either.right(new LinkedImage<>(imagePath, TextStyle.EMPTY)),
                                                                ParStyle.EMPTY, TextStyle.EMPTY, area.getSegOps());
                     area.append(ros);
+                }
+
+                @Override
+                public void addFormula(String formula) {
+                    System.err.println("Adding formula:" + formula);
+                    ReadOnlyStyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> ros =
+                            ReadOnlyStyledDocument.fromSegment(Either.right(new LatexFormula<>(formula, TextStyle.EMPTY)),
+                                                               ParStyle.EMPTY, TextStyle.EMPTY, area.getSegOps());
+                    area.append(ros);
+                }
+
+                @Override
+                public void addFragment(String content, TextStyle tStyle, ParStyle pStyle, int listLevel, boolean bullets) { // List<String> style) {
+                    // TODO: use "current" paragraph style!
+                    //ParStyle pStyle = ParStyle.EMPTY.updateWith(paraStyle, true); // .updateWith(style, true);
+                    //for (String style : )
+                    //style.forEach(s -> tStyle = tStyle.updateWith(s, true));
+                    // .updateWith("para", true).updateWith(style, true);
+
+                    ListItem li = null;
+                    if(listLevel > 0) {
+                        li = new ListItem(listLevel, bullets);
+                    }
+                    System.err.println("LIST: " + li);
+
+                    StyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> doc = 
+                    ReadOnlyStyledDocument.<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle>
+                                fromString(content, pStyle, tStyle, styledTextOps._or(linkedImageOps), li);
+
+                    area.append(doc);
                 }
             });
         } catch (FileNotFoundException e) {
