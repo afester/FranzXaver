@@ -453,19 +453,7 @@ public class RichText extends Application {
     }
 
     private void indentLess() {
-        int pIdx = area.getCurrentParagraph();
-        Paragraph<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> paragraph = area.getParagraph(pIdx);
-        Optional<ListItem> li = paragraph.getListItem();
-
-        if (li.isPresent()) {
-            ListItem newItem = null;
-            int level = li.get().getLevel() - 1;
-            if (level != 0) {
-                newItem = new ListItem(level, true);
-            }
-
-            area.setParagraphList(pIdx, newItem);
-        }
+        area.outdent();
     }
 
     private void indentMore() {
