@@ -7,9 +7,11 @@ public interface DocbookHandler {
 //@Deprecated
   //  void addCode(String content, String language);
 
-    void addImage(String imagePath);
+    void addImage(String imagePath, int listLevel, boolean bullets);
 
-    void addFormula(String formula);
+    void addFormula(String formula, int listLevel, boolean bullets);
 
     void addFragment(String content, TextStyle tStyle, ParStyle paraStyle, int listLevel, boolean bullets);
+    
+    void addCode(String content, TextStyle tStyle, ParStyle paraStyle, int listLevel, boolean bullets);
 }

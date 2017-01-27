@@ -72,6 +72,9 @@ labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam 
     createSubTree(tree, childCount, depth, "Node");
     return tree;
 }</programlisting>
+      <programlisting language="java">public TreeNode&lt;String&gt; addTree(TreeNode&lt;String&gt; child) {
+...
+}</programlisting>
     </section>
 
     <section>

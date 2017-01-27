@@ -154,7 +154,7 @@
 }
 
 .programlisting.java {
-	-fx-border-insets: 0px 0px 0px 5px;	/* trbl */
+	-fx-border-insets: 5px 0px 0px 5px;	/* trbl */
 	-fx-background-color: #0000ff;
 	-fx-fill: yellow;
 

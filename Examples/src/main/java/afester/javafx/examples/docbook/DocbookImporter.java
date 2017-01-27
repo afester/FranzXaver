@@ -168,7 +168,7 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
         else if (name.equals("imagedata")) {
             flushContent();
             String imagePath = attributes.getValue("fileref");
-            handler.addImage(contentPath + "/" + imagePath);
+            handler.addImage(contentPath + "/" + imagePath, listLevel, true);
         }
 
         // <mathphrase>
@@ -180,28 +180,26 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
     private void flushContent() {
         //if (content.length() > 0) {
 
-        // the content might contain newlines - treat each line as a separate paragraph
-        boolean first = true;
-        int idx = 0;
-        String[] lines = content.toString().split("\n");
-        for (String line : lines) {
-            System.err.printf("FLUSH: %s (%s, %s)%n", line, textStyle, paraStyle);
-            handler.addFragment(line, textStyle, paraStyle, listLevel, first);
-            first = false;
-            if (idx < lines.length - 1 || content.toString().endsWith("\n")) {
-                handler.addFragment("\n", textStyle, paraStyle, listLevel, first);    
+        if (language == null) {
+            // the content might contain newlines - treat each line as a separate paragraph
+            boolean first = true;
+            int idx = 0;
+            String[] lines = content.toString().split("\n");
+            for (String line : lines) {
+                System.err.printf("FLUSH: %s (%s, %s)%n", line, textStyle, paraStyle);
+                handler.addFragment(line, textStyle, paraStyle, listLevel, first);
+                first = false;
+                if (idx < lines.length - 1 || content.toString().endsWith("\n")) {
+                    handler.addFragment("\n", textStyle, paraStyle, listLevel, first);    
+                }
+                idx++;
             }
-            idx++;
-
-//            handler.addFragment("\n", textStyle, paraStyle, listLevel);
+        } else {
+            handler.addCode(content.toString(), textStyle, paraStyle, listLevel, true);
         }
-//        System.err.println(Arrays.toString(lines));
-//        
-//        
-//            System.err.printf("FLUSH: %s (%s, %s)%n", content.toString(), textStyle, paraStyle);
-//            handler.addFragment(content.toString(), textStyle, paraStyle, listLevel);
-            content = new StringBuffer();
-        //}
+
+        content = new StringBuffer();
+        language = null;
     }
 
     private void startParagraph() {
@@ -345,7 +343,7 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
         else if (name.equals("mathphrase")) {
             //self.currentStyle = None                # todo: nested styles support (needs yet another stack ...)
 
-            handler.addFormula(content.toString());
+            handler.addFormula(content.toString(), listLevel, true);
             content = new StringBuffer();
         }
     }

@@ -17,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -509,49 +510,35 @@ public class RichText extends Application {
         try (InputStream is = new FileInputStream(file)){
             di.importFromFile(is, new DocbookHandler() {
 
-//                @Override
-//                public void addParagraph(String content, String style, int listLevel) {
-//                    ParStyle pStyle = ParStyle.EMPTY.updateWith(style, true);
-//                    TextStyle tStyle = TextStyle.EMPTY.updateWith(style, true);
-//
-//                    ListItem li = null;
-//                    if(listLevel > 0) {
-//                        li = new ListItem(listLevel);
-//                    }
-//                    StyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> doc = 
-//                    ReadOnlyStyledDocument.<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle>
-//                                fromString(content /*+ "\n"*/, pStyle, tStyle, styledTextOps._or(linkedImageOps), li);
-//
-//                    area.append(doc);
-//                }
-//
-//                @Override
-//                public void addCode(String content, String language) {
-//                    ParStyle pStyle = ParStyle.EMPTY.updateWith("programlisting", true).updateWith(language, true);
-//                    TextStyle tStyle = TextStyle.EMPTY.updateWith("programlisting", true).updateWith(language, true);
-//
-//                    StyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> doc = 
-//                    ReadOnlyStyledDocument.<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle>
-//                                fromString(content + "\n", pStyle, tStyle, styledTextOps._or(linkedImageOps));
-//
-//                    area.append(doc);
-//                }
-
                 @Override
-                public void addImage(String imagePath) {
+                public void addImage(String imagePath, int listLevel, boolean bullets) {
                     System.err.println("Adding Image:" + imagePath);
+                    
+                    ListItem li = null;
+                    if(listLevel > 0) {
+                        li = new ListItem(listLevel, false); // bullets);   // !!!!!!!!!!!!!!!
+                    }
+                    System.err.println("LIST: " + li);
+                    
                     ReadOnlyStyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> ros =
                             ReadOnlyStyledDocument.fromSegment(Either.right(new LinkedImage<>(imagePath, TextStyle.EMPTY)),
-                                                               ParStyle.EMPTY, TextStyle.EMPTY, area.getSegOps());
+                                                               ParStyle.EMPTY, TextStyle.EMPTY, area.getSegOps(), li);
                     area.append(ros);
                 }
 
                 @Override
-                public void addFormula(String formula) {
+                public void addFormula(String formula, int listLevel, boolean bullets) {
                     System.err.println("Adding formula:" + formula);
+                    
+                    ListItem li = null;
+                    if(listLevel > 0) {
+                        li = new ListItem(listLevel, bullets);
+                    }
+                    System.err.println("LIST: " + li);
+
                     ReadOnlyStyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> ros =
                             ReadOnlyStyledDocument.fromSegment(Either.right(new LatexFormula<>(formula, TextStyle.EMPTY)),
-                                                               ParStyle.EMPTY, TextStyle.EMPTY, area.getSegOps());
+                                                               ParStyle.EMPTY, TextStyle.EMPTY, area.getSegOps(), li);
                     area.append(ros);
                 }
 
@@ -575,6 +562,23 @@ public class RichText extends Application {
 
                     area.append(doc);
                 }
+                
+                
+                @Override
+                public void addCode(String content, TextStyle tStyle, ParStyle pStyle, int listLevel, boolean bullets) { // List<String> style) {
+                    ListItem li = null;
+                    if(listLevel > 0) {
+                        li = new ListItem(listLevel, bullets);
+                    }
+                    System.err.println("LIST: " + li);
+
+                    StyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> doc = 
+                    ReadOnlyStyledDocument.<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle>
+                                fromStringEx(content, pStyle, tStyle, styledTextOps._or(linkedImageOps), li);
+System.err.println("ADDING CODE:" + content);
+                    area.append(doc);
+                }
+
             });
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -591,7 +595,8 @@ public class RichText extends Application {
         fileChooser.setInitialDirectory(new File(initialDir));
         File selectedFile = fileChooser.showSaveDialog(mainStage);
         if (selectedFile != null) {
-            save(selectedFile);
+            //save(selectedFile);
+            saveXML(selectedFile);
         }
     }
 
@@ -614,6 +619,21 @@ public class RichText extends Application {
         });
     }
 
+    private void saveXML(File file) {
+        StyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> doc = area.getDocument();
+        
+        try (OutputStream os = new FileOutputStream(file)){
+            DocbookExporter de = new DocbookExporter(os, "data", "");    
+            de.exportToFile(doc);
+            os.flush();
+            os.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * Action listener which inserts a new image at the current caret position.
@@ -629,7 +649,7 @@ public class RichText extends Application {
             imagePath = imagePath.replace('\\',  '/');
             ReadOnlyStyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> ros =
                     ReadOnlyStyledDocument.fromSegment(Either.right(new LinkedImage<>(imagePath, TextStyle.EMPTY)),
-                                                       ParStyle.EMPTY, TextStyle.EMPTY, area.getSegOps());
+                                                       ParStyle.EMPTY, TextStyle.EMPTY, area.getSegOps(), null);
             area.replaceSelection(ros);
         }
     }
