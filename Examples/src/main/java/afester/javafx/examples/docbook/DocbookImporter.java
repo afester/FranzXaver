@@ -168,7 +168,7 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
         else if (name.equals("imagedata")) {
             flushContent();
             String imagePath = attributes.getValue("fileref");
-            handler.addImage(contentPath + "/" + imagePath, listLevel, true);
+            handler.addImage(/*contentPath + "/" +*/ imagePath, listLevel, true);   // TODO: check image path / file
         }
 
         // <mathphrase>
@@ -180,23 +180,23 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
     private void flushContent() {
         //if (content.length() > 0) {
 
-        if (language == null) {
-            // the content might contain newlines - treat each line as a separate paragraph
-            boolean first = true;
-            int idx = 0;
-            String[] lines = content.toString().split("\n");
-            for (String line : lines) {
-                System.err.printf("FLUSH: %s (%s, %s)%n", line, textStyle, paraStyle);
-                handler.addFragment(line, textStyle, paraStyle, listLevel, first);
-                first = false;
-                if (idx < lines.length - 1 || content.toString().endsWith("\n")) {
-                    handler.addFragment("\n", textStyle, paraStyle, listLevel, first);    
-                }
-                idx++;
-            }
-        } else {
-            handler.addCode(content.toString(), textStyle, paraStyle, listLevel, true);
-        }
+//        if (language == null) {
+//            // the content might contain newlines - treat each line as a separate paragraph
+//            boolean first = true;
+//            int idx = 0;
+//            String[] lines = content.toString().split("\n");
+//            for (String line : lines) {
+//                System.err.printf("FLUSH: %s (%s, %s)%n", line, textStyle, paraStyle);
+//                handler.addFragment(line, textStyle, paraStyle, listLevel, first);
+//                first = false;
+//                if (idx < lines.length - 1 || content.toString().endsWith("\n")) {
+//                    handler.addFragment("\n", textStyle, paraStyle, listLevel, first);    
+//                }
+//                idx++;
+//            }
+//        } else {
+            handler.addFragmentWithNewline(content.toString(), textStyle, paraStyle, listLevel, true);
+//        }
 
         content = new StringBuffer();
         language = null;
@@ -281,6 +281,7 @@ class Handler extends DefaultHandler { //(xml.sax.handler.ContentHandler):
 
         // </screen>
         else if (name.equals("screen")) {
+            language="x";  // TODO: flag!
             flushContent();
             content = null;
             paraStyle = null;

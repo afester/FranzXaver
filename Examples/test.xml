@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<article version="5.0" xml:lang="en"
+         xmlns="http://docbook.org/ns/docbook"
+         xmlns:xlink="http://www.w3.org/1999/xlink">
+  <title/>
+
+  <section>
+    <title>Sample Page</title>
+
+    <section>
+      <title>Lists</title>
+      <itemizedlist>
+        <listitem>
+          <para>Python 3.3</para>
+        </listitem>
+        <listitem>
+          <para>PyQt 5.4</para>
+        </listitem>
+        <listitem>
+          <para>cssutils 1.0</para>
+        </listitem>
+        <listitem>
+          <para><olink targetdoc="Encoding%20Test">Encoding Test</olink></para>
+        </listitem>
+        <listitem>
+          <para><olink targetdoc="Math%20Test">Math Test</olink></para>
+        </listitem>
+        <listitem>
+          <para><olink targetdoc="Test2">Test2</olink></para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>Links</title>
+      <para>This sample Wiki is used to test and show the various features of the Rich Text Editor in Qt.</para>
+    </section>
+
+    <section>
+      <title>A tip</title>
+      <tip><para>This section shows how a tip looks like.</para></tip>
+    </section>
+
+    <section>
+      <title>A quotation</title>
+      <blockquote><para>This section shows how a quotation looks like.
+It can even span
+multiple paragraphs (Lines).</para></blockquote>
+    </section>
+
+    <section>
+      <title>A warning</title>
+      <warning><para>This section shows how a warning looks like.</para></warning>
+    </section>
+
+    <section>
+      <title>A  mathematical expression</title>
+      <para><inlineequation><mathphrase>\mathcal{R}\prod_{i=\alpha_{i+1}}^\infty a_i\sin(2 \pi f x_i)</mathphrase></inlineequation></para>
+      <para><inlineequation><mathphrase>x_{1,2} = - \frac{p}{2} \pm \sqrt{(\frac{p}{2})^2 - q}</mathphrase></inlineequation></para>
+    </section>
+
+    <section>
+      <title>A long text</title>
+      <para><code>Lorem ipsum</code> dolor sit amet, <emphasis>consetetur</emphasis> sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. <highlight>At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</highlight> Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor <highlight>invidunt</highlight> ut 
+labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est <code>Lorem ipsum</code> dolor sit amet.</para>
+    </section>
+
+    <section>
+      <title>Java code</title>
+      <programlisting language="java">public TreeNode&lt;String&gt; createTree(int childCount, int depth) {
+    tree = new TreeNode&lt;&gt;("Root");
+    createSubTree(tree, childCount, depth, "Node");
+    return tree;
+}</programlisting>
+      <programlisting language="java">public TreeNode&lt;String&gt; addTree(TreeNode&lt;String&gt; child) {
+...
+}</programlisting>
+    </section>
+
+    <section>
+      <title>C++ code</title>
+      <programlisting language="cpp">#include &lt;stdio.h&gt;
+
+int main() {
+   printf("Hello World")
+}</programlisting>
+    </section>
+
+    <section>
+      <title>XML code</title>
+      <programlisting language="xml">   &lt;h2&gt;Introduction&lt;/h2&gt;
+   &lt;p&gt;This sample Wiki is used to test and show the various features of the &lt;a href="http://www.qt.org"&gt;Rich Text Editor in Qt.&lt;/a&gt;&lt;/p&gt;
+   &lt;p&gt;See the &lt;keyword&gt;TODO list&lt;/keyword&gt; for stuff which is still missing.&lt;/p&gt;
+   &lt;p&gt;&lt;keyword&gt;Sample Page&lt;/keyword&gt;&lt;/p&gt;</programlisting>
+    </section>
+
+    <section>
+      <title>Generic</title>
+      <screen>$ grep pre *
+BrowserWidget.py:        # Expand to and select the previous item
+EditorWidget.py:#         # Reset previous list
+EditorWidget.py:        if style in ['javacode', 'sqlcode', 'cppcode', 'pycode', 'xmlcode', 'pre']:
+EditorWidget.py:        # Create a plain text representation of the selected blocks
+FormatManager.py:                         'pre' : 'pre'}</screen>
+    </section>
+
+    <section>
+      <title>A List</title>
+      <itemizedlist>
+        <listitem>
+          <para><olink targetdoc="Item%201">Item 1</olink></para>
+        </listitem>
+        <listitem>
+          <para>Item 2
+An item with a second line</para>
+        </listitem>
+        <itemizedlist>
+          <listitem>
+            <para>An item on the next level, and an image on a new line, as part of the list item:
+<mediaobject><imageobject><imagedata fileref="8734434072b647df985d106d4a688aeb.png"/></imageobject></mediaobject></para>
+          </listitem>
+        </itemizedlist>
+        <listitem>
+          <para>Code Section - a complete code section as a list item</para>
+        </listitem>
+        <itemizedlist>
+          <listitem>
+            <programlisting language="cpp">int main() {
+   printf("Hello World")
+}</programlisting>
+          </listitem>
+        </itemizedlist>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>Images</title>
+      <para><mediaobject><imageobject><imagedata fileref="26660d803d5b473cb3e73ebbc20fc49f.png"/></imageobject></mediaobject><mediaobject><imageobject><imagedata fileref="5cc513b677a54111974603ebb9790323.png"/></imageobject></mediaobject><mediaobject><imageobject><imagedata fileref="5cc513b677a54111974603ebb9790323.png"/></imageobject></mediaobject></para>
+      <para></para>
+    </section>
+  </section>
+</article>

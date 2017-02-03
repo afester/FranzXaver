@@ -2,8 +2,8 @@ package afester.javafx.examples.docbook;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +20,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.fxmisc.richtext.model.ListItem;
 import org.fxmisc.richtext.model.Paragraph;
 import org.fxmisc.richtext.model.StyledDocument;
 import org.fxmisc.richtext.model.StyledText;
@@ -28,24 +29,23 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import afester.javafx.examples.docbook.util.Escaper;
+import afester.javafx.examples.docbook.util.PercentEscaper;
+
 public class DocbookExporter {
     private PrintWriter out;
     private Element articleElement;
     private Document xmlDoc; 
     private LinkedList<Element> sections = new LinkedList<>();
-    
-    
-    public DocbookExporter(OutputStream os, String string, String string2) {
+    private LinkedList<Element> lists = new LinkedList<>();
+    private String pathPrefix;
+
+    public DocbookExporter(OutputStream os, String pathPrefix, String string2) {
         out = new PrintWriter(os);
-        
+        this.pathPrefix = pathPrefix; 
     }
 
-    // @TODO
-    private String indent(int level) {
-        return "                                    ".substring(0, level*2);
-    }
-
-
+    
     public void exportToFile(StyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> doc) {
         
         
@@ -65,24 +65,30 @@ public class DocbookExporter {
         articleElement.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
         xmlDoc.appendChild(articleElement);
 
+        Element articleTitleElement = xmlDoc.createElement("title");
+        articleElement.appendChild(articleTitleElement);
+
         addDocumentElements(doc);
 
-        Transformer tf = null;
-        try {
-            tf = TransformerFactory.newInstance().newTransformer();
-        } catch (TransformerConfigurationException e) {
-            e.printStackTrace();
-        } catch (TransformerFactoryConfigurationError e) {
-            e.printStackTrace();
-        }
-        tf.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-        tf.setOutputProperty(OutputKeys.INDENT, "yes");
-        tf.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-        try {
-            tf.transform(new DOMSource(xmlDoc), new StreamResult(out));
-        } catch (TransformerException e) {
-            e.printStackTrace();
-        }
+        DocbookWriter tf = new DocbookWriter();
+        
+//        Transformer tf = null;
+//        try {
+//            tf = TransformerFactory.newInstance().newTransformer();
+//        } catch (TransformerConfigurationException e) {
+//            e.printStackTrace();
+//        } catch (TransformerFactoryConfigurationError e) {
+//            e.printStackTrace();
+//        }
+//        tf.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+//        tf.setOutputProperty(OutputKeys.INDENT, "yes");
+//        tf.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+//        try {
+        System.err.println("OUT: " + out);
+        tf.transform(new DOMSource(xmlDoc), new StreamResult(out));
+//        } catch (TransformerException e) {
+//            e.printStackTrace();
+//        }
 
     }
     
@@ -92,7 +98,8 @@ public class DocbookExporter {
             ParStyle ps = p.getParagraphStyle();
             List<String> styles = ps.getStyles();
 
-            System.err.println(styles + "/" + p.getListItem());
+//            System.err.println(styles + "/" + p.getListItem());
+
             // handle styles
             Optional<String> headerStyle = styles.stream().filter(s -> s.startsWith("h")).findFirst();
             if (headerStyle.isPresent()) {
@@ -124,57 +131,164 @@ public class DocbookExporter {
                     sections.peek().appendChild(newSection);
                 }
                 sections.push(newSection);
-            } else if (styles.size() > 0 && styles.get(0).equals("programlisting")) {
-                String language = styles.get(1);
-
-                Element section = sections.peek();
-                Element pgmListingElement = xmlDoc.createElement("programlisting");
-                pgmListingElement.setAttribute("language", language);
-                section.appendChild(pgmListingElement);
-
-                exportSegments(p, pgmListingElement);
-            } else if (styles.contains("tip")) {
-                Element section = sections.peek();
-                Element tipElement = xmlDoc.createElement("tip");
-                Element paraElement = xmlDoc.createElement("para");
-                section.appendChild(tipElement);
-                tipElement.appendChild(paraElement);
-
-                exportSegments(p, tipElement);
-            } else  if (styles.contains("blockquote")) {
-                Element section = sections.peek();
-                Element blockquoteElement = xmlDoc.createElement("blockquote");
-                Element paraElement = xmlDoc.createElement("para");
-                section.appendChild(blockquoteElement);
-                blockquoteElement.appendChild(paraElement);
-
-                exportSegments(p, blockquoteElement);
             } else {
-                Element section = sections.peek();
-                Element paraElement = xmlDoc.createElement("para");
-                section.appendChild(paraElement);
 
-                exportSegments(p, paraElement);
+//****************************************************************
+
+                // check for List
+                int curListLevel = lists.size();
+                int pListLevel = p.getListItem().orElse(new ListItem(0, false)).getLevel();
+                System.err.printf("**LIST: %s - %s%n",  curListLevel, pListLevel);
+
+                // parent is either an itemizedlist or the current section
+                Element parent = lists.peek();
+                if (parent == null) {
+                    parent = sections.peek();
+                }
+
+                // create required itemizedlist levels
+                while(lists.size() < pListLevel) { //  - 1) {
+                    Element newList = xmlDoc.createElement("itemizedlist");
+                    lists.push(newList);
+
+                    parent.appendChild(newList);
+                    parent = newList;
+                }
+
+                // go back to proper itemizedlist level
+                while(lists.size() > pListLevel) {
+                    lists.pop();
+                }
+
+                parent = lists.peek();
+                if (parent != null) {
+                    Element listItemElement = xmlDoc.createElement("listitem");
+                    parent.appendChild(listItemElement);
+                    parent = listItemElement;
+                } else {
+                    parent = sections.peek();
+                }
+
+//****************************************************************
+                if (styles.size() > 0 && styles.get(0).equals("screen")) {
+                    Element screenElement = xmlDoc.createElement("screen");
+                    parent.appendChild(screenElement);
+    
+                    exportSegments(p, screenElement);
+                } else if (styles.size() > 0 && styles.get(0).equals("programlisting")) {
+                    String language = styles.get(1);
+    
+                    Element pgmListingElement = xmlDoc.createElement("programlisting");
+                    pgmListingElement.setAttribute("language", language);
+                    parent.appendChild(pgmListingElement);
+    
+                    exportSegments(p, pgmListingElement);
+                } else if (styles.contains("warning")) {
+                    Element warningElement = xmlDoc.createElement("warning");
+                    Element paraElement = xmlDoc.createElement("para");
+                    parent.appendChild(warningElement);
+                    warningElement.appendChild(paraElement);
+    
+                    exportSegments(p, paraElement);
+                } else if (styles.contains("tip")) {
+                    Element tipElement = xmlDoc.createElement("tip");
+                    Element paraElement = xmlDoc.createElement("para");
+                    parent.appendChild(tipElement);
+                    tipElement.appendChild(paraElement);
+    
+                    exportSegments(p, paraElement);
+                } else  if (styles.contains("blockquote")) {
+                    Element blockquoteElement = xmlDoc.createElement("blockquote");
+                    Element paraElement = xmlDoc.createElement("para");
+                    parent.appendChild(blockquoteElement);
+                    blockquoteElement.appendChild(paraElement);
+    
+                    exportSegments(p, paraElement);
+                } else {
+                    Element paraElement = xmlDoc.createElement("para");
+                    parent.appendChild(paraElement);
+    
+                    exportSegments(p, paraElement);
+                }
             }
         }
     }
 
+    
+    private static final String URL_PATH_OTHER_SAFE_CHARS_LACKING_PLUS =
+                   "-._~" +        // Unreserved characters.
+                   "!$'()*,;&=" +  // The subdelim characters (excluding '+').
+                   "@:";       
     private void exportSegments(Paragraph<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> p, Element parentElement) {
         for (Either<StyledText<TextStyle>, CustomObject<TextStyle>> segment : p.getSegments()) {
-            Element segmentElement = xmlDoc.createElement("segment");
 
-            if (segment.isLeft()) {
-                StyledText<TextStyle> seg = segment.getLeft();
-                Node text = xmlDoc.createTextNode(seg.getText());
-                segmentElement.appendChild(text);
-                
-            } else {
-                CustomObject<TextStyle> seg = segment.getRight();
-                Node text = xmlDoc.createTextNode(seg.toString());
-                segmentElement.appendChild(text);
-            }
             
-            parentElement.appendChild(segmentElement);
+
+            if (segment.isLeft()) { // Text segment
+                StyledText<TextStyle> seg = segment.getLeft();
+                TextStyle segStyle = seg.getStyle();
+
+                if (segStyle.contains("emphasis")) {
+                    Element segmentElement = xmlDoc.createElement("emphasis");
+                    Node text = xmlDoc.createTextNode(seg.getText());
+                    segmentElement.appendChild(text);
+                    parentElement.appendChild(segmentElement);
+                } else if (segStyle.contains("highlight")) {
+                    Element segmentElement = xmlDoc.createElement("highlight");
+                    Node text = xmlDoc.createTextNode(seg.getText());
+                    segmentElement.appendChild(text);
+                    parentElement.appendChild(segmentElement);
+                } else if (segStyle.contains("code")) {
+                    Element segmentElement = xmlDoc.createElement("code");
+                    Node text = xmlDoc.createTextNode(seg.getText());
+                    segmentElement.appendChild(text);
+                    parentElement.appendChild(segmentElement);
+                } else if (segStyle.contains("olink")) {
+                    Element segmentElement = xmlDoc.createElement("olink");
+//                    String ref = "";
+//                    try {
+                        Escaper escaper = new PercentEscaper(URL_PATH_OTHER_SAFE_CHARS_LACKING_PLUS + "+/?", false);
+                        String ref = escaper.escape(seg.getText());
+//
+//                        // ref = URLEncoder.encode(seg.getText(), "UTF-8"); // does not encode space character as expected
+//                        ref = seg.getText();
+//                        ref = ref.replaceAll(" ", "%20");   // TODO: Check
+//                        ref = URLEncoder.encode(ref, "UTF-8"); // does not encode space character as expected
+//                    } catch (UnsupportedEncodingException e) {
+//                        e.printStackTrace();
+//                    } 
+                    segmentElement.setAttribute("targetdoc", ref);
+                    Node text = xmlDoc.createTextNode(seg.getText());
+                    segmentElement.appendChild(text);
+                    parentElement.appendChild(segmentElement);
+                } else {
+                    Node text = xmlDoc.createTextNode(seg.getText());
+                    parentElement.appendChild(text);
+                }
+
+            } else {                // custom object segment
+                CustomObject<TextStyle> seg = segment.getRight();
+                if (seg instanceof LinkedImage) {
+                    Element mediaElement = xmlDoc.createElement("mediaobject");
+                    Element imageElement = xmlDoc.createElement("imageobject");
+                    Element imageDataElement = xmlDoc.createElement("imagedata");
+                    imageDataElement.setAttribute("fileref", ((LinkedImage) seg).getImageFile());   // TODO: Check image path / filename 
+                    imageElement.appendChild(imageDataElement);
+                    mediaElement.appendChild(imageElement);
+
+                    parentElement.appendChild(mediaElement);
+                } else if (seg instanceof LatexFormula) {
+                    Element equationElement = xmlDoc.createElement("inlineequation");
+                    Element phraseElement = xmlDoc.createElement("mathphrase");
+                    Node text = xmlDoc.createTextNode( ((LatexFormula) seg).getFormula());
+                    equationElement.appendChild(phraseElement);
+                    phraseElement.appendChild(text);
+
+                    parentElement.appendChild(equationElement);
+                } else {
+                    throw new RuntimeException("EXPORT ERROR: INVALID SEGMENT " + seg);
+                }
+            }
         }
     }
 }

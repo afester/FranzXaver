@@ -2,7 +2,6 @@ package afester.javafx.examples.docbook;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
 
 import org.fxmisc.richtext.model.Codec;
@@ -14,45 +13,54 @@ import javafx.scene.image.ImageView;
 public class LinkedImage<S> extends CustomObject<S> {
 
     private String imagePath;
+    private String imageFile;
+    private Image image;
 
     public LinkedImage() {
     }
 
-    public LinkedImage(String imagePath, S style) {
+    public LinkedImage(String imagePath, String imageFile, S style) {
         super(style);
         
 
         // if the image is below the current working directory,
         // then store as relative path name.
-        String currentDir = System.getProperty("user.dir") + File.separatorChar;
-        if (imagePath.startsWith(currentDir)) {
-            imagePath = imagePath.substring(currentDir.length());
-        }
+//        String currentDir = System.getProperty("user.dir") + File.separatorChar;
+//        if (imagePath.startsWith(currentDir)) {
+//            imagePath = imagePath.substring(currentDir.length());
+//        }
 
         this.imagePath = imagePath;
+        this.imageFile = imageFile;
     }
 
 
   /**
-   * @return The path of the image to render.
+   * @return The path where the image to render is located.
    */
   public String getImagePath() {
       return imagePath;
   }
 
+  /**
+   * @return The filename of the image to render.
+   */
+  public String getImageFile() {
+      return imageFile;
+  }
+
     
     @Override
     public CustomObject<S> setStyle(S style) {
-        return new LinkedImage<>(imagePath, style);
+        return new LinkedImage<>(imagePath, imageFile, style);
     }
 
     @Override
     public Node createNode() {
-        Image image = new Image("file:" + imagePath); // XXX: No need to create new Image objects each time -
-                                                      // could be cached in the model layer
-        
-        System.err.println("   IMAGE: " + image);
-        
+        if (image == null) {
+            image = new Image("file:" + imagePath + "/" + imageFile);
+        }
+
         ImageView result = new ImageView(image);
         return result;
     }

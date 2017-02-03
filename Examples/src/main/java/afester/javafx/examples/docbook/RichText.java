@@ -511,8 +511,8 @@ public class RichText extends Application {
             di.importFromFile(is, new DocbookHandler() {
 
                 @Override
-                public void addImage(String imagePath, int listLevel, boolean bullets) {
-                    System.err.println("Adding Image:" + imagePath);
+                public void addImage(String imageFile, int listLevel, boolean bullets) {
+                    System.err.println("Adding Image:" + imageFile);
                     
                     ListItem li = null;
                     if(listLevel > 0) {
@@ -521,7 +521,7 @@ public class RichText extends Application {
                     System.err.println("LIST: " + li);
                     
                     ReadOnlyStyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> ros =
-                            ReadOnlyStyledDocument.fromSegment(Either.right(new LinkedImage<>(imagePath, TextStyle.EMPTY)),
+                            ReadOnlyStyledDocument.fromSegment(Either.right(new LinkedImage<>("data", imageFile, TextStyle.EMPTY)),
                                                                ParStyle.EMPTY, TextStyle.EMPTY, area.getSegOps(), li);
                     area.append(ros);
                 }
@@ -565,7 +565,7 @@ public class RichText extends Application {
                 
                 
                 @Override
-                public void addCode(String content, TextStyle tStyle, ParStyle pStyle, int listLevel, boolean bullets) { // List<String> style) {
+                public void addFragmentWithNewline(String content, TextStyle tStyle, ParStyle pStyle, int listLevel, boolean bullets) { // List<String> style) {
                     ListItem li = null;
                     if(listLevel > 0) {
                         li = new ListItem(listLevel, bullets);
@@ -575,7 +575,7 @@ public class RichText extends Application {
                     StyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> doc = 
                     ReadOnlyStyledDocument.<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle>
                                 fromStringEx(content, pStyle, tStyle, styledTextOps._or(linkedImageOps), li);
-System.err.println("ADDING CODE:" + content);
+
                     area.append(doc);
                 }
 
@@ -648,7 +648,7 @@ System.err.println("ADDING CODE:" + content);
             String imagePath = selectedFile.getAbsolutePath();
             imagePath = imagePath.replace('\\',  '/');
             ReadOnlyStyledDocument<ParStyle, Either<StyledText<TextStyle>, CustomObject<TextStyle>>, TextStyle> ros =
-                    ReadOnlyStyledDocument.fromSegment(Either.right(new LinkedImage<>(imagePath, TextStyle.EMPTY)),
+                    ReadOnlyStyledDocument.fromSegment(Either.right(new LinkedImage<>("data", imagePath, TextStyle.EMPTY)),
                                                        ParStyle.EMPTY, TextStyle.EMPTY, area.getSegOps(), null);
             area.replaceSelection(ros);
         }

@@ -23,6 +23,12 @@ public class LatexFormula<S> extends CustomObject<S> {
         this.formula = formula;
     }
 
+    /**
+     * @return The latex expression which is used for this formula.
+     */
+    public String getFormula() {
+        return formula;
+    }
 
     @Override
     public CustomObject<S> setStyle(S style) {

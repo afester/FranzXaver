@@ -13,5 +13,5 @@ public interface DocbookHandler {
 
     void addFragment(String content, TextStyle tStyle, ParStyle paraStyle, int listLevel, boolean bullets);
     
-    void addCode(String content, TextStyle tStyle, ParStyle paraStyle, int listLevel, boolean bullets);
+    void addFragmentWithNewline(String content, TextStyle tStyle, ParStyle paraStyle, int listLevel, boolean bullets);
 }
