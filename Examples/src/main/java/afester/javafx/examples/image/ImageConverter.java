@@ -99,14 +99,14 @@ public class ImageConverter extends Application {
                     //buffer[idx+1];    // G
                     //buffer[idx+2];    // B
                     //buffer[idx+3];    // A
-                    System.err.printf("[%s %s %s] => [%s %s]",
+                    System.err.printf("[%s %s %s] => [%s %s]\n",
                             String.format("%8s", Integer.toBinaryString(buffer[idx+0] & 0xff)).replace(' ', '0'),
                             String.format("%8s", Integer.toBinaryString(buffer[idx+1] & 0xff)).replace(' ', '0'),
                             String.format("%8s", Integer.toBinaryString(buffer[idx+2] & 0xff)).replace(' ', '0'),
                             String.format("%8s", Integer.toBinaryString(upper & 0xff)).replace(' ', '0'),
                             String.format("%8s", Integer.toBinaryString(lower & 0xff)).replace(' ', '0'));
+                    System.err.printf(" rrrrr    gggggg   bbbbb         rrrrrggg gggbbbbb\n\n");
                     idx += 4;
-                    return;
                 }
             }
         });
