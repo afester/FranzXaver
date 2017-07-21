@@ -84,31 +84,49 @@ public class ImageConverter extends Application {
             hd.dumpAll(System.err);
             
             int idx = 0;
-            byte[] rgb565 = new byte[(int) (img.getHeight() * img.getWidth())];
+            int expIdx = 0;
+            byte[] rgb565 = new byte[(int) (img.getHeight() * img.getWidth()) * 2];
             for (int y = 0;  y < (int) img.getHeight();  y++) {
                 for (int x = 0;  x < (int) img.getWidth();  x++) {
-                    // [rrrrrrrr gggggggg bbbbbbbb]
-                    //  ^^^^^    ^^^^^^   ^^^^^
-                    // [rrrrrggg gggbbbbb]
-                    byte upper = (byte) ((        buffer[idx+0] & 0xf8) |
-                                         ((short) buffer[idx+1] & 0xe0) >> 5);
-                    byte lower = (byte) ((((short) buffer[idx+1] & 0x1c) << 3) | 
-                                         ((short) buffer[idx+2] & 0xf8) >> 3);
-
                     //buffer[idx];      // R
                     //buffer[idx+1];    // G
                     //buffer[idx+2];    // B
                     //buffer[idx+3];    // A
-                    System.err.printf("[%s %s %s] => [%s %s]\n",
-                            String.format("%8s", Integer.toBinaryString(buffer[idx+0] & 0xff)).replace(' ', '0'),
-                            String.format("%8s", Integer.toBinaryString(buffer[idx+1] & 0xff)).replace(' ', '0'),
-                            String.format("%8s", Integer.toBinaryString(buffer[idx+2] & 0xff)).replace(' ', '0'),
-                            String.format("%8s", Integer.toBinaryString(upper & 0xff)).replace(' ', '0'),
-                            String.format("%8s", Integer.toBinaryString(lower & 0xff)).replace(' ', '0'));
-                    System.err.printf(" rrrrr    gggggg   bbbbb         rrrrrggg gggbbbbb\n\n");
+
+                    // [rrrrrrrr gggggggg bbbbbbbb]
+                    //  ^^^^^    ^^^^^^   ^^^^^
+                    // [rrrrrggg gggbbbbb]
+                    byte upper = (byte) ((         buffer[idx + 0] & 0xf8) |
+                                         ((short)  buffer[idx + 1] & 0xe0) >> 5);
+                    byte lower = (byte) ((((short) buffer[idx + 1] & 0x1c) << 3) | 
+                                         ((short)  buffer[idx + 2] & 0xf8) >> 3);
+
+//                    String fromOrig = 
+//                            String.format("%8s", Integer.toBinaryString(buffer[idx+0] & 0xff)).replace(' ', '0').substring(0, 5) +
+//                            String.format("%8s", Integer.toBinaryString(buffer[idx+1] & 0xff)).replace(' ', '0').substring(0, 6) +
+//                            String.format("%8s", Integer.toBinaryString(buffer[idx+2] & 0xff)).replace(' ', '0').substring(0, 5);
+//                    String fromConverted =
+//                            String.format("%8s", Integer.toBinaryString(upper & 0xff)).replace(' ', '0')+
+//                            String.format("%8s", Integer.toBinaryString(lower & 0xff)).replace(' ', '0');
+//
+//                    if (!fromOrig.equals(fromConverted)) {
+//                        System.err.println("ERRRROR!!!!");
+//                    }
+//                    System.err.printf(" rrrrr    gggggg   bbbbb         rrrrrggg gggbbbbb\n\n");
+
+                    rgb565[expIdx + 0] = upper;
+                    rgb565[expIdx + 1] = lower;
+
+                    expIdx += 2;
                     idx += 4;
                 }
             }
+
+            //HexDump hd2 = new HexDump(rgb565);
+            //hd2.dumpAll(System.err);
+
+            ArrayDump ad = new ArrayDump(rgb565);
+            ad.dumpAll(System.err);
         });
         mainGroup.getChildren().add(exportButton);
 
