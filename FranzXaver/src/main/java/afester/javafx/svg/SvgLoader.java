@@ -30,6 +30,8 @@ import org.apache.batik.anim.dom.SVGOMLinearGradientElement;
 import org.apache.batik.anim.dom.SVGOMMetadataElement;
 import org.apache.batik.anim.dom.SVGOMPathElement;
 import org.apache.batik.anim.dom.SVGOMPatternElement;
+import org.apache.batik.anim.dom.SVGOMPolygonElement;
+import org.apache.batik.anim.dom.SVGOMPolylineElement;
 import org.apache.batik.anim.dom.SVGOMRadialGradientElement;
 import org.apache.batik.anim.dom.SVGOMRectElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
@@ -85,10 +87,12 @@ public class SvgLoader {
                                                      useSeparatePathElements));
         elementMap.put("line", e -> bh.handleElement((SVGOMLineElement) e));
         elementMap.put("rect", e -> bh.handleElement((SVGOMRectElement) e));
+        elementMap.put("polygon", e -> bh.handleElement((SVGOMPolygonElement) e));
+        elementMap.put("polyline", e -> bh.handleElement((SVGOMPolylineElement) e));
         elementMap.put("circle", e -> bh.handleElement((SVGOMCircleElement) e));
         elementMap.put("ellipse", e -> bh.handleElement((SVGOMEllipseElement) e));
         elementMap.put("text", e -> bh.handleElement((SVGOMTextElement) e));
-
+        
         elementMap.put("tspan", e -> bh.handleElement((SVGOMTSpanElement) e));
         elementMap.put("pattern", e -> bh.handleElement((SVGOMPatternElement) e));
 
@@ -109,7 +113,7 @@ public class SvgLoader {
          * <feImage> <feMorphology> <feSpotLight> <feTile> <feTurbulence> <font>
          * <font-face> <font-face-format> <font-face-name> <font-face-src>
          * <font-face-uri> <foreignObject> <glyph> <glyphRef> <hkern> <image>
-         * <marker> <mask> <missing-glyph> <mpath> <polygon> <polyline> <script>
+         * <marker> <mask> <missing-glyph> <mpath> <script>
          * <set> <style> <switch> <symbol> <textPath> <tref> <use> <view>
          * <vkern>
          */
