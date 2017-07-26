@@ -3,21 +3,17 @@ package afester.javafx.examples.image;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.nio.Buffer;
 
-import com.example.hexdump.HexDump;
+//import com.example.hexdump.HexDump;
 
 import afester.javafx.examples.Example;
-import afester.javafx.tools.ColorSeparator;
 import javafx.application.Application;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritablePixelFormat;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -80,9 +76,9 @@ public class ImageConverter extends Application {
             byte[]  buffer = new byte[bufsize];
             reader.getPixels(0, 0, (int) img.getHeight(), (int) img.getWidth(), pixelformat, buffer, 0, (int) img.getWidth() * 4);
 
-            HexDump hd = new HexDump(buffer);
-            hd.dumpAll(System.err);
-            
+            //HexDump hd = new HexDump(buffer);
+            //hd.dumpAll(System.err);
+
             int idx = 0;
             int expIdx = 0;
             byte[] rgb565 = new byte[(int) (img.getHeight() * img.getWidth()) * 2];
