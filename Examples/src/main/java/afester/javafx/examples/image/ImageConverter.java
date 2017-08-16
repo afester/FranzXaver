@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.layout.VBox;
@@ -70,9 +71,24 @@ public class ImageConverter extends Application {
             byte[] rgb565 = getRGB565(img);
 
             ArrayDump ad = new ArrayDump(rgb565);
-            ad.dumpAll(System.err);
+            ad.dumpAll((int)img.getWidth()*2, System.err);
         });
         mainGroup.getChildren().add(exportButton);
+
+        Button exportStructButton = new Button("Export struct Bitmap ...");
+        exportStructButton.setOnAction(e -> {
+            Image img = imageView.getImage();
+            
+            byte[] rgb565 = getRGB565(img);
+
+            ArrayDump ad = new ArrayDump(rgb565);
+            int width = (int) img.getWidth();
+            int height = (int) img.getHeight();
+            System.err.printf("Bitmap bitmap = {%s, %s,\n", width, height);
+            ad.dumpAll16(width, System.err);
+            System.err.printf("};\n");
+        });
+        mainGroup.getChildren().add(exportStructButton);
 
         imageView = new ImageView();
         mainGroup.getChildren().add(imageView);
@@ -84,24 +100,27 @@ public class ImageConverter extends Application {
     }
 
     public byte[] getRGB565(Image img) {
-        System.err.printf("%s x %s\n",  img.getWidth(), img.getHeight());
+        int width = (int)img.getWidth();
+        int height = (int)img.getHeight();
+
+        System.err.printf("%s x %s\n",  width, height);
         PixelReader reader = img.getPixelReader();
 
-        WritablePixelFormat<java.nio.ByteBuffer> pixelformat = WritablePixelFormat.getByteBgraInstance();
-        int bufsize = (int) (img.getHeight() * img.getWidth() * 4);
-        System.err.printf("Image size: %s x %s (Buffer size: %s bytes)\n",  img.getHeight(), img.getWidth(), bufsize);
+        int bufsize = (width * height * 4);
+        System.err.printf("Image size: %s x %s (Buffer size: %s bytes)\n",  width, height, bufsize);
 
         byte[]  buffer = new byte[bufsize];
-        reader.getPixels(0, 0, (int) img.getHeight(), (int) img.getWidth(), pixelformat, buffer, 0, (int) img.getWidth() * 4);
+        reader.getPixels(0, 0, width, height, 
+                         PixelFormat.getByteBgraInstance(), buffer, 0, width * 4);
 
         //HexDump hd = new HexDump(buffer);
         //hd.dumpAll(System.err);
 
         int idx = 0;
         int expIdx = 0;
-        byte[] rgb565 = new byte[(int) (img.getHeight() * img.getWidth()) * 2];
-        for (int y = 0;  y < (int) img.getHeight();  y++) {
-            for (int x = 0;  x < (int) img.getWidth();  x++) {
+        byte[] rgb565 = new byte[width * height * 2];
+        for (int y = 0;  y < height;  y++) {
+            for (int x = 0;  x < width;  x++) {
                 //buffer[idx];      // R
                 //buffer[idx+1];    // G
                 //buffer[idx+2];    // B

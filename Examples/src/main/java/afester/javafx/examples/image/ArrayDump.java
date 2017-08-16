@@ -22,9 +22,49 @@ public class ArrayDump {
                 }
             }
         }
+        out.print("};");
+    }
+
+    public void dumpAll(int valuesPerRow, PrintStream out) {
+        out.print("  {");
+        for (int idx = 0;  idx < data.length;  ) {
+            out.printf("0x%02x", data[idx++]);
+
+            if (idx < data.length) {
+                out.print(", ");
+                if ((idx % valuesPerRow) == 0) {
+                    out.print("\n   ");
+                }
+            }
+        }
+        out.print("};");
+    }
+
+    
+    public void dumpAll16(int valuesPerRow, PrintStream out) {
+        if (data.length % 2 != 0) {
+            throw new IllegalArgumentException("Buffer does not have even number of values!");
+        }
+
+        out.print("  {");
+        for (int idx = 0;  idx < data.length;  ) {
+            int value = (short) data[idx] & 0xff;
+            value = value | ((short) data[idx+1] & 0xff) << 8;
+            idx += 2;
+            out.printf("0x%04x", value);
+
+            if (idx < data.length) {
+                out.print(", ");
+                if ((idx % (valuesPerRow*2)) == 0) {
+                    out.print("\n   ");
+                }
+            }
+        }
         out.print("}");
     }
 
+
+    
     
     public void dumpAll2(PrintStream out) {
         int idx = 0;
