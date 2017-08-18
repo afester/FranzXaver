@@ -4,7 +4,7 @@
   <artifactId>Examples</artifactId>
 
   <packaging>jar</packaging>
-  <version>0.1</version>
+  <version>0.2-SNAPSHOT</version>
   <name>Examples</name>
   <url>http://maven.apache.org</url>
 
@@ -40,7 +40,7 @@
     <dependency>
       <groupId>com.github.afester.javafx</groupId>
       <artifactId>FranzXaver</artifactId>
-      <version>0.1</version>
+      <version>0.2-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
 
