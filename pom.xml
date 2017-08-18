@@ -4,12 +4,12 @@
   <groupId>com.github.afester.javafx</groupId>
   <artifactId>FranzXaverLibrary</artifactId>
   <packaging>pom</packaging>
-  <version>0.2-SNAPSHOT</version>
+  <version>0.1</version>
   <name>FranzXaver Library and Examples</name>
 
   <scm>
     <developerConnection>scm:git:file:///C:/temp/FranzXaver.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>0.1</tag>
   </scm>
 
   <modules>
