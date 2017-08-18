@@ -10,9 +10,34 @@
   <version>1.0</version>
   <name>FranzXaver Library and Examples</name>
 
+  <scm>
+    <developerConnection>scm:git:file://C/temp/FranzXaver.git</developerConnection>
+  </scm>
+
   <modules>
     <module>FranzXaver</module>
     <module>Examples</module>
   </modules>
+
+  <build>
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.5.3</version>
+        <executions>
+          <execution>
+            <phase>clean</phase>
+            <id>set-release-versions</id>
+            <configuration>
+              <autoVersionSubmodules>true</autoVersionSubmodules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
 
 </project>
