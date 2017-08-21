@@ -8,7 +8,8 @@
   <name>FranzXaver Library and Examples</name>
 
   <scm>
-    <developerConnection>scm:git:file:///C:/temp/FranzXaver.git</developerConnection>
+<!--    <developerConnection>scm:git:file:///C:/temp/FranzXaver.git</developerConnection> -->
+    <developerConnection>scm:git:https://github.com/afester/FranzXaver.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
