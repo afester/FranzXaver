@@ -51,7 +51,7 @@ public class BouncingBall extends Application {
 
     private Direction currentDirection = Direction.NONE;
     private static final double SPEED = 8.0; // 12.0;
-    private static final double STARTANGLE_VARIANCE = Math.toRadians(45);   // +/- 45°
+    private static final double STARTANGLE_VARIANCE = Math.toRadians(45);   // +/- 45deg
 
     // ball vector
     private double ballAngle = Math.toRadians(300); // 315);
@@ -140,11 +140,11 @@ public class BouncingBall extends Application {
      * Calculates the exit angle for the bouncing ball.
      * Rationale:
      * <ul>
-     *   <li>We only need to consider two quadrants (180°) - otherwise the
+     *   <li>We only need to consider two quadrants (180deg) - otherwise the
      *       ball moves away from the barrier</li>
      *   <li>The angle of the barrier is subtracted and then re-added</li>
      *   <li>For the reference (barrier) angle, we also only need to consider
-     *       two quadrants (0 - 180°) - the value is properly calculated!  
+     *       two quadrants (0 - 180deg) - the value is properly calculated!  
      * </ul> 
      * @param old   The current angle of the ball.
      * @param reference The angle of the barrier which bounces the ball.
