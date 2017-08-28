@@ -4,13 +4,13 @@
   <parent>
     <groupId>com.github.afester.javafx</groupId>
     <artifactId>FranzXaverLibrary</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1</version>
   </parent>
 
   <groupId>com.github.afester.javafx</groupId>
   <artifactId>FranzXaver</artifactId>
   <packaging>jar</packaging>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.1</version>
   <name>FranzXaver</name>
   <url>http://maven.apache.org</url>
 
