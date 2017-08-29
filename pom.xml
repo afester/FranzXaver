@@ -5,14 +5,30 @@
   <artifactId>FranzXaverLibrary</artifactId>
   <packaging>pom</packaging>
 
-  <name>FranzXaver Library and Examples</name>
-  <version>0.2-SNAPSHOT</version>
-  <description>The maven main core project description</description>
+  <name>${project.groupId}:${project.artifactId}</name>
+  <version>0.1</version>
+  <description>The top level project which includes the FranzXaver library and the FranzXaver samples application.</description>
   <url>http://afester.github.io/FranzXaver/</url>
 
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Andreas Festerr</name>
+      <email>Andreas.Fester@gmx.de</email>
+      <organizationUrl>http://afester.github.io</organizationUrl>
+    </developer>
+  </developers>
+
   <scm>
-<!--    <developerConnection>scm:git:file:///C:/temp/FranzXaver.git</developerConnection> -->
-    <developerConnection>scm:git:https://github.com/afester/FranzXaver.git</developerConnection>
+    <connection>scm:git:git://github.com/afester/FranzXaver.git</connection>
+    <developerConnection>scm:git:ssh://github.com/afester/FranzXaver.git</developerConnection>
+    <url>https://github.com/afester/FranzXaver/tree/master</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -28,6 +44,7 @@
     <module>Examples</module>
   </modules>
 
+<!--
   <distributionManagement>
     <repository>
       <id>snapshot</id>
@@ -35,17 +52,18 @@
       <url>http://localhost:8081/artifactory/libs-snapshot</url>
     </repository>
   </distributionManagement>
-<!--
+-->
   <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
     <repository>
-      <uniqueVersion>false</uniqueVersion>
-      <id>central</id>
-      <name>Maven Repository Switchboard</name>
-      <url>http://repo1.maven.org/maven2</url>
-      <layout>default</layout>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
   </distributionManagement>
--->
+
   <build>
     <plugins>
 
@@ -91,6 +109,32 @@
           <configuration>
             <mainClass>afester.javafx.examples.AllExamples</mainClass>
           </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>attach-sources</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>attach-javadocs</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
 
       </plugins>

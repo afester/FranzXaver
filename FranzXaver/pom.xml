@@ -4,15 +4,17 @@
   <parent>
     <groupId>com.github.afester.javafx</groupId>
     <artifactId>FranzXaverLibrary</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.1</version>
   </parent>
 
   <groupId>com.github.afester.javafx</groupId>
   <artifactId>FranzXaver</artifactId>
   <packaging>jar</packaging>
-  <version>0.2-SNAPSHOT</version>
-  <name>FranzXaver</name>
-  <url>http://maven.apache.org</url>
+
+  <name>${project.groupId}:${project.artifactId}</name>
+  <version>0.1</version>
+  <description>A JavaFX component and tools library especially focused on SVG.</description>
+  <url>http://afester.github.io/FranzXaver/</url>
 
   <distributionManagement>
     <repository>
@@ -34,10 +36,22 @@
 -->
   <build>
     <plugins>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+
     </plugins>
   </build>
 

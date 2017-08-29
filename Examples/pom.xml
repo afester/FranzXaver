@@ -4,15 +4,17 @@
   <parent>
     <groupId>com.github.afester.javafx</groupId>
     <artifactId>FranzXaverLibrary</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.1</version>
   </parent>
 
   <groupId>com.github.afester.javafx</groupId>
   <artifactId>Examples</artifactId>
   <packaging>jar</packaging>
-  <version>0.2-SNAPSHOT</version>
-  <name>Examples</name>
-  <url>http://maven.apache.org</url>
+
+  <name>${project.groupId}:${project.artifactId}</name>
+  <version>0.1</version>
+  <description>A JavaFX examples application with various examples based on pure JavaFX and also based on components from the FranzXaver library.</description>
+  <url>http://afester.github.io/FranzXaver/</url>
 
   <distributionManagement>
     <repository>
@@ -44,6 +46,16 @@
         <artifactId>maven-gpg-plugin</artifactId>
       </plugin>
 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+
     </plugins>
 
   </build>
@@ -59,7 +71,7 @@
     <dependency>
       <groupId>com.github.afester.javafx</groupId>
       <artifactId>FranzXaver</artifactId>
-      <version>0.2-SNAPSHOT</version>
+      <version>0.1</version>
       <scope>compile</scope>
     </dependency>
 
