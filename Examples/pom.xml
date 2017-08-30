@@ -16,24 +16,6 @@
   <description>A JavaFX examples application with various examples based on pure JavaFX and also based on components from the FranzXaver library.</description>
   <url>http://afester.github.io/FranzXaver/</url>
 
-  <distributionManagement>
-    <repository>
-      <id>snapshot</id>
-      <name>Local-Test-releases</name>
-      <url>http://localhost:8081/artifactory/libs-snapshot</url>
-    </repository>
-  </distributionManagement>
-<!--
-  <distributionManagement>
-    <repository>
-      <uniqueVersion>false</uniqueVersion>
-      <id>central</id>
-      <name>Maven Repository Switchboard</name>
-      <url>http://repo1.maven.org/maven2</url>
-      <layout>default</layout>
-    </repository>
-  </distributionManagement>
--->
   <build> 
     <plugins>
       <plugin>
