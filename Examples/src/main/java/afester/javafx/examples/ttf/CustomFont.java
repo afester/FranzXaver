@@ -23,9 +23,6 @@ import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -35,12 +32,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 
 
 /**
@@ -64,18 +56,8 @@ public class CustomFont extends Application {
     @Override public void start(Stage stage) {
         stage.setTitle("True Type Font example");
 
-
-
-        Font f = null; 
         InputStream is = getClass().getResourceAsStream("DSEG7Classic-Bold.ttf");
-        try {
-            System.err.println(is + " / " + is.available());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        f = Font.loadFont(is, 64);
-        System.err.println(f);
-
+        Font f = Font.loadFont(is, 64);
 
         Rectangle r = new Rectangle(53, 64);
         r.setFill(Color.BLACK);
@@ -92,28 +74,23 @@ public class CustomFont extends Application {
 
         Group disp = new Group();
         disp.getChildren().addAll(r, background, sampleText);
-        
+
         VBox box = new VBox();
         Button b = new Button("export");
         b.setOnAction(e -> {
             SnapshotParameters params = new SnapshotParameters();
             Image result = disp.snapshot(params, null);
-            System.err.printf("%s / %s\n",  result.getWidth(), result.getHeight());
 
             ImageConverter ic = new ImageConverter();
             byte[] rgb565 = ic.getRGB565(result);
 
             ArrayDump ad = new ArrayDump(rgb565);
-            ad.dumpAll(System.err);
-            
+            ad.dumpAll16(System.err, (int) result.getWidth());
+            // ad.dumpAll2(System.err);
         });
         box.getChildren().addAll(b, disp);
-        
-        
+       
         Scene scene  = new Scene(box);
-
-        //scene.setFill(Color.BLACK);
-
 
         stage.setScene(scene);
         stage.show();

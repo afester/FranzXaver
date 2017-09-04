@@ -25,20 +25,44 @@ public class ArrayDump {
         out.print("}");
     }
 
+    public void dumpAll16(PrintStream out, int valuesPerRow) {
+        out.print("  {");
+        for (int idx = 0;  idx < data.length;  ) {
+            int upper = (short) (data[idx++] & 0xff) << 8;
+            int lower = (short) (data[idx++] & 0xff);
+
+            int value = upper + lower;
+            
+            if (value == 0) {
+                out.printf("      ", value);
+            } else {
+                out.printf("0x%04x", value);
+            }
+
+            if (idx < data.length) {
+                out.print(", ");
+                if ((idx % valuesPerRow) == 0) {
+                    out.print("\n   ");
+                }
+            }
+        }
+        out.print("}");
+    }
+
     
     public void dumpAll2(PrintStream out) {
         int idx = 0;
-        for (int y = 0; y < 32;  y++) {
-          for (int x = 0; x < 32;  x++) {
+        for (int y = 0; y < 64;  y++) {
+          for (int x = 0; x < 53;  x++) {
             int r = ((short) data[idx+0] & 0xff) >> 3;
             int g = ((short) data[idx+0] & 0x07) << 3 |
                     ((short) data[idx+1] & 0xff) >> 5;
             int b = ((short) data[idx+1] & 0x1f);
 
             int gray = (int) (0.2989 * (double) r + 0.5870 * (double)g + 0.1140 * (double)b);
-
+gray *= 10;
             if (gray < 5) {
-                out.print("##");
+                out.print("  "); // ##");
             } else if (gray < 10) {
                 out.print("@@");
             } else if (gray < 15) {
@@ -54,7 +78,7 @@ public class ArrayDump {
             } else if (gray < 40) {
                 out.print("..");
             } else {
-                out.print("  ");
+                out.print("##"); // "  ");
             }
             idx += 2;
           }

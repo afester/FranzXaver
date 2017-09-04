@@ -14,3 +14,4 @@ afester.javafx.examples.flowless.FlowlessExample
 afester.javafx.examples.table.dynamic.TableExample
 afester.javafx.examples.table.map.TableExample
 afester.javafx.examples.table.simple.TableExample
+afester.javafx.examples.ttf.CustomFont

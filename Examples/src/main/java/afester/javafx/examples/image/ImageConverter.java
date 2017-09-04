@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.layout.VBox;
@@ -84,24 +85,24 @@ public class ImageConverter extends Application {
     }
 
     public byte[] getRGB565(Image img) {
-        System.err.printf("%s x %s\n",  img.getWidth(), img.getHeight());
+        int imgWidth = (int) img.getWidth();
+        int imgHeight= (int) img.getHeight();
+
         PixelReader reader = img.getPixelReader();
 
-        WritablePixelFormat<java.nio.ByteBuffer> pixelformat = WritablePixelFormat.getByteBgraInstance();
-        int bufsize = (int) (img.getHeight() * img.getWidth() * 4);
-        System.err.printf("Image size: %s x %s (Buffer size: %s bytes)\n",  img.getHeight(), img.getWidth(), bufsize);
-
+        int bufsize = imgWidth * imgHeight * 4;
+        System.err.printf("Image size: %s x %s (Buffer size: %s bytes)\n",  imgWidth, imgHeight, bufsize);
         byte[]  buffer = new byte[bufsize];
-        reader.getPixels(0, 0, (int) img.getHeight(), (int) img.getWidth(), pixelformat, buffer, 0, (int) img.getWidth() * 4);
+        reader.getPixels(0, 0, imgWidth, imgHeight, PixelFormat.getByteBgraInstance(), buffer, 0, imgWidth * 4);
 
         //HexDump hd = new HexDump(buffer);
         //hd.dumpAll(System.err);
 
         int idx = 0;
         int expIdx = 0;
-        byte[] rgb565 = new byte[(int) (img.getHeight() * img.getWidth()) * 2];
-        for (int y = 0;  y < (int) img.getHeight();  y++) {
-            for (int x = 0;  x < (int) img.getWidth();  x++) {
+        byte[] rgb565 = new byte[imgWidth * imgHeight * 2];
+        for (int y = 0;  y < imgHeight;  y++) {
+            for (int x = 0;  x < imgWidth;  x++) {
                 //buffer[idx];      // R
                 //buffer[idx+1];    // G
                 //buffer[idx+2];    // B
