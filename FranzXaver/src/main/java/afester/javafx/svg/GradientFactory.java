@@ -97,10 +97,10 @@ ATTENTION:
 A gradientTransform in SVG does not transform the gradient parameter coordinates.
 Instead, the gradient is generated and then the generated gradient is transformed.
 These are two different things!
-In case of a LinearGradient, assumed a gradient definition line with an angle of 45°,
+In case of a LinearGradient, assumed a gradient definition line with an angle of 45deg,
 if the line coordinates are scaled horizontally, this would change the angle.
 If the generated gradient image is scaled horizontally, this would not change the angle
-(or at least in a different matter). Also, since the gradient flows in a 90°
+(or at least in a different matter). Also, since the gradient flows in a 90deg
 angle regarding the gradient vector, a skew transformation would never be possible
 by just transforming start and end coordinates of the gradient.
          */
