@@ -32,12 +32,7 @@ public class ArrayDump {
             int lower = (short) (data[idx++] & 0xff);
 
             int value = upper + lower;
-            
-            if (value == 0) {
-                out.printf("      ", value);
-            } else {
-                out.printf("0x%04x", value);
-            }
+            out.printf("0x%04x", value);
 
             if (idx < data.length) {
                 out.print(", ");
