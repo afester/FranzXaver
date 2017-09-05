@@ -14,7 +14,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
-import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -71,9 +70,24 @@ public class ImageConverter extends Application {
             byte[] rgb565 = getRGB565(img);
 
             ArrayDump ad = new ArrayDump(rgb565);
-            ad.dumpAll(System.err);
+            ad.dumpAll((int)img.getWidth()*2, System.err);
         });
         mainGroup.getChildren().add(exportButton);
+
+        Button exportStructButton = new Button("Export struct Bitmap ...");
+        exportStructButton.setOnAction(e -> {
+            Image img = imageView.getImage();
+            
+            byte[] rgb565 = getRGB565(img);
+
+            ArrayDump ad = new ArrayDump(rgb565);
+            int width = (int) img.getWidth();
+            int height = (int) img.getHeight();
+            System.err.printf("Bitmap bitmap = {%s, %s,\n", width, height);
+            ad.dumpAll16(System.err, width);
+            System.err.printf("};\n");
+        });
+        mainGroup.getChildren().add(exportStructButton);
 
         imageView = new ImageView();
         mainGroup.getChildren().add(imageView);
@@ -93,6 +107,7 @@ public class ImageConverter extends Application {
         int bufsize = imgWidth * imgHeight * 4;
         System.err.printf("Image size: %s x %s (Buffer size: %s bytes)\n",  imgWidth, imgHeight, bufsize);
         byte[]  buffer = new byte[bufsize];
+
         reader.getPixels(0, 0, imgWidth, imgHeight, PixelFormat.getByteBgraInstance(), buffer, 0, imgWidth * 4);
 
         //HexDump hd = new HexDump(buffer);
@@ -100,6 +115,7 @@ public class ImageConverter extends Application {
 
         int idx = 0;
         int expIdx = 0;
+
         byte[] rgb565 = new byte[imgWidth * imgHeight * 2];
         for (int y = 0;  y < imgHeight;  y++) {
             for (int x = 0;  x < imgWidth;  x++) {
