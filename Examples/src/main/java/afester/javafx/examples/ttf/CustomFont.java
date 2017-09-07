@@ -27,6 +27,10 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.image.PixelFormat;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -88,7 +92,7 @@ public class CustomFont extends Application {
         background.setTextFill(new Color(0.1, 0.1, 0.1, 1.0));
 
 //        Label sampleText = new Label(" .0123456789");
-        Label sampleText = new Label("5");
+        Label sampleText = new Label("8");
         sampleText.setFont(f);
         sampleText.setTextFill(Color.RED);
 
@@ -118,19 +122,25 @@ public class CustomFont extends Application {
 
         Button saveBtn = new Button("Save as ...");
         saveBtn.setOnAction(e -> {
-            //FileChooser fileChooser = new FileChooser();
-            //fileChooser.setTitle("Save Image file ...");
-            //File theFile = fileChooser.showSaveDialog(stage);
-            //if (theFile != null) {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save Image file ...");
+            File theFile = fileChooser.showSaveDialog(stage);
+            if (theFile != null) {
 
                 SnapshotParameters params = new SnapshotParameters();
-                Image wim = disp.snapshot(params, null);
+                WritableImage wim = disp.snapshot(params, null);
+                PixelFormat<?> pif = wim.getPixelReader().getPixelFormat();
+                System.err.println("IMAGE TYPE: " + pif.getType());
+
+                PixelFormat pf = PixelFormat.createByteIndexedInstance(new int[] {5, 10, 15});
                 
+                WritableImage img = new WritableImage(100, 100);
+                System.err.println("NEW IMAGE TYPE: " + img.getPixelReader().getPixelFormat().getType());
                 try {
-                    //ImageIO.write(SwingFXUtils.fromFXImage(wim, null), "png", theFile);
+                    ImageIO.write(SwingFXUtils.fromFXImage(wim, null), "png", theFile);
 
                     BufferedImage bi = SwingFXUtils.fromFXImage(wim, null);
-                    System.err.println("IMAGE TYPE:" + getImageType(bi.getType()));
+                    System.err.println("IMAGE TYPE: " + getImageType(bi.getType()));
 
                     String[] available = ImageIO.getWriterFileSuffixes();
                     for (String a : available) {
@@ -158,7 +168,7 @@ public class CustomFont extends Application {
 //                } catch (FileNotFoundException e1) {
 //                    e1.printStackTrace();
 //                }
-            //  }
+            }
 
 //            ImageConverter ic = new ImageConverter();
 //            byte[] rgb565 = ic.getRGB565(result);
