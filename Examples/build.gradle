@@ -15,6 +15,11 @@ repositories {
 dependencies {
     compile project (":FranzXaver")
     compile 'org.fxmisc.flowless:flowless:0.4.7'
+    compile 'org.fxmisc.flowless:flowless:0.4.7'
+
+    compile "org.testfx:testfx-core:4.0.+"
+    compile "org.testfx:testfx-junit:4.0.+"
+    compile "com.nitorcreations:junit-runners:1.2"
 
     runtime 'org.apache.xmlgraphics:batik-dom:1.9'
     runtime 'org.apache.xmlgraphics:batik-anim:1.9'
