@@ -3,6 +3,10 @@ package afester.javafx.examples.image;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 //import com.example.hexdump.HexDump;
 
@@ -30,8 +34,10 @@ import javafx.stage.Stage;
 public class ImageConverter extends Application {
 
     
-    private ImageView imageView;
-    
+    private List<ImageView> imageViews = new ArrayList<>();
+    private VBox mainGroup = new VBox();
+    private Stage primaryStage;
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -41,9 +47,9 @@ public class ImageConverter extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage ps) {
        
-        VBox mainGroup = new VBox();
+    	this.primaryStage = ps;
 
         Button loadButton = new Button("Load...");
         loadButton.setOnAction(e -> {
@@ -52,9 +58,7 @@ public class ImageConverter extends Application {
             File theFile = fileChooser.showOpenDialog(primaryStage);
             if (theFile != null) {
                 try {
-                    FileInputStream input = new FileInputStream(theFile.getAbsolutePath());
-                    imageView.setImage(new Image(input));
-                    primaryStage.sizeToScene();
+                	loadImage(theFile.getAbsolutePath());
                 } catch (FileNotFoundException e1) {
                     e1.printStackTrace();
                 }
@@ -65,47 +69,117 @@ public class ImageConverter extends Application {
 
         Button exportButton = new Button("Export ...");
         exportButton.setOnAction(e -> {
-            Image img = imageView.getImage();
-            
-            byte[] rgb565 = getRGB565(img);
-
-            ArrayDump ad = new ArrayDump(rgb565);
-            ad.dumpAll((int)img.getWidth()*2, System.err);
+        	imageViews.forEach(iv -> {
+                Image img = iv.getImage();
+                byte[] rgb565 = getRGB565(img);
+                ArrayDump ad = new ArrayDump(rgb565);
+                ad.dumpAll((int)img.getWidth()*2, System.err);
+        	});
         });
         mainGroup.getChildren().add(exportButton);
 
         Button exportStructButton = new Button("Export struct Bitmap ...");
         exportStructButton.setOnAction(e -> {
-            Image img = imageView.getImage();
-            
-            byte[] rgb565 = getRGB565(img);
+        	imageViews.forEach(iv -> {
+                Image img = iv.getImage();
+                byte[] rgb565 = getRGB565(img);
 
-            ArrayDump ad = new ArrayDump(rgb565);
-            int width = (int) img.getWidth();
-            int height = (int) img.getHeight();
-            System.err.printf("Bitmap bitmap = {%s, %s,\n", width, height);
-            ad.dumpAll16(System.err, width);
-            System.err.printf("};\n");
+                ArrayDump ad = new ArrayDump(rgb565);
+                int width = (int) img.getWidth();
+                int height = (int) img.getHeight();
+                System.err.printf("Bitmap %s = {%s, %s,\n", iv.getId(), width, height);
+                ad.dumpAll16(System.err, width);
+                System.err.println("};\n");
+        	});        	
+            
         });
         mainGroup.getChildren().add(exportStructButton);
 
-        imageView = new ImageView();
-        mainGroup.getChildren().add(imageView);
+        Button exportStructPaletteButton = new Button("Export struct Bitmap with Palette ...");
+        exportStructPaletteButton.setOnAction(e -> {
+        	
+        	// use the same palette for all images
+            List<Integer> palette = new ArrayList<>();
+        	imageViews.forEach(iv -> {
+	            Image img = iv.getImage();
+	
+	            byte[] rgb565 = getRGB565(img);
+	
+	            // convert bitmap to indexed bitmap
+	            byte[] bitmap = new byte[rgb565.length / 2];
+	            int bitmapIdx = 0;
+	            for (int idx = 0;  idx < rgb565.length;  ) {
+	                int value = (short) rgb565[idx] & 0xff;
+	                value = value | ((short) rgb565[idx+1] & 0xff) << 8;
+	                idx += 2;
+	
+	                // lookup value index
+	                int colorIdx = palette.indexOf(value);
+	                if (colorIdx == -1) {
+	                	colorIdx = palette.size();
+	                	palette.add(value);
+	                }
+	
+	                bitmap[bitmapIdx++] = (byte) colorIdx;	// TODO: max. 256 colors
+	            }
+
+	            ArrayDump ad = new ArrayDump(bitmap);
+	            int width = (int) img.getWidth();
+	            int height = (int) img.getHeight();
+	            System.err.printf("Bitmap %s = {%s, %s,\n", iv.getId(), width, height);
+	            ad.dumpAll(width, System.err);
+	            System.err.println("};\n");
+        	});
+
+        	// dump the palette
+        	System.err.print("unsigned int[] palette = {");
+        	String prefix = "";
+        	for (int v : palette) {
+                System.err.printf("%s0x%04x", prefix, v);
+                prefix = ", ";
+        	}
+            System.err.println("};\n");
+        });
+        mainGroup.getChildren().add(exportStructPaletteButton);
 
         Scene scene = new Scene(mainGroup);
 
         primaryStage.setScene(scene);
         primaryStage.show();
+        
+        try {
+			loadImage("C:\\Users\\AFESTER\\Projects\\CodeSamples\\Embedded\\AVR\\ILI9481\\adRedBlack.png");
+	        loadImage("C:\\Users\\AFESTER\\Projects\\CodeSamples\\Embedded\\AVR\\ILI9481\\bcefRedBlack.png");
+	        loadImage("C:\\Users\\AFESTER\\Projects\\CodeSamples\\Embedded\\AVR\\ILI9481\\gRedBlack.png");
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		}
     }
 
-    public byte[] getRGB565(Image img) {
+
+    private void loadImage(String filePath) throws FileNotFoundException {
+        Path p = Paths.get(filePath);
+
+        ImageView imageView = new ImageView();
+        imageView.setId(p.getFileName().toString());
+        imageViews.add(imageView);
+        mainGroup.getChildren().add(imageView);
+
+        FileInputStream input = new FileInputStream(p.toFile());
+        imageView.setImage(new Image(input));
+
+        primaryStage.sizeToScene();
+	}
+
+
+	public byte[] getRGB565(Image img) {
         int imgWidth = (int) img.getWidth();
         int imgHeight= (int) img.getHeight();
 
         PixelReader reader = img.getPixelReader();
 
         int bufsize = imgWidth * imgHeight * 4;
-        System.err.printf("Image size: %s x %s (Buffer size: %s bytes)\n",  imgWidth, imgHeight, bufsize);
+        //System.err.printf("Image size: %s x %s (Buffer size: %s bytes)\n",  imgWidth, imgHeight, bufsize);
         byte[]  buffer = new byte[bufsize];
 
         reader.getPixels(0, 0, imgWidth, imgHeight, PixelFormat.getByteBgraInstance(), buffer, 0, imgWidth * 4);
