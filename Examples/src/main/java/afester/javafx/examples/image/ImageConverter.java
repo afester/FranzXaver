@@ -87,7 +87,7 @@ public class ImageConverter extends Application {
                 ArrayDump ad = new ArrayDump(rgb565);
                 int width = (int) img.getWidth();
                 int height = (int) img.getHeight();
-                System.err.printf("Bitmap %s = {%s, %s,\n", iv.getId(), width, height);
+                System.err.printf("Bitmap16 %s = {%s, %s,\n", iv.getId(), width, height);
                 ad.dumpAll16(System.err, width);
                 System.err.println("};\n");
         	});        	
@@ -126,13 +126,13 @@ public class ImageConverter extends Application {
 	            ArrayDump ad = new ArrayDump(bitmap);
 	            int width = (int) img.getWidth();
 	            int height = (int) img.getHeight();
-	            System.err.printf("Bitmap %s = {%s, %s,\n", iv.getId(), width, height);
+	            System.err.printf("Bitmap8 %s = {%s, %s,\n", iv.getId(), width, height);
 	            ad.dumpAll(width, System.err);
 	            System.err.println("};\n");
         	});
 
         	// dump the palette
-        	System.err.print("unsigned int[] palette = {");
+        	System.err.print("uint16_t palette[] = {");
         	String prefix = "";
         	for (int v : palette) {
                 System.err.printf("%s0x%04x", prefix, v);
@@ -148,9 +148,13 @@ public class ImageConverter extends Application {
         primaryStage.show();
         
         try {
-			loadImage("C:\\Users\\AFESTER\\Projects\\CodeSamples\\Embedded\\AVR\\ILI9481\\adRedBlack.png");
-	        loadImage("C:\\Users\\AFESTER\\Projects\\CodeSamples\\Embedded\\AVR\\ILI9481\\bcefRedBlack.png");
-	        loadImage("C:\\Users\\AFESTER\\Projects\\CodeSamples\\Embedded\\AVR\\ILI9481\\gRedBlack.png");
+			//loadImage("C:\\Users\\AFESTER\\Projects\\CodeSamples\\Embedded\\AVR\\ILI9481\\adRedBlack.png");
+	        //loadImage("C:\\Users\\AFESTER\\Projects\\CodeSamples\\Embedded\\AVR\\ILI9481\\bcefRedBlack.png");
+	        //loadImage("C:\\Users\\AFESTER\\Projects\\CodeSamples\\Embedded\\AVR\\ILI9481\\gRedBlack.png");
+			loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/adRedBlack.png");
+	        loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/bcefRedBlack.png");
+            loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/gRedBlack.png");
+        	
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		}
@@ -161,7 +165,9 @@ public class ImageConverter extends Application {
         Path p = Paths.get(filePath);
 
         ImageView imageView = new ImageView();
-        imageView.setId(p.getFileName().toString());
+        String fileName = p.getFileName().toString();
+        fileName = fileName.substring(0, fileName.length() - 4);
+        imageView.setId(fileName);
         imageViews.add(imageView);
         mainGroup.getChildren().add(imageView);
 

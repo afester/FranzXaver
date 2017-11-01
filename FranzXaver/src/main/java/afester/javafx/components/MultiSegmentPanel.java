@@ -16,7 +16,7 @@
 
 package afester.javafx.components;
 
-import com.sun.javafx.css.converters.ColorConverter;
+//import com.sun.javafx.css.converters.ColorConverter;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -27,6 +27,7 @@ import javafx.css.SimpleStyleableObjectProperty;
 import javafx.css.Styleable;
 import javafx.css.StyleableObjectProperty;
 import javafx.css.StyleableProperty;
+import javafx.css.converter.ColorConverter;
 import javafx.event.EventHandler;
 import javafx.scene.control.Control;
 import javafx.scene.paint.Color;

@@ -17,7 +17,9 @@
 package afester.javafx.components;
 
 import com.sun.javafx.scene.control.behavior.BehaviorBase;  // TODO: Private API!
-import com.sun.javafx.scene.control.behavior.KeyBinding;
+import com.sun.javafx.scene.control.inputmap.InputMap;
+//import com.sun.javafx.scene.control.behavior.KeyBinding;
+import com.sun.javafx.scene.control.inputmap.KeyBinding;
 
 import java.util.List;
 
@@ -27,7 +29,13 @@ import java.util.List;
 public class MultiSegmentPanelBehavior extends BehaviorBase<MultiSegmentPanel> {
 
     public MultiSegmentPanelBehavior(MultiSegmentPanel control, List<KeyBinding> keyBindings) {
-        super(control, keyBindings);
+        super(control);
         // control.setOnMouseClicked(value);
     }
+
+	@Override
+	public InputMap<MultiSegmentPanel> getInputMap() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

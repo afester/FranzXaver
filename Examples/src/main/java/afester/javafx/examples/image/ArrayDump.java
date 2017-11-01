@@ -37,7 +37,7 @@ public class ArrayDump {
                 }
             }
         }
-        out.print("};");
+        out.print("}");
     }
 
     
