@@ -152,8 +152,8 @@ public class ImageConverter extends Application {
 	        //loadImage("C:\\Users\\AFESTER\\Projects\\CodeSamples\\Embedded\\AVR\\ILI9481\\bcefRedBlack.png");
 	        //loadImage("C:\\Users\\AFESTER\\Projects\\CodeSamples\\Embedded\\AVR\\ILI9481\\gRedBlack.png");
 			loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/adRedBlack.png");
-	        loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/bcefRedBlack.png");
-            loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/gRedBlack.png");
+	        //loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/bcefRedBlack.png");
+            //loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/gRedBlack.png");
         	
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
@@ -179,6 +179,9 @@ public class ImageConverter extends Application {
 
 
 	public byte[] getRGB565(Image img) {
+		System.err.printf("0x%04x\n", fromRbgToGbr565(0xff0000));
+		System.err.printf("0x%04x\n", fromRbgToGbr565(0x4b0506));
+
         int imgWidth = (int) img.getWidth();
         int imgHeight= (int) img.getHeight();
 
@@ -196,6 +199,7 @@ public class ImageConverter extends Application {
         int idx = 0;
         int expIdx = 0;
 
+        int count = 0;
         byte[] rgb565 = new byte[imgWidth * imgHeight * 2];
         for (int y = 0;  y < imgHeight;  y++) {
             for (int x = 0;  x < imgWidth;  x++) {
@@ -206,7 +210,7 @@ public class ImageConverter extends Application {
 
                 // [rrrrrrrr gggggggg bbbbbbbb]
                 //  ^^^^^    ^^^^^^   ^^^^^
-                // [rrrrrggg gggbbbbb]
+                //          [rrrrrggg gggbbbbb]
                 byte upper = (byte) ((         buffer[idx + 0] & 0xf8) |
                                      ((short)  buffer[idx + 1] & 0xe0) >> 5);
                 byte lower = (byte) ((((short) buffer[idx + 1] & 0x1c) << 3) | 
@@ -216,9 +220,15 @@ public class ImageConverter extends Application {
 //                        String.format("%8s", Integer.toBinaryString(buffer[idx+0] & 0xff)).replace(' ', '0').substring(0, 5) +
 //                        String.format("%8s", Integer.toBinaryString(buffer[idx+1] & 0xff)).replace(' ', '0').substring(0, 6) +
 //                        String.format("%8s", Integer.toBinaryString(buffer[idx+2] & 0xff)).replace(' ', '0').substring(0, 5);
-//                String fromConverted =
-//                        String.format("%8s", Integer.toBinaryString(upper & 0xff)).replace(' ', '0')+
-//                        String.format("%8s", Integer.toBinaryString(lower & 0xff)).replace(' ', '0');
+                String fromOrig = 
+                		String.format("%8s", Integer.toBinaryString(buffer[idx+0] & 0xff)).replace(' ', '0') + " " +
+                		String.format("%8s", Integer.toBinaryString(buffer[idx+1] & 0xff)).replace(' ', '0') + " " +
+	              		String.format("%8s", Integer.toBinaryString(buffer[idx+2] & 0xff)).replace(' ', '0');
+                String fromConverted =
+                        String.format("%8s", Integer.toBinaryString(upper & 0xff)).replace(' ', '0')+
+                        String.format("%8s", Integer.toBinaryString(lower & 0xff)).replace(' ', '0');
+                System.err.printf("%s -> %s\n", fromOrig, fromConverted);
+                if (count++ > 5) return rgb565;
 //
 //                if (!fromOrig.equals(fromConverted)) {
 //                    System.err.println("ERRRROR!!!!");
@@ -238,4 +248,29 @@ public class ImageConverter extends Application {
 
         return rgb565;
     }
+
+	private long fromRbgToRgb565(long rgbValue) {
+		System.err.printf("0x%08x\n", rgbValue );
+		System.err.printf("0x%08x\n", (rgbValue & 0xf80000) >> 8);
+		System.err.printf("0x%08x\n", (rgbValue & 0x00fc00) >> 5);
+		System.err.printf("0x%08x\n", (rgbValue & 0x0000f8) >> 3);
+
+		long result = ((rgbValue & 0xf80000) >> 8) +
+		              ((rgbValue & 0x00fc00) >> 5) +
+		              ((rgbValue & 0x0000f8) >> 3);
+		return result;
+	}
+
+	private long fromRbgToGbr565(long rgbValue) {
+		System.err.printf("0x%08x\n", rgbValue );
+		System.err.printf("0x%08x\n", (rgbValue & 0xf80000) >> 8);
+		System.err.printf("0x%08x\n", (rgbValue & 0x00fc00) >> 5);
+		System.err.printf("0x%08x\n", (rgbValue & 0x0000f8) >> 3);
+
+		long result = ((rgbValue & 0xf80000) >> 19) +
+		              ((rgbValue & 0x00fc00) >> 5) +
+		              ((rgbValue & 0x0000f8) << 8);
+		return result;
+	}
+
 }
