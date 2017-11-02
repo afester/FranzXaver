@@ -16,20 +16,35 @@
 
 package afester.javafx.examples.ttf;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+
+import com.example.hexdump.HexDump;
+
 import afester.javafx.examples.Example;
 import afester.javafx.examples.image.ArrayDump;
 import afester.javafx.examples.image.ImageConverter;
 import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -37,26 +52,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
-import java.awt.color.ColorSpace;
-import java.awt.image.BufferedImage;
-import java.awt.image.DirectColorModel;
-import java.awt.image.IndexColorModel;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageTypeSpecifier;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-
-import com.example.hexdump.HexDump;
 
 
 /**
@@ -87,17 +82,26 @@ public class CustomFont extends Application {
         r.setFill(Color.BLACK);
 
 //        Label background = new Label(" 8888888888");
-        Label background = new Label("8");
-        background.setFont(f);
-        background.setTextFill(new Color(0.1, 0.1, 0.1, 1.0));
+//        Label background = new Label("8");
+//        background.setFont(f);
+//        background.setTextFill(new Color(0.1, 0.1, 0.1, 1.0));
 
 //        Label sampleText = new Label(" .0123456789");
         Label sampleText = new Label("8");
         sampleText.setFont(f);
         sampleText.setTextFill(Color.RED);
 
+        final ColorPicker colorPicker = new ColorPicker();
+        colorPicker.setValue(Color.CORAL);
+        colorPicker.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                sampleText.setTextFill(colorPicker.getValue());               
+            }
+        });
+
         Group disp = new Group();
-        disp.getChildren().addAll(r, background, sampleText);
+        disp.getChildren().addAll(r, /*background, */sampleText);
 
         VBox box = new VBox();
         Button b = new Button("Export");
@@ -184,7 +188,7 @@ public class CustomFont extends Application {
 //
 //            // ad.dumpAll2(System.err);
         });
-        box.getChildren().addAll(b, saveBtn, disp);
+        box.getChildren().addAll(b, saveBtn, disp, colorPicker);
 
         Scene scene  = new Scene(box);
 
