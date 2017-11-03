@@ -137,7 +137,7 @@ public class CustomFont extends Application {
                 System.err.println("IMAGE TYPE: " + pif.getType());
 
                 PixelFormat pf = PixelFormat.createByteIndexedInstance(new int[] {5, 10, 15});
-                
+
                 WritableImage img = new WritableImage(100, 100);
                 System.err.println("NEW IMAGE TYPE: " + img.getPixelReader().getPixelFormat().getType());
                 try {
