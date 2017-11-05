@@ -110,7 +110,7 @@ public class CustomFont extends Application {
             Image result = disp.snapshot(params, null);
 
             ImageConverter ic = new ImageConverter();
-            byte[] rgb565 = ic.getRGB565(result);
+            byte[] rgb565 = ic.getRGB565asByte(result);
             ArrayDump ad = new ArrayDump(rgb565);
             ad.dumpAll16(System.err, (int) result.getWidth());
 

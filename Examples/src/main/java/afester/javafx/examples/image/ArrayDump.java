@@ -4,28 +4,38 @@ import java.io.PrintStream;
 
 public class ArrayDump {
     private byte[] data;
+    private short[] shortData;
     private static int VALUES_PER_ROW= 16;
 
     public ArrayDump(byte[] data) {
         this.data = data;
     }
 
-    public void dumpAll(PrintStream out) {
-        out.print("  {");
-        for (int idx = 0;  idx < data.length;  ) {
-            out.printf("0x%02x", data[idx++]);
+    public ArrayDump(short[] data) {
+    	this.shortData = data;
+	}
 
-            if (idx < data.length) {
-                out.print(", ");
-                if ((idx % VALUES_PER_ROW) == 0) {
-                    out.print("\n   ");
-                }
-            }
-        }
-        out.print("};");
+	public void dumpAll(PrintStream out) {
+		dumpAll(VALUES_PER_ROW, out);
     }
 
     public void dumpAll(int valuesPerRow, PrintStream out) {
+    	if (shortData != null) {
+            out.print("  {");
+            for (int idx = 0;  idx < shortData.length;  ) {
+                out.printf("0x%04x", shortData[idx++]);
+
+                if (idx < shortData.length) {
+                    out.print(", ");
+                    if ((idx % valuesPerRow) == 0) {
+                        out.print("\n   ");
+                    }
+                }
+            }
+            out.print("}");
+    		return;
+    	}
+
         out.print("  {");
         for (int idx = 0;  idx < data.length;  ) {
             out.printf("0x%02x", data[idx++]);

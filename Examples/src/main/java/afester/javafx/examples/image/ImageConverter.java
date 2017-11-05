@@ -103,80 +103,80 @@ public class ImageConverter extends Application {
         });
         mainGroup.getChildren().add(loadButton);
 
-        Button exportButton = new Button("Export ...");
-        exportButton.setOnAction(e -> {
-        	imageViews.forEach(iv -> {
-                Image img = iv.getImage();
-                byte[] rgb565 = getRGB565(img);
-                ArrayDump ad = new ArrayDump(rgb565);
-                ad.dumpAll((int)img.getWidth()*2, System.err);
-        	});
-        });
-        mainGroup.getChildren().add(exportButton);
+//        Button exportButton = new Button("Export ...");
+//        exportButton.setOnAction(e -> {
+//        	imageViews.forEach(iv -> {
+//                Image img = iv.getImage();
+//                byte[] rgb565 = getRGB565(img);
+//                ArrayDump ad = new ArrayDump(rgb565);
+//                ad.dumpAll((int)img.getWidth()*2, System.err);
+//        	});
+//        });
+//        mainGroup.getChildren().add(exportButton);
 
         Button exportStructButton = new Button("Export struct Bitmap ...");
         exportStructButton.setOnAction(e -> {
         	imageViews.forEach(iv -> {
                 Image img = iv.getImage();
-                byte[] rgb565 = getRGB565(img);
+                short[] rgb565 = getRGB565(img);
 
                 ArrayDump ad = new ArrayDump(rgb565);
                 int width = (int) img.getWidth();
                 int height = (int) img.getHeight();
                 System.err.printf("Bitmap16 %s = {%s, %s,\n", iv.getId(), width, height);
-                ad.dumpAll16(System.err, width);
+                ad.dumpAll(width, System.err);
                 System.err.println("};\n");
         	});        	
             
         });
         mainGroup.getChildren().add(exportStructButton);
 
-        Button exportStructPaletteButton = new Button("Export struct Bitmap with Palette ...");
-        exportStructPaletteButton.setOnAction(e -> {
-        	
-        	// use the same palette for all images
-            List<Integer> palette = new ArrayList<>();
-        	imageViews.forEach(iv -> {
-	            Image img = iv.getImage();
-	
-	            byte[] rgb565 = getRGB565(img);
-	
-	            // convert bitmap to indexed bitmap
-	            byte[] bitmap = new byte[rgb565.length / 2];
-	            int bitmapIdx = 0;
-	            for (int idx = 0;  idx < rgb565.length;  ) {
-	                int value = (short) rgb565[idx] & 0xff;
-	                value = value | ((short) rgb565[idx+1] & 0xff) << 8;
-	                idx += 2;
-	
-	                // lookup value index
-	                int colorIdx = palette.indexOf(value);
-	                if (colorIdx == -1) {
-	                	colorIdx = palette.size();
-	                	palette.add(value);
-	                }
-	
-	                bitmap[bitmapIdx++] = (byte) colorIdx;	// TODO: max. 256 colors
-	            }
-
-	            ArrayDump ad = new ArrayDump(bitmap);
-	            int width = (int) img.getWidth();
-	            int height = (int) img.getHeight();
-	            System.err.printf("Bitmap8 %s = {%s, %s,\n", iv.getId(), width, height);
-	            ad.dumpAll(width, System.err);
-	            System.err.println("};\n");
-        	});
-
-        	// dump the palette
-        	System.err.print("uint16_t palette[] = {");
-        	String prefix = "";
-        	for (int v : palette) {
-                System.err.printf("%s0x%04x", prefix, v);
-                prefix = ", ";
-        	}
-            System.err.println("};\n");
-        });
-        mainGroup.getChildren().add(exportStructPaletteButton);
+//        Button exportStructPaletteButton = new Button("Export struct Bitmap with Palette ...");
+//        exportStructPaletteButton.setOnAction(e -> {
+//        	
+//        	// use the same palette for all images
+//            List<Integer> palette = new ArrayList<>();
+//        	imageViews.forEach(iv -> {
+//	            Image img = iv.getImage();
+//	
+//	            byte[] rgb565 = getRGB565(img);
+//	
+//	            // convert bitmap to indexed bitmap
+//	            byte[] bitmap = new byte[rgb565.length / 2];
+//	            int bitmapIdx = 0;
+//	            for (int idx = 0;  idx < rgb565.length;  ) {
+//	                int value = (short) rgb565[idx] & 0xff;
+//	                value = value | ((short) rgb565[idx+1] & 0xff) << 8;
+//	                idx += 2;
+//	
+//	                // lookup value index
+//	                int colorIdx = palette.indexOf(value);
+//	                if (colorIdx == -1) {
+//	                	colorIdx = palette.size();
+//	                	palette.add(value);
+//	                }
+//	
+//	                bitmap[bitmapIdx++] = (byte) colorIdx;	// TODO: max. 256 colors
+//	            }
+//
+//	            ArrayDump ad = new ArrayDump(bitmap);
+//	            int width = (int) img.getWidth();
+//	            int height = (int) img.getHeight();
+//	            System.err.printf("Bitmap8 %s = {%s, %s,\n", iv.getId(), width, height);
+//	            ad.dumpAll(width, System.err);
+//	            System.err.println("};\n");
+//        	});
+//
+//        	// dump the palette
+//        	System.err.print("uint16_t palette[] = {");
+//        	String prefix = "";
+//        	for (int v : palette) {
+//                System.err.printf("%s0x%04x", prefix, v);
+//                prefix = ", ";
+//        	}
+//            System.err.println("};\n");
+//        });
+//        mainGroup.getChildren().add(exportStructPaletteButton);
 
         Scene scene = new Scene(mainGroup);
 
@@ -185,10 +185,10 @@ public class ImageConverter extends Application {
         
         try {
             //loadImage("C:\\temp\\rgb.png");
-			loadImage("C:\\Users\\AFESTER\\Projects\\CodeSamples\\Embedded\\AVR\\ILI9481\\adRedBlack.png");
+			//loadImage("C:\\Users\\AFESTER\\Projects\\CodeSamples\\Embedded\\AVR\\ILI9481\\adRedBlack.png");
 	        //loadImage("C:\\Users\\AFESTER\\Projects\\CodeSamples\\Embedded\\AVR\\ILI9481\\bcefRedBlack.png");
 	        //loadImage("C:\\Users\\AFESTER\\Projects\\CodeSamples\\Embedded\\AVR\\ILI9481\\gRedBlack.png");
-			//loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/adRedBlack.png");
+			loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/adRedBlack.png");
 	        //loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/bcefRedBlack.png");
             //loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/gRedBlack.png");
         	
@@ -215,88 +215,38 @@ public class ImageConverter extends Application {
 	}
 
 
-	public byte[] getRGB565(Image img) {
-		System.err.printf("0x%04x\n", fromRbgToGbr565(0xff0000));
-		System.err.printf("0x%04x\n", fromRbgToGbr565(0x4b0506));
-
+    /**
+     * 
+     * @param img
+     * @return An RGB565 format bitmap from the given image. 
+     */
+	public short[] getRGB565(Image img) {
         int imgWidth = (int) img.getWidth();
         int imgHeight= (int) img.getHeight();
 
         PixelReader reader = img.getPixelReader();
 
-        int bufsize = imgWidth * imgHeight * 4;
-        //System.err.printf("Image size: %s x %s (Buffer size: %s bytes)\n",  imgWidth, imgHeight, bufsize);
-        byte[]  buffer = new byte[bufsize];
-
-        // NOTE: Order is Blue, Green, Red, Alpha!!!
-        reader.getPixels(0, 0, imgWidth, imgHeight, PixelFormat.getByteBgraInstance(), buffer, 0, imgWidth * 4);
-        
+        // get pixel data as ARGB into an integer buffer
         int intBufsize = imgWidth * imgHeight;
-        int[]  intBuffer = new int[intBufsize];
+        int[] intBuffer = new int[intBufsize];
         reader.getPixels(0, 0, imgWidth, imgHeight, PixelFormat.getIntArgbInstance(), intBuffer, 0, imgWidth);
 
-        HexDump hd = new HexDump(intBuffer);
-        hd.dumpAll(System.err);
+        // convert the integer buffer into a short buffer with format rgb565
+        short[] result = new short[imgWidth * imgHeight];
+        for (int idx = 0;  idx < intBufsize; idx++) {
+        	short value = fromARGBToGBR565(intBuffer[idx]);
 
-        int idx = 0;
-        int expIdx = 0;
-
-        int count = 0;
-        byte[] rgb565 = new byte[imgWidth * imgHeight * 2];
-        for (int y = 0;  y < imgHeight;  y++) {
-            for (int x = 0;  x < imgWidth;  x++) {
-                //buffer[idx+0];    // B
-                //buffer[idx+1];    // G
-                //buffer[idx+2];    // R
-                //buffer[idx+3];    // A
-
-                //System.err.printf("BUFFER: %s %s %s\n", toBinaryString(buffer[idx+0]), toBinaryString(buffer[idx+1]), toBinaryString(buffer[idx+2]));
-
-                // [bbbbbbbb gggggggg rrrrrrrr aaaaaaaa]
-                //  ^^^^^    ^^^^^^   ^^^^^
-
-                // tft panel configured for BGR order:
-                //          [bbbbbggg gggrrrrr]
-
-                // tft panel configured for RGB order:
-                //          [rrrrrggg gggbbbbb]
-
-                byte upper = (byte) ((         buffer[idx + 0] & 0xf8) |
-                                     ((short)  buffer[idx + 1] & 0xe0) >> 5);
-                byte lower = (byte) ((((short) buffer[idx + 1] & 0x1c) << 3) | 
-                                     ((short)  buffer[idx + 2] & 0xf8) >> 3);
-
-//                String fromOrig = 
-//                        String.format("%8s", Integer.toBinaryString(buffer[idx+0] & 0xff)).replace(' ', '0').substring(0, 5) +
-//                        String.format("%8s", Integer.toBinaryString(buffer[idx+1] & 0xff)).replace(' ', '0').substring(0, 6) +
-//                        String.format("%8s", Integer.toBinaryString(buffer[idx+2] & 0xff)).replace(' ', '0').substring(0, 5);
-//                String fromOrig = 
-//                		String.format("%8s", Integer.toBinaryString(buffer[idx+0] & 0xff)).replace(' ', '0') + " " +
-//                		String.format("%8s", Integer.toBinaryString(buffer[idx+1] & 0xff)).replace(' ', '0') + " " +
-//	              		String.format("%8s", Integer.toBinaryString(buffer[idx+2] & 0xff)).replace(' ', '0');
-//                String fromConverted =
-//                        String.format("%8s", Integer.toBinaryString(upper & 0xff)).replace(' ', '0')+
-//                        String.format("%8s", Integer.toBinaryString(lower & 0xff)).replace(' ', '0');
-//                System.err.printf("%s -> %s\n", fromOrig, fromConverted);
-//                if (count++ > 5) return rgb565;
-//
-//                if (!fromOrig.equals(fromConverted)) {
-//                    System.err.println("ERRRROR!!!!");
-//                }
-//                System.err.printf(" rrrrr    gggggg   bbbbb         rrrrrggg gggbbbbb\n\n");
-
-                rgb565[expIdx + 0] = upper; // Attention: byte order!!!
-                rgb565[expIdx + 1] = lower;
-
-                expIdx += 2;
-                idx += 4;
-            }
+        	// change byte order - this is required because the
+        	// TFT display receives the HIGH byte during the first transfer 
+        	// on the 8 bit bus, followed by the LOW byte!
+        	// Hence the high byte must be stored at the lower address (Big Endian format).
+        	// we could also leave it as little endian here, and change
+        	// the code in the MCU which writes frame data to the TFT display.
+        	value = (short) (((value & 0xff) << 8) | ((value & 0xff00) >> 8));
+        	result[idx] = value;
         }
 
-        //HexDump hd2 = new HexDump(rgb565);
-        //hd2.dumpAll(System.err);
-
-        return rgb565;
+        return result;
     }
 
 
@@ -380,8 +330,9 @@ public class ImageConverter extends Application {
         return insertSeparator(result, " ", groupSize);
     }
 
+
     /**
-     * @param s A 16 bit value to convert to a 16 bit binary string.
+     * @param value A 16 bit value to convert to a 16 bit binary string.
      *
      * @return The 16 bit binary string which corresponds to the given value.
      */
@@ -403,52 +354,128 @@ public class ImageConverter extends Application {
 	    return String.format("%8s", Integer.toBinaryString(value & 0xff)).replace(' ', '0');
     }
 
-    private long fromRbgToRgb565(long rgbValue) {
-//		System.err.printf("0x%08x\n", rgbValue );
-//		System.err.printf("0x%08x\n", (rgbValue & 0xf80000) >> 8);
-//		System.err.printf("0x%08x\n", (rgbValue & 0x00fc00) >> 5);
-//		System.err.printf("0x%08x\n", (rgbValue & 0x0000f8) >> 3);
 
-		long result = ((rgbValue & 0xf80000) >> 8) +
-		              ((rgbValue & 0x00fc00) >> 5) +
-		              ((rgbValue & 0x0000f8) >> 3);
-		return result;
-	}
-
-	private long fromRbgToGbr565(long rgbValue) {
-//		System.err.printf("0x%08x\n", rgbValue );
-//		System.err.printf("0x%08x\n", (rgbValue & 0xf80000) >> 8);
-//		System.err.printf("0x%08x\n", (rgbValue & 0x00fc00) >> 5);
-//		System.err.printf("0x%08x\n", (rgbValue & 0x0000f8) >> 3);
-
-		long result = ((rgbValue & 0xf80000) >> 19) +
-		              ((rgbValue & 0x00fc00) >> 5) +
-		              ((rgbValue & 0x0000f8) << 8);
-		return result;
-	}
-
+	/**
+	 * Converts an ARGB value, stored in a 32 bit long value, into
+	 * an RGB565 value, stored in a 16 bit short value.
+	 * <code>
+	 * aaaaaaaa rrrrrrrr gggggggg bbbbbbbb
+	 *          ^^^^^    ^^^^^^   ^^^^^
+	 *
+	 *                   rrrrrggg gggbbbbb
+	 * </code>
+	 *
+     * @param rgbValue The (a)rgb value as a long
+     * @return The converted rgb565 value, in rgb order!
+	 */
     private short fromARGBToRGB565(long rgbValue) {
-//	      System.err.printf("0x%08x\n", rgbValue );
-//	      System.err.printf("0x%08x\n", (rgbValue & 0xf80000) >> 8);
-//	      System.err.printf("0x%08x\n", (rgbValue & 0x00fc00) >> 5);
-//	      System.err.printf("0x%08x\n", (rgbValue & 0x0000f8) >> 3);
-
-        long result = ((rgbValue & 0xf80000) >> 19) +
-                      ((rgbValue & 0x00fc00) >> 5) +
-                      ((rgbValue & 0x0000f8) << 8);
-        return result;
+        long result = ((rgbValue & 0x00f80000) >> 8) +
+                      ((rgbValue & 0x0000fc00) >> 5) +
+                      ((rgbValue & 0x000000f8) >> 3);
+        return (short) (result & 0xffff);
     }
 
-    private short fromARGBToGBR565(long rgbValue) {
-//      System.err.printf("0x%08x\n", rgbValue );
-//      System.err.printf("0x%08x\n", (rgbValue & 0xf80000) >> 8);
-//      System.err.printf("0x%08x\n", (rgbValue & 0x00fc00) >> 5);
-//      System.err.printf("0x%08x\n", (rgbValue & 0x0000f8) >> 3);
 
-      long result = ((rgbValue & 0xf80000) >> 19) +
-                    ((rgbValue & 0x00fc00) >> 5) +
-                    ((rgbValue & 0x0000f8) << 8);
-      return result;
-  }
+	/**
+	 * Converts an ARGB value, stored in a 32 bit long value, into
+	 * an GBR565 value, stored in a 16 bit short value.
+	 * <code>
+	 * aaaaaaaa rrrrrrrr gggggggg bbbbbbbb
+	 *          ^^^^^    ^^^^^^   ^^^^^
+	 *
+	 *                   bbbbbggg gggrrrrr
+	 * </code>
+	 * 
+     * @param rgbValue The (a)rgb value as a long
+     * @return The converted rgb565 value, in GBR order!
+     */
+    private short fromARGBToGBR565(long rgbValue) {
+        long result = ((rgbValue & 0x00f80000) >> 19) +
+                      ((rgbValue & 0x0000fc00) >> 5) +
+                      ((rgbValue & 0x000000f8) << 8);
+        return (short) (result & 0xffff);
+    }
+
+	public byte[] getRGB565asByte(Image img) {
+        int imgWidth = (int) img.getWidth();
+        int imgHeight= (int) img.getHeight();
+
+        PixelReader reader = img.getPixelReader();
+
+        //int bufsize = imgWidth * imgHeight * 4;
+        //System.err.printf("Image size: %s x %s (Buffer size: %s bytes)\n",  imgWidth, imgHeight, bufsize);
+        //byte[]  buffer = new byte[bufsize];
+
+        // NOTE: Order is Blue, Green, Red, Alpha!!!
+        //reader.getPixels(0, 0, imgWidth, imgHeight, PixelFormat.getByteBgraInstance(), buffer, 0, imgWidth * 4);
+
+        // get pixel data as ARGB into an integer buffer
+        int intBufsize = imgWidth * imgHeight;
+        int[] intBuffer = new int[intBufsize];
+        reader.getPixels(0, 0, imgWidth, imgHeight, PixelFormat.getIntArgbInstance(), intBuffer, 0, imgWidth);
+
+        //HexDump hd = new HexDump(intBuffer);
+        //hd.dumpAll(System.err);
+
+        int idx = 0;
+        int expIdx = 0;
+
+        int count = 0;
+        byte[] rgb565 = new byte[imgWidth * imgHeight * 2];
+        for (int y = 0;  y < imgHeight;  y++) {
+            for (int x = 0;  x < imgWidth;  x++) {
+                //buffer[idx+0];    // B
+                //buffer[idx+1];    // G
+                //buffer[idx+2];    // R
+                //buffer[idx+3];    // A
+
+                //System.err.printf("BUFFER: %s %s %s\n", toBinaryString(buffer[idx+0]), toBinaryString(buffer[idx+1]), toBinaryString(buffer[idx+2]));
+
+                // [bbbbbbbb gggggggg rrrrrrrr aaaaaaaa]
+                //  ^^^^^    ^^^^^^   ^^^^^
+
+                // tft panel configured for BGR order:
+                //          [bbbbbggg gggrrrrr]
+
+                // tft panel configured for RGB order:
+                //          [rrrrrggg gggbbbbb]
+
+            	short value= fromARGBToGBR565(intBuffer[idx]);
+            	rgb565[idx+0] = (byte) (value & 0xff);
+            	rgb565[idx+1] = (byte) ((value & 0xff00) >> 8);
+
+//                String fromOrig = 
+//                        String.format("%8s", Integer.toBinaryString(buffer[idx+0] & 0xff)).replace(' ', '0').substring(0, 5) +
+//                        String.format("%8s", Integer.toBinaryString(buffer[idx+1] & 0xff)).replace(' ', '0').substring(0, 6) +
+//                        String.format("%8s", Integer.toBinaryString(buffer[idx+2] & 0xff)).replace(' ', '0').substring(0, 5);
+//                String fromOrig = 
+//                		String.format("%8s", Integer.toBinaryString(buffer[idx+0] & 0xff)).replace(' ', '0') + " " +
+//                		String.format("%8s", Integer.toBinaryString(buffer[idx+1] & 0xff)).replace(' ', '0') + " " +
+//	              		String.format("%8s", Integer.toBinaryString(buffer[idx+2] & 0xff)).replace(' ', '0');
+//                String fromConverted =
+//                        String.format("%8s", Integer.toBinaryString(upper & 0xff)).replace(' ', '0')+
+//                        String.format("%8s", Integer.toBinaryString(lower & 0xff)).replace(' ', '0');
+//                System.err.printf("%s -> %s\n", fromOrig, fromConverted);
+//                if (count++ > 5) return rgb565;
+//
+//                if (!fromOrig.equals(fromConverted)) {
+//                    System.err.println("ERRRROR!!!!");
+//                }
+//                System.err.printf(" rrrrr    gggggg   bbbbb         rrrrrggg gggbbbbb\n\n");
+
+                // Big endian ! Why?
+                //rgb565[idx
+                //rgb565[expIdx + 1] = (byte) (bgr565 & 0xff);
+
+                //expIdx += 2;
+                idx++;
+            }
+        }
+
+        //HexDump hd2 = new HexDump(rgb565);
+        //hd2.dumpAll(System.err);
+
+        return rgb565;	
+    }
 
 }
