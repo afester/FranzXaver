@@ -17,40 +17,29 @@
 package afester.javafx.examples.ttf;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-
-import com.example.hexdump.HexDump;
 
 import afester.javafx.examples.Example;
-import afester.javafx.examples.image.ArrayDump;
-import afester.javafx.examples.image.ImageConverter;
 import javafx.application.Application;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.scene.image.PixelFormat;
-import javafx.scene.image.WritableImage;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import javafx.stage.FileChooser;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 
@@ -72,98 +61,122 @@ public class CustomFont extends Application {
         start(new Stage());
     }
 
-    @Override public void start(Stage stage) {
+    private Font f;
+    
+    private class Digit extends Group {
+
+        public Digit(int value) {
+            Text background = new Text("8.");
+            background.setTextOrigin(VPos.TOP);
+            background.setFont(f);
+            background.setFill(new Color(0.15, 0.15, 0.15, 1.0));
+
+//            Bounds b = background.getLayoutBounds();
+//            System.err.printf("%s/%s\n", b.getWidth(), b.getHeight());
+//            Rectangle r = new Rectangle(b.getWidth() + 6, b.getHeight());
+//            r.setFill(Color.YELLOW);
+
+            Text sampleText = new Text(Integer.toString(value));
+            sampleText.setTextOrigin(VPos.TOP);
+            sampleText.setFont(f);
+            sampleText.setFill(Color.RED);
+
+            getChildren().addAll(/*r,*/ background, sampleText);
+        }
+    }
+    
+    
+    @Override
+    public void start(Stage stage) {
         stage.setTitle("True Type Font example");
 
-        InputStream is = getClass().getResourceAsStream("DSEG7Classic-Bold.ttf");
-        Font f = Font.loadFont(is, 64);
+        InputStream is = getClass().getResourceAsStream("DSEG7Classic-BoldItalic.ttf");
+        //Font 
+        f = Font.loadFont(is, 72);
 
-        Rectangle r = new Rectangle(53, 64);
-        r.setFill(Color.BLACK);
-
-//        Label background = new Label(" 8888888888");
-//        Label background = new Label("8");
-//        background.setFont(f);
-//        background.setTextFill(new Color(0.1, 0.1, 0.1, 1.0));
-
-//        Label sampleText = new Label(" .0123456789");
-        Label sampleText = new Label("8");
-        sampleText.setFont(f);
-        sampleText.setTextFill(Color.RED);
-
-        final ColorPicker colorPicker = new ColorPicker();
-        colorPicker.setValue(Color.CORAL);
-        colorPicker.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent t) {
-                sampleText.setTextFill(colorPicker.getValue());               
-            }
-        });
-
-        Group disp = new Group();
-        disp.getChildren().addAll(r, /*background, */sampleText);
+ //
+//        Color[] colors = {Color.RED, Color.VIOLET, Color.BLUE, Color.BLACK, Color.GREEN};
+//
+//        Group g = new Group();
+//        g.setAutoSizeChildren(false);
+//        for (int i = 0; i < 5; i++) {
+//            Rectangle r2 = new Rectangle();
+//            r2.setY(i * 20);
+//            r2.setX(40);
+//            r2.setWidth(100);
+//            r2.setHeight(10);
+//            r2.setFill(colors[i]);
+//            g.getChildren().add(r2);
+//        }
+//        disp.getChildren().add(g);
+        
+//        for (int x = 62;  x < 680;  x += 59) {
+//            Line l = new Line(x, 0, x, 76);
+//            l.setStroke(Color.WHITE);
+//            disp.getChildren().addAll(l);
+//        }
 
         VBox box = new VBox();
         Button b = new Button("Export");
-        b.setOnAction(e -> {
-            SnapshotParameters params = new SnapshotParameters();
-            Image result = disp.snapshot(params, null);
-
-            ImageConverter ic = new ImageConverter();
-            byte[] rgb565 = ic.getRGB565asByte(result);
-            ArrayDump ad = new ArrayDump(rgb565);
-            ad.dumpAll16(System.err, (int) result.getWidth());
-
-            System.err.println();
-
-            byte[] compressed = compressRLE(rgb565);
-            System.err.println("Compressed size:" + compressed.length);
-            ArrayDump cd = new ArrayDump(compressed);
-            cd.dumpAll(System.err);
-
-            // ad.dumpAll2(System.err);
-        });
-
+//        b.setOnAction(e -> {
+//            SnapshotParameters params = new SnapshotParameters();
+//            Image result = disp.snapshot(params, null);
+//
+//            ImageConverter ic = new ImageConverter();
+//            byte[] rgb565 = ic.getRGB565asByte(result);
+//            ArrayDump ad = new ArrayDump(rgb565);
+//            ad.dumpAll16(System.err, (int) result.getWidth());
+//
+//            System.err.println();
+//
+//            byte[] compressed = compressRLE(rgb565);
+//            System.err.println("Compressed size:" + compressed.length);
+//            ArrayDump cd = new ArrayDump(compressed);
+//            cd.dumpAll(System.err);
+//
+//            // ad.dumpAll2(System.err);
+//        });
+//
         Button saveBtn = new Button("Save as ...");
-        saveBtn.setOnAction(e -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Save Image file ...");
-            File theFile = fileChooser.showSaveDialog(stage);
-            if (theFile != null) {
-
-                SnapshotParameters params = new SnapshotParameters();
-                WritableImage wim = disp.snapshot(params, null);
-                PixelFormat<?> pif = wim.getPixelReader().getPixelFormat();
-                System.err.println("IMAGE TYPE: " + pif.getType());
-
-                PixelFormat pf = PixelFormat.createByteIndexedInstance(new int[] {5, 10, 15});
-
-                WritableImage img = new WritableImage(100, 100);
-                System.err.println("NEW IMAGE TYPE: " + img.getPixelReader().getPixelFormat().getType());
-                try {
-                    ImageIO.write(SwingFXUtils.fromFXImage(wim, null), "png", theFile);
-
-                    BufferedImage bi = SwingFXUtils.fromFXImage(wim, null);
-                    System.err.println("IMAGE TYPE: " + getImageType(bi.getType()));
-
-                    String[] available = ImageIO.getWriterFileSuffixes();
-                    for (String a : available) {
-                        System.err.println("  " + a);
-                    }
-                    Iterator<ImageWriter> wrs = ImageIO.getImageWritersByFormatName("png");
-                    wrs.forEachRemaining(iw -> {
-                        ImageWriteParam iwp;
-                        System.err.println(iw);
-                    });
-
-                    ByteArrayOutputStream result = new ByteArrayOutputStream();
-                    ImageIO.write(SwingFXUtils.fromFXImage(wim, null), "png", result);
-
-                    HexDump hd = new HexDump(result.toByteArray());
-                    hd.dumpAll(System.err);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
+//        saveBtn.setOnAction(e -> {
+//            FileChooser fileChooser = new FileChooser();
+//            fileChooser.setTitle("Save Image file ...");
+//            File theFile = fileChooser.showSaveDialog(stage);
+//            if (theFile != null) {
+//
+//                SnapshotParameters params = new SnapshotParameters();
+//                WritableImage wim = disp.snapshot(params, null);
+//                PixelFormat<?> pif = wim.getPixelReader().getPixelFormat();
+//                System.err.println("IMAGE TYPE: " + pif.getType());
+//
+//                PixelFormat pf = PixelFormat.createByteIndexedInstance(new int[] {5, 10, 15});
+//
+//                WritableImage img = new WritableImage(100, 100);
+//                System.err.println("NEW IMAGE TYPE: " + img.getPixelReader().getPixelFormat().getType());
+//                try {
+//                    ImageIO.write(SwingFXUtils.fromFXImage(wim, null), "png", theFile);
+//
+//                    BufferedImage bi = SwingFXUtils.fromFXImage(wim, null);
+//                    System.err.println("IMAGE TYPE: " + getImageType(bi.getType()));
+//
+//                    String[] available = ImageIO.getWriterFileSuffixes();
+//                    for (String a : available) {
+//                        System.err.println("  " + a);
+//                    }
+//                    Iterator<ImageWriter> wrs = ImageIO.getImageWritersByFormatName("png");
+//                    wrs.forEachRemaining(iw -> {
+//                        ImageWriteParam iwp;
+//                        System.err.println(iw);
+//                    });
+//
+//                    ByteArrayOutputStream result = new ByteArrayOutputStream();
+//                    ImageIO.write(SwingFXUtils.fromFXImage(wim, null), "png", result);
+//
+//                    HexDump hd = new HexDump(result.toByteArray());
+//                    hd.dumpAll(System.err);
+//                } catch (IOException e1) {
+//                    e1.printStackTrace();
+//                }
 
 //                try {
 //                    FileInputStream input = new FileInputStream(theFile.getAbsolutePath());
@@ -172,7 +185,7 @@ public class CustomFont extends Application {
 //                } catch (FileNotFoundException e1) {
 //                    e1.printStackTrace();
 //                }
-            }
+//            }
 
 //            ImageConverter ic = new ImageConverter();
 //            byte[] rgb565 = ic.getRGB565(result);
@@ -187,8 +200,40 @@ public class CustomFont extends Application {
 //            cd.dumpAll(System.err);
 //
 //            // ad.dumpAll2(System.err);
+//        });
+
+        ArrayList<Digit> digits = new ArrayList<Digit>();
+        Group disp = new Group();
+        Rectangle r = new Rectangle(700, 76);
+        disp.getChildren().add(r);
+        for (int value = 0;  value < 10;  value++) {
+            Digit d = new Digit(value);
+            digits.add(d);
+            d.setLayoutY(2);
+            d.setLayoutX(64 * value);
+            
+            Line l = new Line((value+1)*64, 0, (value+1)*64, 76);
+            l.setStroke(Color.WHITE);
+
+            disp.getChildren().addAll(d, l);
+        }
+
+        HBox snapshots = new HBox();
+        snapshots.setBackground(new Background(new BackgroundFill(Color.AQUAMARINE, new CornerRadii(0), new Insets(0, 0, 0,0))));
+        snapshots.setSpacing(5);
+        Button snapshotBtn = new Button("Snapshot");
+        snapshotBtn.setOnAction(e -> {
+            SnapshotParameters params = new SnapshotParameters();
+
+            snapshots.getChildren().clear();
+            digits.forEach(c -> {
+                Image result = c.snapshot(params, null);
+                snapshots.getChildren().add(new ImageView(result));
+                stage.sizeToScene();
+            });
         });
-        box.getChildren().addAll(b, saveBtn, disp, colorPicker);
+
+        box.getChildren().addAll(b, saveBtn, disp, snapshotBtn, snapshots);// , colorPicker);
 
         Scene scene  = new Scene(box);
 
