@@ -16,24 +16,10 @@
 
 package afester.javafx.svg;
 
-import javafx.scene.Group;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.Paint;
-import javafx.scene.paint.RadialGradient;
-import javafx.scene.paint.Stop;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.CubicCurve;
-import javafx.scene.shape.Ellipse;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Polyline;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.SVGPath;
-import javafx.scene.shape.Shape;
-import javafx.scene.text.Text;
-import javafx.scene.transform.Affine;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.batik.anim.dom.SVGOMAnimateElement;
 import org.apache.batik.anim.dom.SVGOMAnimatedPathData;
 import org.apache.batik.anim.dom.SVGOMAnimatedPathData.BaseSVGPathSegList;
 import org.apache.batik.anim.dom.SVGOMCircleElement;
@@ -59,15 +45,30 @@ import org.apache.batik.css.dom.CSSOMValue;
 import org.apache.batik.dom.svg.SVGPathSegItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
+import org.w3c.dom.NodeList;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.svg.SVGRect;
 import org.w3c.dom.svg.SVGPoint;
 import org.w3c.dom.svg.SVGPointList;
+import org.w3c.dom.svg.SVGRect;
 
-import java.util.ArrayList;
-import java.util.List;
+import javafx.scene.Group;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Paint;
+import javafx.scene.paint.RadialGradient;
+import javafx.scene.paint.Stop;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.CubicCurve;
+import javafx.scene.shape.Ellipse;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Polyline;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.SVGPath;
+import javafx.scene.shape.Shape;
+import javafx.scene.text.Text;
+import javafx.scene.transform.Affine;
 
 
 public class SvgBasicElementHandler {
@@ -157,6 +158,41 @@ public class SvgBasicElementHandler {
         }
 
         styleTools.applyStyle(result, element);
+
+        // get the animate nodes for this element
+        NodeList children = element.getElementsByTagName("animate");
+        for (int idx = 0;  idx < children.getLength();  idx++) {
+            // See https://www.w3.org/TR/SVG/animate.html#AnimateElement
+            SVGOMAnimateElement animate = (SVGOMAnimateElement) children.item(idx);
+
+            // <animate> animation attribute target attributes
+            String attributeName = animate.getAttribute("attributeName");
+            String attributeType = animate.getAttribute("attributeType");
+
+            // <animate> animation value attributes
+            String from = animate.getAttribute("from");                 // start value for the attribute's value
+            String to = animate.getAttribute("to");                     // end value for the attribute's value
+            String by = animate.getAttribute("by");                     // delta value for the attribute's value
+            String values = animate.getAttribute("values");             // alternatively, a discrete set of values to apply 
+            // If a list of values is specified, any from, to and by attribute values are ignored.
+            // By default, a simple linear interpolation is performed over the values, evenly spaced over the duration of the animation
+
+            // <animate> animation timing attributes
+            String begin = animate.getAttribute("begin");               // Semicolon separated list of start times
+            String end = animate.getAttribute("end");                   // Semicolon separated list of end times            
+            String dur = animate.getAttribute("dur");                   // duration of the animation
+            String repeatCount = animate.getAttribute("repeatCount");   // how often to repeat the animation
+
+            //  String times = animate.getAttribute("times");           // Unsure - times is not an SVG animate attribute...
+                                                                        // In Chrome, the sample runs also without this attribute.
+
+            System.err.printf("ANIMATE: %s(%s)\n"+
+                              "         %s to %s / by %s / values %s\n"+
+                              "         begin=[%s], end=[%s], dur=%s, rep=%s\n", 
+                               attributeName, attributeType, 
+                               from, to, by, values,
+                               begin, end, dur, repeatCount);
+        }
 
         loader.parentNode.getChildren().add(result);
     }

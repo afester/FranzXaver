@@ -16,7 +16,12 @@
 
 package afester.javafx.svg;
 
-import javafx.scene.Group;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.anim.dom.SVGOMCircleElement;
@@ -47,12 +52,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.NodeList;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
+import javafx.scene.Group;
 
 
 public class SvgLoader {
@@ -99,6 +99,8 @@ public class SvgLoader {
         elementMap.put("linearGradient", e -> bh.handleElement((SVGOMLinearGradientElement) e));
         elementMap.put("radialGradient", e -> bh.handleElement((SVGOMRadialGradientElement) e));
         elementMap.put("stop", e -> { } );
+
+        elementMap.put("animate", e -> { } );   // handled as sub element of shapes
 
         /*
          * <title>
