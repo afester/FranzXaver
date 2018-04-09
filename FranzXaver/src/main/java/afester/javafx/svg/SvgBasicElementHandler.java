@@ -52,6 +52,9 @@ import org.w3c.dom.svg.SVGPoint;
 import org.w3c.dom.svg.SVGPointList;
 import org.w3c.dom.svg.SVGRect;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.LinearGradient;
@@ -69,6 +72,7 @@ import javafx.scene.shape.SVGPath;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
+import javafx.util.Duration;
 
 
 public class SvgBasicElementHandler {
@@ -137,6 +141,8 @@ public class SvgBasicElementHandler {
     }
 
 
+    List<Timeline> timeLines = new ArrayList<>();
+
     void handleElement(SVGOMRectElement element) {
         // Get attributes from SVG node
         float xpos = element.getX().getBaseVal().getValue();
@@ -173,7 +179,10 @@ public class SvgBasicElementHandler {
             String from = animate.getAttribute("from");                 // start value for the attribute's value
             String to = animate.getAttribute("to");                     // end value for the attribute's value
             String by = animate.getAttribute("by");                     // delta value for the attribute's value
-            String values = animate.getAttribute("values");             // alternatively, a discrete set of values to apply 
+            String values = animate.getAttribute("values");             // alternatively, a discrete set of values to apply
+            if (!values.equals("")) {
+                
+            }
             // If a list of values is specified, any from, to and by attribute values are ignored.
             // By default, a simple linear interpolation is performed over the values, evenly spaced over the duration of the animation
 
@@ -192,6 +201,18 @@ public class SvgBasicElementHandler {
                                attributeName, attributeType, 
                                from, to, by, values,
                                begin, end, dur, repeatCount);
+
+            // We need one separate Timeline for each <animate> element.
+            result.setOpacity(0.2);                                     // start value
+            KeyValue kv = new KeyValue(result.opacityProperty(), 0.0);  // end value
+
+            KeyFrame kf = new KeyFrame(new Duration(1000), kv);         // Duration of the animation
+            Timeline t = new Timeline(kf);
+            int beginMillis = (int) ( (Double.parseDouble(begin.substring(0, begin.length()-1))+1) * 1000);
+            t.setDelay(new Duration(beginMillis));                      // begin time
+            t.setCycleCount(Timeline.INDEFINITE);                       // repeatCount
+
+            timeLines.add(t);
         }
 
         loader.parentNode.getChildren().add(result);

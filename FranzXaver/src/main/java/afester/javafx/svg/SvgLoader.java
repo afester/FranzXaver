@@ -105,7 +105,7 @@ public class SvgLoader {
         /*
          * <title>
          * 
-         * <a> <altGlyph> <altGlyphDef> <altGlyphItem> <animate> <animateColor>
+         * <a> <altGlyph> <altGlyphDef> <altGlyphItem> <animateColor>
          * <animateMotion> <animateTransform> <clipPath> <color-profile>
          * <cursor> <desc> <filter> <feGaussianBlur> <feOffset>
          * <feSpecularLighting> <fePointLight> <feComposite> <feMerge>
@@ -231,6 +231,9 @@ public class SvgLoader {
 
         parentNode = new Group();
         handle(doc);
+        System.err.println("Playing 1...");
+        bh.timeLines.forEach(e -> e.play());
+
         return parentNode;
     }
 
@@ -251,6 +254,10 @@ public class SvgLoader {
 
         parentNode = new Group();
         handle(doc);
+        System.err.println("Playing 2...");
+        //System.err.println("FRAMES:" + bh.t.getKeyFrames().size());
+        //System.err.println("TOTAL: " + bh.t.getTotalDuration());
+        bh.timeLines.forEach(e -> e.play());
 
         return parentNode;
     }

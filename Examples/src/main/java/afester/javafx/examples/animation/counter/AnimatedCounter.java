@@ -16,8 +16,10 @@
 
 package afester.javafx.examples.animation.counter;
 
-import afester.javafx.examples.Example;
+import java.util.ArrayList;
+import java.util.List;
 
+import afester.javafx.examples.Example;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -30,9 +32,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Example(desc = "Animating a sequence of bitmap images", 
