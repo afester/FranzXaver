@@ -52,6 +52,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.NodeList;
 
+import javafx.animation.Timeline;
 import javafx.scene.Group;
 
 
@@ -232,7 +233,7 @@ public class SvgLoader {
         parentNode = new Group();
         handle(doc);
         System.err.println("Playing 1...");
-        bh.timeLines.forEach(e -> e.play());
+//        bh.timeLines.forEach(e -> e.play());
 
         return parentNode;
     }
@@ -254,10 +255,23 @@ public class SvgLoader {
 
         parentNode = new Group();
         handle(doc);
+
         System.err.println("Playing 2...");
         //System.err.println("FRAMES:" + bh.t.getKeyFrames().size());
         //System.err.println("TOTAL: " + bh.t.getTotalDuration());
-        bh.timeLines.forEach(e -> e.play());
+
+        SvgAnimation.normalize(bh.animations);
+        //List<Timeline> timeLines = new ArrayList<>();
+        for (SvgAnimation animation : bh.animations) {
+            System.err.println(animation);
+            //timeLines.add(animation.createTimeline());
+            Timeline timeLine = animation.createTimeline();     // TODO: manage the Timeline objects - they are tied to the JavaFX application Thread
+            timeLine.play();                                    // TODO: Is this safe? Do the timelines have a common time base?
+        }
+
+//        for (Timeline tl : timeLines) {
+//            tl.play();
+//        }
 
         return parentNode;
     }

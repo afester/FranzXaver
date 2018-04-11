@@ -52,9 +52,6 @@ import org.w3c.dom.svg.SVGPoint;
 import org.w3c.dom.svg.SVGPointList;
 import org.w3c.dom.svg.SVGRect;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.LinearGradient;
@@ -72,7 +69,6 @@ import javafx.scene.shape.SVGPath;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
-import javafx.util.Duration;
 
 
 public class SvgBasicElementHandler {
@@ -141,7 +137,7 @@ public class SvgBasicElementHandler {
     }
 
 
-    List<Timeline> timeLines = new ArrayList<>();
+    List<SvgAnimation> animations = new ArrayList<>();
 
     void handleElement(SVGOMRectElement element) {
         // Get attributes from SVG node
@@ -168,51 +164,10 @@ public class SvgBasicElementHandler {
         // get the animate nodes for this element
         NodeList children = element.getElementsByTagName("animate");
         for (int idx = 0;  idx < children.getLength();  idx++) {
-            // See https://www.w3.org/TR/SVG/animate.html#AnimateElement
             SVGOMAnimateElement animate = (SVGOMAnimateElement) children.item(idx);
-
-            // <animate> animation attribute target attributes
-            String attributeName = animate.getAttribute("attributeName");
-            String attributeType = animate.getAttribute("attributeType");
-
-            // <animate> animation value attributes
-            String from = animate.getAttribute("from");                 // start value for the attribute's value
-            String to = animate.getAttribute("to");                     // end value for the attribute's value
-            String by = animate.getAttribute("by");                     // delta value for the attribute's value
-            String values = animate.getAttribute("values");             // alternatively, a discrete set of values to apply
-            if (!values.equals("")) {
-                
-            }
-            // If a list of values is specified, any from, to and by attribute values are ignored.
-            // By default, a simple linear interpolation is performed over the values, evenly spaced over the duration of the animation
-
-            // <animate> animation timing attributes
-            String begin = animate.getAttribute("begin");               // Semicolon separated list of start times
-            String end = animate.getAttribute("end");                   // Semicolon separated list of end times            
-            String dur = animate.getAttribute("dur");                   // duration of the animation
-            String repeatCount = animate.getAttribute("repeatCount");   // how often to repeat the animation
-
-            //  String times = animate.getAttribute("times");           // Unsure - times is not an SVG animate attribute...
-                                                                        // In Chrome, the sample runs also without this attribute.
-
-            System.err.printf("ANIMATE: %s(%s)\n"+
-                              "         %s to %s / by %s / values %s\n"+
-                              "         begin=[%s], end=[%s], dur=%s, rep=%s\n", 
-                               attributeName, attributeType, 
-                               from, to, by, values,
-                               begin, end, dur, repeatCount);
-
-            // We need one separate Timeline for each <animate> element.
-            result.setOpacity(0.2);                                     // start value
-            KeyValue kv = new KeyValue(result.opacityProperty(), 0.0);  // end value
-
-            KeyFrame kf = new KeyFrame(new Duration(1000), kv);         // Duration of the animation
-            Timeline t = new Timeline(kf);
-            int beginMillis = (int) ( (Double.parseDouble(begin.substring(0, begin.length()-1))+1) * 1000);
-            t.setDelay(new Duration(beginMillis));                      // begin time
-            t.setCycleCount(Timeline.INDEFINITE);                       // repeatCount
-
-            timeLines.add(t);
+            SvgAnimation animation = new SvgAnimation(result, animate);
+//            System.err.println(animation);
+            animations.add(animation);
         }
 
         loader.parentNode.getChildren().add(result);
