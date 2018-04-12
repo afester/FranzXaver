@@ -19,7 +19,6 @@ package afester.javafx.svg;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.batik.anim.dom.SVGOMAnimateElement;
 import org.apache.batik.anim.dom.SVGOMAnimatedPathData;
 import org.apache.batik.anim.dom.SVGOMAnimatedPathData.BaseSVGPathSegList;
 import org.apache.batik.anim.dom.SVGOMCircleElement;
@@ -45,7 +44,6 @@ import org.apache.batik.css.dom.CSSOMValue;
 import org.apache.batik.dom.svg.SVGPathSegItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSStyleDeclaration;
 import org.w3c.dom.svg.SVGPoint;
@@ -118,6 +116,8 @@ public class SvgBasicElementHandler {
             result.getTransforms().add(transformation);
         }
 
+        animations.addAll(SvgAnimation.getAnimations(result, element));
+
         loader.parentNode.getChildren().add(result);
         loader.parentNode = result;
     }
@@ -160,15 +160,8 @@ public class SvgBasicElementHandler {
         }
 
         styleTools.applyStyle(result, element);
-
-        // get the animate nodes for this element
-        NodeList children = element.getElementsByTagName("animate");
-        for (int idx = 0;  idx < children.getLength();  idx++) {
-            SVGOMAnimateElement animate = (SVGOMAnimateElement) children.item(idx);
-            SvgAnimation animation = new SvgAnimation(result, animate);
-//            System.err.println(animation);
-            animations.add(animation);
-        }
+        SvgAnimation.getAnimations(result, element);
+        animations.addAll(SvgAnimation.getAnimations(result, element));
 
         loader.parentNode.getChildren().add(result);
     }
@@ -310,6 +303,7 @@ public class SvgBasicElementHandler {
         }
 
         styleTools.applyStyle(result, element);
+        animations.addAll(SvgAnimation.getAnimations(result, element));
 
         loader.parentNode.getChildren().add(result);
     }
@@ -374,6 +368,7 @@ public class SvgBasicElementHandler {
         }
 
         styleTools.applyStyle(result, element);
+        animations.addAll(SvgAnimation.getAnimations(result, element));
 
         //fxObj.setStroke(Color.VIOLET);
         loader.parentNode.getChildren().add(result);
@@ -476,6 +471,8 @@ public class SvgBasicElementHandler {
 
                 result.getChildren().add(fxObj);
             }
+
+            animations.addAll(SvgAnimation.getAnimations(fxObj, element));
         }
 
         loader.parentNode.getChildren().add(result);

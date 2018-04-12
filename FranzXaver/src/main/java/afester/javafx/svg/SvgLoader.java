@@ -266,7 +266,9 @@ public class SvgLoader {
             System.err.println(animation);
             //timeLines.add(animation.createTimeline());
             Timeline timeLine = animation.createTimeline();     // TODO: manage the Timeline objects - they are tied to the JavaFX application Thread
-            timeLine.play();                                    // TODO: Is this safe? Do the timelines have a common time base?
+            if (timeLine != null) {
+                timeLine.play();                                    // TODO: Is this safe? Do the timelines have a common time base?
+            }
         }
 
 //        for (Timeline tl : timeLines) {
