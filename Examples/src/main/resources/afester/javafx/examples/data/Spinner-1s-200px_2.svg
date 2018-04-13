@@ -2,7 +2,7 @@
   xmlns="http://www.w3.org/2000/svg" 
   xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" style="background: none;">
 <g transform="rotate(0 50 50)">
-  <rect x="47" y="24" rx="9.4" ry="4.8" width="6" height="12" fill="#ff727d">
+  <rect x="47" y="24" rx="9.4" ry="4.8" width="6" height="12" fill="#00ff00">
     <animate attributeName="opacity" values="1;0"  dur="10s" begin="-9.166666666666666s" repeatCount="indefinite"></animate>
   </rect>
 </g><g transform="rotate(30 50 50)">

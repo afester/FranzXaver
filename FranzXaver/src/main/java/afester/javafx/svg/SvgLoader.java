@@ -251,6 +251,7 @@ public class SvgLoader {
         // note: uses the DOM approach.
         // probably a SAX based approach would be better from a performance
         // perspective.
+        bh.animations.clear();
         SVGOMDocument doc = loadSvgDocument(svgFile);
 
         parentNode = new Group();

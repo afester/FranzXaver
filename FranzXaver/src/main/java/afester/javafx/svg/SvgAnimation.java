@@ -18,7 +18,6 @@ package afester.javafx.svg;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.batik.anim.dom.SVGOMAnimateElement;
@@ -110,6 +109,16 @@ public class SvgAnimation {
 
         //  String times = animate.getAttribute("times");           // Unsure - times is not an SVG animate attribute...
                                                                     // In Chrome, the sample runs also without this attribute.
+
+        // There is "keyTimes", though:
+        // "A semicolon-separated list of time values used to control the pacing of the animation. 
+        //  Each time in the list corresponds to a value in the ‘values’ attribute list, and defines 
+        //  when the value is used in the animation function. Each time value in the ‘keyTimes’ list 
+        // is specified as a floating point value between 0 and 1 (inclusive), representing a proportional 
+        // offset into the simple duration of the animation element.
+        // For animations specified with a ‘values’ list, the ‘keyTimes’ attribute if specified must have exactly 
+        // as many values as there are in the ‘values’ attribute. For from/to/by animations, the ‘keyTimes’ 
+        // attribute if specified must have two values.
     }
 
 
@@ -139,26 +148,45 @@ public class SvgAnimation {
      * This is required because svg:animate obviously allows negative timeline values, while
      * JavaFX only allows positive timeline values.
      * 
+     * https://www.w3.org/TR/2001/REC-smil-animation-20010904/#Timing-EvaluationOfBeginEndTimeLists
+     * "When a begin time is resolved to be in the past (i.e., before the current presentation time), the element begins immediately, 
+     *  but acts as though it had begun at the specified time (playing from an offset into the media)."
+     *  
      * @param animations
      */
     public static void normalize(List<SvgAnimation> animations) {
-        long offset = Long.MAX_VALUE;
+      System.err.println("BEFORE:");
+      for (SvgAnimation animation : animations) {
+          System.err.println(" +- " + animation.begin);
+      }
+      for (SvgAnimation animation : animations) {
+          if (animation.begin != null && animation.begin < 0) {
+              animation.begin = animation.duration + animation.begin;
+          }
+      }
 
-        for (SvgAnimation animation : animations) {
-            offset = Math.min(offset, animation.begin != null ? animation.begin : 0);
-            // System.err.printf("%s - %s\n", offset, animation.begin);
-        }
+      System.err.println("AFTER:");
+      for (SvgAnimation animation : animations) {
+          System.err.println(" +- " + animation.begin);
+      }
 
-        if (offset != 0) {
-            for (SvgAnimation animation : animations) {
-                if (animation.begin != null) {
-                    animation.begin -= offset;
-                }
-                if (animation.end != null) {
-                    animation.end -= offset;
-                }
-            }
-        }
+//        long offset = Long.MAX_VALUE;
+//
+//        for (SvgAnimation animation : animations) {
+//            offset = Math.min(offset, animation.begin != null ? animation.begin : 0);
+//            // System.err.printf("%s - %s\n", offset, animation.begin);
+//        }
+//
+//        if (offset != 0) {
+//            for (SvgAnimation animation : animations) {
+//                if (animation.begin != null) {
+//                    animation.begin -= offset;
+//                }
+//                if (animation.end != null) {
+//                    animation.end -= offset;
+//                }
+//            }
+//        }
     }
 
 //    private void parseValues() {
@@ -216,14 +244,19 @@ public class SvgAnimation {
             // ft.jumpTo(new Duration(begin));
 
             // Instead, we use an explicitly calculated start value and set a delay on the FadeTransition:
-//            final float startOpaq = (float) begin / duration;
-//            node.setOpacity(startOpaq);
+            float startOpaq = /*1.0F -*/ ((float) begin / duration);
+            if (begin == 0) {
+                startOpaq = 1.0F;
+            }
+            node.setOpacity(startOpaq);
+
             ft.setDelay(new Duration(begin));
+            // ft.jumpTo(new Duration(begin));
 
             ft.setFromValue(Double.parseDouble(values[0]));
             ft.setToValue(Double.parseDouble(values[1]));
             ft.setCycleCount(repeatCount);
- 
+
             return ft;
 
         } else if (attributeName.equals("stroke-dashoffset")) {
@@ -279,15 +312,21 @@ public class SvgAnimation {
      * 
      * @return A list of SvgAnimation objects which represent the svg:animate element.
      */
-    public static Collection<? extends SvgAnimation> getAnimations(Node node, SVGOMElement element) {
+    public static List<SvgAnimation> getAnimations(Node node, SVGOMElement element) {
         List<SvgAnimation> result = new ArrayList<>();
 
-        // get the animate nodes for this element
-        NodeList children = element.getElementsByTagName("animate");
-        for (int idx = 0;  idx < children.getLength();  idx++) {
-            SVGOMAnimateElement animate = (SVGOMAnimateElement) children.item(idx);
-            SvgAnimation animation = new SvgAnimation(node, animate);
-            result.add(animation);
+        // get the animate child nodes for this element
+
+        // NodeList children = element.getElementsByTagName("animate");
+
+        NodeList nl = element.getChildNodes();
+        for (int idx = 0;  idx < nl.getLength();  idx++) {
+            org.w3c.dom.Node child = nl.item(idx);
+            if ("animate".equals(child.getLocalName())) {
+                SVGOMAnimateElement animate = (SVGOMAnimateElement) child;
+                SvgAnimation animation = new SvgAnimation(node, animate);
+                result.add(animation);
+            }
         }
 
         return result;
