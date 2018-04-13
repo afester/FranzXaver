@@ -26,7 +26,8 @@ import org.apache.batik.anim.dom.SVGOMElement;
 import org.apache.batik.parser.ClockParser;
 import org.w3c.dom.NodeList;
 
-import javafx.animation.KeyFrame;
+import javafx.animation.Animation;
+import javafx.animation.FadeTransition;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.scene.Node;
@@ -37,18 +38,21 @@ import javafx.util.Duration;
 
 public class SvgAnimation {
 
-    private Node node;              // The JavaFX node to animate
+    public Node node;              // The JavaFX node to animate
 
     private String attributeName;   // The attribute to animate
     // private String attributeType;
 
-    private String[] values;        // TODO: probably need to parameterize this type
+    private String[] values;        // The raw values retrieved from the svg:animate element.
+                                    // Depending on the attribute to animate, this can be a simple double value,
+                                    // a color, a list of values, a list of tuples and probably more.  
+
     private double by;              // TODO: probably need to parameterize this type
 
     private Long begin;             // TODO: can also be a list of start times
     private Long end;               // TODO: can also be a list of end times
     private Long duration;          // duration in ms
-    private int repeatCount = 0;   // how often to repeat - Timeline.INFINITE is infinite times 
+    private int repeatCount = 0;    // how often to repeat - Timeline.INFINITE is infinite times 
 
 
     public SvgAnimation(Node node, SVGOMAnimateElement element) {
@@ -66,7 +70,6 @@ public class SvgAnimation {
             // If a list of values is specified, any from, to and by attribute values are ignored.
             // By default, a simple linear interpolation is performed over the values, evenly spaced over the duration of the animation
             values = valueList.split(";");  // each discrete value is separated by ';'
-            System.err.println(values);
         } else {
             String from = element.getAttribute("from").trim();      // start value for the attribute's value
             if (from.equals("")) {                                  // from is optional
@@ -86,6 +89,15 @@ public class SvgAnimation {
 
         // <animate> animation timing attributes
         begin = parseTime(element.getAttribute("begin"));           // Semicolon separated list of start times (currently only single value supported)
+                                                                    // This is the time where the animation should start - 
+                // Currently only offset values are supported.
+                // the offset describes the time within the timeline where the
+                // animation should start at.
+                // if the animated attribute is opacity, the duration is 3s, and
+                // the begin value is 1s, the property would start with opacity=0.333
+                // NOTE that this is different from the Timeline.delay property which delays the animation, but still starts
+                // with the propertie's current value!
+
         end = parseTime(element.getAttribute("end"));               // Semicolon separated list of end times (currently only single value supported)
 
         duration = parseTime(element.getAttribute("dur"));          // duration of the animation
@@ -98,20 +110,17 @@ public class SvgAnimation {
 
         //  String times = animate.getAttribute("times");           // Unsure - times is not an SVG animate attribute...
                                                                     // In Chrome, the sample runs also without this attribute.
-        
-        System.err.println(this);
     }
 
 
+    private float result;
     /**
      * Returns the given time value in ms as a long value.
      *
      * @param timeValue The time value from an SVG animate attribute
      * @return The corresponding time value in ms
      */
-    private float result;
-
-    public Long parseTime(String timeValue) {
+    private Long parseTime(String timeValue) {
         if (timeValue.equals("")) {
             return null;
         }
@@ -137,7 +146,7 @@ public class SvgAnimation {
 
         for (SvgAnimation animation : animations) {
             offset = Math.min(offset, animation.begin != null ? animation.begin : 0);
-            System.err.printf("%s - %s\n", offset, animation.begin);
+            // System.err.printf("%s - %s\n", offset, animation.begin);
         }
 
         if (offset != 0) {
@@ -152,7 +161,7 @@ public class SvgAnimation {
         }
     }
 
-//    private void nix() {
+//    private void parseValues() {
 //
 //        // now, each value can be of a simple type or of a complex type like color, list, ....
 //        // (probably this needs to be calculated depending on the attributeName)
@@ -195,22 +204,37 @@ public class SvgAnimation {
      * 
      * @return A JavaFX timeline object which corresponds to this SvgAnimation.
      */
-    public Timeline createTimeline() {
-        KeyValue kv = null;
+    public Animation createAnimation() {
+        List<KeyValue> keyValues = new ArrayList<>();
         if (attributeName.equals("opacity")) {
-            System.err.println("opacity VALUES: " + Arrays.toString(values));
-            node.setOpacity(Double.parseDouble(values[0]));                           // start value  
-            kv = new KeyValue(node.opacityProperty(), Double.parseDouble(values[1])); // end value
+
+            // for opacity, we can use a FadeTransition
+            FadeTransition ft = new FadeTransition(new Duration(duration), node);
+
+            // It seems that we can not simply jumpTo the begin time and expect the opacity value to start
+            // at the proper value.
+            // ft.jumpTo(new Duration(begin));
+
+            // Instead, we use an explicitly calculated start value and set a delay on the FadeTransition:
+//            final float startOpaq = (float) begin / duration;
+//            node.setOpacity(startOpaq);
+            ft.setDelay(new Duration(begin));
+
+            ft.setFromValue(Double.parseDouble(values[0]));
+            ft.setToValue(Double.parseDouble(values[1]));
+            ft.setCycleCount(repeatCount);
+ 
+            return ft;
 
         } else if (attributeName.equals("stroke-dashoffset")) {
             System.err.println("stroke-dashoffset VALUES: " + Arrays.toString(values));
             Shape s = (Shape) node;
-            kv = new KeyValue(s.strokeDashOffsetProperty(), 1.0); // values[1]); // end value
+            keyValues.add(new KeyValue(s.strokeDashOffsetProperty(), 1.0)); // values[1]); // end value
 
         } else if (attributeName.equals("stroke")) {
             System.err.println("stroke VALUES: " + Arrays.toString(values));
             Shape s = (Shape) node;
-            kv = new KeyValue(s.strokeProperty(), Color.ALICEBLUE);  // values[1]); // end value
+            keyValues.add(new KeyValue(s.strokeProperty(), Color.ALICEBLUE));  // values[1]); // end value
 
         } else if (attributeName.equals("points")) {
             System.err.println("points VALUES: " + Arrays.toString(values));
@@ -235,25 +259,26 @@ public class SvgAnimation {
             throw new RuntimeException("Unknown property " + attributeName);
         }
 
-        KeyFrame kf = new KeyFrame(new Duration(duration), kv);     // Duration of the animation
-        Timeline t = new Timeline(kf);
-        if (begin != null) {
-            t.setDelay(new Duration(begin));                            // begin time
-        }
-        t.setCycleCount(repeatCount);                               // repeatCount
+//        KeyFrame kf = new KeyFrame(new Duration(duration), keyValues.toArray(new KeyValue[0]));     // Duration of the animation
+//        Timeline t = new Timeline(kf);
+//        if (begin != null) {
+//            // t.setDelay(new Duration(begin));                            // begin time
+//            t.jumpTo(new Duration(begin));
+//        }
+//        t.setCycleCount(repeatCount);                               // repeatCount
 
-        return t;
-    }
-
-    
-    public String toString() {
-        return String.format("SvgAnimation[attributeName=%s,\n"+
-                             "             values=%s, by=%s,\n"+
-                             "             begin=%s, end=%s, duration=%s, repeatCount=%s]",
-                              attributeName, Arrays.toString(values), by, begin, end, duration, repeatCount);
+        return null;
     }
 
 
+    /**
+     * Returns a list of SvgAnimation objects from the svg:animate element. 
+     * 
+     * @param node   The JavaFX node which shall be animated.
+     * @param element The avg:animate element
+     * 
+     * @return A list of SvgAnimation objects which represent the svg:animate element.
+     */
     public static Collection<? extends SvgAnimation> getAnimations(Node node, SVGOMElement element) {
         List<SvgAnimation> result = new ArrayList<>();
 
@@ -266,5 +291,14 @@ public class SvgAnimation {
         }
 
         return result;
+    }
+
+
+    @Override
+    public String toString() {
+        return String.format("SvgAnimation[attributeName=%s,\n"+
+                             "             values=%s, by=%s,\n"+
+                             "             begin=%s, end=%s, duration=%s, repeatCount=%s]",
+                              attributeName, Arrays.toString(values), by, begin, end, duration, repeatCount);
     }
 }

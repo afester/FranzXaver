@@ -52,7 +52,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.NodeList;
 
-import javafx.animation.Timeline;
+import javafx.animation.Animation;
 import javafx.scene.Group;
 
 
@@ -265,9 +265,13 @@ public class SvgLoader {
         for (SvgAnimation animation : bh.animations) {
             System.err.println(animation);
             //timeLines.add(animation.createTimeline());
-            Timeline timeLine = animation.createTimeline();     // TODO: manage the Timeline objects - they are tied to the JavaFX application Thread
-            if (timeLine != null) {
-                timeLine.play();                                    // TODO: Is this safe? Do the timelines have a common time base?
+            Animation anim = animation.createAnimation();     // TODO: manage the Timeline objects - they are tied to the JavaFX application Thread
+
+            if (anim != null) {
+                System.err.printf("Playing: %s %s\n", anim.getCurrentTime(), anim.getCycleDuration());
+                anim.play();                                    // TODO: Is this safe? Do the timelines have a common time base?
+//                System.err.printf("Playing2: %s %s\n", anim.getCurrentTime(), anim.getCycleDuration());
+                System.err.println("OPAC:" + animation.node.getOpacity());
             }
         }
 
