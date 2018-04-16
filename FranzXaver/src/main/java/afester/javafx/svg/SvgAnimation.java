@@ -27,12 +27,8 @@ import org.w3c.dom.NodeList;
 
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
-import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.scene.Node;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Shape;
 import javafx.util.Duration;
 
 public class SvgAnimation {
@@ -142,54 +138,6 @@ public class SvgAnimation {
     }
 
 
-    /**
-     * Normalizes the begin and end times of each animation.
-     * The lowest begin time is considered an offset which is subtracted from all animations.
-     * This is required because svg:animate obviously allows negative timeline values, while
-     * JavaFX only allows positive timeline values.
-     * 
-     * https://www.w3.org/TR/2001/REC-smil-animation-20010904/#Timing-EvaluationOfBeginEndTimeLists
-     * "When a begin time is resolved to be in the past (i.e., before the current presentation time), the element begins immediately, 
-     *  but acts as though it had begun at the specified time (playing from an offset into the media)."
-     *  
-     * @param animations
-     */
-    public static void normalize(List<SvgAnimation> animations) {
-//      System.err.println("BEFORE:");
-//      for (SvgAnimation animation : animations) {
-//          System.err.println(" +- " + animation.begin);
-//      }
-//      for (SvgAnimation animation : animations) {
-//          if (animation.begin != null && animation.begin < 0) {
-//              //animation.begin = animation.duration + animation.begin;
-//              animation.begin = -animation.begin;
-//          }
-//      }
-//
-//      System.err.println("AFTER:");
-//      for (SvgAnimation animation : animations) {
-//          System.err.println(" +- " + animation.begin);
-//      }
-
-//        long offset = Long.MAX_VALUE;
-//
-//        for (SvgAnimation animation : animations) {
-//            offset = Math.min(offset, animation.begin != null ? animation.begin : 0);
-//            // System.err.printf("%s - %s\n", offset, animation.begin);
-//        }
-//
-//        if (offset != 0) {
-//            for (SvgAnimation animation : animations) {
-//                if (animation.begin != null) {
-//                    animation.begin -= offset;
-//                }
-//                if (animation.end != null) {
-//                    animation.end -= offset;
-//                }
-//            }
-//        }
-    }
-
 //    private void parseValues() {
 //
 //        // now, each value can be of a simple type or of a complex type like color, list, ....
@@ -234,16 +182,13 @@ public class SvgAnimation {
      * @return A JavaFX timeline object which corresponds to this SvgAnimation.
      */
     public Animation createAnimation() {
-        List<KeyValue> keyValues = new ArrayList<>();
         if (attributeName.equals("opacity")) {
 
             // for opacity, we can use a FadeTransition
             FadeTransition ft = new FadeTransition(new Duration(duration), node);
-
             ft.setFromValue(Double.parseDouble(values[0]));
             ft.setToValue(Double.parseDouble(values[1]));
             ft.setCycleCount(repeatCount);
-            // ft.setRate(0.1);
             if (begin < 0) {
                 // TODO: This works but is not yet completely clear why the begin time stamp needs to 
                 // be mirrored instead of shifted by the duration offset
@@ -256,17 +201,21 @@ public class SvgAnimation {
 
         } else if (attributeName.equals("stroke-dashoffset")) {
             System.err.println("stroke-dashoffset VALUES: " + Arrays.toString(values));
-            Shape s = (Shape) node;
-            keyValues.add(new KeyValue(s.strokeDashOffsetProperty(), 1.0)); // values[1]); // end value
+            
+            //Shape s = (Shape) node;
+            //keyValues.add(new KeyValue(s.strokeDashOffsetProperty(), 1.0)); // values[1]); // end value
 
         } else if (attributeName.equals("stroke")) {
             System.err.println("stroke VALUES: " + Arrays.toString(values));
-            Shape s = (Shape) node;
-            keyValues.add(new KeyValue(s.strokeProperty(), Color.ALICEBLUE));  // values[1]); // end value
+
+            //Shape s = (Shape) node;
+            //keyValues.add(new KeyValue(s.strokeProperty(), Color.ALICEBLUE));  // values[1]); // end value
+
+            return null;
 
         } else if (attributeName.equals("points")) {
             System.err.println("points VALUES: " + Arrays.toString(values));
-            Polygon p = (Polygon) node;        // points animations apply to a Polygon
+            // Polygon p = (Polygon) node;        // points animations apply to a Polygon
 
             // Animating the points of a polygon is not that trivial ... 
             // kv = new KeyValue(p.getPoints(), 1.0); // values[1]); // end value
@@ -286,14 +235,6 @@ public class SvgAnimation {
         } else {
             throw new RuntimeException("Unknown property " + attributeName);
         }
-
-//        KeyFrame kf = new KeyFrame(new Duration(duration), keyValues.toArray(new KeyValue[0]));     // Duration of the animation
-//        Timeline t = new Timeline(kf);
-//        if (begin != null) {
-//            // t.setDelay(new Duration(begin));                            // begin time
-//            t.jumpTo(new Duration(begin));
-//        }
-//        t.setCycleCount(repeatCount);                               // repeatCount
 
         return null;
     }
