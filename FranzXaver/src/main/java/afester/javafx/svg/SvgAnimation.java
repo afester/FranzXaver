@@ -155,20 +155,21 @@ public class SvgAnimation {
      * @param animations
      */
     public static void normalize(List<SvgAnimation> animations) {
-      System.err.println("BEFORE:");
-      for (SvgAnimation animation : animations) {
-          System.err.println(" +- " + animation.begin);
-      }
-      for (SvgAnimation animation : animations) {
-          if (animation.begin != null && animation.begin < 0) {
-              animation.begin = animation.duration + animation.begin;
-          }
-      }
-
-      System.err.println("AFTER:");
-      for (SvgAnimation animation : animations) {
-          System.err.println(" +- " + animation.begin);
-      }
+//      System.err.println("BEFORE:");
+//      for (SvgAnimation animation : animations) {
+//          System.err.println(" +- " + animation.begin);
+//      }
+//      for (SvgAnimation animation : animations) {
+//          if (animation.begin != null && animation.begin < 0) {
+//              //animation.begin = animation.duration + animation.begin;
+//              animation.begin = -animation.begin;
+//          }
+//      }
+//
+//      System.err.println("AFTER:");
+//      for (SvgAnimation animation : animations) {
+//          System.err.println(" +- " + animation.begin);
+//      }
 
 //        long offset = Long.MAX_VALUE;
 //
@@ -239,23 +240,17 @@ public class SvgAnimation {
             // for opacity, we can use a FadeTransition
             FadeTransition ft = new FadeTransition(new Duration(duration), node);
 
-            // It seems that we can not simply jumpTo the begin time and expect the opacity value to start
-            // at the proper value.
-            // ft.jumpTo(new Duration(begin));
-
-            // Instead, we use an explicitly calculated start value and set a delay on the FadeTransition:
-            float startOpaq = /*1.0F -*/ ((float) begin / duration);
-            if (begin == 0) {
-                startOpaq = 1.0F;
-            }
-            node.setOpacity(startOpaq);
-
-            ft.setDelay(new Duration(begin));
-            // ft.jumpTo(new Duration(begin));
-
             ft.setFromValue(Double.parseDouble(values[0]));
             ft.setToValue(Double.parseDouble(values[1]));
             ft.setCycleCount(repeatCount);
+            // ft.setRate(0.1);
+            if (begin < 0) {
+                // TODO: This works but is not yet completely clear why the begin time stamp needs to 
+                // be mirrored instead of shifted by the duration offset
+                ft.jumpTo(new Duration(-begin));    
+            } else {
+                ft.jumpTo(new Duration(begin));   
+            }
 
             return ft;
 

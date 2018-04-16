@@ -258,21 +258,16 @@ public class SvgLoader {
         handle(doc);
 
         System.err.println("Playing 2...");
-        //System.err.println("FRAMES:" + bh.t.getKeyFrames().size());
-        //System.err.println("TOTAL: " + bh.t.getTotalDuration());
-
         SvgAnimation.normalize(bh.animations);
-        //List<Timeline> timeLines = new ArrayList<>();
         for (SvgAnimation animation : bh.animations) {
             System.err.println(animation);
-            //timeLines.add(animation.createTimeline());
             Animation anim = animation.createAnimation();     // TODO: manage the Timeline objects - they are tied to the JavaFX application Thread
 
             if (anim != null) {
                 System.err.printf("Playing: %s %s\n", anim.getCurrentTime(), anim.getCycleDuration());
                 anim.play();                                    // TODO: Is this safe? Do the timelines have a common time base?
 //                System.err.printf("Playing2: %s %s\n", anim.getCurrentTime(), anim.getCycleDuration());
-                System.err.println("OPAC:" + animation.node.getOpacity());
+//                System.err.println("OPAC:" + animation.node.getOpacity());
             }
         }
 
