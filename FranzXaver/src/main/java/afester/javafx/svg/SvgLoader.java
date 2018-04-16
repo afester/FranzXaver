@@ -16,7 +16,12 @@
 
 package afester.javafx.svg;
 
-import javafx.scene.Group;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.anim.dom.SVGOMCircleElement;
@@ -47,12 +52,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.NodeList;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
+import javafx.animation.Timeline;
+import javafx.scene.Group;
 
 
 public class SvgLoader {
@@ -100,10 +101,12 @@ public class SvgLoader {
         elementMap.put("radialGradient", e -> bh.handleElement((SVGOMRadialGradientElement) e));
         elementMap.put("stop", e -> { } );
 
+        elementMap.put("animate", e -> { } );   // handled as sub element of shapes
+
         /*
          * <title>
          * 
-         * <a> <altGlyph> <altGlyphDef> <altGlyphItem> <animate> <animateColor>
+         * <a> <altGlyph> <altGlyphDef> <altGlyphItem> <animateColor>
          * <animateMotion> <animateTransform> <clipPath> <color-profile>
          * <cursor> <desc> <filter> <feGaussianBlur> <feOffset>
          * <feSpecularLighting> <fePointLight> <feComposite> <feMerge>
@@ -229,6 +232,9 @@ public class SvgLoader {
 
         parentNode = new Group();
         handle(doc);
+        System.err.println("Playing 1...");
+//        bh.timeLines.forEach(e -> e.play());
+
         return parentNode;
     }
 
@@ -249,6 +255,25 @@ public class SvgLoader {
 
         parentNode = new Group();
         handle(doc);
+
+        System.err.println("Playing 2...");
+        //System.err.println("FRAMES:" + bh.t.getKeyFrames().size());
+        //System.err.println("TOTAL: " + bh.t.getTotalDuration());
+
+        SvgAnimation.normalize(bh.animations);
+        //List<Timeline> timeLines = new ArrayList<>();
+        for (SvgAnimation animation : bh.animations) {
+            System.err.println(animation);
+            //timeLines.add(animation.createTimeline());
+            Timeline timeLine = animation.createTimeline();     // TODO: manage the Timeline objects - they are tied to the JavaFX application Thread
+            if (timeLine != null) {
+                timeLine.play();                                    // TODO: Is this safe? Do the timelines have a common time base?
+            }
+        }
+
+//        for (Timeline tl : timeLines) {
+//            tl.play();
+//        }
 
         return parentNode;
     }

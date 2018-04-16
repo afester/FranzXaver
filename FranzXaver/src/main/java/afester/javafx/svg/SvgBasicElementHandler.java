@@ -16,23 +16,8 @@
 
 package afester.javafx.svg;
 
-import javafx.scene.Group;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.Paint;
-import javafx.scene.paint.RadialGradient;
-import javafx.scene.paint.Stop;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.CubicCurve;
-import javafx.scene.shape.Ellipse;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Polyline;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.SVGPath;
-import javafx.scene.shape.Shape;
-import javafx.scene.text.Text;
-import javafx.scene.transform.Affine;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.batik.anim.dom.SVGOMAnimatedPathData;
 import org.apache.batik.anim.dom.SVGOMAnimatedPathData.BaseSVGPathSegList;
@@ -59,15 +44,29 @@ import org.apache.batik.css.dom.CSSOMValue;
 import org.apache.batik.dom.svg.SVGPathSegItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.svg.SVGRect;
 import org.w3c.dom.svg.SVGPoint;
 import org.w3c.dom.svg.SVGPointList;
+import org.w3c.dom.svg.SVGRect;
 
-import java.util.ArrayList;
-import java.util.List;
+import javafx.scene.Group;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Paint;
+import javafx.scene.paint.RadialGradient;
+import javafx.scene.paint.Stop;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.CubicCurve;
+import javafx.scene.shape.Ellipse;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Polyline;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.SVGPath;
+import javafx.scene.shape.Shape;
+import javafx.scene.text.Text;
+import javafx.scene.transform.Affine;
 
 
 public class SvgBasicElementHandler {
@@ -117,6 +116,8 @@ public class SvgBasicElementHandler {
             result.getTransforms().add(transformation);
         }
 
+        animations.addAll(SvgAnimation.getAnimations(result, element));
+
         loader.parentNode.getChildren().add(result);
         loader.parentNode = result;
     }
@@ -135,6 +136,8 @@ public class SvgBasicElementHandler {
         }
     }
 
+
+    List<SvgAnimation> animations = new ArrayList<>();
 
     void handleElement(SVGOMRectElement element) {
         // Get attributes from SVG node
@@ -157,6 +160,8 @@ public class SvgBasicElementHandler {
         }
 
         styleTools.applyStyle(result, element);
+        SvgAnimation.getAnimations(result, element);
+        animations.addAll(SvgAnimation.getAnimations(result, element));
 
         loader.parentNode.getChildren().add(result);
     }
@@ -298,6 +303,7 @@ public class SvgBasicElementHandler {
         }
 
         styleTools.applyStyle(result, element);
+        animations.addAll(SvgAnimation.getAnimations(result, element));
 
         loader.parentNode.getChildren().add(result);
     }
@@ -362,6 +368,7 @@ public class SvgBasicElementHandler {
         }
 
         styleTools.applyStyle(result, element);
+        animations.addAll(SvgAnimation.getAnimations(result, element));
 
         //fxObj.setStroke(Color.VIOLET);
         loader.parentNode.getChildren().add(result);
@@ -464,6 +471,8 @@ public class SvgBasicElementHandler {
 
                 result.getChildren().add(fxObj);
             }
+
+            animations.addAll(SvgAnimation.getAnimations(fxObj, element));
         }
 
         loader.parentNode.getChildren().add(result);

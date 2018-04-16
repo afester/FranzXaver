@@ -16,12 +16,8 @@
 
 package afester.javafx.svg;
 
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Shape;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.scene.transform.Affine;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.anim.dom.SVGStylableElement;
@@ -40,8 +36,12 @@ import org.w3c.dom.svg.SVGTransform;
 import org.w3c.dom.svg.SVGTransformList;
 import org.w3c.dom.svg.SVGTransformable;
 
-import java.util.HashMap;
-import java.util.Map;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Shape;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.transform.Affine;
 
 public class SvgStyleTools {
     private static final Logger logger = LogManager.getLogger();
