@@ -108,7 +108,7 @@ public class SvgBasicElementHandler {
 
     // <svg:g>
     void handleElement(SVGOMGElement element) {
-        Group result = new Group();
+        SvgNode result = new SvgNode();
         result.setId(element.getId());
 
         Affine transformation = styleTools.getTransform(element);

@@ -52,14 +52,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.NodeList;
 
-import javafx.animation.Animation;
 import javafx.scene.Group;
 
 
 public class SvgLoader {
     private static final Logger logger = LogManager.getLogger();
 
-    Group parentNode;
+    SvgNode parentNode;
 
     // flag whether to add a rectangle in the size of the drawing
     boolean addRootRect = false;
@@ -147,7 +146,7 @@ public class SvgLoader {
 
     
     private void handle(org.w3c.dom.Node node) {
-        Group par = parentNode; // save current parent
+        SvgNode par = parentNode; // save current parent
 
         // Dispatch handling of the current node to its handler
         String localName = node.getLocalName();
@@ -230,10 +229,9 @@ public class SvgLoader {
         // perspective.
         SVGOMDocument doc = loadSvgDocument(fileName);
 
-        parentNode = new Group();
+        parentNode = new SvgNode();
         handle(doc);
-        System.err.println("Playing 1...");
-//        bh.timeLines.forEach(e -> e.play());
+        bh.animations.forEach(a -> parentNode.addAnimation(a.createAnimation()) );
 
         return parentNode;
     }
@@ -247,26 +245,16 @@ public class SvgLoader {
      *
      * @return A JavaFX node representing the SVG file.
      */
-    public Group loadSvg(InputStream svgFile) {
+    public SvgNode loadSvg(InputStream svgFile) {
         // note: uses the DOM approach.
         // probably a SAX based approach would be better from a performance
         // perspective.
         bh.animations.clear();
         SVGOMDocument doc = loadSvgDocument(svgFile);
 
-        parentNode = new Group();
+        parentNode = new SvgNode();
         handle(doc);
-
-        System.err.println("Playing 2...");
-        for (SvgAnimation animation : bh.animations) {
-            System.err.println(animation);
-            Animation anim = animation.createAnimation();     // TODO: manage the Timeline objects - they are tied to the JavaFX application Thread
-
-            if (anim != null) {
-                System.err.printf("Playing: %s %s\n", anim.getCurrentTime(), anim.getCycleDuration());
-                anim.play();                                    // TODO: Is this safe? Do the timelines have a common time base?
-            }
-        }
+        bh.animations.forEach(a -> parentNode.addAnimation(a.createAnimation()) );
 
         return parentNode;
     }

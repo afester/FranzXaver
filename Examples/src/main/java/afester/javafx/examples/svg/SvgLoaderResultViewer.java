@@ -16,10 +16,18 @@
 
 package afester.javafx.examples.svg;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
 import afester.javafx.components.SnapSlider;
 import afester.javafx.examples.Example;
 import afester.javafx.svg.GradientPolicy;
 import afester.javafx.svg.SvgLoader;
+import afester.javafx.svg.SvgNode;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -37,13 +45,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 
 @Example(desc = "Using SvgLoader to render an SVG file", 
          cat  = "FranzXaver")
@@ -66,7 +67,7 @@ public class SvgLoaderResultViewer extends Application {
 
 
     // The SVG image's top node, as returned from the SvgLoader
-    private Group svgImage = new Group();
+    private SvgNode svgNode = new SvgNode();
 
     /* in order to properly scale the svgImage node, we need an additional
      * intermediate node 
@@ -189,8 +190,8 @@ public class SvgLoaderResultViewer extends Application {
     }
 
     private void setScale(Double scale) {
-        svgImage.setScaleX(scale);
-        svgImage.setScaleY(scale);
+        svgNode.setScaleX(scale);
+        svgNode.setScaleY(scale);
     }
 
 
@@ -199,9 +200,11 @@ public class SvgLoaderResultViewer extends Application {
         InputStream svgFile = 
                 getClass().getResourceAsStream(DATA_PACKAGE + "/" + fileName);
 
-        imageLayout.getChildren().remove(svgImage);
-        svgImage = loader.loadSvg(svgFile);
-        imageLayout.getChildren().add(svgImage);
+        imageLayout.getChildren().remove(svgNode);
+        svgNode.stopAnimations();
+        svgNode = loader.loadSvg(svgFile);
+        svgNode.startAnimations();
+        imageLayout.getChildren().add(svgNode);
     }
 
 

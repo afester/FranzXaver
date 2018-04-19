@@ -27,8 +27,11 @@ import org.w3c.dom.NodeList;
 
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
+import javafx.animation.StrokeTransition;
 import javafx.animation.Timeline;
 import javafx.scene.Node;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Shape;
 import javafx.util.Duration;
 
 public class SvgAnimation {
@@ -200,18 +203,36 @@ public class SvgAnimation {
             return ft;
 
         } else if (attributeName.equals("stroke-dashoffset")) {
-            System.err.println("stroke-dashoffset VALUES: " + Arrays.toString(values));
-            
-            //Shape s = (Shape) node;
-            //keyValues.add(new KeyValue(s.strokeDashOffsetProperty(), 1.0)); // values[1]); // end value
+
+            StrokeDashOffsetTransition sdot = new StrokeDashOffsetTransition(Duration.millis(duration), (Shape) node);
+            sdot.setFromValue(Double.parseDouble(values[0]));
+            sdot.setToValue(Double.parseDouble(values[1]));
+            sdot.setCycleCount(repeatCount);
+            if (begin != null) {
+                if (begin < 0) {
+                    sdot.jumpTo(new Duration(-begin));    
+                } else {
+                    sdot.jumpTo(new Duration(begin));   
+                }
+            }
+
+            return sdot;
 
         } else if (attributeName.equals("stroke")) {
-            System.err.println("stroke VALUES: " + Arrays.toString(values));
 
-            //Shape s = (Shape) node;
-            //keyValues.add(new KeyValue(s.strokeProperty(), Color.ALICEBLUE));  // values[1]); // end value
+            StrokeTransition st = new StrokeTransition(Duration.millis(duration), (Shape) node);
+            st.setFromValue(Color.RED);   // values[0]
+            st.setToValue(Color.GREEN);   // values[1]
+            st.setCycleCount(repeatCount);
+            if (begin != null) {
+                if (begin < 0) {
+                    st.jumpTo(new Duration(-begin));    
+                } else {
+                    st.jumpTo(new Duration(begin));   
+                }
+            }
 
-            return null;
+            return st;
 
         } else if (attributeName.equals("points")) {
             System.err.println("points VALUES: " + Arrays.toString(values));
@@ -220,7 +241,7 @@ public class SvgAnimation {
             // Animating the points of a polygon is not that trivial ... 
             // kv = new KeyValue(p.getPoints(), 1.0); // values[1]); // end value
 
-            return null;
+            // return null;
 
         } else if (attributeName.equals("d")) {
             System.err.println("d VALUES: " + Arrays.toString(values));
@@ -230,7 +251,7 @@ public class SvgAnimation {
             // Animating the path elements a Path is not that trivial ... 
             // kv = new KeyValue(p.getPoints(), 1.0); // values[1]); // end value
 
-            return null;
+            // return null;
 
         } else {
             throw new RuntimeException("Unknown property " + attributeName);
