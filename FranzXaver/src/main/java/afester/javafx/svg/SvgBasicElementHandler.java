@@ -95,8 +95,12 @@ public class SvgBasicElementHandler {
             result.setStroke(Color.BLACK);
             result.getStrokeDashArray().addAll(3.0,7.0,3.0,7.0);
 
+            
             loader.parentNode.getChildren().add(result);    
         }
+
+        // an <svg> element can have animateTransform children which link to a particular node
+        SvgAnimation.getAnimateTransforms(null, element);
     }
 
 
@@ -117,6 +121,7 @@ public class SvgBasicElementHandler {
         }
 
         animations.addAll(SvgAnimation.getAnimations(result, element));
+        SvgAnimation.getAnimateTransforms(result, element);
 
         loader.parentNode.getChildren().add(result);
         loader.parentNode = result;
@@ -160,8 +165,9 @@ public class SvgBasicElementHandler {
         }
 
         styleTools.applyStyle(result, element);
-        SvgAnimation.getAnimations(result, element);
+
         animations.addAll(SvgAnimation.getAnimations(result, element));
+        SvgAnimation.getAnimateTransforms(result, element);
 
         loader.parentNode.getChildren().add(result);
     }
@@ -304,6 +310,7 @@ public class SvgBasicElementHandler {
 
         styleTools.applyStyle(result, element);
         animations.addAll(SvgAnimation.getAnimations(result, element));
+        SvgAnimation.getAnimateTransforms(result, element);
 
         loader.parentNode.getChildren().add(result);
     }
@@ -369,6 +376,7 @@ public class SvgBasicElementHandler {
 
         styleTools.applyStyle(result, element);
         animations.addAll(SvgAnimation.getAnimations(result, element));
+        SvgAnimation.getAnimateTransforms(result, element);
 
         //fxObj.setStroke(Color.VIOLET);
         loader.parentNode.getChildren().add(result);
@@ -473,6 +481,7 @@ public class SvgBasicElementHandler {
             }
 
             animations.addAll(SvgAnimation.getAnimations(fxObj, element));
+            SvgAnimation.getAnimateTransforms(result, element);
         }
 
         loader.parentNode.getChildren().add(result);

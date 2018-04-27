@@ -100,13 +100,14 @@ public class SvgLoader {
         elementMap.put("radialGradient", e -> bh.handleElement((SVGOMRadialGradientElement) e));
         elementMap.put("stop", e -> { } );
 
-        elementMap.put("animate", e -> { } );   // handled as sub element of shapes
+        elementMap.put("animate", e -> { } );             // handled as sub element of shapes
+        elementMap.put("animateTransform", e -> { } );   // handled as sub element of shapes
 
         /*
          * <title>
          * 
          * <a> <altGlyph> <altGlyphDef> <altGlyphItem> <animateColor>
-         * <animateMotion> <animateTransform> <clipPath> <color-profile>
+         * <animateMotion> <clipPath> <color-profile>
          * <cursor> <desc> <filter> <feGaussianBlur> <feOffset>
          * <feSpecularLighting> <fePointLight> <feComposite> <feMerge>
          * <feMergeNode> <feBlend> <feColorMatrix> <feComponentTransfer>

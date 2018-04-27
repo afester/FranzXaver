@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.batik.anim.dom.SVGOMAnimateElement;
+import org.apache.batik.anim.dom.SVGOMAnimateTransformElement;
 import org.apache.batik.anim.dom.SVGOMElement;
 import org.apache.batik.parser.ClockParser;
 import org.w3c.dom.NodeList;
@@ -71,7 +72,7 @@ public class SvgAnimation {
         } else {
             String from = element.getAttribute("from").trim();      // start value for the attribute's value
             if (from.equals("")) {                                  // from is optional
-                from = "0";
+                from = null; // "0"; // 0 is wrong.
             }
 
             String to = element.getAttribute("to").trim();          // end value for the attribute's value
@@ -205,7 +206,12 @@ public class SvgAnimation {
         } else if (attributeName.equals("stroke-dashoffset")) {
 
             StrokeDashOffsetTransition sdot = new StrokeDashOffsetTransition(Duration.millis(duration), (Shape) node);
-            sdot.setFromValue(Double.parseDouble(values[0]));
+            
+            if (values[0] != null) {
+                sdot.setFromValue(Double.parseDouble(values[0]));
+            } else {
+                sdot.setFromValue( ((Shape) node).getStrokeDashOffset());
+            }
             sdot.setToValue(Double.parseDouble(values[1]));
             sdot.setCycleCount(repeatCount);
             if (begin != null) {
@@ -273,9 +279,6 @@ public class SvgAnimation {
         List<SvgAnimation> result = new ArrayList<>();
 
         // get the animate child nodes for this element
-
-        // NodeList children = element.getElementsByTagName("animate");
-
         NodeList nl = element.getChildNodes();
         for (int idx = 0;  idx < nl.getLength();  idx++) {
             org.w3c.dom.Node child = nl.item(idx);
@@ -283,6 +286,35 @@ public class SvgAnimation {
                 SVGOMAnimateElement animate = (SVGOMAnimateElement) child;
                 SvgAnimation animation = new SvgAnimation(node, animate);
                 result.add(animation);
+            }
+        }
+
+        return result;
+    }
+
+    public static void m() {
+        if ("".equals("")) {
+            x(" ");
+        } else {
+            x(" ");
+        }
+        //     ^ place cursor here and type {
+    }
+
+    static void x(String s) {}
+
+    public static List<SvgAnimation> getAnimateTransforms(Node node, SVGOMElement element) {
+        List<SvgAnimation> result = new ArrayList<>();
+
+        // get the animate child nodes for this element
+        NodeList nl = element.getChildNodes();
+        for (int idx = 0;  idx < nl.getLength();  idx++) {
+            org.w3c.dom.Node child = nl.item(idx);
+            if ("animateTransform".equals(child.getLocalName())) {
+                SVGOMAnimateTransformElement animateTransform = (SVGOMAnimateTransformElement) child;
+                System.err.println("TRANS:" + animateTransform);
+                // SvgAnimation animation = new SvgAnimation(node, animate);
+                // result.add(animation);
             }
         }
 

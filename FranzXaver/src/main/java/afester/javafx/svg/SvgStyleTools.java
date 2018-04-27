@@ -39,6 +39,7 @@ import org.w3c.dom.svg.SVGTransformable;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Shape;
+import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
@@ -86,9 +87,11 @@ public class SvgStyleTools {
         // svgElement.getComputedStyle() takes care of all styling aspects,
         // like inheritance of style attributes or presentation versus CSS styles
         CSSStyleDeclaration style = svgElement.getComputedStyle(obj, null);
+
+        // System.err.println("CSS:" + style.getCssText());
+
         CSSOMSVGComputedStyle.ComputedCSSPaintValue val = 
                 (ComputedCSSPaintValue) style.getPropertyCSSValue("fill");
-
         if (val.getPaintType() == SVGPaint.SVG_PAINTTYPE_NONE) {    // fill=none
             return null;
         }
@@ -105,7 +108,7 @@ public class SvgStyleTools {
             float red = val.getRed().getFloatValue(CSSPrimitiveValue.CSS_NUMBER) / 255;
             float green = val.getGreen().getFloatValue(CSSPrimitiveValue.CSS_NUMBER) / 255;
             float blue = val.getBlue().getFloatValue(CSSPrimitiveValue.CSS_NUMBER) / 255;
-    
+
             CSSOMComputedStyle.ComputedCSSValue  opacity = 
                     (ComputedCSSValue) style.getPropertyCSSValue("fill-opacity");
             float alpha = opacity.getFloatValue(CSSPrimitiveValue.CSS_NUMBER);
@@ -200,6 +203,28 @@ public class SvgStyleTools {
         if (strokeDashOffset != null) {
             double dashOffset = strokeDashOffset.getValue().getFloatValue();
             fxObj.setStrokeDashOffset(dashOffset);
+        }
+
+        // stroke-linecap
+        CSSOMSVGComputedStyle.ComputedCSSValue strokeLineCap = 
+                (ComputedCSSValue) style.getPropertyCSSValue("stroke-linecap");
+        if (strokeLineCap != null) {
+            String lineCap = strokeLineCap.getValue().getStringValue();
+            switch(lineCap) {
+                case "butt":
+                    fxObj.setStrokeLineCap(StrokeLineCap.BUTT);
+                    break;
+
+                case "round":
+                    fxObj.setStrokeLineCap(StrokeLineCap.ROUND);
+                    break;
+
+                case "square":
+                    fxObj.setStrokeLineCap(StrokeLineCap.SQUARE);
+                    break;
+
+                default: throw new RuntimeException("Invalid stroke-linecap " + lineCap); 
+            }
         }
     }
 
