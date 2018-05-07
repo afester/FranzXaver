@@ -292,17 +292,6 @@ public class SvgAnimation {
         return result;
     }
 
-    public static void m() {
-        if ("".equals("")) {
-            x(" ");
-        } else {
-            x(" ");
-        }
-        //     ^ place cursor here and type {
-    }
-
-    static void x(String s) {}
-
     public static List<SvgAnimation> getAnimateTransforms(Node node, SVGOMElement element) {
         List<SvgAnimation> result = new ArrayList<>();
 
