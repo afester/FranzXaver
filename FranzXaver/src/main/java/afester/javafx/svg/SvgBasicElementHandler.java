@@ -121,7 +121,7 @@ public class SvgBasicElementHandler {
         }
 
         animations.addAll(SvgAnimation.getAnimations(result, element));
-        SvgAnimation.getAnimateTransforms(result, element);
+        animations.addAll(SvgAnimation.getAnimateTransforms(result, element));
 
         loader.parentNode.getChildren().add(result);
         loader.parentNode = result;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Andreas Fester
+ * Copyright 2018 Andreas Fester
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.batik.anim.dom.SVGOMAnimateElement;
 import org.apache.batik.anim.dom.SVGOMAnimateTransformElement;
+import org.apache.batik.anim.dom.SVGOMAnimationElement;
 import org.apache.batik.anim.dom.SVGOMElement;
 import org.apache.batik.parser.ClockParser;
 import org.w3c.dom.NodeList;
@@ -38,6 +39,7 @@ import javafx.util.Duration;
 public class SvgAnimation {
 
     public Node node;              // The JavaFX node to animate
+    private String href;           // Alternatively, the id of the JavaFX node to animate
 
     private String attributeName;   // The attribute to animate
     // private String attributeType;
@@ -54,31 +56,69 @@ public class SvgAnimation {
     private int repeatCount = 0;    // how often to repeat - Timeline.INFINITE is infinite times 
 
 
+    /**
+     * Creates an SvgAnimation object from an <svg:animate> element.
+     *
+     * @param node
+     * @param element
+     */
     public SvgAnimation(Node node, SVGOMAnimateElement element) {
         this.node = node;
 
         // See https://www.w3.org/TR/SVG/animate.html#AnimateElement
 
+
+        populateAnimationAttributes(element);
+    }
+
+
+    /**
+     * Creates an SvgAnimation object from an <svg:animateTransform> element.
+     * 
+     * @param node
+     * @param animateTransform
+     */
+    public SvgAnimation(Node node, SVGOMAnimateTransformElement element) {
+        this.node = node;
+        populateAnimationAttributes(element);
+
+//        String href = animateTransform.getAttributeNS(SVGOMAnimateTransformElement.XLINK_NAMESPACE_URI, SVGOMAnimateTransformElement.XLINK_HREF_ATTRIBUTE);
+//        String type = animateTransform.getAttribute(SVGOMAnimateTransformElement.SVG_TYPE_ATTRIBUTE);
+//        String repeatCount = animateTransform.getAttribute(SVGOMAnimateTransformElement.SVG_REPEAT_COUNT_ATTRIBUTE);
+        //        keyTimes=0; 0.8; 1
+        //        dur=3s
+        //        values=0 150 150; 0 150 150; 180 150 150
+        //        repeatCount=indefinite
+        //        xlink:href=#frame
+        //        begin=0s
+
+//        System.err.printf("TRANS: %s %s %s\n", href, type, repeatCount);
+        // SvgAnimation animation = new SvgAnimation(node, animate);
+    }
+
+    private void populateAnimationAttributes(SVGOMAnimationElement element) {
+        href = element.getAttributeNS(SVGOMAnimateTransformElement.XLINK_NAMESPACE_URI, SVGOMAnimateTransformElement.XLINK_HREF_ATTRIBUTE);
+
         // <animate> animation attribute target attributes
-        attributeName = element.getAttribute("attributeName");
+        attributeName = element.getAttribute(SVGOMAnimateElement.SVG_ATTRIBUTE_NAME_ATTRIBUTE);
         // attributeType = element.getAttribute("attributeType");      //  "CSS | XML | auto"
 
         // <animate> animation value attributes
-        String valueList = element.getAttribute("values");             // alternatively, a discrete set of values to apply
+        String valueList = element.getAttribute(SVGOMAnimateElement.SVG_VALUES_ATTRIBUTE);             // alternatively, a discrete set of values to apply
         if (!valueList.equals("")) {
             // If a list of values is specified, any from, to and by attribute values are ignored.
             // By default, a simple linear interpolation is performed over the values, evenly spaced over the duration of the animation
             values = valueList.split(";");  // each discrete value is separated by ';'
         } else {
-            String from = element.getAttribute("from").trim();      // start value for the attribute's value
+            String from = element.getAttribute(SVGOMAnimateElement.SVG_FROM_ATTRIBUTE).trim();      // start value for the attribute's value
             if (from.equals("")) {                                  // from is optional
                 from = null; // "0"; // 0 is wrong.
             }
 
-            String to = element.getAttribute("to").trim();          // end value for the attribute's value
+            String to = element.getAttribute(SVGOMAnimateElement.SVG_TO_ATTRIBUTE).trim();          // end value for the attribute's value
             values = new String[] {from, to};
 
-            String byAttr = element.getAttribute("by");
+            String byAttr = element.getAttribute(SVGOMAnimateElement.SVG_BY_ATTRIBUTE);
             if (byAttr.equals("")) {                                // by is optional
                 byAttr = "0";
             }
@@ -87,7 +127,7 @@ public class SvgAnimation {
         }
 
         // <animate> animation timing attributes
-        begin = parseTime(element.getAttribute("begin"));           // Semicolon separated list of start times (currently only single value supported)
+        begin = parseTime(element.getAttribute(SVGOMAnimateElement.SVG_BEGIN_ATTRIBUTE));           // Semicolon separated list of start times (currently only single value supported)
                                                                     // This is the time where the animation should start - 
                 // Currently only offset values are supported.
                 // the offset describes the time within the timeline where the
@@ -97,10 +137,10 @@ public class SvgAnimation {
                 // NOTE that this is different from the Timeline.delay property which delays the animation, but still starts
                 // with the propertie's current value!
 
-        end = parseTime(element.getAttribute("end"));               // Semicolon separated list of end times (currently only single value supported)
+        end = parseTime(element.getAttribute(SVGOMAnimateElement.SVG_END_ATTRIBUTE));               // Semicolon separated list of end times (currently only single value supported)
 
-        duration = parseTime(element.getAttribute("dur"));          // duration of the animation
-        String repeatAttr = element.getAttribute("repeatCount");    // how often to repeat the animation
+        duration = parseTime(element.getAttribute(SVGOMAnimateElement.SVG_DUR_ATTRIBUTE));          // duration of the animation
+        String repeatAttr = element.getAttribute(SVGOMAnimateElement.SVG_REPEAT_COUNT_ATTRIBUTE);    // how often to repeat the animation
         if (repeatAttr.equals("indefinite")) {
             repeatCount = Timeline.INDEFINITE;
         } else {
@@ -122,6 +162,7 @@ public class SvgAnimation {
     }
 
 
+
     private float result;
     /**
      * Returns the given time value in ms as a long value.
@@ -141,44 +182,6 @@ public class SvgAnimation {
         return (long) (result * 1000);
     }
 
-
-//    private void parseValues() {
-//
-//        // now, each value can be of a simple type or of a complex type like color, list, ....
-//        // (probably this needs to be calculated depending on the attributeName)
-//        System.err.println(Arrays.toString(theValues));
-//        // values = new double[theValues.length];
-//        for (int idx = 0;  idx < theValues.length;  idx++) {
-//
-//            AnimationValue av = null;
-//            String[] list = theValues[idx].trim().split(" ");
-//            if (list.length == 1) {
-//                av = new AnimationValue(Double.parseDouble(list[0]));
-//            } else {
-//                for (int idx2 = 0;  idx2 < list.length;  idx2++) {
-//                    String[] tuple = list[idx].trim().split(",");
-//
-//                    if (tuple.length == 1) {
-//                        
-//                    } else {
-//                        List<Double> doubleValues = new ArrayList<>();
-//                        for (String e : tuple) {
-//                            doubleValues.add(Double.parseDouble(e));
-//                        }
-//                        animationValue = new AnimationValue(doubleValues);
-//                    }
-//                    theList.add(doubleValues);
-//                }
-//                av = new AnimationValue(theList);
-//            }
-//            System.err.println("VALUE:" + av);
-//
-//            // values2.add(theList);
-//            // System.err.println(theList);
-//            // values[idx] = Double.parseDouble(theValues[idx]);
-//        }
-//
-//    }
 
     /**
      * Creates a JavaFX timeline from this SvgAnimation.
@@ -259,6 +262,8 @@ public class SvgAnimation {
 
             // return null;
 
+        } else if (attributeName.equals("transform")) {
+            System.err.println("TRANSFORM: " + this);
         } else {
             throw new RuntimeException("Unknown property " + attributeName);
         }
@@ -301,9 +306,8 @@ public class SvgAnimation {
             org.w3c.dom.Node child = nl.item(idx);
             if ("animateTransform".equals(child.getLocalName())) {
                 SVGOMAnimateTransformElement animateTransform = (SVGOMAnimateTransformElement) child;
-                System.err.println("TRANS:" + animateTransform);
-                // SvgAnimation animation = new SvgAnimation(node, animate);
-                // result.add(animation);
+                SvgAnimation animation = new SvgAnimation(node, animateTransform);
+                result.add(animation);
             }
         }
 
@@ -313,9 +317,9 @@ public class SvgAnimation {
 
     @Override
     public String toString() {
-        return String.format("SvgAnimation[attributeName=%s,\n"+
+        return String.format("SvgAnimation[href=%s, attributeName=%s,\n"+
                              "             values=%s, by=%s,\n"+
                              "             begin=%s, end=%s, duration=%s, repeatCount=%s]",
-                              attributeName, Arrays.toString(values), by, begin, end, duration, repeatCount);
+                              node == null ? href : node, attributeName, Arrays.toString(values), by, begin, end, duration, repeatCount);
     }
 }
