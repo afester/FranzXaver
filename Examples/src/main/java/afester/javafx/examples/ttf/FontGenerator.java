@@ -22,15 +22,12 @@ import java.util.ArrayList;
 
 import afester.javafx.examples.Example;
 import javafx.application.Application;
-import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -43,6 +40,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -94,46 +92,13 @@ public class FontGenerator extends Application {
     public void start(Stage stage) {
         stage.setTitle("Font Generator");
 
-
-        VBox fontFamilyPanel = new VBox();
-        ListView<String> fontFamilies = new ListView<>();
-        Font.getFamilies().forEach(e -> fontFamilies.getItems().add(e));
-
-        fontFamilies.getSelectionModel().getSelectedIndices().addListener( new ListChangeListener<Integer>() {
-
-            @Override
-            public void onChanged(Change<? extends Integer> arg0) {
-                if (arg0.next()) {
-                    Integer idx = arg0.getAddedSubList().get(0);
-                    String fontFamily = fontFamilies.getItems().get(idx);
-                    
-                    
-                    Font font = Font.font(fontFamily);
-                    // FontMetrics fm = Toolkit.getToolkit().getFontLoader().getFontMetrics(font);
-                }
-            }
-
-            
-        } );
-
-        fontFamilyPanel.getChildren().addAll(new Text("Font"), fontFamilies, new Button("Load ..."));
-
-        VBox fontStylePanel = new VBox();
-        CheckBox cb2 = new CheckBox("Italic");
-        ListView<String> fontWeight = new ListView<>();
-        fontWeight.getItems().addAll("Thin", "Light", "Normal", "Bold");
-        fontStylePanel.getChildren().addAll(new Text("Style"), cb2, fontWeight);
-
-        VBox fontSizePanel = new VBox();
-        ListView<String> fontSize= new ListView<>();
-        fontSize.getItems().addAll("6.0", "8.0", "10.0", "11.0", "12.0", "14.0", "16.0", "18.0", "20.0", "22.0", "24.0", "26.0",
-                                   "28.0", "30.0", "32.0", "34.0", "36.0", "38.0", "40.0", "42.0", "44.0", "46.0");
-        fontSizePanel.getChildren().addAll(new Text("Size"), fontSize);
-
-        HBox fontPanel = new HBox();
-        fontPanel.getChildren().addAll(fontFamilyPanel, fontStylePanel, fontSizePanel);
-
         Text t = new Text();
+
+        FontSelectionPanel fsp = new FontSelectionPanel();
+        fsp.setOnFontChanged( e-> {
+            Font f = Font.font(e.getFamily(), e.getWeight(), e.isItalic() ? FontPosture.ITALIC : FontPosture.REGULAR, e.getSize());
+            t.setFont(f);
+        });
 
         TextField inputLine = new TextField("ABC 123");
         inputLine.textProperty().addListener((obj, oldVal, newVal) -> {
@@ -291,7 +256,7 @@ public class FontGenerator extends Application {
             });
         });
 
-        box.getChildren().addAll(fontPanel, inputLine, t, b, saveBtn, disp, snapshotBtn, snapshots);// , colorPicker);
+        box.getChildren().addAll(fsp, inputLine, t, b, saveBtn, disp, snapshotBtn, snapshots);// , colorPicker);
 
         Scene scene  = new Scene(box);
 
