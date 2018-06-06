@@ -17,20 +17,35 @@
 package afester.javafx.examples.ttf;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import com.sun.javafx.tk.FontMetrics;
 import com.sun.javafx.tk.Toolkit;
 
 import afester.javafx.examples.Example;
+import afester.javafx.examples.image.ArrayDump;
+import afester.javafx.examples.image.ImageConverter;
 import javafx.application.Application;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Bounds;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -62,7 +77,10 @@ public class FontGenerator extends Application {
     private Font f;
     private TextField inputLine;
     private Group glyphs;
-
+    private List<GlyphData> glyphData = new ArrayList<>();
+    private CheckBox showGlyphBounds;
+    private HBox snapshots;
+    
     private class Digit extends Group {
 
         public Digit(int value) {
@@ -134,7 +152,6 @@ public class FontGenerator extends Application {
 //            disp.getChildren().addAll(l);
 //        }
 
-        VBox box = new VBox();
 //        Button b = new Button("Export");
 //        b.setOnAction(e -> {
 //            SnapshotParameters params = new SnapshotParameters();
@@ -154,7 +171,7 @@ public class FontGenerator extends Application {
 //
 //            // ad.dumpAll2(System.err);
 //        });
-//
+
 //        Button saveBtn = new Button("Save as ...");
 //        saveBtn.setOnAction(e -> {
 //            FileChooser fileChooser = new FileChooser();
@@ -221,9 +238,6 @@ public class FontGenerator extends Application {
 //        });
 
         
-        glyphs = new Group();
-        updateGlyphs();
-        
 //        ArrayList<Digit> digits = new ArrayList<Digit>();
 //        Group disp = new Group();
 //        Rectangle r = new Rectangle(700, 76);
@@ -255,8 +269,63 @@ public class FontGenerator extends Application {
 //            });
 //        });
 
+        HBox bottomBox = new HBox();
+        bottomBox.setSpacing(10);
+        showGlyphBounds = new CheckBox("Show glyph bounds");
+        showGlyphBounds.setOnAction(e -> {
+            updateGlyphs();
+        });
+
+        snapshots = new HBox();
+        
+        
+        Button exportButton = new Button("Export ...");
+        exportButton.setOnAction(e -> {
+
+            try {
+                FileOutputStream fos = new FileOutputStream("font.c");
+                PrintStream out = new PrintStream(fos);
+    
+                SnapshotParameters params = new SnapshotParameters();
+                snapshots.getChildren().clear();
+                for (GlyphData gd : glyphData) {
+                // for (Node group : glyphs.getChildrenUnmodifiable()) {
+                    Image img = gd.glyphNode.snapshot(params, null);
+                    snapshots.getChildren().add(new ImageView(img));
+                    stage.sizeToScene();
+                    
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", baos);
+    
+    //                HexDump hd = new HexDump(baos.toByteArray());
+    //                hd.dumpAll(System.err);
+    
+                    ImageConverter ic = new ImageConverter();
+                    byte[] rgb565 = ic.getRGB565asByte(img);
+    //                ArrayDump ad = new ArrayDump(rgb565);
+    //                ad.dumpAll16(System.err, (int) img.getWidth());
+    
+    //              System.err.println();
+
+                    byte[] compressed = compressRLE(rgb565);
+                    System.err.println("Compressed size:" + compressed.length);
+                    ArrayDump cd = new ArrayDump(compressed);
+                    out.println(String.format("uint8_t glyph_%s = ", gd.character));
+                    cd.dumpAll(out);
+                    out.println(";\n");
+                }
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        });
+        bottomBox.getChildren().addAll(exportButton, showGlyphBounds);
+
+        glyphs = new Group();
+        updateGlyphs();
+
+        VBox box = new VBox();
         box.setSpacing(10);
-        box.getChildren().addAll(fsp, inputLine, t, glyphs); // , b, saveBtn, disp, snapshotBtn, snapshots);// , colorPicker);
+        box.getChildren().addAll(fsp, inputLine, t, glyphs, bottomBox, snapshots); // , b, saveBtn, disp, snapshotBtn, snapshots);// , colorPicker);
 
         Scene scene  = new Scene(box);
 
@@ -284,9 +353,10 @@ public class FontGenerator extends Application {
     
     
     private class GlyphData {
-        char character;     // the character
-        float charWidth;    // the width of the character
-        Bounds charBox;     // the bounding box of the visible part of the glyph (might be much smaller than charWidth X charHeight)
+        char character;         // the character
+        float charWidth;        // the width of the character
+        Bounds charBox;         // the bounding box of the visible part of the glyph (might be much smaller than charWidth X charHeight)
+        public Group glyphNode; // the javafx node which renders the glyph
     }
 
     // private float xpos = 0;
@@ -296,7 +366,7 @@ public class FontGenerator extends Application {
 
 
 // Calculate all glyphs
-        List<GlyphData> glyphData = new ArrayList<>(); 
+        glyphData.clear();
 //xpos = 0;
         yMin = 0;
         yMax = 0;
@@ -326,33 +396,42 @@ public class FontGenerator extends Application {
         float xpos = 0;
         for (GlyphData gd : glyphData) {
 
-        // glyph
-            Text c = new Text(xpos, 0, String.valueOf(gd.character));
-            // c.setBoundsType(TextBoundsType.LOGICAL_VERTICAL_CENTER);
-            //c.setTextOrigin(VPos.BOTTOM);  // Default is VPos.BASELINE!!!!
-            c.setFont(f);
-            c.setFill(Color.RED);
+            Group gg = new Group();
 
-        // Bounding box of the character 
-            final Rectangle gr = new Rectangle(xpos + gd.charBox.getMinX(), gd.charBox.getMinY(),
-                                               gd.charBox.getWidth(), gd.charBox.getHeight());
-            //gr.setFill(Color.BLACK);
-            //gr.setStroke(null);
-            gr.setFill(null);
-            gr.setStroke(Color.WHITE);
-            gr.getStrokeDashArray().add(0, 5.0);
-            gr.getStrokeDashArray().add(1, 5.0);
-
-        // background shape
+            // background shape
             final Rectangle r = new Rectangle(xpos,  yMin, gd.charWidth, charHeight);
             r.setFill(Color.BLACK);
 //            r.setFill(null);
 //            r.setStroke(Color.BLACK);
 //            r.getStrokeDashArray().add(0, 5.0);
 //            r.getStrokeDashArray().add(1, 5.0);
+            gg.getChildren().add(r);
+
+        // Bounding box of the character
+            if (showGlyphBounds.isSelected()) {
+                final Rectangle gr = new Rectangle(xpos + gd.charBox.getMinX(), gd.charBox.getMinY(),
+                                                   gd.charBox.getWidth(), gd.charBox.getHeight());
+                //gr.setFill(Color.BLACK);
+                //gr.setStroke(null);
+                gr.setFill(null);
+                gr.setStroke(Color.WHITE);
+                gr.getStrokeDashArray().add(0, 5.0);
+                gr.getStrokeDashArray().add(1, 5.0);
+                gg.getChildren().add(gr);
+            }
+
+            // glyph
+            Text c = new Text(xpos, 0, String.valueOf(gd.character));
+            // c.setBoundsType(TextBoundsType.LOGICAL_VERTICAL_CENTER);
+            //c.setTextOrigin(VPos.BOTTOM);  // Default is VPos.BASELINE!!!!
+            c.setFont(f);
+            c.setFill(Color.RED);
+            gg.getChildren().add(c);
+            
+            gd.glyphNode = gg;
+            glyphs.getChildren().add(gg);
 
             xpos += gd.charWidth; //  + 4;
-            glyphs.getChildren().addAll(r, gr, c);
         }
 
         //Line l1 = new Line(0, yMin, xpos, yMin);
