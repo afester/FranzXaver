@@ -44,7 +44,7 @@ class FontSelectionSkin extends SkinBase<FontSelectionPanel> {
         VBox fontFamilyPanel = new VBox();
         fontFamilies = new ListView<>();
         Font.getFamilies().forEach(e -> fontFamilies.getItems().add(e));
-        fontFamilies.getSelectionModel().select(0);
+        fontFamilies.getSelectionModel().select(fsp.currentFont.getFamily());
         fontFamilies.getSelectionModel().getSelectedIndices().addListener( new ListChangeListener<Integer>() {
     
             @Override
@@ -67,13 +67,20 @@ class FontSelectionSkin extends SkinBase<FontSelectionPanel> {
 /// Font style
         VBox fontStylePanel = new VBox();
         italic = new CheckBox("Italic");
+        if (fsp.currentFont.getStyle().toUpperCase().contains("ITALIC")) {
+            italic.setSelected(true);
+        }
         italic.setOnAction( e-> {
             fireEvent(fsp);
         }); 
 
         fontWeight = new ListView<>();
         fontWeight.getItems().addAll(FontWeight.THIN, FontWeight.LIGHT, FontWeight.NORMAL, FontWeight.BOLD);
-        fontWeight.getSelectionModel().select(FontWeight.NORMAL);
+        if (fsp.currentFont.getStyle().toUpperCase().contains("BOLD")) {
+            fontWeight.getSelectionModel().select(FontWeight.BOLD);
+        } else {
+            fontWeight.getSelectionModel().select(FontWeight.NORMAL);
+        }
         fontWeight.getSelectionModel().getSelectedIndices().addListener( new ListChangeListener<Integer>() {
             @Override
             public void onChanged(Change<? extends Integer> arg0) {
@@ -86,12 +93,10 @@ class FontSelectionSkin extends SkinBase<FontSelectionPanel> {
 /// Font size
         VBox fontSizePanel = new VBox();
         fontSize= new ListView<>();
-        //fontSize.getItems().addAll("6.0", "8.0", "10.0", "11.0", "12.0", "14.0", "16.0", "18.0", "20.0", "22.0", "24.0", "26.0",
-        //                           "28.0", "30.0", "32.0", "34.0", "36.0", "38.0", "40.0", "42.0", "44.0", "46.0");
         fontSize.getItems().addAll(6, 8, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26,
                                    28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50,
                                    52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80);
-        fontSize.getSelectionModel().select(Integer.valueOf(12));
+        fontSize.getSelectionModel().select(Integer.valueOf((int) fsp.currentFont.getSize()));
         fontSize.getSelectionModel().getSelectedIndices().addListener( new ListChangeListener<Integer>() {
             @Override
             public void onChanged(Change<? extends Integer> arg0) {
@@ -102,6 +107,7 @@ class FontSelectionSkin extends SkinBase<FontSelectionPanel> {
         fontSizePanel.getChildren().addAll(new Text("Size"), fontSize);
 
         HBox fontPanel = new HBox();
+        fontPanel.setSpacing(10);
         fontPanel.getChildren().addAll(fontFamilyPanel, fontStylePanel, fontSizePanel);
         getChildren().add(fontPanel);
     }
@@ -125,8 +131,15 @@ public class FontSelectionPanel extends Control {
         return onFontChanged;
     }
 
+    Font currentFont;
 
-    public FontSelectionPanel() {
+    /**
+     * Creates a new panel to select a font.
+     *
+     * @param f The default font to select in the panel.
+     */
+    public FontSelectionPanel(Font f) {
+        currentFont = f;
     }
 
     @Override
