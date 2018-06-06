@@ -29,6 +29,7 @@ import org.w3c.dom.NodeList;
 
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
+import javafx.animation.Interpolator;
 import javafx.animation.StrokeTransition;
 import javafx.animation.Timeline;
 import javafx.scene.Node;
@@ -184,15 +185,16 @@ public class SvgAnimation {
 
 
     /**
-     * Creates a JavaFX timeline from this SvgAnimation.
+     * Creates a JavaFX Animation from this SvgAnimation.
      * 
-     * @return A JavaFX timeline object which corresponds to this SvgAnimation.
+     * @return A JavaFX Animation object which corresponds to this SvgAnimation.
      */
     public Animation createAnimation() {
         if (attributeName.equals("opacity")) {
 
             // for opacity, we can use a FadeTransition
             FadeTransition ft = new FadeTransition(new Duration(duration), node);
+            ft.setInterpolator(Interpolator.LINEAR);
             ft.setFromValue(Double.parseDouble(values[0]));
             ft.setToValue(Double.parseDouble(values[1]));
             ft.setCycleCount(repeatCount);
@@ -209,6 +211,7 @@ public class SvgAnimation {
         } else if (attributeName.equals("stroke-dashoffset")) {
 
             StrokeDashOffsetTransition sdot = new StrokeDashOffsetTransition(Duration.millis(duration), (Shape) node);
+            sdot.setInterpolator(Interpolator.LINEAR);
             
             if (values[0] != null) {
                 sdot.setFromValue(Double.parseDouble(values[0]));
@@ -230,6 +233,7 @@ public class SvgAnimation {
         } else if (attributeName.equals("stroke")) {
 
             StrokeTransition st = new StrokeTransition(Duration.millis(duration), (Shape) node);
+            st.setInterpolator(Interpolator.LINEAR);
             st.setFromValue(Color.RED);   // values[0]
             st.setToValue(Color.GREEN);   // values[1]
             st.setCycleCount(repeatCount);
