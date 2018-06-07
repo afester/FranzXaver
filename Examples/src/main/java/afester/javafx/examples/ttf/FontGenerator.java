@@ -23,7 +23,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
@@ -288,8 +290,10 @@ public class FontGenerator extends Application {
     
                 SnapshotParameters params = new SnapshotParameters();
                 snapshots.getChildren().clear();
+                int glyphIdx = 0;
+                glyphData.sort( (a, b) -> { return a.character > b.character ? 1 : -1; } );
+                Map<Integer, String> charSetMap = new HashMap<>();
                 for (GlyphData gd : glyphData) {
-                // for (Node group : glyphs.getChildrenUnmodifiable()) {
                     Image img = gd.glyphNode.snapshot(params, null);
                     snapshots.getChildren().add(new ImageView(img));
                     stage.sizeToScene();
@@ -297,23 +301,38 @@ public class FontGenerator extends Application {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", baos);
     
-    //                HexDump hd = new HexDump(baos.toByteArray());
-    //                hd.dumpAll(System.err);
-    
                     ImageConverter ic = new ImageConverter();
                     byte[] rgb565 = ic.getRGB565asByte(img);
-    //                ArrayDump ad = new ArrayDump(rgb565);
-    //                ad.dumpAll16(System.err, (int) img.getWidth());
-    
-    //              System.err.println();
 
                     byte[] compressed = compressRLE(rgb565);
                     System.err.println("Compressed size:" + compressed.length);
+
+                    out.println(String.format("// Glyph data: '%c'", gd.character));
+                    String glyphId = String.format("g%03d", glyphIdx++);
+                    charSetMap.put((int) gd.character, glyphId);
+                    out.println(String.format("uint8_t %s = ", glyphId));
                     ArrayDump cd = new ArrayDump(compressed);
-                    out.println(String.format("uint8_t glyph_%s = ", gd.character));
                     cd.dumpAll(out);
                     out.println(";\n");
                 }
+
+                out.print("uint8_t* charSet[224] = {");
+                for (int idx = ' ';  idx < 256;  idx++) {
+                    String glyphId = charSetMap.get(idx);
+                    if (glyphId == null) {
+                        glyphId = "NULL";
+                    }
+
+                    if (idx > 0) {
+                        out.print(", ");
+                    }
+                    if ((idx % 8) == 0) {
+                        out.println();
+                    }
+                    out.print(" " + glyphId);
+                    out.print(String.format(" /*%03d'%c'*/", idx, (char) idx));
+                }
+                out.println("};");
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
@@ -357,6 +376,11 @@ public class FontGenerator extends Application {
         float charWidth;        // the width of the character
         Bounds charBox;         // the bounding box of the visible part of the glyph (might be much smaller than charWidth X charHeight)
         public Group glyphNode; // the javafx node which renders the glyph
+
+        @Override
+        public String toString() {
+            return "" + character;
+        }
     }
 
     // private float xpos = 0;
