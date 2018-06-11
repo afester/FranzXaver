@@ -18,6 +18,7 @@ package afester.javafx.examples.ttf;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -123,7 +124,7 @@ public class FontGenerator extends Application {
             updateGlyphs();
         });
 
-        inputLine = new TextField("0123456789,mAVT°C");
+        inputLine = new TextField("0123456789,mAVTï¿½C");
         inputLine.textProperty().addListener((obj, oldVal, newVal) -> {
             t.setText(newVal);
             updateGlyphs();
@@ -287,50 +288,114 @@ public class FontGenerator extends Application {
             try {
                 FileOutputStream fos = new FileOutputStream("font.c");
                 PrintStream out = new PrintStream(fos);
-    
+
+                out.println("#include <stddef.h>");
+                out.println("#include <ILI9481.h>");
+                out.println("#include <avr/pgmspace.h>");
+                out.println();
+
+                // Create the glyph bitmap data
                 SnapshotParameters params = new SnapshotParameters();
                 snapshots.getChildren().clear();
                 int glyphIdx = 0;
                 glyphData.sort( (a, b) -> { return a.character > b.character ? 1 : -1; } );
-                Map<Integer, String> charSetMap = new HashMap<>();
+                Map<Integer, GlyphData> charSetMap = new HashMap<>();
                 for (GlyphData gd : glyphData) {
                     Image img = gd.glyphNode.snapshot(params, null);
-                    snapshots.getChildren().add(new ImageView(img));
-                    stage.sizeToScene();
                     
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", baos);
-    
+                    File theFile = new File(gd.glyphId + ".png");
+                    ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", theFile);
+
                     ImageConverter ic = new ImageConverter();
-                    byte[] rgb565 = ic.getRGB565asByte(img);
+                    List<Short> palette = new ArrayList<>();
+/////////////////////////7
+		            short[] rgb565 = ic.getRGB565(img);
 
-                    byte[] compressed = compressRLE(rgb565);
-                    System.err.println("Compressed size:" + compressed.length);
+		            // convert bitmap to indexed bitmap
+		            byte[] bitmap = new byte[rgb565.length];
+		            for (int idx = 0;  idx < rgb565.length;  idx++) {
+		            	short value = rgb565[idx];
+		
+		                // lookup value index
+		                int colorIdx = palette.indexOf(value);
+		                if (colorIdx == -1) {
+		                	colorIdx = palette.size();
+		                	palette.add(value);
+		                }
+	
+		                bitmap[idx] = (byte) colorIdx;	// TODO: max. 256 colors
+		            }
+	
+		            int newLength = ic.rleEncode(bitmap);
+		            byte[] bitmapRle = new byte[newLength];
+		            System.arraycopy(bitmap, 0, bitmapRle, 0, newLength);
+		            
+		            ArrayDump ad = new ArrayDump(bitmapRle);
+		            int width = (int) img.getWidth();
+		            int height = (int) img.getHeight();
 
-                    out.println(String.format("// Glyph data: '%c'", gd.character));
-                    String glyphId = String.format("g%03d", glyphIdx++);
-                    charSetMap.put((int) gd.character, glyphId);
-                    out.println(String.format("uint8_t %s = ", glyphId));
-                    ArrayDump cd = new ArrayDump(compressed);
-                    cd.dumpAll(out);
-                    out.println(";\n");
+		            out.printf("const Bitmap8 %s PROGMEM = {%s, %s,\n", gd.glyphId, width, height);
+		            ad.dumpAll(width, out);
+		            out.println("};\n");
+/////////////////
+                    
+//                    System.err.printf("%s X %s\n", img.getWidth(), img.getHeight());
+//                    snapshots.getChildren().add(new ImageView(img));
+//                    stage.sizeToScene();
+//                    
+//                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//                    ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", baos);
+//    
+//                    byte[] rgb565 = ic.getRGB565asByte(img);
+//
+//                    
+//                    
+//		            int newLength = ImageConverter.rleEncode(rgb565);
+//		            byte[] compressed= new byte[newLength];
+//		            System.arraycopy(rgb565, 0, compressed, 0, newLength);
+//
+//                    //byte[] compressed = compressRLE(rgb565);
+//                    System.err.println("Compressed size:" + compressed.length);
+//
+//                    out.println(String.format("// Glyph data: '%c'", gd.character));
+//                    gd.glyphId = String.format("g%03d", glyphIdx++);
+//                    charSetMap.put((int) gd.character, gd);
+//                    
+//                    //out.println(String.format("uint8_t %s = ", gd.glyphId));
+//                    out.println(String.format("static const  Bitmap8 %s PROGMEM = {%s, %s,",
+//                    		gd.glyphId, (int) img.getWidth(), (int) img.getHeight()));
+//                    		//gd.glyphId, (int) gd.charWidth, (int) gd.charHeight));
+//                    ArrayDump cd = new ArrayDump(compressed);
+//                    cd.dumpAll(out);
+//                    out.println("};\n");
                 }
 
-                out.print("uint8_t* charSet[224] = {");
+                // create the font array
+                //out.println("struct fontData {");
+                //out.println("  uint8_t *glyph;");
+                //out.println("  uint8_t width");
+                //out.println("};");
+                //out.print("struct fontData charSet[224] = {");
+                out.print("const Bitmap8* charSet[224] = {");
                 for (int idx = ' ';  idx < 256;  idx++) {
-                    String glyphId = charSetMap.get(idx);
-                    if (glyphId == null) {
-                        glyphId = "NULL";
+
+                    GlyphData gd = charSetMap.get(idx);
+                    String glyphId = "NULL";
+                    int glyphWidth = 0;
+                    if (gd != null) {
+                        glyphId = "&" + gd.glyphId;
+                        glyphWidth = (int) gd.charWidth;
                     }
 
-                    if (idx > 0) {
+                    if (idx > ' ') {
                         out.print(", ");
                     }
                     if ((idx % 8) == 0) {
                         out.println();
                     }
-                    out.print(" " + glyphId);
-                    out.print(String.format(" /*%03d'%c'*/", idx, (char) idx));
+
+                    //out.print(String.format("{%s /*%03d'%c'*/, %d}", glyphId, idx, (char) idx, glyphWidth));
+                    out.print(String.format("%s /*%03d'%c'*/", glyphId, idx, (char) idx));
                 }
                 out.println("};");
             } catch (IOException e1) {
@@ -375,7 +440,9 @@ public class FontGenerator extends Application {
         char character;         // the character
         float charWidth;        // the width of the character
         Bounds charBox;         // the bounding box of the visible part of the glyph (might be much smaller than charWidth X charHeight)
-        public Group glyphNode; // the javafx node which renders the glyph
+        Group glyphNode; 		// the javafx node which renders the glyph
+        String glyphId;			// the C identifier for this glyph 
+public double charHeight;
 
         @Override
         public String toString() {
@@ -419,7 +486,7 @@ public class FontGenerator extends Application {
         final double charHeight = yMax - yMin;
         float xpos = 0;
         for (GlyphData gd : glyphData) {
-
+        	gd.charHeight = charHeight;
             Group gg = new Group();
 
             // background shape
@@ -485,6 +552,7 @@ public class FontGenerator extends Application {
         return result;
     }
 
+    /* TODO: Different algorithms - see ImageConverter.java! */
     private byte[] compressRLEinternal(byte[] data, byte[] dest) {
         int count = 0;
         int oldValue = -1;  // value always <= 65536

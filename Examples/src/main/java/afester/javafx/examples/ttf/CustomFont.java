@@ -17,14 +17,20 @@
 package afester.javafx.examples.ttf;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
+
 import afester.javafx.examples.Example;
 import javafx.application.Application;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
@@ -66,10 +72,10 @@ public class CustomFont extends Application {
     private class Digit extends Group {
 
         public Digit(int value) {
-            Text background = new Text("8.");
+            Text background = new Text("8");
             background.setTextOrigin(VPos.TOP);
             background.setFont(f);
-            background.setFill(new Color(0.15, 0.15, 0.15, 1.0));
+            background.setFill(new Color(0.1, 0.1, 0.1, 1.0));
 
 //            Bounds b = background.getLayoutBounds();
 //            System.err.printf("%s/%s\n", b.getWidth(), b.getHeight());
@@ -79,9 +85,9 @@ public class CustomFont extends Application {
             Text sampleText = new Text(Integer.toString(value));
             sampleText.setTextOrigin(VPos.TOP);
             sampleText.setFont(f);
-            sampleText.setFill(Color.RED);
+            sampleText.setFill(new Color(0xda/255.0, 1.0, 0, 1.0));
 
-            getChildren().addAll(/*r,*/ background, sampleText);
+            getChildren().addAll(/*r, */background, sampleText);
         }
     }
     
@@ -93,28 +99,6 @@ public class CustomFont extends Application {
         InputStream is = getClass().getResourceAsStream("DSEG7Classic-BoldItalic.ttf");
         //Font 
         f = Font.loadFont(is, 72);
-
- //
-//        Color[] colors = {Color.RED, Color.VIOLET, Color.BLUE, Color.BLACK, Color.GREEN};
-//
-//        Group g = new Group();
-//        g.setAutoSizeChildren(false);
-//        for (int i = 0; i < 5; i++) {
-//            Rectangle r2 = new Rectangle();
-//            r2.setY(i * 20);
-//            r2.setX(40);
-//            r2.setWidth(100);
-//            r2.setHeight(10);
-//            r2.setFill(colors[i]);
-//            g.getChildren().add(r2);
-//        }
-//        disp.getChildren().add(g);
-        
-//        for (int x = 62;  x < 680;  x += 59) {
-//            Line l = new Line(x, 0, x, 76);
-//            l.setStroke(Color.WHITE);
-//            disp.getChildren().addAll(l);
-//        }
 
         VBox box = new VBox();
         Button b = new Button("Export");
@@ -219,17 +203,53 @@ public class CustomFont extends Application {
         }
 
         HBox snapshots = new HBox();
-        snapshots.setBackground(new Background(new BackgroundFill(Color.AQUAMARINE, new CornerRadii(0), new Insets(0, 0, 0,0))));
-        snapshots.setSpacing(5);
+        box.setFillWidth(false);
         Button snapshotBtn = new Button("Snapshot");
         snapshotBtn.setOnAction(e -> {
             SnapshotParameters params = new SnapshotParameters();
-
+            params.setFill(Color.BLACK);
             snapshots.getChildren().clear();
             digits.forEach(c -> {
                 Image result = c.snapshot(params, null);
                 snapshots.getChildren().add(new ImageView(result));
-                stage.sizeToScene();
+            });
+
+            Button export = new Button("Save ...");
+            box.getChildren().add(export);
+            stage.sizeToScene();
+            export.setOnAction(e1 -> {
+            	int count = 0;
+            	for (Node iv : snapshots.getChildren()) {
+            		Image img = ((ImageView) iv).getImage();
+
+	        		File theFile = new File("img" +count + ".png");
+	        		count++;
+	                try {
+						ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", theFile);
+					} catch (IOException e2) {
+						e2.printStackTrace();
+					}
+            	}
+
+                Image result = snapshots.snapshot(new SnapshotParameters(), null);
+        		File theFile = new File("imgComplete.png");
+        		try {
+					ImageIO.write(SwingFXUtils.fromFXImage(result, null), "png", theFile);
+				} catch (IOException e2) {
+					e2.printStackTrace();
+				}
+
+//            	snapshots.getChildren().forEach(iv -> {
+//            		Image img = ((ImageView) iv).getImage();
+//            		File theFile = new File("img" +count + ".png");
+//            		count++;
+//                    try {
+//						ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", theFile);
+//					} catch (IOException e2) {
+//						e2.printStackTrace();
+//					}
+//
+//            	});
             });
         });
 

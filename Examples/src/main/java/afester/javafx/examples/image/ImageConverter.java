@@ -3,6 +3,10 @@ package afester.javafx.examples.image;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -51,6 +55,17 @@ public class ImageConverter extends Application {
     @Override
     public void start(Stage ps) {
 
+    	
+//    	byte[] data = {0, 0, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3};
+//    	HexDump hd = new HexDump(data);
+//    	hd.dumpAll(System.err);
+//    	
+//    	int x = rleEncode(data);
+//    	System.err.println(x);
+//
+//    	hd = new HexDump(data);
+//    	hd.dumpAll(System.err);
+    	
 //        byte b = 0;
 //        while(true) {
 //            System.err.printf("%3d: %s\n", b & 0xff, toBinaryString(b));
@@ -68,22 +83,22 @@ public class ImageConverter extends Application {
 //                break;
 //            }
 //        }
-
-        byte b = (byte) 0xff;           // 0xff is an int literal!!
-        System.err.printf("%3d: %s\n", b & 0xff, toBinaryString(b));
-
-        short s = (short) 0xffff;       // 0xffff is an int literal!!
-        System.err.printf("%5d: %s\n", s & 0xffff, toBinaryString(s, 8));
-
-        int i = 0xffffffff;             // 0xffffffff is an int literal!!
-        //System.err.printf("%10d: %s\n", i & 0xffffffffL, toBinaryString(i));
-                                          //  ^^^^^^^^^ Need LONG here!
-        System.err.printf("%10s: %s\n", Integer.toUnsignedString(i), toBinaryString(i, 8));
-
-        long l = 0xffffffffffffffffL;   // 0xffffffffffffffffL is a long literal!!
-        System.err.printf("%10s: %s\n", Long.toUnsignedString(l), toBinaryString(l, 8));
-
-        System.err.println(insertSeparator("Hello World", "|", 2));
+//
+//        byte b = (byte) 0xff;           // 0xff is an int literal!!
+//        System.err.printf("%3d: %s\n", b & 0xff, toBinaryString(b));
+//
+//        short s = (short) 0xffff;       // 0xffff is an int literal!!
+//        System.err.printf("%5d: %s\n", s & 0xffff, toBinaryString(s, 8));
+//
+//        int i = 0xffffffff;             // 0xffffffff is an int literal!!
+//        //System.err.printf("%10d: %s\n", i & 0xffffffffL, toBinaryString(i));
+//                                          //  ^^^^^^^^^ Need LONG here!
+//        System.err.printf("%10s: %s\n", Integer.toUnsignedString(i), toBinaryString(i, 8));
+//
+//        long l = 0xffffffffffffffffL;   // 0xffffffffffffffffL is a long literal!!
+//        System.err.printf("%10s: %s\n", Long.toUnsignedString(l), toBinaryString(l, 8));
+//
+//        System.err.println(insertSeparator("Hello World", "|", 2));
 
     	this.primaryStage = ps;
 
@@ -116,6 +131,7 @@ public class ImageConverter extends Application {
 
         Button exportStructButton = new Button("Export struct Bitmap ...");
         exportStructButton.setOnAction(e -> {
+        	
         	imageViews.forEach(iv -> {
                 Image img = iv.getImage();
                 short[] rgb565 = getRGB565(img);
@@ -127,56 +143,67 @@ public class ImageConverter extends Application {
                 ad.dumpAll(width, System.err);
                 System.err.println("};\n");
         	});        	
-            
+
         });
         mainGroup.getChildren().add(exportStructButton);
 
-//        Button exportStructPaletteButton = new Button("Export struct Bitmap with Palette ...");
-//        exportStructPaletteButton.setOnAction(e -> {
-//        	
-//        	// use the same palette for all images
-//            List<Integer> palette = new ArrayList<>();
-//        	imageViews.forEach(iv -> {
-//	            Image img = iv.getImage();
-//	
-//	            byte[] rgb565 = getRGB565(img);
-//	
-//	            // convert bitmap to indexed bitmap
-//	            byte[] bitmap = new byte[rgb565.length / 2];
-//	            int bitmapIdx = 0;
-//	            for (int idx = 0;  idx < rgb565.length;  ) {
-//	                int value = (short) rgb565[idx] & 0xff;
-//	                value = value | ((short) rgb565[idx+1] & 0xff) << 8;
-//	                idx += 2;
-//	
-//	                // lookup value index
-//	                int colorIdx = palette.indexOf(value);
-//	                if (colorIdx == -1) {
-//	                	colorIdx = palette.size();
-//	                	palette.add(value);
-//	                }
-//	
-//	                bitmap[bitmapIdx++] = (byte) colorIdx;	// TODO: max. 256 colors
-//	            }
-//
-//	            ArrayDump ad = new ArrayDump(bitmap);
-//	            int width = (int) img.getWidth();
-//	            int height = (int) img.getHeight();
-//	            System.err.printf("Bitmap8 %s = {%s, %s,\n", iv.getId(), width, height);
-//	            ad.dumpAll(width, System.err);
-//	            System.err.println("};\n");
-//        	});
-//
-//        	// dump the palette
-//        	System.err.print("uint16_t palette[] = {");
-//        	String prefix = "";
-//        	for (int v : palette) {
-//                System.err.printf("%s0x%04x", prefix, v);
-//                prefix = ", ";
-//        	}
-//            System.err.println("};\n");
-//        });
-//        mainGroup.getChildren().add(exportStructPaletteButton);
+        Button exportStructPaletteButton = new Button("Export struct Bitmap with Palette ...");
+        exportStructPaletteButton.setOnAction(e -> {
+            try (OutputStream fos = new FileOutputStream("result.c")) {
+            	PrintStream out = new PrintStream(fos);
+	
+	        	// use the same palette for all images
+	            List<Short> palette = new ArrayList<>();
+	        	imageViews.forEach(iv -> {
+		            Image img = iv.getImage();
+		
+		            short[] rgb565 = getRGB565(img);
+	
+		            // convert bitmap to indexed bitmap
+		            byte[] bitmap = new byte[rgb565.length];
+		            for (int idx = 0;  idx < rgb565.length;  idx++) {
+		            	short value = rgb565[idx];
+		
+		                // lookup value index
+		                int colorIdx = palette.indexOf(value);
+		                if (colorIdx == -1) {
+		                	colorIdx = palette.size();
+		                	palette.add(value);
+		                }
+	
+		                bitmap[idx] = (byte) colorIdx;	// TODO: max. 256 colors
+		            }
+	
+		            int newLength = rleEncode(bitmap);
+		            byte[] bitmapRle = new byte[newLength];
+		            System.arraycopy(bitmap, 0, bitmapRle, 0, newLength);
+		            
+		            ArrayDump ad = new ArrayDump(bitmapRle);
+		            int width = (int) img.getWidth();
+		            int height = (int) img.getHeight();
+
+		            out.printf("const Bitmap8 %s PROGMEM = {%s, %s,\n", iv.getId(), width, height);
+		            ad.dumpAll(width, out);
+		            out.println("};\n");
+	        	});
+	
+	        	// dump the palette
+	        	out.print("uint16_t palette[] = {");
+	        	String prefix = "";
+	        	for (int v : palette) {
+	                out.printf("%s0x%04x", prefix, v & 0xffff);
+	                prefix = ", ";
+	        	}
+	            out.println("};\n");
+            
+            } catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+
+        });
+        mainGroup.getChildren().add(exportStructPaletteButton);
 
         Scene scene = new Scene(mainGroup);
 
@@ -188,17 +215,54 @@ public class ImageConverter extends Application {
 			//loadImage("C:\\Users\\AFESTER\\Projects\\CodeSamples\\Embedded\\AVR\\ILI9481\\adRedBlack.png");
 	        //loadImage("C:\\Users\\AFESTER\\Projects\\CodeSamples\\Embedded\\AVR\\ILI9481\\bcefRedBlack.png");
 	        //loadImage("C:\\Users\\AFESTER\\Projects\\CodeSamples\\Embedded\\AVR\\ILI9481\\gRedBlack.png");
-			loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/adRedBlack.png");
+			//loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/adRedBlack.png");
 	        //loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/bcefRedBlack.png");
             //loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/gRedBlack.png");
-        	
+           
+//        	loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/null.png");
+//            loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/eins.png");
+//            loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/zwei.png");
+//            loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/drei.png");
+//            loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/vier.png");
+//            loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/fuenf.png");
+//            loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/sechs.png");
+//            loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/sieben.png");
+//            loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/acht.png");
+//            loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/neun.png");
+          loadImage("/home/andreas/Projects/FranzXaver/Examples/null.png");
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		}
     }
 
 
-    private void loadImage(String filePath) throws FileNotFoundException {
+    // TODO: move into RleEncode - class!
+    public int rleEncode(byte[] bitmap) {
+    	int readIdx = 0;
+    	int writeIdx = 0;
+
+    	while(readIdx < bitmap.length) {
+
+        	byte count = 0;
+    		while(readIdx < bitmap.length && 
+    			  bitmap[readIdx] == bitmap[writeIdx] && 
+    			  count < 15) {
+    			count++;
+    			readIdx++;
+    		}
+    		bitmap[writeIdx] = (byte) (bitmap[writeIdx] | (count << 4));
+    		writeIdx++;
+
+    		if (readIdx >= bitmap.length) { 
+    			return writeIdx;
+    		}
+    		bitmap[writeIdx] = bitmap[readIdx];
+    	}
+
+		return writeIdx + 1;
+	}
+
+	private void loadImage(String filePath) throws FileNotFoundException {
         Path p = Paths.get(filePath);
 
         ImageView imageView = new ImageView();
