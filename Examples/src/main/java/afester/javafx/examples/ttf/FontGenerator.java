@@ -17,7 +17,6 @@
 package afester.javafx.examples.ttf;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -36,6 +35,7 @@ import com.sun.javafx.tk.Toolkit;
 import afester.javafx.examples.Example;
 import afester.javafx.examples.image.ArrayDump;
 import afester.javafx.examples.image.ImageConverter;
+import afester.javafx.examples.image.RleEncoder;
 import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Bounds;
@@ -47,8 +47,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -79,9 +80,10 @@ public class FontGenerator extends Application {
 
     private Font f;
     private TextField inputLine;
-    private Group glyphs;
+    private HBox glyphs;
     private List<GlyphData> glyphData = new ArrayList<>();
     private CheckBox showGlyphBounds;
+    private CheckBox showCharacterBounds;
     private HBox snapshots;
     
     private class Digit extends Group {
@@ -124,7 +126,7 @@ public class FontGenerator extends Application {
             updateGlyphs();
         });
 
-        inputLine = new TextField("0123456789,mAVT�C");
+        inputLine = new TextField("0"); // 123456789,mAVT�C");
         inputLine.textProperty().addListener((obj, oldVal, newVal) -> {
             t.setText(newVal);
             updateGlyphs();
@@ -279,6 +281,11 @@ public class FontGenerator extends Application {
             updateGlyphs();
         });
 
+        showCharacterBounds = new CheckBox("Show character bounds");
+        showCharacterBounds.setOnAction(e -> {
+            updateGlyphs();
+        });
+
         snapshots = new HBox();
         
         
@@ -300,9 +307,11 @@ public class FontGenerator extends Application {
                 int glyphIdx = 0;
                 glyphData.sort( (a, b) -> { return a.character > b.character ? 1 : -1; } );
                 Map<Integer, GlyphData> charSetMap = new HashMap<>();
+                RleEncoder rle = new RleEncoder();
                 for (GlyphData gd : glyphData) {
                     Image img = gd.glyphNode.snapshot(params, null);
-                    
+                    System.err.printf("%s X %s\n", img.getWidth(), img.getHeight());
+
                     File theFile = new File(gd.glyphId + ".png");
                     ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", theFile);
 
@@ -326,7 +335,7 @@ public class FontGenerator extends Application {
 		                bitmap[idx] = (byte) colorIdx;	// TODO: max. 256 colors
 		            }
 	
-		            int newLength = ic.rleEncode(bitmap);
+		            int newLength = rle.rleEncode_4plus4(bitmap);
 		            byte[] bitmapRle = new byte[newLength];
 		            System.arraycopy(bitmap, 0, bitmapRle, 0, newLength);
 		            
@@ -404,7 +413,7 @@ public class FontGenerator extends Application {
         });
         bottomBox.getChildren().addAll(exportButton, showGlyphBounds);
 
-        glyphs = new Group();
+        glyphs = new HBox();
         updateGlyphs();
 
         VBox box = new VBox();
@@ -435,14 +444,14 @@ public class FontGenerator extends Application {
 //        );
     }
     
-    
+
     private class GlyphData {
         char character;         // the character
         float charWidth;        // the width of the character
+        float charHeight;       // the line height (same value for each glyph)
         Bounds charBox;         // the bounding box of the visible part of the glyph (might be much smaller than charWidth X charHeight)
-        Group glyphNode; 		// the javafx node which renders the glyph
+        Pane glyphNode; 		// the javafx node which renders the glyph
         String glyphId;			// the C identifier for this glyph 
-public double charHeight;
 
         @Override
         public String toString() {
@@ -451,8 +460,8 @@ public double charHeight;
     }
 
     // private float xpos = 0;
-    private double yMin = 0;
-    private double yMax = 0;
+    private float yMin = 0;
+    private float yMax = 0;
     private void updateGlyphs() {
 
 
@@ -471,10 +480,10 @@ public double charHeight;
             gd.character =  (char) e;
 
             if (gd.charBox.getMinY() < yMin) {
-                yMin = gd.charBox.getMinY();
+                yMin = (float) gd.charBox.getMinY();
             }
             if (gd.charBox.getMaxY() > yMax) {
-                yMax = gd.charBox.getMaxY();
+                yMax = (float) gd.charBox.getMaxY();
             }
 
             glyphData.add(gd);
@@ -483,11 +492,13 @@ public double charHeight;
 
         glyphs.getChildren().clear();
 
-        final double charHeight = yMax - yMin;
+        final float charHeight = yMax - yMin;
         float xpos = 0;
         for (GlyphData gd : glyphData) {
         	gd.charHeight = charHeight;
-            Group gg = new Group();
+            StackPane gg = new StackPane();
+            // gg.setCenterShape(true);
+            gg.setStyle("-fx-background-color: green;");
 
             // background shape
             final Rectangle r = new Rectangle(xpos,  yMin, gd.charWidth, charHeight);
@@ -514,11 +525,12 @@ public double charHeight;
             // glyph
             Text c = new Text(xpos, 0, String.valueOf(gd.character));
             // c.setBoundsType(TextBoundsType.LOGICAL_VERTICAL_CENTER);
-            //c.setTextOrigin(VPos.BOTTOM);  // Default is VPos.BASELINE!!!!
+            // c.setTextOrigin(VPos.BOTTOM);  // Default is VPos.BASELINE!!!!
             c.setFont(f);
+            System.err.println(c.getBoundsInLocal());
             c.setFill(Color.RED);
             gg.getChildren().add(c);
-            
+
             gd.glyphNode = gg;
             glyphs.getChildren().add(gg);
 
@@ -550,64 +562,5 @@ public double charHeight;
         }
         
         return result;
-    }
-
-    /* TODO: Different algorithms - see ImageConverter.java! */
-    private byte[] compressRLEinternal(byte[] data, byte[] dest) {
-        int count = 0;
-        int oldValue = -1;  // value always <= 65536
-        int value = 0;
-        int upper = 0;
-        int lower = 0;
-        int resultLength = 0;
-
-        ArrayList<Integer> allValues = new ArrayList<>();
-        for (int idx = 0;  idx < data.length;  ) {
-            upper = (short) (data[idx++] & 0xff) << 8;
-            lower = (short) (data[idx++] & 0xff);
-            value = upper + lower;
-
-            if (!allValues.contains(value)) {
-                allValues.add(value);
-            }
-
-            count++;
-
-            if (oldValue == -1) {
-                oldValue = value;
-                count = 0;
-            }
-
-            if (value != oldValue) {
-                if (dest != null) {
-                    dest[resultLength + 0] = (byte) count;                      // TODO: Overflow!
-                    dest[resultLength + 1] = (byte) allValues.indexOf(value);   // TODO: Overflow!
-                    //dest[resultLength + 1] = (byte) upper;
-                    //dest[resultLength + 2] = (byte) lower;
-                }
-                resultLength += 2; // 3;
-                count = 0;
-            }
-            oldValue = value;
-        }
-        if (dest != null) {
-            dest[resultLength + 0] = (byte) (count+1);                  // TODO: Overflow!
-            dest[resultLength + 1] = (byte) allValues.indexOf(value);   // TODO: Overflow!
-            //dest[resultLength + 1] = (byte) upper;
-            //dest[resultLength + 2] = (byte) lower;
-        }
-        resultLength += 2; // 3;
-        
-        if (dest == null) {
-            System.err.println(allValues);
-            return new byte[resultLength];
-        }
-        return dest;
-    }
-    
-    private byte[] compressRLE(byte[] data) {
-        byte[] buffer = compressRLEinternal(data, null);
-        compressRLEinternal(data, buffer);
-        return buffer;
     }
 }

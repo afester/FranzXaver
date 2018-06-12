@@ -12,8 +12,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.hexdump.HexDump;
-
 //import com.example.hexdump.HexDump;
 
 import afester.javafx.examples.Example;
@@ -150,6 +148,8 @@ public class ImageConverter extends Application {
         Button exportStructPaletteButton = new Button("Export struct Bitmap with Palette ...");
         exportStructPaletteButton.setOnAction(e -> {
             try (OutputStream fos = new FileOutputStream("result.c")) {
+                RleEncoder rle = new RleEncoder();
+
             	PrintStream out = new PrintStream(fos);
 	
 	        	// use the same palette for all images
@@ -174,7 +174,7 @@ public class ImageConverter extends Application {
 		                bitmap[idx] = (byte) colorIdx;	// TODO: max. 256 colors
 		            }
 	
-		            int newLength = rleEncode(bitmap);
+		            int newLength = rle.rleEncode_4plus4(bitmap);
 		            byte[] bitmapRle = new byte[newLength];
 		            System.arraycopy(bitmap, 0, bitmapRle, 0, newLength);
 		            
@@ -229,38 +229,13 @@ public class ImageConverter extends Application {
 //            loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/sieben.png");
 //            loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/acht.png");
 //            loadImage("/home/andreas/Projects/CodeSamples/Embedded/AVR/ILI9481/neun.png");
-          loadImage("/home/andreas/Projects/FranzXaver/Examples/null.png");
+          loadImage("null.png");
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		}
     }
 
 
-    // TODO: move into RleEncode - class!
-    public int rleEncode(byte[] bitmap) {
-    	int readIdx = 0;
-    	int writeIdx = 0;
-
-    	while(readIdx < bitmap.length) {
-
-        	byte count = 0;
-    		while(readIdx < bitmap.length && 
-    			  bitmap[readIdx] == bitmap[writeIdx] && 
-    			  count < 15) {
-    			count++;
-    			readIdx++;
-    		}
-    		bitmap[writeIdx] = (byte) (bitmap[writeIdx] | (count << 4));
-    		writeIdx++;
-
-    		if (readIdx >= bitmap.length) { 
-    			return writeIdx;
-    		}
-    		bitmap[writeIdx] = bitmap[readIdx];
-    	}
-
-		return writeIdx + 1;
-	}
 
 	private void loadImage(String filePath) throws FileNotFoundException {
         Path p = Paths.get(filePath);
