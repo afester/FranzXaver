@@ -39,6 +39,7 @@ import afester.javafx.examples.image.RleEncoder;
 import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -47,6 +48,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -309,7 +312,9 @@ public class FontGenerator extends Application {
                 Map<Integer, GlyphData> charSetMap = new HashMap<>();
                 RleEncoder rle = new RleEncoder();
                 for (GlyphData gd : glyphData) {
-                    Image img = gd.glyphNode.snapshot(params, null);
+                	System.err.printf("Node: %s (%s / %s)\n", gd.glyphNode, gd.glyphNode.getWidth(),
+                			gd.glyphNode.getHeight());
+                    Image img = gd.glyphNode.snapshot(null, null);
                     System.err.printf("%s X %s\n", img.getWidth(), img.getHeight());
 
                     File theFile = new File(gd.glyphId + ".png");
@@ -411,7 +416,7 @@ public class FontGenerator extends Application {
                 e1.printStackTrace();
             }
         });
-        bottomBox.getChildren().addAll(exportButton, showGlyphBounds);
+        bottomBox.getChildren().addAll(exportButton, showGlyphBounds, showCharacterBounds);
 
         glyphs = new HBox();
         updateGlyphs();
@@ -477,6 +482,7 @@ public class FontGenerator extends Application {
             GlyphData gd = new GlyphData();
             gd.charWidth = fm.getCharWidth((char) e);  // width of the given character
             gd.charBox = reportSize(String.valueOf((char) e), f);
+            System.err.println(gd.charBox);
             gd.character =  (char) e;
 
             if (gd.charBox.getMinY() < yMin) {
@@ -491,28 +497,43 @@ public class FontGenerator extends Application {
 
 
         glyphs.getChildren().clear();
-
+        glyphs.setSpacing(0);
+        glyphs.setPadding(Insets.EMPTY);
         final float charHeight = yMax - yMin;
         float xpos = 0;
+        int i = 0;
         for (GlyphData gd : glyphData) {
+            // background shape and container for glyph and bounding boxes
         	gd.charHeight = charHeight;
-            StackPane gg = new StackPane();
-            // gg.setCenterShape(true);
-            gg.setStyle("-fx-background-color: green;");
+            Pane gg = new Pane();
+            gg.setPrefWidth(gd.charWidth);
+            gg.setPrefHeight(gd.charHeight);
+            //gg.setMPrefWidth(gd.charWidth);
+            gg.setMaxHeight(gd.charHeight);
+            glyphs.setPadding(Insets.EMPTY);
+            //gg.setCenterShape(false);
+            gg.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
+//            if (i % 2 == 0 ) {
+//            	gg.setBackground(new Background(new BackgroundFill(Color.BLUE, null, null)));
+//            } else { 
+//            	gg.setBackground(new Background(new BackgroundFill(Color.YELLOW, null, null)));
+//        	}
+//            i++;
+        
 
-            // background shape
-            final Rectangle r = new Rectangle(xpos,  yMin, gd.charWidth, charHeight);
-            r.setFill(Color.BLACK);
-//            r.setFill(null);
-//            r.setStroke(Color.BLACK);
-//            r.getStrokeDashArray().add(0, 5.0);
-//            r.getStrokeDashArray().add(1, 5.0);
-            gg.getChildren().add(r);
+//            final Rectangle r = new Rectangle(xpos,  yMin, gd.charWidth, charHeight);
+//            r.setFill(Color.BLACK);
+////            r.setFill(null);
+////            r.setStroke(Color.BLACK);
+////            r.getStrokeDashArray().add(0, 5.0);
+////            r.getStrokeDashArray().add(1, 5.0);
+//            gg.getChildren().add(r);
 
         // Bounding box of the character
             if (showGlyphBounds.isSelected()) {
-                final Rectangle gr = new Rectangle(xpos + gd.charBox.getMinX(), gd.charBox.getMinY(),
+                final Rectangle gr = new Rectangle(gd.charBox.getMinX(), gd.charBox.getMinY(),
                                                    gd.charBox.getWidth(), gd.charBox.getHeight());
+                gr.setManaged(false);
                 //gr.setFill(Color.BLACK);
                 //gr.setStroke(null);
                 gr.setFill(null);
@@ -521,13 +542,24 @@ public class FontGenerator extends Application {
                 gr.getStrokeDashArray().add(1, 5.0);
                 gg.getChildren().add(gr);
             }
+//            if (showCharacterBounds.isSelected()) {
+//                //final Rectangle gr = new Rectangle(0, gd.charBox.getMinY(),
+//                //        						   gd.charBox.getWidth(), gd.charBox.getHeight());
+//                final Rectangle gr = new Rectangle(0, 0, 30, 30);
+//                gr.setManaged(false);
+//                gr.setFill(null);
+//                gr.setStroke(Color.RED);
+//                gr.getStrokeDashArray().add(0, 5.0);
+//                gr.getStrokeDashArray().add(1, 5.0);
+//                gg.getChildren().add(gr);
+//            }
 
-            // glyph
-            Text c = new Text(xpos, 0, String.valueOf(gd.character));
+            // glyph - position is relative to Pane!
+            Text c = new Text(0, gd.charHeight, String.valueOf(gd.character));
+            c.setManaged(false);
             // c.setBoundsType(TextBoundsType.LOGICAL_VERTICAL_CENTER);
             // c.setTextOrigin(VPos.BOTTOM);  // Default is VPos.BASELINE!!!!
             c.setFont(f);
-            System.err.println(c.getBoundsInLocal());
             c.setFill(Color.RED);
             gg.getChildren().add(c);
 
