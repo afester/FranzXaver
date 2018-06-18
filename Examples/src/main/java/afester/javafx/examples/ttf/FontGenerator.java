@@ -52,7 +52,6 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -60,6 +59,7 @@ import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextBoundsType;
 import javafx.stage.Stage;
 
 
@@ -434,21 +434,74 @@ public class FontGenerator extends Application {
 
     public Bounds reportSize(String s, Font myFont) {
         Text text = new Text(s);
+        // text.setBoundsType(TextBoundsType.VISUAL);
         text.setFont(myFont);
+        //text.setY(0);
+        // Bounds tb = text.getBoundsInLocal();
+        text.setTextOrigin(VPos.TOP);
+
         Bounds tb = text.getBoundsInLocal();
+        System.err.println("TEXT BOUNDS: " + tb);
         Rectangle stencil = new Rectangle(
                 tb.getMinX(), tb.getMinY(), tb.getWidth(), tb.getHeight()
         );
+        //System.err.println("STENCIL BOUNDS: " + stencil.getBoundsInLocal());
 
         Shape intersection = Shape.intersect(text, stencil);
-
+        
         Bounds ib = intersection.getBoundsInLocal();
+        System.err.println("RESULT BOUNDS: " + ib + "/" + intersection);
         return ib;
 //        System.out.println(
 //                "Text size: " + ib.getWidth() + ", " + ib.getHeight()
 //        );
     }
     
+    
+    
+    class GlyphBoundsInfo {
+        private Bounds logicalBounds;
+        private Bounds visualBounds;
+
+        public GlyphBoundsInfo(Bounds bLogical, Bounds bVisual) {
+            this.logicalBounds = bLogical;
+            this.visualBounds = bVisual;
+            System.err.println("1:" + bLogical);
+            System.err.println("2:" + bVisual);
+        }
+
+        public Bounds getLogicalBounds() {
+            return logicalBounds;
+        }
+        
+        public Bounds getVisualBounds() {
+            return visualBounds;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("GlyphBoundsInfo[ %s/%s,%sx%s / %s/%s,%sx%s]",  
+                                 logicalBounds.getMinX(), logicalBounds.getMinY(), logicalBounds.getWidth(), logicalBounds.getHeight(),
+                                 visualBounds.getMinX(), visualBounds.getMinY(), visualBounds.getWidth(), visualBounds.getHeight());
+        }
+    }
+
+    private GlyphBoundsInfo getGlyphBounds(String s, Font font) {
+        Pane p = new Pane();
+        Text text = new Text(s);
+        text.setFont(font);
+        text.setTextOrigin(VPos.BASELINE);
+        text.setBoundsType(TextBoundsType.LOGICAL);
+
+        p.getChildren().add(text);
+        
+        Bounds bLogical = text.getBoundsInLocal();
+
+        text.setBoundsType(TextBoundsType.VISUAL);
+        Bounds bVisual = text.getBoundsInLocal();
+
+        return new GlyphBoundsInfo(bLogical, bVisual);
+    }
 
     private class GlyphData {
         char character;         // the character
@@ -457,6 +510,7 @@ public class FontGenerator extends Application {
         Bounds charBox;         // the bounding box of the visible part of the glyph (might be much smaller than charWidth X charHeight)
         Pane glyphNode; 		// the javafx node which renders the glyph
         String glyphId;			// the C identifier for this glyph 
+        GlyphBoundsInfo gbi;
 
         @Override
         public String toString() {
@@ -464,11 +518,23 @@ public class FontGenerator extends Application {
         }
     }
 
+    private void updateGlyphs2() {
+        glyphs.getChildren().clear();
+        
+        Text c = new Text(0, 0 , inputLine.getText());
+        c.setTextOrigin(VPos.TOP);
+        c.setFont(f);
+        c.setFill(Color.RED);
+        Pane gg = new Pane();
+        gg.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
+        gg.getChildren().add(c);
+        glyphs.getChildren().add(gg);
+    }
+
     // private float xpos = 0;
     private float yMin = 0;
     private float yMax = 0;
     private void updateGlyphs() {
-
 
 // Calculate all glyphs
         glyphData.clear();
@@ -482,7 +548,8 @@ public class FontGenerator extends Application {
             GlyphData gd = new GlyphData();
             gd.charWidth = fm.getCharWidth((char) e);  // width of the given character
             gd.charBox = reportSize(String.valueOf((char) e), f);
-            System.err.println(gd.charBox);
+            gd.gbi = getGlyphBounds(String.valueOf((char) e), f);
+            System.err.println(gd.gbi);
             gd.character =  (char) e;
 
             if (gd.charBox.getMinY() < yMin) {
@@ -494,7 +561,6 @@ public class FontGenerator extends Application {
 
             glyphData.add(gd);
         });
-
 
         glyphs.getChildren().clear();
         glyphs.setSpacing(0);
@@ -531,8 +597,12 @@ public class FontGenerator extends Application {
 
         // Bounding box of the character
             if (showGlyphBounds.isSelected()) {
-                final Rectangle gr = new Rectangle(gd.charBox.getMinX(), gd.charBox.getMinY(),
-                                                   gd.charBox.getWidth(), gd.charBox.getHeight());
+              final Rectangle gr = new Rectangle(gd.gbi.getVisualBounds().getMinX(),
+                                                 gd.gbi.getVisualBounds().getMinY(),
+                                                 gd.gbi.getVisualBounds().getWidth(),
+                                                 gd.gbi.getVisualBounds().getHeight());
+//                final Rectangle gr = new Rectangle(gd.charBox.getMinX(), gd.charBox.getMinY(),
+//                                                   gd.charBox.getWidth(), gd.charBox.getHeight());
                 gr.setManaged(false);
                 //gr.setFill(Color.BLACK);
                 //gr.setStroke(null);
@@ -542,31 +612,42 @@ public class FontGenerator extends Application {
                 gr.getStrokeDashArray().add(1, 5.0);
                 gg.getChildren().add(gr);
             }
-//            if (showCharacterBounds.isSelected()) {
-//                //final Rectangle gr = new Rectangle(0, gd.charBox.getMinY(),
-//                //        						   gd.charBox.getWidth(), gd.charBox.getHeight());
-//                final Rectangle gr = new Rectangle(0, 0, 30, 30);
-//                gr.setManaged(false);
-//                gr.setFill(null);
-//                gr.setStroke(Color.RED);
-//                gr.getStrokeDashArray().add(0, 5.0);
-//                gr.getStrokeDashArray().add(1, 5.0);
-//                gg.getChildren().add(gr);
-//            }
+            if (showCharacterBounds.isSelected()) {
+                final Rectangle gr = new Rectangle(gd.gbi.getLogicalBounds().getMinX(),
+                                                   gd.gbi.getLogicalBounds().getMinY(),
+                                                   gd.gbi.getLogicalBounds().getWidth(),
+                                                   gd.gbi.getLogicalBounds().getHeight());
+
+                //final Rectangle gr = new Rectangle(0, gd.charBox.getMinY(),
+                //        						   gd.charBox.getWidth(), gd.charBox.getHeight());
+                // final Rectangle gr = new Rectangle(0, 0, 30, 30);
+                gr.setManaged(false);
+                gr.setFill(null);
+                gr.setStroke(Color.RED);
+                gr.getStrokeDashArray().add(0, 5.0);
+                gr.getStrokeDashArray().add(1, 5.0);
+                gg.getChildren().add(gr);
+            }
 
             // glyph - position is relative to Pane!
-            Text c = new Text(0, gd.charHeight, String.valueOf(gd.character));
+            Text c = new Text(0, 0 , /* gd.charHeight, */String.valueOf(gd.character));
             c.setManaged(false);
             // c.setBoundsType(TextBoundsType.LOGICAL_VERTICAL_CENTER);
-            // c.setTextOrigin(VPos.BOTTOM);  // Default is VPos.BASELINE!!!!
+            c.setTextOrigin(VPos.TOP);  // Default is VPos.BASELINE!!!!
             c.setFont(f);
             c.setFill(Color.RED);
             gg.getChildren().add(c);
 
+            
             gd.glyphNode = gg;
             glyphs.getChildren().add(gg);
 
-            xpos += gd.charWidth; //  + 4;
+            xpos += gd.gbi.getLogicalBounds().getWidth(); //  gd.charWidth; //  + 4;
+            
+
+            // c.setBoundsType(TextBoundsType.VISUAL);
+            
+            System.err.println(c.getBoundsInParent());
         }
 
         //Line l1 = new Line(0, yMin, xpos, yMin);
