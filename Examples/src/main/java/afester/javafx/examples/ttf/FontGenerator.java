@@ -54,6 +54,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
@@ -85,8 +86,9 @@ public class FontGenerator extends Application {
     private TextField inputLine;
     private HBox glyphs;
     private List<GlyphData> glyphData = new ArrayList<>();
-    private CheckBox showGlyphBounds;
-    private CheckBox showCharacterBounds;
+    private CheckBox showVisualBounds;
+    private CheckBox showLogicalBounds;
+    private CheckBox showTextOrigin;
     private HBox snapshots;
     
     private class Digit extends Group {
@@ -129,7 +131,7 @@ public class FontGenerator extends Application {
             updateGlyphs();
         });
 
-        inputLine = new TextField("0"); // 123456789,mAVTï¿½C");
+        inputLine = new TextField("0123456789,mAVT°C");
         inputLine.textProperty().addListener((obj, oldVal, newVal) -> {
             t.setText(newVal);
             updateGlyphs();
@@ -279,13 +281,18 @@ public class FontGenerator extends Application {
 
         HBox bottomBox = new HBox();
         bottomBox.setSpacing(10);
-        showGlyphBounds = new CheckBox("Show glyph bounds");
-        showGlyphBounds.setOnAction(e -> {
+        showVisualBounds = new CheckBox("Show visual bounds");
+        showVisualBounds.setOnAction(e -> {
             updateGlyphs();
         });
 
-        showCharacterBounds = new CheckBox("Show character bounds");
-        showCharacterBounds.setOnAction(e -> {
+        showLogicalBounds = new CheckBox("Show logical bounds");
+        showLogicalBounds.setOnAction(e -> {
+            updateGlyphs();
+        });
+
+        showTextOrigin = new CheckBox("Show Text Origin");
+        showTextOrigin.setOnAction(e -> {
             updateGlyphs();
         });
 
@@ -416,19 +423,72 @@ public class FontGenerator extends Application {
                 e1.printStackTrace();
             }
         });
-        bottomBox.getChildren().addAll(exportButton, showGlyphBounds, showCharacterBounds);
+        bottomBox.getChildren().addAll(exportButton, showVisualBounds, showLogicalBounds, showTextOrigin);
 
         glyphs = new HBox();
-        updateGlyphs();
 
+        glyphMetricArea = new Pane();
+        glyphMetricArea.setStyle("-fx-background-color: lightgray; -fx-border-color: darkgray; -fx-border-style: dashed;");
+        updateGlyphs();
+        
         VBox box = new VBox();
         box.setSpacing(10);
-        box.getChildren().addAll(fsp, inputLine, t, glyphs, bottomBox, snapshots); // , b, saveBtn, disp, snapshotBtn, snapshots);// , colorPicker);
+        box.getChildren().addAll(fsp, inputLine, t, glyphs, bottomBox, snapshots,
+                                 glyphMetricArea); // , b, saveBtn, disp, snapshotBtn, snapshots);// , colorPicker);
 
         Scene scene  = new Scene(box);
 
         stage.setScene(scene);
         stage.show();
+    }
+
+    private Pane glyphMetricArea;
+
+    double xpos = 10;
+    private Pane updateGlyphs() {
+
+        glyphMetricArea.getChildren().clear();
+
+        xpos = 10;
+        inputLine.getText().chars().forEach(e -> {
+                
+            Text t = new Text(xpos, 100, String.valueOf((char) e));  // inputLine.getText());
+            t.setFont(f);
+            glyphMetricArea.getChildren().add(t);
+
+            if (showTextOrigin.isSelected()) {
+                Circle c = new Circle(xpos, 100, 2, Color.BLUE);
+                glyphMetricArea.getChildren().add(c);
+            }
+
+            Bounds bl = t.getBoundsInLocal();
+            System.err.println("LOGICAL:" + bl);
+            if (showLogicalBounds.isSelected()) {
+                Rectangle r = new Rectangle(bl.getMinX(), bl.getMinY(), bl.getWidth(), bl.getHeight());
+                r.setFill(null);
+                r.setStroke(Color.GRAY);
+                r.getStrokeDashArray().addAll(2.0, 2.0);
+                glyphMetricArea.getChildren().add(r);
+            }
+    
+            t.setBoundsType(TextBoundsType.VISUAL);
+            
+            Bounds bl2 = t.getBoundsInLocal();
+            System.err.println("VISUAL:" + bl2);
+            if (showVisualBounds.isSelected()) {
+                Rectangle r2 = new Rectangle(bl2.getMinX(), bl2.getMinY(), bl2.getWidth(), bl2.getHeight());
+                r2.setFill(null);
+                r2.setStroke(Color.ORANGE);
+                r2.getStrokeDashArray().addAll(5.0, 5.0);
+                glyphMetricArea.getChildren().add(r2);
+            }
+    
+            t.setBoundsType(TextBoundsType.LOGICAL);
+            
+            xpos += bl.getWidth();
+        });
+
+        return glyphMetricArea;
     }
 
 
@@ -534,7 +594,7 @@ public class FontGenerator extends Application {
     // private float xpos = 0;
     private float yMin = 0;
     private float yMax = 0;
-    private void updateGlyphs() {
+    private void updateGlyphs3() {
 
 // Calculate all glyphs
         glyphData.clear();
@@ -596,7 +656,7 @@ public class FontGenerator extends Application {
 //            gg.getChildren().add(r);
 
         // Bounding box of the character
-            if (showGlyphBounds.isSelected()) {
+            if (showVisualBounds.isSelected()) {
               final Rectangle gr = new Rectangle(gd.gbi.getVisualBounds().getMinX(),
                                                  gd.gbi.getVisualBounds().getMinY(),
                                                  gd.gbi.getVisualBounds().getWidth(),
@@ -612,7 +672,7 @@ public class FontGenerator extends Application {
                 gr.getStrokeDashArray().add(1, 5.0);
                 gg.getChildren().add(gr);
             }
-            if (showCharacterBounds.isSelected()) {
+            if (showLogicalBounds.isSelected()) {
                 final Rectangle gr = new Rectangle(gd.gbi.getLogicalBounds().getMinX(),
                                                    gd.gbi.getLogicalBounds().getMinY(),
                                                    gd.gbi.getLogicalBounds().getWidth(),
