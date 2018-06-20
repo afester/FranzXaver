@@ -33,13 +33,13 @@ import com.sun.javafx.tk.FontMetrics;
 import com.sun.javafx.tk.Toolkit;
 
 import afester.javafx.examples.Example;
-import afester.javafx.examples.image.ArrayDump;
-import afester.javafx.examples.image.ImageConverter;
 import afester.javafx.examples.image.RleEncoder;
 import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.geometry.Rectangle2D;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -48,6 +48,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.HBox;
@@ -55,6 +56,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
@@ -89,6 +91,9 @@ public class FontGenerator extends Application {
     private CheckBox showVisualBounds;
     private CheckBox showLogicalBounds;
     private CheckBox showTextOrigin;
+    private CheckBox showTopBound;
+    private CheckBox showBottomBound;
+    private CheckBox showEffectiveBounds;
     private HBox snapshots;
     
     private class Digit extends Group {
@@ -296,6 +301,21 @@ public class FontGenerator extends Application {
             updateGlyphs();
         });
 
+        showTopBound = new CheckBox("Show top bound");
+        showTopBound.setOnAction(e -> {
+            updateGlyphs();
+        });
+
+        showBottomBound = new CheckBox("Show bottom bound");
+        showBottomBound.setOnAction(e -> {
+            updateGlyphs();
+        });
+
+        showEffectiveBounds = new CheckBox("Show effective bounds");
+        showEffectiveBounds.setOnAction(e -> {
+            updateGlyphs();
+        });
+
         snapshots = new HBox();
         
         
@@ -319,49 +339,50 @@ public class FontGenerator extends Application {
                 Map<Integer, GlyphData> charSetMap = new HashMap<>();
                 RleEncoder rle = new RleEncoder();
                 for (GlyphData gd : glyphData) {
-                	System.err.printf("Node: %s (%s / %s)\n", gd.glyphNode, gd.glyphNode.getWidth(),
-                			gd.glyphNode.getHeight());
-                    Image img = gd.glyphNode.snapshot(null, null);
+                    System.err.printf("'%s': %s\n", gd.character, gd.effectiveBounds);
+                    params.setViewport(new Rectangle2D(gd.effectiveBounds.getMinX(), gd.effectiveBounds.getMinY(),
+                                                       gd.effectiveBounds.getWidth(), gd.effectiveBounds.getHeight()));
+                    Image img = glyphMetricArea.snapshot(params, null);
                     System.err.printf("%s X %s\n", img.getWidth(), img.getHeight());
 
                     File theFile = new File(gd.glyphId + ".png");
                     ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", theFile);
 
-                    ImageConverter ic = new ImageConverter();
-                    List<Short> palette = new ArrayList<>();
-/////////////////////////7
-		            short[] rgb565 = ic.getRGB565(img);
-
-		            // convert bitmap to indexed bitmap
-		            byte[] bitmap = new byte[rgb565.length];
-		            for (int idx = 0;  idx < rgb565.length;  idx++) {
-		            	short value = rgb565[idx];
-		
-		                // lookup value index
-		                int colorIdx = palette.indexOf(value);
-		                if (colorIdx == -1) {
-		                	colorIdx = palette.size();
-		                	palette.add(value);
-		                }
-	
-		                bitmap[idx] = (byte) colorIdx;	// TODO: max. 256 colors
-		            }
-	
-		            int newLength = rle.rleEncode_4plus4(bitmap);
-		            byte[] bitmapRle = new byte[newLength];
-		            System.arraycopy(bitmap, 0, bitmapRle, 0, newLength);
-		            
-		            ArrayDump ad = new ArrayDump(bitmapRle);
-		            int width = (int) img.getWidth();
-		            int height = (int) img.getHeight();
-
-		            out.printf("const Bitmap8 %s PROGMEM = {%s, %s,\n", gd.glyphId, width, height);
-		            ad.dumpAll(width, out);
-		            out.println("};\n");
+//                    ImageConverter ic = new ImageConverter();
+//                    List<Short> palette = new ArrayList<>();
+///////////////////////////7
+//		            short[] rgb565 = ic.getRGB565(img);
+//
+//		            // convert bitmap to indexed bitmap
+//		            byte[] bitmap = new byte[rgb565.length];
+//		            for (int idx = 0;  idx < rgb565.length;  idx++) {
+//		            	short value = rgb565[idx];
+//		
+//		                // lookup value index
+//		                int colorIdx = palette.indexOf(value);
+//		                if (colorIdx == -1) {
+//		                	colorIdx = palette.size();
+//		                	palette.add(value);
+//		                }
+//	
+//		                bitmap[idx] = (byte) colorIdx;	// TODO: max. 256 colors
+//		            }
+//	
+//		            int newLength = rle.rleEncode_4plus4(bitmap);
+//		            byte[] bitmapRle = new byte[newLength];
+//		            System.arraycopy(bitmap, 0, bitmapRle, 0, newLength);
+//		            
+//		            ArrayDump ad = new ArrayDump(bitmapRle);
+//		            int width = (int) img.getWidth();
+//		            int height = (int) img.getHeight();
+//
+//		            out.printf("const Bitmap8 %s PROGMEM = {%s, %s,\n", gd.glyphId, width, height);
+//		            ad.dumpAll(width, out);
+//		            out.println("};\n");
 /////////////////
                     
 //                    System.err.printf("%s X %s\n", img.getWidth(), img.getHeight());
-//                    snapshots.getChildren().add(new ImageView(img));
+                    snapshots.getChildren().add(new ImageView(img));
 //                    stage.sizeToScene();
 //                    
 //                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -423,18 +444,20 @@ public class FontGenerator extends Application {
                 e1.printStackTrace();
             }
         });
-        bottomBox.getChildren().addAll(exportButton, showVisualBounds, showLogicalBounds, showTextOrigin);
+        bottomBox.getChildren().addAll(exportButton, showVisualBounds, showLogicalBounds, showTextOrigin, 
+                                       showTopBound, showBottomBound, showEffectiveBounds);
 
         glyphs = new HBox();
 
         glyphMetricArea = new Pane();
-        glyphMetricArea.setStyle("-fx-background-color: lightgray; -fx-border-color: darkgray; -fx-border-style: dashed;");
+        //glyphMetricArea.setStyle("-fx-background-color: lightgray; -fx-border-color: darkgray; -fx-border-style: dashed;");
+        glyphMetricArea.setStyle("-fx-background-color: black");
         updateGlyphs();
-        
+
         VBox box = new VBox();
         box.setSpacing(10);
-        box.getChildren().addAll(fsp, inputLine, t, glyphs, bottomBox, snapshots,
-                                 glyphMetricArea); // , b, saveBtn, disp, snapshotBtn, snapshots);// , colorPicker);
+        box.getChildren().addAll(fsp, inputLine, /*t,*/ glyphMetricArea, bottomBox, snapshots);
+                                 //glyphMetricArea); // , b, saveBtn, disp, snapshotBtn, snapshots);// , colorPicker);
 
         Scene scene  = new Scene(box);
 
@@ -445,15 +468,25 @@ public class FontGenerator extends Application {
     private Pane glyphMetricArea;
 
     double xpos = 10;
+    double topY = 1000;
+    double bottomY = 0;
+    int theId = 0;
+
     private Pane updateGlyphs() {
 
         glyphMetricArea.getChildren().clear();
+        glyphData.clear();
 
         xpos = 10;
+        topY = 1000;
+        bottomY = 0;
+
+        //List<Bounds> effectiveBounds = new ArrayList<>();
         inputLine.getText().chars().forEach(e -> {
                 
             Text t = new Text(xpos, 100, String.valueOf((char) e));  // inputLine.getText());
             t.setFont(f);
+            t.setFill(Color.RED);
             glyphMetricArea.getChildren().add(t);
 
             if (showTextOrigin.isSelected()) {
@@ -462,7 +495,7 @@ public class FontGenerator extends Application {
             }
 
             Bounds bl = t.getBoundsInLocal();
-            System.err.println("LOGICAL:" + bl);
+          //  System.err.println("LOGICAL:" + bl);
             if (showLogicalBounds.isSelected()) {
                 Rectangle r = new Rectangle(bl.getMinX(), bl.getMinY(), bl.getWidth(), bl.getHeight());
                 r.setFill(null);
@@ -472,9 +505,15 @@ public class FontGenerator extends Application {
             }
     
             t.setBoundsType(TextBoundsType.VISUAL);
-            
+
             Bounds bl2 = t.getBoundsInLocal();
-            System.err.println("VISUAL:" + bl2);
+            System.err.println("\nVISUAL:" + bl2);
+            System.err.println("  TOPY:" + topY);
+            System.err.println("  VY:" + bl2.getMinY());
+            topY = Math.min(topY,  bl2.getMinY());
+            bottomY = Math.max(bottomY,  bl2.getMaxY());
+            // System.err.println("  VISUAL:" + bl2);
+            System.err.println("  TOPY:" + topY);
             if (showVisualBounds.isSelected()) {
                 Rectangle r2 = new Rectangle(bl2.getMinX(), bl2.getMinY(), bl2.getWidth(), bl2.getHeight());
                 r2.setFill(null);
@@ -484,9 +523,42 @@ public class FontGenerator extends Application {
             }
     
             t.setBoundsType(TextBoundsType.LOGICAL);
-            
+
+            GlyphData gd = new GlyphData();
+            gd.character = (char) e;
+            gd.logicalBounds = bl;
+            glyphData.add(gd);
             xpos += bl.getWidth();
         });
+
+        if (showTopBound.isSelected()) {
+            Line l = new Line(0, topY, 2000, topY);
+            l.setStroke(Color.RED);
+            glyphMetricArea.getChildren().add(l);
+        }
+
+        if (showBottomBound.isSelected()) {
+            Line l = new Line(0, bottomY, 2000, bottomY);
+            l.setStroke(Color.RED);
+            glyphMetricArea.getChildren().add(l);
+        }
+
+        theId = 0;
+        glyphData.forEach(gd -> {
+            gd.glyphId = "g" + (theId++);
+            gd.effectiveBounds = new BoundingBox(gd.logicalBounds.getMinX(), topY, gd.logicalBounds.getWidth(), bottomY - topY);            
+        });
+
+        if (showEffectiveBounds.isSelected()) {
+            glyphData.forEach(gd -> {
+                Rectangle r2 = new Rectangle(gd.effectiveBounds.getMinX(), gd.effectiveBounds.getMinY(),
+                                             gd.effectiveBounds.getWidth(), gd.effectiveBounds.getHeight());
+                r2.setFill(null);
+                r2.setStroke(Color.WHITE);
+                // r2.getStrokeDashArray().addAll(5.0, 5.0);
+                glyphMetricArea.getChildren().add(r2);
+            });
+        }
 
         return glyphMetricArea;
     }
@@ -565,9 +637,14 @@ public class FontGenerator extends Application {
 
     private class GlyphData {
         char character;         // the character
+        Bounds logicalBounds;
+        Bounds effectiveBounds;
+        
+        
         float charWidth;        // the width of the character
         float charHeight;       // the line height (same value for each glyph)
         Bounds charBox;         // the bounding box of the visible part of the glyph (might be much smaller than charWidth X charHeight)
+        
         Pane glyphNode; 		// the javafx node which renders the glyph
         String glyphId;			// the C identifier for this glyph 
         GlyphBoundsInfo gbi;
