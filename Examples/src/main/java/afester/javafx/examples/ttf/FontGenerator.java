@@ -317,6 +317,7 @@ public class FontGenerator extends Application {
         });
 
         snapshots = new HBox();
+        snapshots.setSpacing(2);
         
         
         Button exportButton = new Button("Export ...");
@@ -340,7 +341,14 @@ public class FontGenerator extends Application {
                 RleEncoder rle = new RleEncoder();
                 for (GlyphData gd : glyphData) {
                     System.err.printf("'%s': %s\n", gd.character, gd.effectiveBounds);
-                    params.setViewport(new Rectangle2D(gd.effectiveBounds.getMinX(), gd.effectiveBounds.getMinY(),
+                    params.setViewport(new Rectangle2D(10, 10, 100, 100));
+                    System.err.println(glyphMetricArea.getBoundsInParent());
+                    Bounds b = glyphMetricArea.getBoundsInParent();
+
+                    //params.setViewport(new Rectangle2D(b.getMinX(), b.getMinY(),
+                    //                                   b.getWidth(), b.getHeight()));
+                    params.setViewport(new Rectangle2D(b.getMinX() + gd.effectiveBounds.getMinX(), 
+                                                       b.getMinY() + gd.effectiveBounds.getMinY(),
                                                        gd.effectiveBounds.getWidth(), gd.effectiveBounds.getHeight()));
                     Image img = glyphMetricArea.snapshot(params, null);
                     System.err.printf("%s X %s\n", img.getWidth(), img.getHeight());
@@ -382,7 +390,8 @@ public class FontGenerator extends Application {
 /////////////////
                     
 //                    System.err.printf("%s X %s\n", img.getWidth(), img.getHeight());
-                    snapshots.getChildren().add(new ImageView(img));
+                    ImageView iv = new ImageView(img);
+                    snapshots.getChildren().add(iv);
 //                    stage.sizeToScene();
 //                    
 //                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
