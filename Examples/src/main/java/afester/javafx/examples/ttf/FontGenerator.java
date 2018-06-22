@@ -17,7 +17,6 @@
 package afester.javafx.examples.ttf;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,15 +26,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.imageio.ImageIO;
-
 import com.sun.javafx.tk.FontMetrics;
 import com.sun.javafx.tk.Toolkit;
 
 import afester.javafx.examples.Example;
 import afester.javafx.examples.image.RleEncoder;
 import javafx.application.Application;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
@@ -46,7 +42,9 @@ import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -64,6 +62,18 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
 import javafx.stage.Stage;
+
+
+
+enum ExportFileFormat {
+    C_CODE, BINARY
+}
+
+
+enum ExportImageFormat {
+    PNG, RGB565, RGB565_COMPRESSED
+}
+
 
 
 /**
@@ -95,7 +105,10 @@ public class FontGenerator extends Application {
     private CheckBox showBottomBound;
     private CheckBox showEffectiveBounds;
     private HBox snapshots;
-    
+
+    private ExportFileFormat exportFileFormat = ExportFileFormat.C_CODE;
+    private ExportImageFormat exportImageFormat = ExportImageFormat.PNG;
+
     private class Digit extends Group {
 
         public Digit(int value) {
@@ -319,9 +332,27 @@ public class FontGenerator extends Application {
         snapshots = new HBox();
         snapshots.setSpacing(2);
         
-        
+        Button previewButton = new Button("Preview");
+        previewButton.setOnAction(e -> {
+            SnapshotParameters params = new SnapshotParameters();
+            snapshots.getChildren().clear();
+            for (GlyphData gd : glyphData) {
+                Bounds b = glyphMetricArea.getBoundsInParent();
+                params.setViewport(new Rectangle2D(b.getMinX() + gd.effectiveBounds.getMinX(), 
+                                                   b.getMinY() + gd.effectiveBounds.getMinY(),
+                                                   gd.effectiveBounds.getWidth(), gd.effectiveBounds.getHeight()));
+                Image img = glyphMetricArea.snapshot(params, null);
+
+                ImageView iv = new ImageView(img);
+                snapshots.getChildren().add(iv);
+            }
+        });
+
         Button exportButton = new Button("Export ...");
         exportButton.setOnAction(e -> {
+
+            System.err.printf("File Format : %s\n", exportFileFormat);
+            System.err.printf("Image Format: %s\n", exportImageFormat);
 
             try {
                 FileOutputStream fos = new FileOutputStream("font.c");
@@ -333,28 +364,14 @@ public class FontGenerator extends Application {
                 out.println();
 
                 // Create the glyph bitmap data
-                SnapshotParameters params = new SnapshotParameters();
-                snapshots.getChildren().clear();
                 int glyphIdx = 0;
                 glyphData.sort( (a, b) -> { return a.character > b.character ? 1 : -1; } );
                 Map<Integer, GlyphData> charSetMap = new HashMap<>();
                 RleEncoder rle = new RleEncoder();
                 for (GlyphData gd : glyphData) {
-                    System.err.printf("'%s': %s\n", gd.character, gd.effectiveBounds);
-                    params.setViewport(new Rectangle2D(10, 10, 100, 100));
-                    System.err.println(glyphMetricArea.getBoundsInParent());
-                    Bounds b = glyphMetricArea.getBoundsInParent();
 
-                    //params.setViewport(new Rectangle2D(b.getMinX(), b.getMinY(),
-                    //                                   b.getWidth(), b.getHeight()));
-                    params.setViewport(new Rectangle2D(b.getMinX() + gd.effectiveBounds.getMinX(), 
-                                                       b.getMinY() + gd.effectiveBounds.getMinY(),
-                                                       gd.effectiveBounds.getWidth(), gd.effectiveBounds.getHeight()));
-                    Image img = glyphMetricArea.snapshot(params, null);
-                    System.err.printf("%s X %s\n", img.getWidth(), img.getHeight());
-
-                    File theFile = new File(gd.glyphId + ".png");
-                    ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", theFile);
+//                    File theFile = new File(gd.glyphId + ".png");
+//                    ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", theFile);
 
 //                    ImageConverter ic = new ImageConverter();
 //                    List<Short> palette = new ArrayList<>();
@@ -390,8 +407,6 @@ public class FontGenerator extends Application {
 /////////////////
                     
 //                    System.err.printf("%s X %s\n", img.getWidth(), img.getHeight());
-                    ImageView iv = new ImageView(img);
-                    snapshots.getChildren().add(iv);
 //                    stage.sizeToScene();
 //                    
 //                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -453,19 +468,57 @@ public class FontGenerator extends Application {
                 e1.printStackTrace();
             }
         });
-        bottomBox.getChildren().addAll(exportButton, showVisualBounds, showLogicalBounds, showTextOrigin, 
+
+        bottomBox.getChildren().addAll(showVisualBounds, showLogicalBounds, showTextOrigin, 
                                        showTopBound, showBottomBound, showEffectiveBounds);
 
         glyphs = new HBox();
 
         glyphMetricArea = new Pane();
-        //glyphMetricArea.setStyle("-fx-background-color: lightgray; -fx-border-color: darkgray; -fx-border-style: dashed;");
         glyphMetricArea.setStyle("-fx-background-color: black");
         updateGlyphs();
 
+//##############################        
+        HBox exportComponent = new HBox();
+        exportComponent.setSpacing(10);
+
+        VBox fileOptions = new VBox();
+        fileOptions.setSpacing(5);
+        ToggleGroup fileOptionsGroup = new ToggleGroup();
+
+        RadioButton button1 = new RadioButton("C-Code");
+        button1.setToggleGroup(fileOptionsGroup);
+        button1.setSelected(true);
+        button1.setOnAction(e -> exportFileFormat = ExportFileFormat.C_CODE);
+
+        RadioButton button2 = new RadioButton("Binary");
+        button2.setToggleGroup(fileOptionsGroup);
+        fileOptions.getChildren().addAll(button1, button2);
+        button1.setOnAction(e -> exportFileFormat = ExportFileFormat.BINARY);
+
+        VBox formatOptions = new VBox();
+        formatOptions.setSpacing(5);
+        ToggleGroup formatGroup = new ToggleGroup();
+        RadioButton button3 = new RadioButton("PNG file");
+        button3.setToggleGroup(formatGroup);
+        button3.setSelected(true);
+        button3.setOnAction(e -> exportImageFormat = ExportImageFormat.PNG);
+
+        RadioButton button4 = new RadioButton("RGB565");
+        button4.setToggleGroup(formatGroup);
+        button4.setOnAction(e -> exportImageFormat = ExportImageFormat.RGB565);
+
+        RadioButton button5 = new RadioButton("RGB565 Compressed");
+        button5.setToggleGroup(formatGroup);
+        button5.setOnAction(e -> exportImageFormat = ExportImageFormat.RGB565_COMPRESSED);
+
+        formatOptions.getChildren().addAll(button3, button4, button5);
+
+        exportComponent.getChildren().addAll(fileOptions, formatOptions, exportButton);
+//##############################
         VBox box = new VBox();
         box.setSpacing(10);
-        box.getChildren().addAll(fsp, inputLine, /*t,*/ glyphMetricArea, bottomBox, snapshots);
+        box.getChildren().addAll(fsp, inputLine, /*t,*/ glyphMetricArea, bottomBox, previewButton, snapshots, exportComponent);
                                  //glyphMetricArea); // , b, saveBtn, disp, snapshotBtn, snapshots);// , colorPicker);
 
         Scene scene  = new Scene(box);
