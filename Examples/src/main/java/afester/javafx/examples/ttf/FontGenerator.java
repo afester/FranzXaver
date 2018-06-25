@@ -17,6 +17,8 @@
 package afester.javafx.examples.ttf;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,12 +28,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
+
 import com.sun.javafx.tk.FontMetrics;
 import com.sun.javafx.tk.Toolkit;
 
 import afester.javafx.examples.Example;
+import afester.javafx.examples.image.ArrayDump;
 import afester.javafx.examples.image.RleEncoder;
 import javafx.application.Application;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
@@ -42,9 +48,7 @@ import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -65,13 +69,40 @@ import javafx.stage.Stage;
 
 
 
-enum ExportFileFormat {
-    C_CODE, BINARY
+enum ExportFileFormat implements RadioButtonValues {
+    C_CODE("C-Code"),
+    BINARY("Binary");
+
+
+    private String label;
+
+    ExportFileFormat(String label) {
+        this.label = label;
+    }
+
+    @Override
+    public String getLabel() {
+        return label;
+    }
 }
 
 
-enum ExportImageFormat {
-    PNG, RGB565, RGB565_COMPRESSED
+enum ExportImageFormat implements RadioButtonValues {
+    PNG("PNG"), 
+    RGB565("RGB565"), 
+    RGB565_COMPRESSED("RGB565 Compressed");
+    
+
+    private String label;
+
+    ExportImageFormat(String label) {
+        this.label = label;
+    }
+
+    @Override
+    public String getLabel() {
+        return label;
+    }
 }
 
 
@@ -106,8 +137,11 @@ public class FontGenerator extends Application {
     private CheckBox showEffectiveBounds;
     private HBox snapshots;
 
-    private ExportFileFormat exportFileFormat = ExportFileFormat.C_CODE;
-    private ExportImageFormat exportImageFormat = ExportImageFormat.PNG;
+    private RadioButtonGroup exportSelection;
+    private RadioButtonGroup formatSelection;
+
+    //private ExportFileFormat exportFileFormat = ExportFileFormat.C_CODE;
+    //private ExportImageFormat exportImageFormat = ExportImageFormat.PNG;
 
     private class Digit extends Group {
 
@@ -341,9 +375,9 @@ public class FontGenerator extends Application {
                 params.setViewport(new Rectangle2D(b.getMinX() + gd.effectiveBounds.getMinX(), 
                                                    b.getMinY() + gd.effectiveBounds.getMinY(),
                                                    gd.effectiveBounds.getWidth(), gd.effectiveBounds.getHeight()));
-                Image img = glyphMetricArea.snapshot(params, null);
+                gd.glyphImg = glyphMetricArea.snapshot(params, null);
 
-                ImageView iv = new ImageView(img);
+                ImageView iv = new ImageView(gd.glyphImg);
                 snapshots.getChildren().add(iv);
             }
         });
@@ -351,8 +385,25 @@ public class FontGenerator extends Application {
         Button exportButton = new Button("Export ...");
         exportButton.setOnAction(e -> {
 
-            System.err.printf("File Format : %s\n", exportFileFormat);
-            System.err.printf("Image Format: %s\n", exportImageFormat);
+            // TODO: modify structure so that we can use switch() here
+            if (this.exportSelection.getSelectedValue() == ExportFileFormat.BINARY) {
+                if (this.formatSelection.getSelectedValue() == ExportImageFormat.PNG) {
+                   exportBinaryPNG();
+                } else if (this.formatSelection.getSelectedValue() == ExportImageFormat.RGB565) {
+                   exportBinaryRGB565();
+                } else if (this.formatSelection.getSelectedValue() == ExportImageFormat.RGB565_COMPRESSED) {
+                   exportBinaryRGB565Compressed();
+                }
+
+            } else if (this.exportSelection.getSelectedValue() == ExportFileFormat.C_CODE) {
+                if (this.formatSelection.getSelectedValue() == ExportImageFormat.PNG) {
+                    exportCCodePNG();
+                 } else if (this.formatSelection.getSelectedValue() == ExportImageFormat.RGB565) {
+                    exportCCodeRGB565();
+                 } else if (this.formatSelection.getSelectedValue() == ExportImageFormat.RGB565_COMPRESSED) {
+                    exportCCodeRGB565Compressed();
+                 }
+            }
 
             try {
                 FileOutputStream fos = new FileOutputStream("font.c");
@@ -482,39 +533,12 @@ public class FontGenerator extends Application {
         HBox exportComponent = new HBox();
         exportComponent.setSpacing(10);
 
-        VBox fileOptions = new VBox();
-        fileOptions.setSpacing(5);
-        ToggleGroup fileOptionsGroup = new ToggleGroup();
+        exportSelection = new RadioButtonGroup(ExportFileFormat.values());
+        exportSelection.setSelectedValue(ExportFileFormat.C_CODE);
+        formatSelection = new RadioButtonGroup(ExportImageFormat.values());
+        formatSelection.setSelectedValue(ExportImageFormat.PNG);
 
-        RadioButton button1 = new RadioButton("C-Code");
-        button1.setToggleGroup(fileOptionsGroup);
-        button1.setSelected(true);
-        button1.setOnAction(e -> exportFileFormat = ExportFileFormat.C_CODE);
-
-        RadioButton button2 = new RadioButton("Binary");
-        button2.setToggleGroup(fileOptionsGroup);
-        fileOptions.getChildren().addAll(button1, button2);
-        button1.setOnAction(e -> exportFileFormat = ExportFileFormat.BINARY);
-
-        VBox formatOptions = new VBox();
-        formatOptions.setSpacing(5);
-        ToggleGroup formatGroup = new ToggleGroup();
-        RadioButton button3 = new RadioButton("PNG file");
-        button3.setToggleGroup(formatGroup);
-        button3.setSelected(true);
-        button3.setOnAction(e -> exportImageFormat = ExportImageFormat.PNG);
-
-        RadioButton button4 = new RadioButton("RGB565");
-        button4.setToggleGroup(formatGroup);
-        button4.setOnAction(e -> exportImageFormat = ExportImageFormat.RGB565);
-
-        RadioButton button5 = new RadioButton("RGB565 Compressed");
-        button5.setToggleGroup(formatGroup);
-        button5.setOnAction(e -> exportImageFormat = ExportImageFormat.RGB565_COMPRESSED);
-
-        formatOptions.getChildren().addAll(button3, button4, button5);
-
-        exportComponent.getChildren().addAll(fileOptions, formatOptions, exportButton);
+        exportComponent.getChildren().addAll(exportSelection, formatSelection, exportButton);
 //##############################
         VBox box = new VBox();
         box.setSpacing(10);
@@ -525,6 +549,51 @@ public class FontGenerator extends Application {
 
         stage.setScene(scene);
         stage.show();
+    }
+
+    private void exportCCodeRGB565Compressed() {
+    }
+
+    private void exportCCodeRGB565() {
+    }
+
+    private void exportCCodePNG() {
+        for (GlyphData gd : glyphData) {
+            String fileName = gd.glyphId + ".c";
+            System.err.print("Export " + fileName);
+            
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            try {
+                ImageIO.write(SwingFXUtils.fromFXImage(gd.glyphImg, null), "png", bos);
+                System.err.println(" =>" + bos.size());
+                
+                ArrayDump ad = new ArrayDump(bos.toByteArray());
+                PrintStream out = new PrintStream(new FileOutputStream(fileName));
+                ad.dumpAll(16, out);
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void exportBinaryRGB565Compressed() {
+    }
+
+    private void exportBinaryRGB565() {
+    }
+
+    private void exportBinaryPNG() {
+        for (GlyphData gd : glyphData) {
+            String fileName = gd.glyphId + ".png";
+            System.err.println("Export " + fileName);
+            File theFile = new File(fileName);
+            try {
+                ImageIO.write(SwingFXUtils.fromFXImage(gd.glyphImg, null), "png", theFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private Pane glyphMetricArea;
@@ -701,7 +770,7 @@ public class FontGenerator extends Application {
         char character;         // the character
         Bounds logicalBounds;
         Bounds effectiveBounds;
-        
+        Image glyphImg;
         
         float charWidth;        // the width of the character
         float charHeight;       // the line height (same value for each glyph)
