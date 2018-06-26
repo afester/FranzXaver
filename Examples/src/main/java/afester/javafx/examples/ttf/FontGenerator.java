@@ -19,6 +19,7 @@ package afester.javafx.examples.ttf;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,6 +36,7 @@ import com.sun.javafx.tk.Toolkit;
 
 import afester.javafx.examples.Example;
 import afester.javafx.examples.image.ArrayDump;
+import afester.javafx.examples.image.ImageConverter;
 import afester.javafx.examples.image.RleEncoder;
 import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
@@ -89,9 +91,9 @@ enum ExportFileFormat implements RadioButtonValues {
 
 enum ExportImageFormat implements RadioButtonValues {
     PNG("PNG"), 
+    RGB565_INDEXED("RGB565 Indexed"),
     RGB565("RGB565"), 
     RGB565_COMPRESSED("RGB565 Compressed");
-    
 
     private String label;
 
@@ -398,11 +400,13 @@ public class FontGenerator extends Application {
             } else if (this.exportSelection.getSelectedValue() == ExportFileFormat.C_CODE) {
                 if (this.formatSelection.getSelectedValue() == ExportImageFormat.PNG) {
                     exportCCodePNG();
-                 } else if (this.formatSelection.getSelectedValue() == ExportImageFormat.RGB565) {
+                } else if (this.formatSelection.getSelectedValue() == ExportImageFormat.RGB565_INDEXED) {
+                    exportCCodeRGB565Indexed();
+                } else if (this.formatSelection.getSelectedValue() == ExportImageFormat.RGB565) {
                     exportCCodeRGB565();
-                 } else if (this.formatSelection.getSelectedValue() == ExportImageFormat.RGB565_COMPRESSED) {
+                } else if (this.formatSelection.getSelectedValue() == ExportImageFormat.RGB565_COMPRESSED) {
                     exportCCodeRGB565Compressed();
-                 }
+                }
             }
 
             try {
@@ -421,29 +425,7 @@ public class FontGenerator extends Application {
                 RleEncoder rle = new RleEncoder();
                 for (GlyphData gd : glyphData) {
 
-//                    File theFile = new File(gd.glyphId + ".png");
-//                    ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", theFile);
-
-//                    ImageConverter ic = new ImageConverter();
-//                    List<Short> palette = new ArrayList<>();
-///////////////////////////7
-//		            short[] rgb565 = ic.getRGB565(img);
-//
-//		            // convert bitmap to indexed bitmap
-//		            byte[] bitmap = new byte[rgb565.length];
-//		            for (int idx = 0;  idx < rgb565.length;  idx++) {
-//		            	short value = rgb565[idx];
-//		
-//		                // lookup value index
-//		                int colorIdx = palette.indexOf(value);
-//		                if (colorIdx == -1) {
-//		                	colorIdx = palette.size();
-//		                	palette.add(value);
-//		                }
-//	
-//		                bitmap[idx] = (byte) colorIdx;	// TODO: max. 256 colors
-//		            }
-//	
+//......
 //		            int newLength = rle.rleEncode_4plus4(bitmap);
 //		            byte[] bitmapRle = new byte[newLength];
 //		            System.arraycopy(bitmap, 0, bitmapRle, 0, newLength);
@@ -554,7 +536,59 @@ public class FontGenerator extends Application {
     private void exportCCodeRGB565Compressed() {
     }
 
+    private void exportCCodeRGB565Indexed() {
+        for (GlyphData gd : glyphData) {
+            String fileName = gd.glyphId + ".c";
+            System.err.print("Export " + fileName);
+
+            ImageConverter ic = new ImageConverter();
+            List<Short> palette = new ArrayList<>();
+
+            short[] rgb565 = ic.getRGB565(gd.glyphImg);
+
+            // convert bitmap to indexed bitmap
+            byte[] bitmap = new byte[rgb565.length];
+            for (int idx = 0;  idx < rgb565.length;  idx++) {
+                short value = rgb565[idx];
+        
+                // lookup value index
+                int colorIdx = palette.indexOf(value);
+                if (colorIdx == -1) {
+                    colorIdx = palette.size();
+                    palette.add(value);
+                }
+        
+                bitmap[idx] = (byte) colorIdx;  // TODO: max. 256 colors
+            }
+
+            try (PrintStream out = new PrintStream(new FileOutputStream(fileName))) {
+                ArrayDump ad = new ArrayDump<short>(bitmap);
+                ad.dumpAll(16, out);
+
+                ad = new ArrayDump(palette);
+                ad.dumpAll(16, out);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
     private void exportCCodeRGB565() {
+        ImageConverter ic = new ImageConverter();
+        for (GlyphData gd : glyphData) {
+            String fileName = gd.glyphId + ".c";
+            System.err.print("Export " + fileName);
+
+            short[] rgb565 = ic.getRGB565(gd.glyphImg);
+            ArrayDump ad = new ArrayDump(rgb565);
+            
+            try (PrintStream out = new PrintStream(new FileOutputStream(fileName))) {
+                ad.dumpAll(16, out);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }            
     }
 
     private void exportCCodePNG() {
@@ -581,6 +615,18 @@ public class FontGenerator extends Application {
     }
 
     private void exportBinaryRGB565() {
+        ImageConverter ic = new ImageConverter();
+        for (GlyphData gd : glyphData) {
+            String fileName = gd.glyphId + ".rgb565";
+            System.err.print("Export " + fileName);
+
+            byte[] rgb565 = ic.getRGB565asByte(gd.glyphImg);
+            try (FileOutputStream fos = new FileOutputStream(fileName)) {
+                fos.write(rgb565);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }            
     }
 
     private void exportBinaryPNG() {

@@ -2,18 +2,18 @@ package afester.javafx.examples.image;
 
 import java.io.PrintStream;
 
-public class ArrayDump {
-    private byte[] data;
+public class ArrayDump<T> {
+    private T[] data;
     private short[] shortData;
     private static int VALUES_PER_ROW= 16;
 
-    public ArrayDump(byte[] data) {
+    public ArrayDump(T[] data) {
         this.data = data;
     }
 
-    public ArrayDump(short[] data) {
-    	this.shortData = data;
-	}
+//    public ArrayDump(short[] data) {
+//    	this.shortData = data;
+//	}
 
 	public void dumpAll(PrintStream out) {
 		dumpAll(VALUES_PER_ROW, out);
