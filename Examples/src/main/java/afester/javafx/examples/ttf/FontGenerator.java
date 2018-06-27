@@ -36,8 +36,10 @@ import com.sun.javafx.tk.Toolkit;
 
 import afester.javafx.examples.Example;
 import afester.javafx.examples.image.ArrayDump;
+import afester.javafx.examples.image.ByteArray;
 import afester.javafx.examples.image.ImageConverter;
 import afester.javafx.examples.image.RleEncoder;
+import afester.javafx.examples.image.ShortArray;
 import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.BoundingBox;
@@ -562,11 +564,11 @@ public class FontGenerator extends Application {
             }
 
             try (PrintStream out = new PrintStream(new FileOutputStream(fileName))) {
-                ArrayDump ad = new ArrayDump<short>(bitmap);
+                ArrayDump<ByteArray> ad = new ArrayDump<>(new ByteArray(bitmap));
                 ad.dumpAll(16, out);
 
-                ad = new ArrayDump(palette);
-                ad.dumpAll(16, out);
+                ArrayDump<List<Short>> ad2 = new ArrayDump<>(palette);
+                ad2.dumpAll(16, out);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -581,8 +583,8 @@ public class FontGenerator extends Application {
             System.err.print("Export " + fileName);
 
             short[] rgb565 = ic.getRGB565(gd.glyphImg);
-            ArrayDump ad = new ArrayDump(rgb565);
-            
+            ArrayDump<ShortArray> ad = new ArrayDump<>(new ShortArray(rgb565));
+
             try (PrintStream out = new PrintStream(new FileOutputStream(fileName))) {
                 ad.dumpAll(16, out);
             } catch (FileNotFoundException e) {
