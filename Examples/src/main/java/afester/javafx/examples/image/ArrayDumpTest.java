@@ -20,6 +20,9 @@ public class ArrayDumpTest {
         @SuppressWarnings("serial")
         List<Short> shortList = new ArrayList<Short>() {{ add((short) 40);  add((short) 80);  add((short) 1200);  add((short) 4200);  add((short) 5500); }};
 
+        @SuppressWarnings("serial")
+        List<Number> hetList = new ArrayList<Number>() {{ add((byte) 40);  add((long) 80);  add((int) 1200);  add((short) 4200);  add((short) 5500); }};
+
         System.err.print("byte[]  ");
         ArrayDump ad1 = new ArrayDump(bValues);
         ad1.dumpAll();
@@ -47,5 +50,9 @@ public class ArrayDumpTest {
         System.err.print("\nList  ");
         ArrayDump ad7 = new ArrayDump(shortList);
         ad7.dumpAll();
+
+        System.err.print("\nHeterogenous List  ");
+        ArrayDump ad8 = new ArrayDump(hetList);
+        ad8.dumpAll();
     }
 }

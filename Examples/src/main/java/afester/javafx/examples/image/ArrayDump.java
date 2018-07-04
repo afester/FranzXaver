@@ -37,7 +37,6 @@ public class ArrayDump {
     private boolean isArray;
     private Class<?> elementType;
     private int arrayIdx;
-    private String format = "%s";
 
     private String getNextElement() {
         if (arrayIdx >= arrayLength) {
@@ -46,28 +45,44 @@ public class ArrayDump {
 
         if (isArray) {
             if (elementType == byte.class) {
-                return String.format(format, Array.getByte(arrayData, arrayIdx++));
+                return String.format("0x%02x", Array.getByte(arrayData, arrayIdx++));
             } else if (elementType == short.class) {
-                return String.format(format, Array.getShort(arrayData, arrayIdx++));
+                return String.format("0x%04x", Array.getShort(arrayData, arrayIdx++));
             } else if (elementType == int.class) {
-                return String.format(format, Array.getInt(arrayData, arrayIdx++));
+                return String.format("0x%08x", Array.getInt(arrayData, arrayIdx++));
+            } else if (elementType == long.class) {
+                return String.format("0x%016x", Array.getLong(arrayData, arrayIdx++));
             } else if (elementType == Byte.class) {
-                return String.format(format, Array.get(arrayData, arrayIdx++));
+                return String.format("0x%02x", Array.get(arrayData, arrayIdx++));
             } else if (elementType == Short.class) {
-                return String.format(format, Array.get(arrayData, arrayIdx++));
+                return String.format("0x%04x", Array.get(arrayData, arrayIdx++));
             } else if (elementType == Integer.class) {
-                return String.format(format, Array.get(arrayData, arrayIdx++));
+                return String.format("0x%08x", Array.get(arrayData, arrayIdx++));
+            } else if (elementType == Long.class) {
+                return String.format("0x%016x", Array.get(arrayData, arrayIdx++));
             } 
         } else {
-            System.err.println(((List) arrayData).get(arrayIdx).getClass());
-            return String.format(format, ((List) arrayData).get(arrayIdx++));
+            Object elem = ((List<?>) arrayData).get(arrayIdx++);
+            elementType = elem.getClass();
+
+            if (elementType == Byte.class) {
+                return String.format("0x%02x", elem);
+            } else if (elementType == Short.class) {
+                return String.format("0x%04x", elem);
+            } else if (elementType == Integer.class) {
+                return String.format("0x%08x", elem);
+            } else if (elementType == Long.class) {
+                return String.format("0x%016x", elem);
+            } 
         }
 
         return null;
     }
 ////////////////////
+    
+
     public void dumpAll() {
-        dumpAll(VALUES_PER_ROW, System.out);
+        dumpAll(VALUES_PER_ROW, System.err);
     }
 
     public void dumpAll(PrintStream out) {
@@ -75,7 +90,7 @@ public class ArrayDump {
     }
 
     public void dumpAll(int valuesPerRow) {
-        dumpAll(valuesPerRow, System.out);
+        dumpAll(valuesPerRow, System.err);
     }
     
     public void dumpAll(int valuesPerRow, PrintStream out) {
@@ -87,17 +102,12 @@ public class ArrayDump {
             arrayLength = Array.getLength(arrayData);
             elementType = arrayData.getClass().getComponentType();
 
-            if (elementType == byte.class || elementType == Byte.class) {
-                format = "0x%02x";
-            } else if (elementType == short.class || elementType == Short.class) {
-                format = "0x%04x";
-            } else if (elementType == int.class || elementType == Integer.class) {
-                format = "0x%08x";
-            } 
-
         } else if (List.class.isInstance(arrayData)) {
-            arrayLength = ((List) arrayData).size();
-            elementType = ??? ;
+            arrayLength = ((List<?>) arrayData).size();
+            
+            // can only be determined when iterating the element, since type 
+            // and hence format can be different for each element
+            elementType = null;
         } else {
             throw new RuntimeException("Unsupported data type!");
         }
@@ -117,6 +127,7 @@ public class ArrayDump {
             }
         }
         out.print("}");
+        out.flush();
     }
 
 

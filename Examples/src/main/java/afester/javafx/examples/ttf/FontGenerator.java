@@ -25,9 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.imageio.ImageIO;
 
@@ -36,10 +34,8 @@ import com.sun.javafx.tk.Toolkit;
 
 import afester.javafx.examples.Example;
 import afester.javafx.examples.image.ArrayDump;
-import afester.javafx.examples.image.ByteArray;
 import afester.javafx.examples.image.ImageConverter;
 import afester.javafx.examples.image.RleEncoder;
-import afester.javafx.examples.image.ShortArray;
 import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.BoundingBox;
@@ -411,97 +407,97 @@ public class FontGenerator extends Application {
                 }
             }
 
-            try {
-                FileOutputStream fos = new FileOutputStream("font.c");
-                PrintStream out = new PrintStream(fos);
-
-                out.println("#include <stddef.h>");
-                out.println("#include <ILI9481.h>");
-                out.println("#include <avr/pgmspace.h>");
-                out.println();
-
-                // Create the glyph bitmap data
-                int glyphIdx = 0;
-                glyphData.sort( (a, b) -> { return a.character > b.character ? 1 : -1; } );
-                Map<Integer, GlyphData> charSetMap = new HashMap<>();
-                RleEncoder rle = new RleEncoder();
-                for (GlyphData gd : glyphData) {
-
-//......
-//		            int newLength = rle.rleEncode_4plus4(bitmap);
-//		            byte[] bitmapRle = new byte[newLength];
-//		            System.arraycopy(bitmap, 0, bitmapRle, 0, newLength);
-//		            
-//		            ArrayDump ad = new ArrayDump(bitmapRle);
-//		            int width = (int) img.getWidth();
-//		            int height = (int) img.getHeight();
+//            try {
+//                FileOutputStream fos = new FileOutputStream("font.c");
+//                PrintStream out = new PrintStream(fos);
 //
-//		            out.printf("const Bitmap8 %s PROGMEM = {%s, %s,\n", gd.glyphId, width, height);
-//		            ad.dumpAll(width, out);
-//		            out.println("};\n");
-/////////////////
-                    
-//                    System.err.printf("%s X %s\n", img.getWidth(), img.getHeight());
-//                    stage.sizeToScene();
-//                    
-//                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//                    ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", baos);
-//    
-//                    byte[] rgb565 = ic.getRGB565asByte(img);
+//                out.println("#include <stddef.h>");
+//                out.println("#include <ILI9481.h>");
+//                out.println("#include <avr/pgmspace.h>");
+//                out.println();
 //
-//                    
-//                    
-//		            int newLength = ImageConverter.rleEncode(rgb565);
-//		            byte[] compressed= new byte[newLength];
-//		            System.arraycopy(rgb565, 0, compressed, 0, newLength);
+//                // Create the glyph bitmap data
+//                int glyphIdx = 0;
+//                glyphData.sort( (a, b) -> { return a.character > b.character ? 1 : -1; } );
+//                Map<Integer, GlyphData> charSetMap = new HashMap<>();
+//                RleEncoder rle = new RleEncoder();
+//                for (GlyphData gd : glyphData) {
 //
-//                    //byte[] compressed = compressRLE(rgb565);
-//                    System.err.println("Compressed size:" + compressed.length);
-//
-//                    out.println(String.format("// Glyph data: '%c'", gd.character));
-//                    gd.glyphId = String.format("g%03d", glyphIdx++);
-//                    charSetMap.put((int) gd.character, gd);
+////......
+////		            int newLength = rle.rleEncode_4plus4(bitmap);
+////		            byte[] bitmapRle = new byte[newLength];
+////		            System.arraycopy(bitmap, 0, bitmapRle, 0, newLength);
+////		            
+////		            ArrayDump ad = new ArrayDump(bitmapRle);
+////		            int width = (int) img.getWidth();
+////		            int height = (int) img.getHeight();
+////
+////		            out.printf("const Bitmap8 %s PROGMEM = {%s, %s,\n", gd.glyphId, width, height);
+////		            ad.dumpAll(width, out);
+////		            out.println("};\n");
+///////////////////
 //                    
-//                    //out.println(String.format("uint8_t %s = ", gd.glyphId));
-//                    out.println(String.format("static const  Bitmap8 %s PROGMEM = {%s, %s,",
-//                    		gd.glyphId, (int) img.getWidth(), (int) img.getHeight()));
-//                    		//gd.glyphId, (int) gd.charWidth, (int) gd.charHeight));
-//                    ArrayDump cd = new ArrayDump(compressed);
-//                    cd.dumpAll(out);
-//                    out.println("};\n");
-                }
-
-                // create the font array
-                //out.println("struct fontData {");
-                //out.println("  uint8_t *glyph;");
-                //out.println("  uint8_t width");
-                //out.println("};");
-                //out.print("struct fontData charSet[224] = {");
-                out.print("const Bitmap8* charSet[224] = {");
-                for (int idx = ' ';  idx < 256;  idx++) {
-
-                    GlyphData gd = charSetMap.get(idx);
-                    String glyphId = "NULL";
-                    int glyphWidth = 0;
-                    if (gd != null) {
-                        glyphId = "&" + gd.glyphId;
-                        glyphWidth = (int) gd.charWidth;
-                    }
-
-                    if (idx > ' ') {
-                        out.print(", ");
-                    }
-                    if ((idx % 8) == 0) {
-                        out.println();
-                    }
-
-                    //out.print(String.format("{%s /*%03d'%c'*/, %d}", glyphId, idx, (char) idx, glyphWidth));
-                    out.print(String.format("%s /*%03d'%c'*/", glyphId, idx, (char) idx));
-                }
-                out.println("};");
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+////                    System.err.printf("%s X %s\n", img.getWidth(), img.getHeight());
+////                    stage.sizeToScene();
+////                    
+////                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+////                    ImageIO.write(SwingFXUtils.fromFXImage(img, null), "png", baos);
+////    
+////                    byte[] rgb565 = ic.getRGB565asByte(img);
+////
+////                    
+////                    
+////		            int newLength = ImageConverter.rleEncode(rgb565);
+////		            byte[] compressed= new byte[newLength];
+////		            System.arraycopy(rgb565, 0, compressed, 0, newLength);
+////
+////                    //byte[] compressed = compressRLE(rgb565);
+////                    System.err.println("Compressed size:" + compressed.length);
+////
+////                    out.println(String.format("// Glyph data: '%c'", gd.character));
+////                    gd.glyphId = String.format("g%03d", glyphIdx++);
+////                    charSetMap.put((int) gd.character, gd);
+////                    
+////                    //out.println(String.format("uint8_t %s = ", gd.glyphId));
+////                    out.println(String.format("static const  Bitmap8 %s PROGMEM = {%s, %s,",
+////                    		gd.glyphId, (int) img.getWidth(), (int) img.getHeight()));
+////                    		//gd.glyphId, (int) gd.charWidth, (int) gd.charHeight));
+////                    ArrayDump cd = new ArrayDump(compressed);
+////                    cd.dumpAll(out);
+////                    out.println("};\n");
+//                }
+//
+//                // create the font array
+//                //out.println("struct fontData {");
+//                //out.println("  uint8_t *glyph;");
+//                //out.println("  uint8_t width");
+//                //out.println("};");
+//                //out.print("struct fontData charSet[224] = {");
+//                out.print("const Bitmap8* charSet[224] = {");
+//                for (int idx = ' ';  idx < 256;  idx++) {
+//
+//                    GlyphData gd = charSetMap.get(idx);
+//                    String glyphId = "NULL";
+//                    int glyphWidth = 0;
+//                    if (gd != null) {
+//                        glyphId = "&" + gd.glyphId;
+//                        glyphWidth = (int) gd.charWidth;
+//                    }
+//
+//                    if (idx > ' ') {
+//                        out.print(", ");
+//                    }
+//                    if ((idx % 8) == 0) {
+//                        out.println();
+//                    }
+//
+//                    //out.print(String.format("{%s /*%03d'%c'*/, %d}", glyphId, idx, (char) idx, glyphWidth));
+//                    out.print(String.format("%s /*%03d'%c'*/", glyphId, idx, (char) idx));
+//                }
+//                out.println("};");
+//            } catch (IOException e1) {
+//                e1.printStackTrace();
+//            }
         });
 
         bottomBox.getChildren().addAll(showVisualBounds, showLogicalBounds, showTextOrigin, 
@@ -536,81 +532,155 @@ public class FontGenerator extends Application {
     }
 
     private void exportCCodeRGB565Compressed() {
+        String fileName = "font.c";
+        System.err.print("Export " + fileName);
+
+        int overallSize = 0;
+        try (PrintStream out = new PrintStream(new FileOutputStream(fileName))) {
+            ImageConverter ic = new ImageConverter();
+            RleEncoder rle = new RleEncoder();
+            List<Short> palette = new ArrayList<>();
+
+            // calculate the palette size
+            for (GlyphData gd : glyphData) {
+    
+                short[] rgb565 = ic.getRGB565(gd.glyphImg);
+    
+                // convert bitmap to indexed bitmap
+//                byte[] bitmap = new byte[rgb565.length];
+                for (int idx = 0;  idx < rgb565.length;  idx++) {
+                    short value = rgb565[idx];
+            
+                    // lookup value index
+                    int colorIdx = palette.indexOf(value);
+                    if (colorIdx == -1) {
+                        colorIdx = palette.size();
+                        palette.add(value);
+                    }
+
+//                    bitmap[idx] = (byte) colorIdx;  // TODO: max. 256 colors
+                }
+            }
+            System.err.println("Palette size: " + palette.size());
+            System.err.println(palette);
+
+            // Reduce the number of colors
+            // Since a color is represented in three dimensions (R, G, B) we can't simply sort them 
+            // into a linear array and see what elements are adjacent
+            // https://javagraphics.blogspot.com/2014/02/images-color-palette-reduction.html
+
+//                int compressedSize = rle.rleEncode_4plus4(bitmap);
+//                byte[] result = new byte[compressedSize];
+//                System.arraycopy(bitmap, 0, result, 0, compressedSize);
+//                overallSize += result.length;
+//
+//                out.printf("const Bitmap8Rle %s PROGMEM = {%d, %d,\n", gd.glyphId, (int) gd.glyphImg.getWidth(), (int) gd.glyphImg.getHeight());
+//                ArrayDump ad = new ArrayDump(result);
+//                ad.dumpAll(16, out);
+//                out.println("};\n");
+//            }
+
+            out.printf("uint16_t palette[] =\n");
+            ArrayDump ad2 = new ArrayDump(palette);
+            ad2.dumpAll(16, out);
+            out.println(";");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        System.err.printf("Overall size: %s bytes\n", overallSize);
+
     }
 
     private void exportCCodeRGB565Indexed() {
-        for (GlyphData gd : glyphData) {
-            String fileName = gd.glyphId + ".c";
-            System.err.print("Export " + fileName);
+        String fileName = "font.c";
+        System.err.print("Export " + fileName);
 
+        int overallSize = 0;
+        try (PrintStream out = new PrintStream(new FileOutputStream(fileName))) {
             ImageConverter ic = new ImageConverter();
             List<Short> palette = new ArrayList<>();
 
-            short[] rgb565 = ic.getRGB565(gd.glyphImg);
-
-            // convert bitmap to indexed bitmap
-            byte[] bitmap = new byte[rgb565.length];
-            for (int idx = 0;  idx < rgb565.length;  idx++) {
-                short value = rgb565[idx];
-        
-                // lookup value index
-                int colorIdx = palette.indexOf(value);
-                if (colorIdx == -1) {
-                    colorIdx = palette.size();
-                    palette.add(value);
+            for (GlyphData gd : glyphData) {
+    
+                short[] rgb565 = ic.getRGB565(gd.glyphImg);
+    
+                // convert bitmap to indexed bitmap
+                byte[] bitmap = new byte[rgb565.length];
+                for (int idx = 0;  idx < rgb565.length;  idx++) {
+                    short value = rgb565[idx];
+            
+                    // lookup value index
+                    int colorIdx = palette.indexOf(value);
+                    if (colorIdx == -1) {
+                        colorIdx = palette.size();
+                        palette.add(value);
+                    }
+            
+                    bitmap[idx] = (byte) colorIdx;  // TODO: max. 256 colors
                 }
-        
-                bitmap[idx] = (byte) colorIdx;  // TODO: max. 256 colors
-            }
+                overallSize += bitmap.length;
 
-            try (PrintStream out = new PrintStream(new FileOutputStream(fileName))) {
-                ArrayDump<ByteArray> ad = new ArrayDump<>(new ByteArray(bitmap));
+                out.printf("const Bitmap8 %s PROGMEM = {%d, %d,\n", gd.glyphId, (int) gd.glyphImg.getWidth(), (int) gd.glyphImg.getHeight());
+                ArrayDump ad = new ArrayDump(bitmap);
                 ad.dumpAll(16, out);
-
-                ArrayDump<List<Short>> ad2 = new ArrayDump<>(palette);
-                ad2.dumpAll(16, out);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+                out.println("};\n");
             }
 
+            out.printf("uint16_t palette[] =\n");
+            ArrayDump ad2 = new ArrayDump(palette);
+            ad2.dumpAll(16, out);
+            out.println(";");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
+        System.err.printf("Overall size: %s bytes\n", overallSize);
     }
 
     private void exportCCodeRGB565() {
-        ImageConverter ic = new ImageConverter();
-        for (GlyphData gd : glyphData) {
-            String fileName = gd.glyphId + ".c";
-            System.err.print("Export " + fileName);
+        String fileName = "font.c";
+        System.err.print("Export " + fileName);
 
-            short[] rgb565 = ic.getRGB565(gd.glyphImg);
-            ArrayDump<ShortArray> ad = new ArrayDump<>(new ShortArray(rgb565));
+        int overallSize = 0;
+        try (PrintStream out = new PrintStream(new FileOutputStream(fileName))) {
+            ImageConverter ic = new ImageConverter();
+            for (GlyphData gd : glyphData) {
+                short[] rgb565 = ic.getRGB565(gd.glyphImg);
+                System.err.println(" =>" + rgb565.length);
+                overallSize += rgb565.length*2;
 
-            try (PrintStream out = new PrintStream(new FileOutputStream(fileName))) {
+                out.printf("const Bitmap16 %s PROGMEM =\n", gd.glyphId);
+                ArrayDump ad = new ArrayDump(rgb565);
                 ad.dumpAll(16, out);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+                out.println(";\n");
             }
-        }            
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } 
+        System.err.printf("Overall size: %s bytes\n", overallSize);
     }
 
     private void exportCCodePNG() {
-        for (GlyphData gd : glyphData) {
-            String fileName = gd.glyphId + ".c";
-            System.err.print("Export " + fileName);
-            
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            try {
+        String fileName = "font.c";
+        System.err.print("Export " + fileName);
+
+        int overallSize = 0;
+        try (PrintStream out = new PrintStream(new FileOutputStream(fileName))) {
+
+            for (GlyphData gd : glyphData) {
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 ImageIO.write(SwingFXUtils.fromFXImage(gd.glyphImg, null), "png", bos);
                 System.err.println(" =>" + bos.size());
-                
+                overallSize += bos.size();
+
+                out.printf("const PngFile %s PROGMEM =\n", gd.glyphId);
                 ArrayDump ad = new ArrayDump(bos.toByteArray());
-                PrintStream out = new PrintStream(new FileOutputStream(fileName));
                 ad.dumpAll(16, out);
-                out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+                out.println(";\n");
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        System.err.printf("Overall size: %s bytes\n", overallSize);
     }
 
     private void exportBinaryRGB565Compressed() {
