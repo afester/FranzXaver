@@ -25,7 +25,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 
@@ -51,6 +53,9 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.HBox;
@@ -370,6 +375,10 @@ public class FontGenerator extends Application {
         previewButton.setOnAction(e -> {
             SnapshotParameters params = new SnapshotParameters();
             snapshots.getChildren().clear();
+            
+            ImageConverter ic = new ImageConverter();
+            List<Short> palette = new ArrayList<>();
+            
             for (GlyphData gd : glyphData) {
                 Bounds b = glyphMetricArea.getBoundsInParent();
                 params.setViewport(new Rectangle2D(b.getMinX() + gd.effectiveBounds.getMinX(), 
@@ -377,9 +386,35 @@ public class FontGenerator extends Application {
                                                    gd.effectiveBounds.getWidth(), gd.effectiveBounds.getHeight()));
                 gd.glyphImg = glyphMetricArea.snapshot(params, null);
 
+                gd.glyphImg = reduceColorsTo565(gd.glyphImg);
+                getColors(gd.glyphImg);
+
+/////////////////////////////            
                 ImageView iv = new ImageView(gd.glyphImg);
                 snapshots.getChildren().add(iv);
+            
+                // create the color palette
+                short[] rgb565 = ic.getRGB565(gd.glyphImg);
+                
+                // convert bitmap to indexed bitmap
+                byte[] bitmap = new byte[rgb565.length];
+                for (int idx = 0;  idx < rgb565.length;  idx++) {
+                    short value = rgb565[idx];
+            
+                    // lookup value index
+                    int colorIdx = palette.indexOf(value);
+                    if (colorIdx == -1) {
+                        colorIdx = palette.size();
+                        palette.add(value);
+                    }
+            
+                    bitmap[idx] = (byte) colorIdx;  // TODO: max. 256 colors
+                }
+                
             }
+
+            System.err.println("Number of colors: " + palette.size());
+///////////////////////////////////
         });
 
         Button exportButton = new Button("Export ...");
@@ -529,6 +564,57 @@ public class FontGenerator extends Application {
 
         stage.setScene(scene);
         stage.show();
+    }
+
+    /**
+     * Reduces the colors in the given image to the RGB565 format.
+     *
+     * @param glyphImg The image to reduce.
+     * @return The image with the reduced number of colors.
+     */
+    private Image reduceColorsTo565(Image glyphImg) {
+        WritableImage outputImage = new WritableImage((int) glyphImg.getWidth(), (int) glyphImg.getHeight());
+        PixelReader reader = glyphImg.getPixelReader();
+        PixelWriter writer = outputImage.getPixelWriter();
+
+        for (int y = 0; y < glyphImg.getHeight(); y++) {
+           for (int x = 0; x < glyphImg.getWidth(); x++) {
+              int argb = reader.getArgb(x, y);
+
+              //argb = argb & 0xFFFFFFFF;     // identity
+              //argb = argb & 0x80FFFFFF;     // half opaque
+              argb = argb & 0xFFF8FCF8;     // 5 bits red, 6 bits green, 5 bits blue
+              //argb = argb & 0xFFC0C0C0;       // 2 bits red, 2 bits green, 2 bits blue
+
+//              int a = (argb >> 24) & 0xFF;
+//              int r = (argb >> 16) & 0xFF;
+//              int g = (argb >>  8) & 0xFF;
+//              int b =  argb        & 0xFF;
+//
+//              r = r & 0xC0;
+//              g = g & 0xC0;
+//              b = b & 0xC0;
+//
+//              argb = (a << 24) | (r << 16) | (g << 8) | b;
+
+              writer.setArgb(x, y, argb);
+           }
+        }
+
+        return outputImage;
+    }
+
+    private void getColors(Image glyphImg) {
+        Set<Color> colors = new HashSet<>();
+        PixelReader pr = glyphImg.getPixelReader();
+        for (int y = 0;  y < glyphImg.getHeight();  y++) {
+            for (int x = 0;  x < glyphImg.getWidth();  x++) {
+                Color c = pr.getColor(x, y);
+                colors.add(c);
+            }
+        }
+        
+        System.err.println("Number of colors:" + colors.size());
     }
 
     private void exportCCodeRGB565Compressed() {
