@@ -25,9 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.imageio.ImageIO;
 
@@ -370,14 +368,17 @@ public class FontGenerator extends Application {
 
         snapshots = new HBox();
         snapshots.setSpacing(2);
-        
+
+        PaletteView pv = new PaletteView();
+
         Button previewButton = new Button("Preview");
         previewButton.setOnAction(e -> {
             SnapshotParameters params = new SnapshotParameters();
             snapshots.getChildren().clear();
             
             ImageConverter ic = new ImageConverter();
-            List<Short> palette = new ArrayList<>();
+//            List<Short> palette = new ArrayList<>();
+            ColorPalette cp = new ColorPalette();
             
             for (GlyphData gd : glyphData) {
                 Bounds b = glyphMetricArea.getBoundsInParent();
@@ -387,33 +388,36 @@ public class FontGenerator extends Application {
                 gd.glyphImg = glyphMetricArea.snapshot(params, null);
 
                 gd.glyphImg = reduceColorsTo565(gd.glyphImg);
-                getColors(gd.glyphImg);
+                // getColors(gd.glyphImg);
+
+                cp.addColors(gd.glyphImg);
 
 /////////////////////////////            
                 ImageView iv = new ImageView(gd.glyphImg);
                 snapshots.getChildren().add(iv);
-            
-                // create the color palette
-                short[] rgb565 = ic.getRGB565(gd.glyphImg);
-                
-                // convert bitmap to indexed bitmap
-                byte[] bitmap = new byte[rgb565.length];
-                for (int idx = 0;  idx < rgb565.length;  idx++) {
-                    short value = rgb565[idx];
-            
-                    // lookup value index
-                    int colorIdx = palette.indexOf(value);
-                    if (colorIdx == -1) {
-                        colorIdx = palette.size();
-                        palette.add(value);
-                    }
-            
-                    bitmap[idx] = (byte) colorIdx;  // TODO: max. 256 colors
-                }
+
+//                // create the color palette
+//                short[] rgb565 = ic.getRGB565(gd.glyphImg);
+//                
+//                // convert bitmap to indexed bitmap
+//                byte[] bitmap = new byte[rgb565.length];
+//                for (int idx = 0;  idx < rgb565.length;  idx++) {
+//                    short value = rgb565[idx];
+//            
+//                    // lookup value index
+//                    int colorIdx = palette.indexOf(value);
+//                    if (colorIdx == -1) {
+//                        colorIdx = palette.size();
+//                        palette.add(value);
+//                    }
+//            
+//                    bitmap[idx] = (byte) colorIdx;  // TODO: max. 256 colors
+//                }
                 
             }
 
-            System.err.println("Number of colors: " + palette.size());
+            System.err.println("Number of colors: " + cp.getSize());
+            pv.setPalette(cp);
 ///////////////////////////////////
         });
 
@@ -557,7 +561,7 @@ public class FontGenerator extends Application {
 //##############################
         VBox box = new VBox();
         box.setSpacing(10);
-        box.getChildren().addAll(fsp, inputLine, /*t,*/ glyphMetricArea, bottomBox, previewButton, snapshots, exportComponent);
+        box.getChildren().addAll(fsp, inputLine, /*t,*/ glyphMetricArea, bottomBox, previewButton, snapshots, pv, exportComponent);
                                  //glyphMetricArea); // , b, saveBtn, disp, snapshotBtn, snapshots);// , colorPicker);
 
         Scene scene  = new Scene(box);
@@ -604,18 +608,18 @@ public class FontGenerator extends Application {
         return outputImage;
     }
 
-    private void getColors(Image glyphImg) {
-        Set<Color> colors = new HashSet<>();
-        PixelReader pr = glyphImg.getPixelReader();
-        for (int y = 0;  y < glyphImg.getHeight();  y++) {
-            for (int x = 0;  x < glyphImg.getWidth();  x++) {
-                Color c = pr.getColor(x, y);
-                colors.add(c);
-            }
-        }
-        
-        System.err.println("Number of colors:" + colors.size());
-    }
+//    private void getColors(Image glyphImg) {
+//        Set<Color> colors = new HashSet<>();
+//        PixelReader pr = glyphImg.getPixelReader();
+//        for (int y = 0;  y < glyphImg.getHeight();  y++) {
+//            for (int x = 0;  x < glyphImg.getWidth();  x++) {
+//                Color c = pr.getColor(x, y);
+//                colors.add(c);
+//            }
+//        }
+//        
+//        System.err.println("Number of colors:" + colors.size());
+//    }
 
     private void exportCCodeRGB565Compressed() {
         String fileName = "font.c";
