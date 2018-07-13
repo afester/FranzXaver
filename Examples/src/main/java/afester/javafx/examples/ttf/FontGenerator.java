@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -110,6 +111,24 @@ enum ExportImageFormat implements RadioButtonValues {
 
 
 
+enum ColorReduction implements RadioButtonValues {
+    NONE("None"), 
+    RGB565("RGB 565"),
+    COLORS_16("16 Colors"); 
+
+    private String label;
+
+    ColorReduction(String label) {
+        this.label = label;
+    }
+
+    @Override
+    public String getLabel() {
+        return label;
+    }
+}
+
+
 /**
  * Example for loading a custom true type font
  */
@@ -142,6 +161,7 @@ public class FontGenerator extends Application {
 
     private RadioButtonGroup exportSelection;
     private RadioButtonGroup formatSelection;
+    private RadioButtonGroup reduction;
 
     //private ExportFileFormat exportFileFormat = ExportFileFormat.C_CODE;
     //private ExportImageFormat exportImageFormat = ExportImageFormat.PNG;
@@ -369,56 +389,22 @@ public class FontGenerator extends Application {
         snapshots = new HBox();
         snapshots.setSpacing(2);
 
+        HBox previewOptions = new HBox();
         PaletteView pv = new PaletteView();
+        previewOptions.getChildren().add(pv);
+
+        reduction = new RadioButtonGroup(ColorReduction.values());
+        reduction.setOnAction(e -> updatePreview(pv) );
+
+//        reduceRGB565 = new CheckBox("Reduce to RGB565");
+        previewOptions.getChildren().add(reduction);
+//        reduceRGB565.setOnAction(e -> {
+//            updatePreview(pv);
+//        });
 
         Button previewButton = new Button("Preview");
         previewButton.setOnAction(e -> {
-            SnapshotParameters params = new SnapshotParameters();
-            snapshots.getChildren().clear();
-            
-            ImageConverter ic = new ImageConverter();
-//            List<Short> palette = new ArrayList<>();
-            ColorPalette cp = new ColorPalette();
-            
-            for (GlyphData gd : glyphData) {
-                Bounds b = glyphMetricArea.getBoundsInParent();
-                params.setViewport(new Rectangle2D(b.getMinX() + gd.effectiveBounds.getMinX(), 
-                                                   b.getMinY() + gd.effectiveBounds.getMinY(),
-                                                   gd.effectiveBounds.getWidth(), gd.effectiveBounds.getHeight()));
-                gd.glyphImg = glyphMetricArea.snapshot(params, null);
-
-                gd.glyphImg = reduceColorsTo565(gd.glyphImg);
-                // getColors(gd.glyphImg);
-
-                cp.addColors(gd.glyphImg);
-
-/////////////////////////////            
-                ImageView iv = new ImageView(gd.glyphImg);
-                snapshots.getChildren().add(iv);
-
-//                // create the color palette
-//                short[] rgb565 = ic.getRGB565(gd.glyphImg);
-//                
-//                // convert bitmap to indexed bitmap
-//                byte[] bitmap = new byte[rgb565.length];
-//                for (int idx = 0;  idx < rgb565.length;  idx++) {
-//                    short value = rgb565[idx];
-//            
-//                    // lookup value index
-//                    int colorIdx = palette.indexOf(value);
-//                    if (colorIdx == -1) {
-//                        colorIdx = palette.size();
-//                        palette.add(value);
-//                    }
-//            
-//                    bitmap[idx] = (byte) colorIdx;  // TODO: max. 256 colors
-//                }
-                
-            }
-
-            System.err.println("Number of colors: " + cp.getSize());
-            pv.setPalette(cp);
-///////////////////////////////////
+            updatePreview(pv);
         });
 
         Button exportButton = new Button("Export ...");
@@ -561,13 +547,82 @@ public class FontGenerator extends Application {
 //##############################
         VBox box = new VBox();
         box.setSpacing(10);
-        box.getChildren().addAll(fsp, inputLine, /*t,*/ glyphMetricArea, bottomBox, previewButton, snapshots, pv, exportComponent);
+        
+        
+        ColorPalette cp = new ColorPalette();
+        Random rnd = new Random();
+        for (int i = 0;  i < 1000;  i++) {
+            Color c = new Color(rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble(), 1.0);
+            cp.addColor(c);
+        }
+        PaletteView colorSortSample = new PaletteView(cp);
+
+        box.getChildren().addAll(fsp, inputLine, /*t,*/ glyphMetricArea, bottomBox, previewButton, snapshots, previewOptions, exportComponent,
+                                 colorSortSample);
+
                                  //glyphMetricArea); // , b, saveBtn, disp, snapshotBtn, snapshots);// , colorPicker);
 
         Scene scene  = new Scene(box);
 
         stage.setScene(scene);
         stage.show();
+    }
+
+
+
+    private void updatePreview(PaletteView pv) {
+        SnapshotParameters params = new SnapshotParameters();
+        snapshots.getChildren().clear();
+        
+        ImageConverter ic = new ImageConverter();
+        ColorPalette cp = new ColorPalette();
+        
+        for (GlyphData gd : glyphData) {
+            Bounds b = glyphMetricArea.getBoundsInParent();
+            params.setViewport(new Rectangle2D(b.getMinX() + gd.effectiveBounds.getMinX(), 
+                                               b.getMinY() + gd.effectiveBounds.getMinY(),
+                                               gd.effectiveBounds.getWidth(), gd.effectiveBounds.getHeight()));
+            gd.glyphImg = glyphMetricArea.snapshot(params, null);
+
+
+            if (reduction.getSelectedValue() == ColorReduction.RGB565) {
+                gd.glyphImg = reduceColorsTo565(gd.glyphImg);
+            }
+
+            // getColors(gd.glyphImg);
+
+            cp.addColors(gd.glyphImg);
+
+/////////////////////////////            
+            ImageView iv = new ImageView(gd.glyphImg);
+            snapshots.getChildren().add(iv);
+
+//                // create the color palette
+//                short[] rgb565 = ic.getRGB565(gd.glyphImg);
+//                
+//                // convert bitmap to indexed bitmap
+//                byte[] bitmap = new byte[rgb565.length];
+//                for (int idx = 0;  idx < rgb565.length;  idx++) {
+//                    short value = rgb565[idx];
+//            
+//                    // lookup value index
+//                    int colorIdx = palette.indexOf(value);
+//                    if (colorIdx == -1) {
+//                        colorIdx = palette.size();
+//                        palette.add(value);
+//                    }
+//            
+//                    bitmap[idx] = (byte) colorIdx;  // TODO: max. 256 colors
+//                }
+            
+        }
+
+        System.err.println("Number of colors: " + cp.getSize());
+
+//        cp.sort();
+        System.err.println(cp.getColorList());
+        pv.setPalette(cp);
+///////////////////////////////////
     }
 
     /**
@@ -584,23 +639,7 @@ public class FontGenerator extends Application {
         for (int y = 0; y < glyphImg.getHeight(); y++) {
            for (int x = 0; x < glyphImg.getWidth(); x++) {
               int argb = reader.getArgb(x, y);
-
-              //argb = argb & 0xFFFFFFFF;     // identity
-              //argb = argb & 0x80FFFFFF;     // half opaque
               argb = argb & 0xFFF8FCF8;     // 5 bits red, 6 bits green, 5 bits blue
-              //argb = argb & 0xFFC0C0C0;       // 2 bits red, 2 bits green, 2 bits blue
-
-//              int a = (argb >> 24) & 0xFF;
-//              int r = (argb >> 16) & 0xFF;
-//              int g = (argb >>  8) & 0xFF;
-//              int b =  argb        & 0xFF;
-//
-//              r = r & 0xC0;
-//              g = g & 0xC0;
-//              b = b & 0xC0;
-//
-//              argb = (a << 24) | (r << 16) | (g << 8) | b;
-
               writer.setArgb(x, y, argb);
            }
         }
