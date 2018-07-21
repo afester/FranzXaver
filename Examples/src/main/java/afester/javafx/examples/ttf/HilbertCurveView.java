@@ -1,5 +1,8 @@
 package afester.javafx.examples.ttf;
 
+import java.math.BigInteger;
+import java.util.Arrays;
+
 import javafx.application.Application;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
@@ -36,6 +39,10 @@ public class HilbertCurveView extends Application {
     private Path path = new Path();     // the hilbert curve
     private Font idxFont = new Font("Sans", 8.0);
     private int hilbertIndex = 0;
+    private Integer depth = null;
+    private int currentRow = -1;
+    private int currentColumn = -1;
+    private Text infoText = new Text();
 
     @Override
     public void start(Stage stage) {
@@ -54,9 +61,11 @@ public class HilbertCurveView extends Application {
         controls.getChildren().add(numIters);
         Button updateBtn = new Button("Update");
         updateBtn.setOnAction(e -> {
-            int depth = Integer.parseInt(numIters.getText());
+            depth = Integer.parseInt(numIters.getText());
+
             canvas.getChildren().clear();
             drawRects(depth, 50, 0, 400, 400);
+
             path = new Path();
             canvas.getChildren().add(path);
             hilbertIndex = 0;
@@ -64,8 +73,32 @@ public class HilbertCurveView extends Application {
         });
         controls.getChildren().add(updateBtn);
 
+        canvas.setOnMouseMoved(e -> {
+        	if (depth != null) {
+        		double mouseX = e.getX();
+        		double mouseY = e.getY();
+        		if (mouseX > 50 && mouseX < 450 && mouseY > 0 && mouseY < 400) {
+        			mouseX -= 50;
+                    final int rowCols = (1 << depth);
+                    final float dc = 400 / rowCols;
+                    int row = (int) (mouseX / dc);
+                    int column = rowCols - (int) (mouseY / dc) -1;
+                    if (row != currentRow || column != currentColumn) {
+                    	currentRow = row;
+                    	currentColumn = column;
+	
+	                    HilbertCurve hc = HilbertCurve.bits(depth).dimensions(2);
+	                    BigInteger idx = hc.index(new long[] {currentColumn, currentRow});
+	                    long[]  pos = hc.point(idx);
+	
+	                    infoText.setText(String.format("%s / %s: %s => %s\n", currentRow, currentColumn, idx, Arrays.toString(pos)));
+                    }
+        		}
+        	}
+        });
         layout.getChildren().add(canvas);
         layout.getChildren().add(controls);
+        layout.getChildren().add(infoText);
 
         Scene scene  = new Scene(layout);
 
@@ -102,12 +135,12 @@ public class HilbertCurveView extends Application {
         xpos = x;
         ypos = y;
         for (int i = 0;  i < rowCols;  i++) {
-            Text t = new Text(xpos+ dc/2, y + h, "" + (i + 1));
+            Text t = new Text(xpos+ dc/2, y + h, "" + (i + 1 -1));
             t.setFont(idxFont);
             t.setTextOrigin(VPos.TOP);
             canvas.getChildren().add(t);
 
-            t = new Text(x - 10, ypos + dc/2, "" + (rowCols - i));
+            t = new Text(x - 10, ypos + dc/2, "" + (rowCols - i -1));
             t.setTextAlignment(TextAlignment.RIGHT);
             t.setFont(idxFont);
             canvas.getChildren().add(t);
