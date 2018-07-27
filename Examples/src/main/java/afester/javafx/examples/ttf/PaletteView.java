@@ -24,7 +24,8 @@ public class PaletteView extends GridPane {
         int row = 0;
         //for (Color c : cp.getColors()) {
         //for (Color c : cp.getColorList()) {
-        for (Color c : cp.getSortedColors()) {
+        //for (Color c : cp.getSortedColors(new RgbSorter())) {
+        for (Color c : cp.getSortedColors(new HilbertSorter())) {
             Rectangle rect = new Rectangle(10, 10);
             rect.setFill(c);
             add(rect, column, row);

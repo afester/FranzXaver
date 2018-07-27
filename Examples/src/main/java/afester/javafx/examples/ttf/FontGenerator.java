@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -548,17 +547,17 @@ public class FontGenerator extends Application {
         VBox box = new VBox();
         box.setSpacing(10);
         
-        
-        ColorPalette cp = new ColorPalette();
-        Random rnd = new Random();
-        for (int i = 0;  i < 1000;  i++) {
-            Color c = new Color(rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble(), 1.0);
-            cp.addColor(c);
-        }
-        PaletteView colorSortSample = new PaletteView(cp);
+//        
+//        ColorPalette cp = new ColorPalette();
+//        Random rnd = new Random();
+//        for (int i = 0;  i < 1000;  i++) {
+//            Color c = new Color(rnd.nextDouble(), rnd.nextDouble(), rnd.nextDouble(), 1.0);
+//            cp.addColor(c);
+//        }
+//        PaletteView colorSortSample = new PaletteView(cp);
 
-        box.getChildren().addAll(fsp, inputLine, /*t,*/ glyphMetricArea, bottomBox, previewButton, snapshots, previewOptions, exportComponent,
-                                 colorSortSample);
+        box.getChildren().addAll(fsp, inputLine, /*t,*/ glyphMetricArea, bottomBox, previewButton, snapshots, previewOptions, exportComponent);
+                                 // colorSortSample);
 
                                  //glyphMetricArea); // , b, saveBtn, disp, snapshotBtn, snapshots);// , colorPicker);
 
