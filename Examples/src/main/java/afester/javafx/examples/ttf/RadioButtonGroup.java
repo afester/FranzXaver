@@ -11,11 +11,11 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
 
-public class RadioButtonGroup extends VBox {
+public class RadioButtonGroup<E> extends VBox {
 
     private ToggleGroup buttonGroup;
 
-    @SuppressWarnings("serial")
+    @SuppressWarnings({ "serial", "unchecked" })
     public RadioButtonGroup(RadioButtonValues[] values) {
         buttonGroup = new ToggleGroup();
         setSpacing(5);
@@ -28,7 +28,7 @@ public class RadioButtonGroup extends VBox {
 
             // TODO: any better approach for this bi-directional binding?
             rb.setOnAction(a -> {
-                setSelectedValue(e);
+                setSelectedValue((E) e);
             });
 
             selectedValue.addListener(l -> {
@@ -58,16 +58,16 @@ public class RadioButtonGroup extends VBox {
     /*
      * The "selected value" property
      */
-    public final void setSelectedValue(RadioButtonValues value) {
+    public final void setSelectedValue(E value) {
         selectedValue.setValue(value);
     }
-    public final RadioButtonValues getSelectedValue() {
+    public final E getSelectedValue() {
         return selectedValue.getValue();
     }
-    public final ObjectProperty<RadioButtonValues> selectedValueProperty() {
+    public final ObjectProperty<E> selectedValueProperty() {
         return selectedValue;
     }
-    private ObjectProperty<RadioButtonValues> selectedValue = new SimpleObjectProperty<>();
+    private ObjectProperty<E> selectedValue = new SimpleObjectProperty<>();
 
     /*
      * The "onAction" property

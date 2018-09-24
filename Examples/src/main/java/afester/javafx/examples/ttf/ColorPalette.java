@@ -20,7 +20,7 @@ public class ColorPalette {
 
     public ColorPalette() {
     }
-    
+
     /**
      * Adds all colors from a given image to this color palette.
      *
@@ -43,14 +43,20 @@ public class ColorPalette {
      */
     public void addColor(Color c) {
         if (!colorMap.containsKey(c)) {
-            colorMap.put(c,  maxIdx++);
+            colorMap.put(c, maxIdx++);
         }
     }
 
+    /**
+     * @return The number of colors in this palette.
+     */
     public int getSize() {
         return colorMap.size();
     }
 
+    /**
+     * @return The colors in this palette as a Set of Color.
+     */
     public Set<Color> getColors() {
         return colorMap.keySet();
     }

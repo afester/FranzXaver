@@ -158,9 +158,9 @@ public class FontGenerator extends Application {
     private CheckBox showEffectiveBounds;
     private HBox snapshots;
 
-    private RadioButtonGroup exportSelection;
-    private RadioButtonGroup formatSelection;
-    private RadioButtonGroup reduction;
+    private RadioButtonGroup<ExportFileFormat> exportSelection;
+    private RadioButtonGroup<ExportImageFormat> formatSelection;
+    private RadioButtonGroup<ColorReduction> reduction;
 
     //private ExportFileFormat exportFileFormat = ExportFileFormat.C_CODE;
     //private ExportImageFormat exportImageFormat = ExportImageFormat.PNG;
@@ -205,7 +205,7 @@ public class FontGenerator extends Application {
             updateGlyphs();
         });
 
-        inputLine = new TextField("0123456789,mAVT°C");
+        inputLine = new TextField("0123456789,mACTUV:Â°");
         inputLine.textProperty().addListener((obj, oldVal, newVal) -> {
             t.setText(newVal);
             updateGlyphs();
@@ -583,9 +583,21 @@ public class FontGenerator extends Application {
                                                gd.effectiveBounds.getWidth(), gd.effectiveBounds.getHeight()));
             gd.glyphImg = glyphMetricArea.snapshot(params, null);
 
+            switch(reduction.getSelectedValue()) {
+			
+	            case COLORS_16:
+					gd.glyphImg = reduceColorsTo16(gd.glyphImg);
+					break;
 
-            if (reduction.getSelectedValue() == ColorReduction.RGB565) {
-                gd.glyphImg = reduceColorsTo565(gd.glyphImg);
+				case NONE:
+					break;
+
+				case RGB565:
+					gd.glyphImg = reduceColorsTo565(gd.glyphImg);
+					break;
+
+				default:
+					break;
             }
 
             // getColors(gd.glyphImg);
@@ -624,7 +636,26 @@ public class FontGenerator extends Application {
 ///////////////////////////////////
     }
 
-    /**
+	/**
+     * Reduces the colors in the given image to 16 colors.
+     *
+     * @param glyphImg The image to reduce.
+     * @return The image with the reduced number of colors.
+     */
+    private Image reduceColorsTo16(Image glyphImg) {
+    	ColorPalette pal = new ColorPalette();
+    	pal.addColors(glyphImg);
+    	System.err.printf("Number of colors: %s\n", pal.getSize());
+
+    	ColorSpectrum spectr = new ColorSpectrum();
+    	spectr.addColors(glyphImg);
+    	spectr.dumpSpectrum(System.err);
+
+		return glyphImg;
+	}
+
+
+	/**
      * Reduces the colors in the given image to the RGB565 format.
      *
      * @param glyphImg The image to reduce.
