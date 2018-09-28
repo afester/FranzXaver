@@ -1,15 +1,8 @@
 package afester.javafx.examples.ttf;
 
-import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
@@ -42,7 +35,7 @@ public class ColorSpectrum {
      *
      * @param c
      */
-    public void addColor(Color c) {
+    public void addColor(final Color c) {
     	Integer count = colorSpectrum.get(c);
         if (count == null) {
         	count = 1;
@@ -51,8 +44,14 @@ public class ColorSpectrum {
         }
         colorSpectrum.put(c, count);
     }
-    
-    public void dumpSpectrum(PrintStream out) {
+
+    /**
+     * Dumps the current spectrum of colors to an output stream.
+     * The output contains a list of colors and the number of occurences of that color.
+     * 
+     * @param out The PrintStream where to dump the current spectrum.
+     */
+    public void dumpSpectrum(final PrintStream out) {
     	colorSpectrum.forEach((k, v) -> out.printf("  %s: %s\n", k, v));
     }
 }

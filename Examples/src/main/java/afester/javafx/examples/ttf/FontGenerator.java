@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -651,6 +652,25 @@ public class FontGenerator extends Application {
     	spectr.addColors(glyphImg);
     	spectr.dumpSpectrum(System.err);
 
+///////////////////////////
+    	List<Color> colors = pal.getSortedColors(new HilbertSorter());
+    	HilbertCurve hc = HilbertCurve.bits(8).dimensions(3);
+    	BigInteger prev = null;
+    	for (Color c : colors) {
+    	    if (prev == null) {
+                long[] previous = new long[] {(int) (c.getRed() * 255), (int) (c.getGreen() * 255), (int) (c.getBlue() * 255)};
+                prev = hc.index(previous);
+    	    } else {
+                long[] current = new long[] {(int) (c.getRed() * 255), (int) (c.getGreen() * 255), (int) (c.getBlue() * 255)};
+                BigInteger cur = hc.index(current);
+                
+                System.err.printf("Delta: %s-%s: %s\n", cur, prev, cur.subtract(prev));
+
+                prev = cur;
+    	    }
+    	}
+///////////////////////////
+    	
 		return glyphImg;
 	}
 
