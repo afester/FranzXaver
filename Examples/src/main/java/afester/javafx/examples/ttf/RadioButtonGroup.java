@@ -34,7 +34,10 @@ public class RadioButtonGroup<E> extends VBox {
             selectedValue.addListener(l -> {
                if (getSelectedValue() == e) {
                    rb.setSelected(true);
-                   onAction.get().handle(new ActionEvent() {});
+                   
+                   if (onAction.get() != null) {
+                       onAction.get().handle(new ActionEvent() {});
+                   }
                }
             });
         });
