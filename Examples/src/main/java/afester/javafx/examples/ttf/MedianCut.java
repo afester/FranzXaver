@@ -33,9 +33,15 @@ public class MedianCut {
      * @return The color-reduced image.
      */
     public Image medianCut(Image orig, int maxColors){
-        testFindMin();
+        final long start = System.currentTimeMillis();
+
         int[] repCols = findRepresentativeColors(orig, maxColors);
-        return quantizeImage(orig, repCols);
+        Image result = quantizeImage(orig, repCols);
+
+        final long stop = System.currentTimeMillis();
+        System.err.printf("Time taken: %s sec.\n", (stop - start) / 1000.0F);
+
+        return result;
     }
 
 
@@ -224,19 +230,17 @@ public class MedianCut {
     //the method to find and return the longest axis of the box as the one to divide along.
     private int findMaxDimension(ColorBox bx){
     
-        float [] dims = new float [3];
+        final List<Float> dims = new ArrayList<>(3);// Float[3];
+
         //the length of each is measured as the (max value - min value)
-        dims[0] = bx.rmax - bx.rmin;
-        dims[1] = bx.gmax - bx.gmin;
-        dims[2] = bx.bmax - bx.bmin;
-    
-        float sizeMax = findMinOrMax(dims, 1);
-        if(sizeMax == dims[0]){
-            return RED;
-        }else if(sizeMax == dims[1]){
-            return GREEN;
-        }else{
-            return BLUE;
+        dims.add(bx.rmax - bx.rmin);
+        dims.add(bx.gmax - bx.gmin);
+        dims.add(bx.bmax - bx.bmin);
+
+        switch(findIndexOfMax(dims)) {
+            case 0 : return RED;
+            case 1 : return GREEN;
+            default: return BLUE;
         }
     }
 
@@ -255,12 +259,11 @@ public class MedianCut {
         float [] rgb = {0.0F, 0.0F, 0.0F}; //start at zero
         while(it.hasNext()){
             MyColor mc = it.next();
+            
+            // sum of each channel stored separately
             rgb[RED] += mc.rgb[RED];
             rgb[GREEN] += mc.rgb[GREEN];
             rgb[BLUE] += mc.rgb[BLUE];
-//            for(int i = 0; i < 3; i++){
-//                rgb[i] += mc.rgb[i]; //sum of each channel stored separately
-//            }
         }
 
         float avgRed = rgb[RED] / (float) cols.size();
@@ -339,31 +342,6 @@ public class MedianCut {
     }
 
     /**
-     * Get the minimum OR maximum from an array of floats
-     * 
-     * @param f
-     * @param k Flag to determine whether to find the minimum or the maximum (0 = min, 1 = max)
-     *
-     * @return
-     */
-    private float findMinOrMax(float[] f, int k){
-        if(f.length > 0) {
-            float m = f[0];
-            for(int i = 1; i < f.length; i++){
-                //if k is 0 the minimum is required. Otherwise return the maximum. 
-                if(k == 0){
-                    m = Math.min(m,f[i]);
-                }else{
-                    m = Math.max(m,f[i]);
-                }
-            } 
-            return m;
-        }
-
-        return 0.0F;
-    }
-
-    /**
      * @param f A list of Float values.
      * @return The smallest float value in the list or 0.0F if the list does not contain any element. 
      */
@@ -379,21 +357,40 @@ public class MedianCut {
         return f.stream().max((a, b) -> Float.compare(a.floatValue(), b.floatValue())).orElse(0.0F);
     }
 
+    /**
+     * @param f A list of Float values.
+     * @return The index of the largest float value in the list or -1 if the list does not contain any element. 
+     */
+    private int findIndexOfMax(Collection<Float> f) {
+        Float maxVal = Float.NEGATIVE_INFINITY;
+        int result = -1;
+        int idx = 0;
+        for (Float val : f) {
+            if (val > maxVal) {
+                maxVal = val;
+                result = idx;
+            }
+            idx++;
+        }
+
+        return result;
+    }
+
     private void testFindMin() {
         List<Float> l1 = Arrays.asList();
-        System.err.printf("%s, %s, %s\n", l1, findMin(l1), findMax(l1));
+        System.err.printf("%s, %s, %s (%s)\n", l1, findMin(l1), findMax(l1), findIndexOfMax(l1));
 
         List<Float> l2 = Arrays.asList(5.0F);
-        System.err.printf("%s, %s, %s\n", l2, findMin(l2), findMax(l2));
+        System.err.printf("%s, %s, %s (%s)\n", l2, findMin(l2), findMax(l2), findIndexOfMax(l2));
 
         List<Float> l3 = Arrays.asList(5.0F, 3.0F);
-        System.err.printf("%s, %s, %s\n", l3, findMin(l3), findMax(l3));
+        System.err.printf("%s, %s, %s (%s)\n", l3, findMin(l3), findMax(l3), findIndexOfMax(l3));
 
         List<Float> l4 = Arrays.asList(5.0F, 2.0F, 3.0F, 2.5F);
-        System.err.printf("%s, %s, %s\n", l4, findMin(l4), findMax(l4));
+        System.err.printf("%s, %s, %s (%s)\n", l4, findMin(l4), findMax(l4), findIndexOfMax(l4));
 
         List<Float> l5 = Arrays.asList(5.0F, 2.0F, 8.0F, 3.0F, 2.5F);
-        System.err.printf("%s, %s, %s\n", l5, findMin(l5), findMax(l5));
+        System.err.printf("%s, %s, %s (%s)\n", l5, findMin(l5), findMax(l5), findIndexOfMax(l5));
     }
 
     private int color(float avgRed, float avgGreen, float avgBlue) {
@@ -437,9 +434,9 @@ public class MedianCut {
      * 
      */
     class ColorBox{
-        float rmin, rmax, gmin, gmax, bmin, bmax;   // the bounds of the color box
-        Map<Integer, MyColor> cols;                 // all colors which are inside the box boundaries
-        int level;
+        final Float rmin, rmax, gmin, gmax, bmin, bmax;   // the bounds of the color box
+        final Map<Integer, MyColor> cols;                 // all colors which are inside the box boundaries
+        final int level;
     
         // constructor takes the colours contained by this box and its level of "depth"
         ColorBox(Map<Integer, MyColor> cols, int level){
@@ -449,30 +446,24 @@ public class MedianCut {
 /** Convert the Colors into their individual channels */
             // Compute the box boundaries.
             // 3 temporary arrays used for getting the min/max of each RGB channel
-            float [] reds = new float [cols.size()];
-            float [] greens = new float [cols.size()];
-            float [] blues = new float [cols.size()];
+            List<Float> reds = new ArrayList<>(cols.size());
+            List<Float> greens = new ArrayList<>(cols.size());
+            List<Float> blues = new ArrayList<>(cols.size());
 
-            Iterator<MyColor> it = cols.values().iterator();
-            int index = 0;
-    
-            while(it.hasNext()){
-                MyColor mc = it.next();
-                reds[index] = mc.rgb[RED];
-                greens[index] = mc.rgb[GREEN];
-                blues[index] = mc.rgb[BLUE];
-                index++;
-            }
+            cols.values().forEach(mc -> {
+                reds.add(mc.rgb[RED]);
+                greens.add(mc.rgb[GREEN]);
+                blues.add(mc.rgb[BLUE]);
+            });
 /******************************************************/
 
             // we need the min/max to determine which axis to split along
-            rmin = findMinOrMax(reds, 0);
-            rmax = findMinOrMax(reds, 1);
-            gmin = findMinOrMax(greens, 0);
-            gmax = findMinOrMax(greens, 1);
-            bmin = findMinOrMax(blues, 0);
-            bmax = findMinOrMax(blues, 1);
+            rmin = findMin(reds);
+            rmax = findMax(reds);
+            gmin = findMin(greens);
+            gmax = findMax(greens);
+            bmin = findMin(blues);
+            bmax = findMax(blues);
         }
     }
-
 }
