@@ -1,8 +1,6 @@
 package afester.javafx.examples.ttf;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,16 +12,18 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
-// Source:
-// https://gist.github.com/stubbedtoe/8070228
-// The Median Cut algorithm for colour quantization implemented in Processing. 
-// The algorithm is implemented as described in the book "Principles of 
-// digital image processing: Core algorithms" by Wilhelm Burger, Mark James Burge (Springer, 2009) pp 90-92.
+
+/**
+ * An implementation of the Median Cut algorithm for colour quantization as 
+ * described in the book "Principles of digital image processing: Core algorithms" 
+ * by Wilhelm Burger, Mark James Burge (Springer, 2009) pp 90-92.
+ * 
+ * Source: https://gist.github.com/stubbedtoe/8070228
+ */
 public class MedianCut { 
     final int RED = 0;
     final int GREEN = 1;
     final int BLUE = 2;
-    
 
     /**
      * Converts an image into the same image with the number of colors reduced to the given amount.
@@ -35,7 +35,13 @@ public class MedianCut {
     public Image medianCut(Image orig, int maxColors){
         final long start = System.currentTimeMillis();
 
-        int[] repCols = findRepresentativeColors(orig, maxColors);
+        // Step 1: Get a map of all colors in the original image
+        Map<Integer, MyColor> origCols = findOriginalColors(orig);
+
+        // Step 2: find the colors which best match all the original colors in the reduced palette
+        int[] repCols = findRepresentativeColors(origCols, maxColors);
+
+        // Step 3: Quantize the image with the new set of colors
         Image result = quantizeImage(orig, repCols);
 
         final long stop = System.currentTimeMillis();
@@ -54,7 +60,7 @@ public class MedianCut {
      *
      * @return The quantized image.
      */
-    private Image quantizeImage(Image img, int[] newCols){
+    public Image quantizeImage(Image img, int[] newCols){
         //the new image should be the same size as the original
         WritableImage newImg = new WritableImage((int) img.getWidth(), (int) img.getHeight());
         PixelReader reader = img.getPixelReader();
@@ -67,7 +73,7 @@ public class MedianCut {
                 // find the closest colour in the array to the original pixel's colour
                 int index = 0;
                 float closest = distanceToRGB(c, newCols[0]);
-                for(int j=1;j<newCols.length;j++){
+                for(int j = 1; j < newCols.length; j++){
                     if(closest > distanceToRGB(c, newCols[j])){
                         closest = distanceToRGB(c, newCols[j]);
                         index = j;
@@ -91,14 +97,12 @@ public class MedianCut {
      *
      * @return
      */
-    private int[] findRepresentativeColors(Image orig, int maxColors){
+    public int[] findRepresentativeColors(Map<Integer, MyColor> origCols, int maxColors){
 
-        //get a reference to each colour in the original image
-        Map<Integer, MyColor> origCols = findOriginalColors(orig);
         if(origCols.size() <= maxColors){
-            //num of colours is less than or equal to the max num in the orig image
-            //so simply return the colour in an int array
-    
+            // num of colours is less than or equal to the max num in the orig image
+            // so simply return the colour in an int array
+
             int[]toReturn = new int[origCols.size()];
             Iterator<MyColor> it = origCols.values().iterator();
             int index = 0;
@@ -110,23 +114,22 @@ public class MedianCut {
             return toReturn;
    
         }else{
-            //otherwise subdivide the box of colours until the required number 
-            //has been reached
-    
+            // otherwise subdivide the box of colours until the required number 
+            // has been reached
             ArrayList<ColorBox> colorBoxes = new ArrayList<>(); //where the boxes will be stored
             ColorBox first = new ColorBox(origCols, 0); //the largest box (level 0)
             colorBoxes.add(first);
             int k = 1; //we have one box
             boolean done = false;
-    
-            while(k<maxColors && !done){
+            while(k < maxColors && !done){
     
                 ColorBox next = findBoxToSplit(colorBoxes);
                 if(next != null){
     
-                    ColorBox [] boxes = splitBox(next);
+                    ColorBox [] boxes = next.splitBox();
     
-                    if(colorBoxes.remove(next)){} //finds and removes an element in one
+                    if (colorBoxes.remove(next)){} //finds and removes an element in one
+
                     //replaced with the two smaller boxes that make it up 
                     colorBoxes.add(boxes[0]);
                     colorBoxes.add(boxes[1]);   
@@ -139,9 +142,9 @@ public class MedianCut {
     
             //get the average colour from each of the boxes in the arraylist
             int [] avgCols = new int [colorBoxes.size()];
-            for(int i=0; i<avgCols.length; i++){
-                ColorBox cb = (ColorBox)colorBoxes.get(i);
-                avgCols[i] = averageColor(cb);
+            for(int i = 0; i < avgCols.length; i++){
+                ColorBox cb = colorBoxes.get(i);
+                avgCols[i] = cb.averageColor();
             }
     
             return avgCols;
@@ -152,11 +155,10 @@ public class MedianCut {
     private ColorBox findBoxToSplit(ArrayList<ColorBox> listOfBoxes){
     
         ArrayList<ColorBox> canBeSplit = new ArrayList<>();
-    
-        for(int i = 0; i<listOfBoxes.size(); i++){
+        for(int i = 0; i < listOfBoxes.size(); i++){
             ColorBox cb = listOfBoxes.get(i);
 
-            //only boxes containing more than one colour can be split 
+            // only boxes containing more than one colour can be split 
             if(cb.cols.size() > 1){
                 canBeSplit.add(cb);
             }   
@@ -164,113 +166,23 @@ public class MedianCut {
     
         if(canBeSplit.size() == 0){
             return null; //a null will trigger the end of the subdividing loop
-        }else{
-    
-            //use the 'level' of each box to ensure they are divided in the correct order.
-            //the box with the lowest level is returned.
-    
-            ColorBox minBox = canBeSplit.get(0);
-            int minLevel = minBox.level;
-    
-            for(int i = 1; i < canBeSplit.size(); i++){
-                ColorBox test = canBeSplit.get(i);
-                if(minLevel > test.level){
-                    minLevel = test.level;
-                    minBox = test;
-                }
-            }
-    
-            return minBox;
-    
         }
-    
-    }
-    
-    //divide a box along its longest RGB axis to create 2 smaller boxes and return these
-    private ColorBox[] splitBox(ColorBox bx){
-    
-        int m = bx.level; //store the current 'level'
-        int d = findMaxDimension(bx); //the dimension to split along
-    
-        //get the median only counting along the longest RGB dimension
-        Map<Integer, MyColor> cols = bx.cols;
-        Iterator<MyColor> it = cols.values().iterator();
-        float c = 0.0F;
-        while(it.hasNext()){
-            MyColor mc = it.next();
-            c += mc.rgb[d]; 
-        }
-    
-        float median = c / (float)cols.size();
-    
-        //the two Hashmaps to contain all the colours in the original box
-        HashMap<Integer, MyColor> left = new HashMap<>();
-        HashMap<Integer, MyColor> right = new HashMap<>();
-    
-        Iterator<MyColor> itr = cols.values().iterator();
-        while(itr.hasNext()){
-            MyColor mc = itr.next();
+        
+        // use the 'level' of each box to ensure they are divided in the correct order.
+        // the box with the lowest level is returned.
 
-            //putting each colour in the appropriate box
-            if(mc.rgb[d] <= median){
-                left.put(mc.col,mc);
-            }else{
-                right.put(mc.col,mc);
+        ColorBox minBox = canBeSplit.get(0);
+        int minLevel = minBox.level;
+
+        for(int i = 1; i < canBeSplit.size(); i++){
+            ColorBox test = canBeSplit.get(i);
+            if(minLevel > test.level){
+                minLevel = test.level;
+                minBox = test;
             }
         }
-    
-        ColorBox [] toReturn = new ColorBox [2];
-        toReturn[0] = new ColorBox(left, m+1); //the 'level' has increased 
-        toReturn[1] = new ColorBox(right, m+1);
-    
-        return toReturn;
-    
-    }
-    
-    //the method to find and return the longest axis of the box as the one to divide along.
-    private int findMaxDimension(ColorBox bx){
-    
-        final List<Float> dims = new ArrayList<>(3);// Float[3];
 
-        //the length of each is measured as the (max value - min value)
-        dims.add(bx.rmax - bx.rmin);
-        dims.add(bx.gmax - bx.gmin);
-        dims.add(bx.bmax - bx.bmin);
-
-        switch(findIndexOfMax(dims)) {
-            case 0 : return RED;
-            case 1 : return GREEN;
-            default: return BLUE;
-        }
-    }
-
-
-    /**
-     * Returns the average colour of all the colours contained by the given box.
-     * 
-     * @param bx The color box
-     * 
-     * @return The average color in the box.
-     */
-    private int averageColor(ColorBox bx){
-
-        Map<Integer, MyColor> cols = bx.cols;
-        Iterator<MyColor> it = cols.values().iterator();
-        float [] rgb = {0.0F, 0.0F, 0.0F}; //start at zero
-        while(it.hasNext()){
-            MyColor mc = it.next();
-            
-            // sum of each channel stored separately
-            rgb[RED] += mc.rgb[RED];
-            rgb[GREEN] += mc.rgb[GREEN];
-            rgb[BLUE] += mc.rgb[BLUE];
-        }
-
-        float avgRed = rgb[RED] / (float) cols.size();
-        float avgGreen = rgb[GREEN] / (float) cols.size();
-        float avgBlue = rgb[BLUE] / (float) cols.size();
-
-        return color(avgRed, avgGreen, avgBlue);
+        return minBox;
     }
 
 
@@ -342,61 +254,38 @@ public class MedianCut {
     }
 
     /**
-     * @param f A list of Float values.
-     * @return The smallest float value in the list or 0.0F if the list does not contain any element. 
+     * Gets the set of representative colors from a List of images
+     * @param img
+     * @return
      */
-    private Float findMin(Collection<Float> f) {
-        return f.stream().min((a, b) -> Float.compare(a.floatValue(), b.floatValue())).orElse(0.0F);
-    }
+    public Map<Integer, MyColor> findOriginalColors(final List<Image> imageList){
 
-    /**
-     * @param f A list of Float values.
-     * @return The largest float value in the list or 0.0F if the list does not contain any element. 
-     */
-    private Float findMax(Collection<Float> f) {
-        return f.stream().max((a, b) -> Float.compare(a.floatValue(), b.floatValue())).orElse(0.0F);
-    }
+        //entries in the hashmap are stored in (key,value) pairs
+        //key = int colour , value = MyColor colorObject 
+        Map<Integer, MyColor> toReturn = new HashMap<>();
 
-    /**
-     * @param f A list of Float values.
-     * @return The index of the largest float value in the list or -1 if the list does not contain any element. 
-     */
-    private int findIndexOfMax(Collection<Float> f) {
-        Float maxVal = Float.NEGATIVE_INFINITY;
-        int result = -1;
-        int idx = 0;
-        for (Float val : f) {
-            if (val > maxVal) {
-                maxVal = val;
-                result = idx;
+        for (Image img : imageList) {
+            PixelReader reader = img.getPixelReader();
+            for (int y = 0; y < img.getHeight(); y++) {
+               for (int x = 0; x < img.getWidth(); x++) {
+                   int c = col2int(reader.getColor(x, y));
+    
+                   if(toReturn.containsKey(c)){ 
+                       MyColor temp = (MyColor)toReturn.get(c);
+                       temp.increment(); //increase its 'count' value (NOTE: Not used anywhere!)
+                   }else{
+                       MyColor toAdd = new MyColor(c);
+                       toReturn.put(c, toAdd);
+                   }
+               }
             }
-            idx++;
         }
 
-        return result;
+        return toReturn;
     }
 
-    private void testFindMin() {
-        List<Float> l1 = Arrays.asList();
-        System.err.printf("%s, %s, %s (%s)\n", l1, findMin(l1), findMax(l1), findIndexOfMax(l1));
-
-        List<Float> l2 = Arrays.asList(5.0F);
-        System.err.printf("%s, %s, %s (%s)\n", l2, findMin(l2), findMax(l2), findIndexOfMax(l2));
-
-        List<Float> l3 = Arrays.asList(5.0F, 3.0F);
-        System.err.printf("%s, %s, %s (%s)\n", l3, findMin(l3), findMax(l3), findIndexOfMax(l3));
-
-        List<Float> l4 = Arrays.asList(5.0F, 2.0F, 3.0F, 2.5F);
-        System.err.printf("%s, %s, %s (%s)\n", l4, findMin(l4), findMax(l4), findIndexOfMax(l4));
-
-        List<Float> l5 = Arrays.asList(5.0F, 2.0F, 8.0F, 3.0F, 2.5F);
-        System.err.printf("%s, %s, %s (%s)\n", l5, findMin(l5), findMax(l5), findIndexOfMax(l5));
-    }
-
-    private int color(float avgRed, float avgGreen, float avgBlue) {
-        return ((int) avgRed << 16) + ((int) avgGreen << 8) + (int) avgBlue;
-    }
-
+    
+    
     
     private int col2int(Color color) {
         int r = (int) (color.getRed()*255);
@@ -405,18 +294,19 @@ public class MedianCut {
         return ( (r << 16) + (g << 8) + b);
     }
 
-    //class to store colours for use in the ColorBoxes
-    private class MyColor{
+
+    // class to store colours for use in the ColorBoxes
+    class MyColor{
     
         int col;
         int count;
         float [] rgb = new float[3];
     
-        //constructor takes the color as an int
+        // constructor takes the color as an int
         MyColor(int col){
             this.col = col;
             
-            //bitshifting faster than red(col) etc. 
+            // bitshifting faster than red(col) etc. 
             rgb[RED]= (col >> 16) & 0xFF;
             rgb[GREEN]=(col >> 8) & 0xFF;
             rgb[BLUE]= col & 0xFF;
@@ -426,44 +316,6 @@ public class MedianCut {
     
         void increment(){
             count++;
-        }
-    }
-    
-
-    /**
-     * 
-     */
-    class ColorBox{
-        final Float rmin, rmax, gmin, gmax, bmin, bmax;   // the bounds of the color box
-        final Map<Integer, MyColor> cols;                 // all colors which are inside the box boundaries
-        final int level;
-    
-        // constructor takes the colours contained by this box and its level of "depth"
-        ColorBox(Map<Integer, MyColor> cols, int level){
-            this.cols = cols;
-            this.level = level;
-
-/** Convert the Colors into their individual channels */
-            // Compute the box boundaries.
-            // 3 temporary arrays used for getting the min/max of each RGB channel
-            List<Float> reds = new ArrayList<>(cols.size());
-            List<Float> greens = new ArrayList<>(cols.size());
-            List<Float> blues = new ArrayList<>(cols.size());
-
-            cols.values().forEach(mc -> {
-                reds.add(mc.rgb[RED]);
-                greens.add(mc.rgb[GREEN]);
-                blues.add(mc.rgb[BLUE]);
-            });
-/******************************************************/
-
-            // we need the min/max to determine which axis to split along
-            rmin = findMin(reds);
-            rmax = findMax(reds);
-            gmin = findMin(greens);
-            gmax = findMax(greens);
-            bmin = findMin(blues);
-            bmax = findMax(blues);
         }
     }
 }

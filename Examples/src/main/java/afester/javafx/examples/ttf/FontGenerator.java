@@ -24,9 +24,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
@@ -37,6 +37,7 @@ import afester.javafx.examples.Example;
 import afester.javafx.examples.image.ArrayDump;
 import afester.javafx.examples.image.ImageConverter;
 import afester.javafx.examples.image.RleEncoder;
+import afester.javafx.examples.ttf.MedianCut.MyColor;
 import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.BoundingBox;
@@ -576,101 +577,100 @@ public class FontGenerator extends Application {
         
         ImageConverter ic = new ImageConverter();
         ColorPalette cp = new ColorPalette();
-        
+
+        List<Image> allImages = new ArrayList<>();
         for (GlyphData gd : glyphData) {
             Bounds b = glyphMetricArea.getBoundsInParent();
             params.setViewport(new Rectangle2D(b.getMinX() + gd.effectiveBounds.getMinX(), 
                                                b.getMinY() + gd.effectiveBounds.getMinY(),
                                                gd.effectiveBounds.getWidth(), gd.effectiveBounds.getHeight()));
             gd.glyphImg = glyphMetricArea.snapshot(params, null);
-
-            switch(reduction.getSelectedValue()) {
-			
-	            case COLORS_16:
-					gd.glyphImg = reduceColorsTo16(gd.glyphImg);
-					break;
-
-				case NONE:
-					break;
-
-				case RGB565:
-					gd.glyphImg = reduceColorsTo565(gd.glyphImg);
-					break;
-
-				default:
-					break;
-            }
-
-            // getColors(gd.glyphImg);
-
-            cp.addColors(gd.glyphImg);
-
-/////////////////////////////            
-            ImageView iv = new ImageView(gd.glyphImg);
-            snapshots.getChildren().add(iv);
-
-//                // create the color palette
-//                short[] rgb565 = ic.getRGB565(gd.glyphImg);
-//                
-//                // convert bitmap to indexed bitmap
-//                byte[] bitmap = new byte[rgb565.length];
-//                for (int idx = 0;  idx < rgb565.length;  idx++) {
-//                    short value = rgb565[idx];
-//            
-//                    // lookup value index
-//                    int colorIdx = palette.indexOf(value);
-//                    if (colorIdx == -1) {
-//                        colorIdx = palette.size();
-//                        palette.add(value);
-//                    }
-//            
-//                    bitmap[idx] = (byte) colorIdx;  // TODO: max. 256 colors
-//                }
-            
+            allImages.add(gd.glyphImg);
         }
 
-        System.err.println("Number of colors: " + cp.getSize());
+        switch(reduction.getSelectedValue()) {
+    
+            case COLORS_16: {
+                // Now quantize the SET of images
+                MedianCut mc = new MedianCut();
+    
+                // Step 1: Get a map of all colors in the original image
+                Map<Integer, MyColor> origCols = mc.findOriginalColors(allImages);
+                System.err.println("Number of colors: " + origCols.size());
+    
+                // Step 2: find the colors which best match all the original colors in the reduced palette
+                int[] repCols = mc.findRepresentativeColors(origCols, 16);
+                System.err.println("Number of rep colors: " + repCols.length);
+    
+                // Step 3: Quantize all images with the new set of colors
+                for (GlyphData gd : glyphData) {
+                    gd.glyphImg = mc.quantizeImage(gd.glyphImg, repCols);
+    
+                    ImageView iv = new ImageView(gd.glyphImg);
+                    snapshots.getChildren().add(iv);
+                    cp.addColors(gd.glyphImg);
+                }
+    
+            }
+            break;
 
-//        cp.sort();
+            case NONE:
+                for (GlyphData gd : glyphData) {
+                    ImageView iv = new ImageView(gd.glyphImg);
+                    snapshots.getChildren().add(iv);
+                    cp.addColors(gd.glyphImg);
+                }
+                break;
+
+            case RGB565:
+                /// gd.glyphImg = reduceColorsTo565(gd.glyphImg);
+                break;
+
+            default:
+                break;
+        }
+        
         System.err.println(cp.getColorList());
         pv.setPalette(cp);
-///////////////////////////////////
     }
 
 	/**
      * Reduces the colors in the given image to 16 colors.
-     *
+     * 
      * @param glyphImg The image to reduce.
      * @return The image with the reduced number of colors.
      */
-    private Image reduceColorsTo16(Image glyphImg) {
+    private Image xreduceColorsTo16(Image glyphImg) {
     	ColorPalette pal = new ColorPalette();
     	pal.addColors(glyphImg);
-    	System.err.printf("Number of colors: %s\n", pal.getSize());
+    	System.err.printf("(16) Number of colors: %s\n", pal.getSize());
 
     	ColorSpectrum spectr = new ColorSpectrum();
     	spectr.addColors(glyphImg);
     	spectr.dumpSpectrum(System.err);
 
-///////////////////////////
-    	List<Color> colors = pal.getSortedColors(new HilbertSorter());
-    	HilbertCurve hc = HilbertCurve.bits(8).dimensions(3);
-    	BigInteger prev = null;
-    	for (Color c : colors) {
-    	    if (prev == null) {
-                long[] previous = new long[] {(int) (c.getRed() * 255), (int) (c.getGreen() * 255), (int) (c.getBlue() * 255)};
-                prev = hc.index(previous);
-    	    } else {
-                long[] current = new long[] {(int) (c.getRed() * 255), (int) (c.getGreen() * 255), (int) (c.getBlue() * 255)};
-                BigInteger cur = hc.index(current);
-                
-                System.err.printf("Delta: %s-%s: %s\n", cur, prev, cur.subtract(prev));
+    	MedianCut mc = new MedianCut();
+    	glyphImg = mc.medianCut(glyphImg, 16);
 
-                prev = cur;
-    	    }
-    	}
 ///////////////////////////
-    	
+//    	List<Color> colors = pal.getSortedColors(new HilbertSorter());
+//    	HilbertCurve hc = HilbertCurve.bits(8).dimensions(3);
+//    	BigInteger prev = null;
+//    	for (Color c : colors) {
+//    	    if (prev == null) {
+//                long[] previous = new long[] {(int) (c.getRed() * 255), (int) (c.getGreen() * 255), (int) (c.getBlue() * 255)};
+//                prev = hc.index(previous);
+//    	    } else {
+//                long[] current = new long[] {(int) (c.getRed() * 255), (int) (c.getGreen() * 255), (int) (c.getBlue() * 255)};
+//                BigInteger cur = hc.index(current);
+//                
+//                System.err.printf("Delta: %s-%s: %s\n", cur, prev, cur.subtract(prev));
+//
+//                prev = cur;
+//    	    }
+//    	}
+///////////////////////////
+
 		return glyphImg;
 	}
 
@@ -803,6 +803,51 @@ public class FontGenerator extends Application {
                 ArrayDump ad = new ArrayDump(bitmap);
                 ad.dumpAll(16, out);
                 out.println("};\n");
+            }
+
+            out.printf("uint16_t palette[] =\n");
+            ArrayDump ad2 = new ArrayDump(palette);
+            ad2.dumpAll(16, out);
+            out.println(";");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        System.err.printf("Overall size: %s bytes\n", overallSize);
+    }
+
+    private void exportCCode4bitIndexed() {
+        String fileName = "font.c";
+        System.err.print("Export " + fileName);
+
+        int overallSize = 0;
+        try (PrintStream out = new PrintStream(new FileOutputStream(fileName))) {
+            ImageConverter ic = new ImageConverter();
+            List<Short> palette = new ArrayList<>();
+
+            for (GlyphData gd : glyphData) {
+
+                // short[] rgb565 = ic.getRGB565(gd.glyphImg);
+//    
+//                // convert bitmap to indexed bitmap
+//                byte[] bitmap = new byte[rgb565.length];
+//                for (int idx = 0;  idx < rgb565.length;  idx++) {
+//                    short value = rgb565[idx];
+//            
+//                    // lookup value index
+//                    int colorIdx = palette.indexOf(value);
+//                    if (colorIdx == -1) {
+//                        colorIdx = palette.size();
+//                        palette.add(value);
+//                    }
+//            
+//                    bitmap[idx] = (byte) colorIdx;  // TODO: max. 256 colors
+//                }
+//                overallSize += bitmap.length;
+
+                out.printf("const Bitmap8 %s PROGMEM = {%d, %d,\n", gd.glyphId, (int) gd.glyphImg.getWidth(), (int) gd.glyphImg.getHeight());
+//                ArrayDump ad = new ArrayDump(bitmap);
+//                ad.dumpAll(16, out);
+//                out.println("};\n");
             }
 
             out.printf("uint16_t palette[] =\n");
