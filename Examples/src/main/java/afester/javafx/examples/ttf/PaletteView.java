@@ -18,7 +18,7 @@ public class PaletteView extends GridPane {
 
         final int columns = ((int) Math.sqrt(cp.getSize() - 1)) + 1;
         final int rows = (cp.getSize() -1) / columns + 1;
-        System.err.printf("%s: %s x %s (%s)\n", cp.getSize(), columns, rows, columns*rows);
+        // System.err.printf("%s: %s x %s (%s)\n", cp.getSize(), columns, rows, columns*rows);
 
         int column = 0;
         int row = 0;

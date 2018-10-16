@@ -12,7 +12,7 @@ public class RleEncoder {
     /**
      * Compresses the given byte array into an array where each byte contains a count 
      * in the upper four bits and a value in the lower four bits.
-     * Note that this requires that the value is less than 16! 
+     * Note that this requires that all values are less than 16! 
      * 
      * @param bitmap
      * @return

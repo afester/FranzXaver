@@ -15,6 +15,7 @@ import java.util.List;
 //import com.example.hexdump.HexDump;
 
 import afester.javafx.examples.Example;
+import afester.javafx.examples.ttf.ColorPalette;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -23,6 +24,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -407,7 +409,7 @@ public class ImageConverter extends Application {
      * @param rgbValue The (a)rgb value as a long
      * @return The converted rgb565 value, in rgb order!
 	 */
-    private short fromARGBToRGB565(long rgbValue) {
+    public static short fromARGBToRGB565(long rgbValue) {
         long result = ((rgbValue & 0x00f80000) >> 8) +
                       ((rgbValue & 0x0000fc00) >> 5) +
                       ((rgbValue & 0x000000f8) >> 3);
@@ -428,7 +430,7 @@ public class ImageConverter extends Application {
      * @param rgbValue The (a)rgb value as a long
      * @return The converted rgb565 value, in GBR order!
      */
-    private short fromARGBToGBR565(long rgbValue) {
+    public static short fromARGBToGBR565(long rgbValue) {
         long result = ((rgbValue & 0x00f80000) >> 19) +
                       ((rgbValue & 0x0000fc00) >> 5) +
                       ((rgbValue & 0x000000f8) << 8);
@@ -517,4 +519,29 @@ public class ImageConverter extends Application {
         return rgb565;	
     }
 
+	/**
+	 * @param image The image to return a bitmap from. 
+	 * @param pal The palette to use.
+	 * @return A bitmap of the given image using the given palette.
+	 *         Note that the maximum colors in the palette is 256.
+	 */
+    public byte[] getIndexed(Image image, ColorPalette cp) {
+        int imgWidth = (int) image.getWidth();
+        int imgHeight= (int) image.getHeight();
+
+        byte[] result = new byte[imgWidth * imgHeight];
+        int destIdx = 0;
+        PixelReader reader = image.getPixelReader();
+        for (int y = 0; y < imgHeight;  y++) {
+            for (int x = 0; x < imgWidth;  x++) {
+                Color pixel = reader.getColor(x, y);
+                int idx = cp.indexOf(pixel);
+                result[destIdx++] = (byte) idx; // 0 .. 15
+                System.err.println(idx);
+            }
+        }
+
+        System.err.printf("%s == %s ?\n", destIdx, result.length);
+        return result;
+    }
 }

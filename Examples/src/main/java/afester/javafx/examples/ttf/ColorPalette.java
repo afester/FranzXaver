@@ -105,4 +105,25 @@ public class ColorPalette {
 
         return result;
     }
+
+    
+    /**
+     * @param color The color to lookup in the palette.
+     * @return The index of a given color or -1 if the given color does not exist in this palette.
+     */
+    public int indexOf(Color color) {
+        Integer idx = colorMap.get(color);
+        if (idx != null) {
+            return idx;
+        }
+        return -1;
+    }
+
+    /**
+     * @param index The palette index for which to return the color.
+     * @return The color for the given palette index.
+     */
+    public Color colorFor(int index) {
+        return null;
+    }
 }

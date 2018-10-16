@@ -286,11 +286,15 @@ public class MedianCut {
 
     
     
-    
-    private int col2int(Color color) {
-        int r = (int) (color.getRed()*255);
-        int g = (int) (color.getGreen()*255);
-        int b = (int) (color.getBlue()*255);
+    /**
+     * Converts a Color into the corresponding integer value
+     * @param color
+     * @return
+     */
+    public static int col2int(Color color) {
+        int r = (int) (color.getRed() * 255);
+        int g = (int) (color.getGreen() * 255);
+        int b = (int) (color.getBlue() * 255);
         return ( (r << 16) + (g << 8) + b);
     }
 

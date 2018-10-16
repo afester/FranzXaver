@@ -16,7 +16,6 @@
 
 package afester.javafx.examples.ttf;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,9 +29,6 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import com.sun.javafx.tk.FontMetrics;
-import com.sun.javafx.tk.Toolkit;
-
 import afester.javafx.examples.Example;
 import afester.javafx.examples.image.ArrayDump;
 import afester.javafx.examples.image.ImageConverter;
@@ -42,7 +38,6 @@ import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
@@ -56,8 +51,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -96,7 +89,8 @@ enum ExportImageFormat implements RadioButtonValues {
     PNG("PNG"), 
     RGB565_INDEXED("RGB565 Indexed"),
     RGB565("RGB565"), 
-    RGB565_COMPRESSED("RGB565 Compressed");
+    RGB565_COMPRESSED("RGB565 Compressed"),
+    INDEXED_4("4 bit indexed");
 
     private String label;
 
@@ -151,6 +145,8 @@ public class FontGenerator extends Application {
     private Font f;
     private TextField inputLine;
     private HBox glyphs;
+    private PaletteView pv;
+    private ColorPalette cp; 
     private List<GlyphData> glyphData = new ArrayList<>();
     private CheckBox showVisualBounds;
     private CheckBox showLogicalBounds;
@@ -391,7 +387,7 @@ public class FontGenerator extends Application {
         snapshots.setSpacing(2);
 
         HBox previewOptions = new HBox();
-        PaletteView pv = new PaletteView();
+        pv = new PaletteView();
         previewOptions.getChildren().add(pv);
 
         reduction = new RadioButtonGroup(ColorReduction.values());
@@ -411,26 +407,45 @@ public class FontGenerator extends Application {
         Button exportButton = new Button("Export ...");
         exportButton.setOnAction(e -> {
 
-            // TODO: modify structure so that we can use switch() here
-            if (this.exportSelection.getSelectedValue() == ExportFileFormat.BINARY) {
-                if (this.formatSelection.getSelectedValue() == ExportImageFormat.PNG) {
-                   exportBinaryPNG();
-                } else if (this.formatSelection.getSelectedValue() == ExportImageFormat.RGB565) {
-                   exportBinaryRGB565();
-                } else if (this.formatSelection.getSelectedValue() == ExportImageFormat.RGB565_COMPRESSED) {
-                   exportBinaryRGB565Compressed();
-                }
+            switch (this.exportSelection.getSelectedValue()) {
+                case BINARY:
+                    switch(this.formatSelection.getSelectedValue()) {
+                        case INDEXED_4:
+                            break;
+                        case PNG:
+                            exportBinaryPNG();
+                            break;
+                        case RGB565:
+                            exportBinaryRGB565();
+                            break;
+                        case RGB565_COMPRESSED:
+                            exportBinaryRGB565Compressed();
+                            break;
+                        case RGB565_INDEXED:
+                            break;
+                    }
+                    break;
 
-            } else if (this.exportSelection.getSelectedValue() == ExportFileFormat.C_CODE) {
-                if (this.formatSelection.getSelectedValue() == ExportImageFormat.PNG) {
-                    exportCCodePNG();
-                } else if (this.formatSelection.getSelectedValue() == ExportImageFormat.RGB565_INDEXED) {
-                    exportCCodeRGB565Indexed();
-                } else if (this.formatSelection.getSelectedValue() == ExportImageFormat.RGB565) {
-                    exportCCodeRGB565();
-                } else if (this.formatSelection.getSelectedValue() == ExportImageFormat.RGB565_COMPRESSED) {
-                    exportCCodeRGB565Compressed();
-                }
+                case C_CODE:
+                    switch(this.formatSelection.getSelectedValue()) {
+                        case INDEXED_4:
+                            exportCCode4bitIndexed();
+                            break;
+
+                        case PNG:
+                            exportCCodePNG();
+                            break;
+                        case RGB565:
+                            exportCCodeRGB565();
+                            break;
+                        case RGB565_COMPRESSED:
+                            exportCCodeRGB565Compressed();
+                            break;
+                        case RGB565_INDEXED:
+                            exportCCodeRGB565Indexed();
+                            break;
+                    }
+                    break;
             }
 
 //            try {
@@ -576,7 +591,7 @@ public class FontGenerator extends Application {
         snapshots.getChildren().clear();
         
         ImageConverter ic = new ImageConverter();
-        ColorPalette cp = new ColorPalette();
+        /*ColorPalette */ cp = new ColorPalette();
 
         List<Image> allImages = new ArrayList<>();
         for (GlyphData gd : glyphData) {
@@ -591,28 +606,28 @@ public class FontGenerator extends Application {
         switch(reduction.getSelectedValue()) {
     
             case COLORS_16: {
-                // Now quantize the SET of images
-                MedianCut mc = new MedianCut();
-    
-                // Step 1: Get a map of all colors in the original image
-                Map<Integer, MyColor> origCols = mc.findOriginalColors(allImages);
-                System.err.println("Number of colors: " + origCols.size());
-    
-                // Step 2: find the colors which best match all the original colors in the reduced palette
-                int[] repCols = mc.findRepresentativeColors(origCols, 16);
-                System.err.println("Number of rep colors: " + repCols.length);
-    
-                // Step 3: Quantize all images with the new set of colors
-                for (GlyphData gd : glyphData) {
-                    gd.glyphImg = mc.quantizeImage(gd.glyphImg, repCols);
-    
-                    ImageView iv = new ImageView(gd.glyphImg);
-                    snapshots.getChildren().add(iv);
-                    cp.addColors(gd.glyphImg);
+                    // Now quantize the SET of images
+                    MedianCut mc = new MedianCut();
+        
+                    // Step 1: Get a map of all colors in the original image
+                    Map<Integer, MyColor> origCols = mc.findOriginalColors(allImages);
+                    System.err.println("Number of colors: " + origCols.size());
+        
+                    // Step 2: find the colors which best match all the original colors in the reduced palette
+                    int[] repCols = mc.findRepresentativeColors(origCols, 16);
+                    System.err.println("Number of rep colors: " + repCols.length);
+        
+                    // Step 3: Quantize all images with the new set of colors
+                    for (GlyphData gd : glyphData) {
+                        gd.glyphImg = mc.quantizeImage(gd.glyphImg, repCols);
+        
+                        ImageView iv = new ImageView(gd.glyphImg);
+                        snapshots.getChildren().add(iv);
+                        cp.addColors(gd.glyphImg);
+                    }
+        
                 }
-    
-            }
-            break;
+                break;
 
             case NONE:
                 for (GlyphData gd : glyphData) {
@@ -629,50 +644,10 @@ public class FontGenerator extends Application {
             default:
                 break;
         }
-        
+
         System.err.println(cp.getColorList());
         pv.setPalette(cp);
     }
-
-	/**
-     * Reduces the colors in the given image to 16 colors.
-     * 
-     * @param glyphImg The image to reduce.
-     * @return The image with the reduced number of colors.
-     */
-    private Image xreduceColorsTo16(Image glyphImg) {
-    	ColorPalette pal = new ColorPalette();
-    	pal.addColors(glyphImg);
-    	System.err.printf("(16) Number of colors: %s\n", pal.getSize());
-
-    	ColorSpectrum spectr = new ColorSpectrum();
-    	spectr.addColors(glyphImg);
-    	spectr.dumpSpectrum(System.err);
-
-    	MedianCut mc = new MedianCut();
-    	glyphImg = mc.medianCut(glyphImg, 16);
-
-///////////////////////////
-//    	List<Color> colors = pal.getSortedColors(new HilbertSorter());
-//    	HilbertCurve hc = HilbertCurve.bits(8).dimensions(3);
-//    	BigInteger prev = null;
-//    	for (Color c : colors) {
-//    	    if (prev == null) {
-//                long[] previous = new long[] {(int) (c.getRed() * 255), (int) (c.getGreen() * 255), (int) (c.getBlue() * 255)};
-//                prev = hc.index(previous);
-//    	    } else {
-//                long[] current = new long[] {(int) (c.getRed() * 255), (int) (c.getGreen() * 255), (int) (c.getBlue() * 255)};
-//                BigInteger cur = hc.index(current);
-//                
-//                System.err.printf("Delta: %s-%s: %s\n", cur, prev, cur.subtract(prev));
-//
-//                prev = cur;
-//    	    }
-//    	}
-///////////////////////////
-
-		return glyphImg;
-	}
 
 
 	/**
@@ -822,41 +797,38 @@ public class FontGenerator extends Application {
         int overallSize = 0;
         try (PrintStream out = new PrintStream(new FileOutputStream(fileName))) {
             ImageConverter ic = new ImageConverter();
-            List<Short> palette = new ArrayList<>();
-
             for (GlyphData gd : glyphData) {
 
-                // short[] rgb565 = ic.getRGB565(gd.glyphImg);
-//    
-//                // convert bitmap to indexed bitmap
-//                byte[] bitmap = new byte[rgb565.length];
-//                for (int idx = 0;  idx < rgb565.length;  idx++) {
-//                    short value = rgb565[idx];
-//            
-//                    // lookup value index
-//                    int colorIdx = palette.indexOf(value);
-//                    if (colorIdx == -1) {
-//                        colorIdx = palette.size();
-//                        palette.add(value);
-//                    }
-//            
-//                    bitmap[idx] = (byte) colorIdx;  // TODO: max. 256 colors
-//                }
-//                overallSize += bitmap.length;
+                byte[] indexedBitmap = ic.getIndexed(gd.glyphImg, cp);
+                RleEncoder re = new RleEncoder();
+                int newSize = re.rleEncode_4plus4(indexedBitmap);
+                byte[] compressed = new byte[newSize];
+                System.arraycopy(indexedBitmap, 0, compressed, 0, newSize);
+                overallSize += compressed.length;
 
                 out.printf("const Bitmap8 %s PROGMEM = {%d, %d,\n", gd.glyphId, (int) gd.glyphImg.getWidth(), (int) gd.glyphImg.getHeight());
-//                ArrayDump ad = new ArrayDump(bitmap);
-//                ad.dumpAll(16, out);
-//                out.println("};\n");
+                ArrayDump ad = new ArrayDump(compressed);
+                ad.dumpAll(16, out);
+                out.println("};\n");
             }
 
-            out.printf("uint16_t palette[] =\n");
-            ArrayDump ad2 = new ArrayDump(palette);
-            ad2.dumpAll(16, out);
-            out.println(";");
+            // Export the palette values (the actual color values) in RGB565 format
+            out.printf("uint16_t palette[] =\n{");
+            boolean first = true;
+            for (Color c : cp.getColorList()) {
+                if (!first) {
+                    out.printf(", ");
+                }
+                first = false;
+                int colorValue = MedianCut.col2int(c);
+                short rgb565Value = ImageConverter.fromARGBToRGB565(colorValue);
+                out.printf("0x%04x", rgb565Value);
+            }
+            out.println("};");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+
         System.err.printf("Overall size: %s bytes\n", overallSize);
     }
 
@@ -1128,162 +1100,162 @@ public class FontGenerator extends Application {
         }
     }
 
-    private void updateGlyphs2() {
-        glyphs.getChildren().clear();
-        
-        Text c = new Text(0, 0 , inputLine.getText());
-        c.setTextOrigin(VPos.TOP);
-        c.setFont(f);
-        c.setFill(Color.RED);
-        Pane gg = new Pane();
-        gg.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
-        gg.getChildren().add(c);
-        glyphs.getChildren().add(gg);
-    }
-
-    // private float xpos = 0;
-    private float yMin = 0;
-    private float yMax = 0;
-    private void updateGlyphs3() {
-
-// Calculate all glyphs
-        glyphData.clear();
-//xpos = 0;
-        yMin = 0;
-        yMax = 0;
-        final FontMetrics fm = Toolkit.getToolkit().getFontLoader().getFontMetrics(f);
-        // final float charHeight = fm.getXheight();    // height of non-capital "x" letter
-        ///final float charHeight = fm.getLineHeight();    // line height - might be much larger than the glyph sizes
-        inputLine.getText().chars().forEach(e -> {
-            GlyphData gd = new GlyphData();
-            gd.charWidth = fm.getCharWidth((char) e);  // width of the given character
-            gd.charBox = reportSize(String.valueOf((char) e), f);
-            gd.gbi = getGlyphBounds(String.valueOf((char) e), f);
-            System.err.println(gd.gbi);
-            gd.character =  (char) e;
-
-            if (gd.charBox.getMinY() < yMin) {
-                yMin = (float) gd.charBox.getMinY();
-            }
-            if (gd.charBox.getMaxY() > yMax) {
-                yMax = (float) gd.charBox.getMaxY();
-            }
-
-            glyphData.add(gd);
-        });
-
-        glyphs.getChildren().clear();
-        glyphs.setSpacing(0);
-        glyphs.setPadding(Insets.EMPTY);
-        final float charHeight = yMax - yMin;
-        float xpos = 0;
-        int i = 0;
-        for (GlyphData gd : glyphData) {
-            // background shape and container for glyph and bounding boxes
-        	gd.charHeight = charHeight;
-            Pane gg = new Pane();
-            gg.setPrefWidth(gd.charWidth);
-            gg.setPrefHeight(gd.charHeight);
-            //gg.setMPrefWidth(gd.charWidth);
-            gg.setMaxHeight(gd.charHeight);
-            glyphs.setPadding(Insets.EMPTY);
-            //gg.setCenterShape(false);
-            gg.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
-//            if (i % 2 == 0 ) {
-//            	gg.setBackground(new Background(new BackgroundFill(Color.BLUE, null, null)));
-//            } else { 
-//            	gg.setBackground(new Background(new BackgroundFill(Color.YELLOW, null, null)));
-//        	}
-//            i++;
-        
-
-//            final Rectangle r = new Rectangle(xpos,  yMin, gd.charWidth, charHeight);
-//            r.setFill(Color.BLACK);
-////            r.setFill(null);
-////            r.setStroke(Color.BLACK);
-////            r.getStrokeDashArray().add(0, 5.0);
-////            r.getStrokeDashArray().add(1, 5.0);
-//            gg.getChildren().add(r);
-
-        // Bounding box of the character
-            if (showVisualBounds.isSelected()) {
-              final Rectangle gr = new Rectangle(gd.gbi.getVisualBounds().getMinX(),
-                                                 gd.gbi.getVisualBounds().getMinY(),
-                                                 gd.gbi.getVisualBounds().getWidth(),
-                                                 gd.gbi.getVisualBounds().getHeight());
-//                final Rectangle gr = new Rectangle(gd.charBox.getMinX(), gd.charBox.getMinY(),
-//                                                   gd.charBox.getWidth(), gd.charBox.getHeight());
-                gr.setManaged(false);
-                //gr.setFill(Color.BLACK);
-                //gr.setStroke(null);
-                gr.setFill(null);
-                gr.setStroke(Color.WHITE);
-                gr.getStrokeDashArray().add(0, 5.0);
-                gr.getStrokeDashArray().add(1, 5.0);
-                gg.getChildren().add(gr);
-            }
-            if (showLogicalBounds.isSelected()) {
-                final Rectangle gr = new Rectangle(gd.gbi.getLogicalBounds().getMinX(),
-                                                   gd.gbi.getLogicalBounds().getMinY(),
-                                                   gd.gbi.getLogicalBounds().getWidth(),
-                                                   gd.gbi.getLogicalBounds().getHeight());
-
-                //final Rectangle gr = new Rectangle(0, gd.charBox.getMinY(),
-                //        						   gd.charBox.getWidth(), gd.charBox.getHeight());
-                // final Rectangle gr = new Rectangle(0, 0, 30, 30);
-                gr.setManaged(false);
-                gr.setFill(null);
-                gr.setStroke(Color.RED);
-                gr.getStrokeDashArray().add(0, 5.0);
-                gr.getStrokeDashArray().add(1, 5.0);
-                gg.getChildren().add(gr);
-            }
-
-            // glyph - position is relative to Pane!
-            Text c = new Text(0, 0 , /* gd.charHeight, */String.valueOf(gd.character));
-            c.setManaged(false);
-            // c.setBoundsType(TextBoundsType.LOGICAL_VERTICAL_CENTER);
-            c.setTextOrigin(VPos.TOP);  // Default is VPos.BASELINE!!!!
-            c.setFont(f);
-            c.setFill(Color.RED);
-            gg.getChildren().add(c);
-
-            
-            gd.glyphNode = gg;
-            glyphs.getChildren().add(gg);
-
-            xpos += gd.gbi.getLogicalBounds().getWidth(); //  gd.charWidth; //  + 4;
-            
-
-            // c.setBoundsType(TextBoundsType.VISUAL);
-            
-            System.err.println(c.getBoundsInParent());
-        }
-
-        //Line l1 = new Line(0, yMin, xpos, yMin);
-        //Line l2 = new Line(0, yMax, xpos, yMax);
-        //glyphs.getChildren().addAll(l1, l2);
-    }
-
-    private String getImageType(int type) {
-        String result = "UNKNOWN";
-        switch(type) {
-            case BufferedImage.TYPE_CUSTOM  : result = "TYPE_CUSTOM"; break;
-            case BufferedImage.TYPE_INT_RGB  : result = "TYPE_INT_RGB"; break;
-            case BufferedImage.TYPE_INT_ARGB  : result = "TYPE_INT_ARGB"; break;
-            case BufferedImage.TYPE_INT_ARGB_PRE  : result = "TYPE_INT_ARGB_PRE"; break;
-            case BufferedImage.TYPE_INT_BGR  : result = "TYPE_INT_BGR"; break;
-            case BufferedImage.TYPE_3BYTE_BGR  : result = "TYPE_3BYTE_BGR"; break;
-            case BufferedImage.TYPE_4BYTE_ABGR  : result = "TYPE_4BYTE_ABGR"; break;
-            case BufferedImage.TYPE_4BYTE_ABGR_PRE  : result = "TYPE_4BYTE_ABGR_PRE"; break;
-            case BufferedImage.TYPE_USHORT_565_RGB  : result = "TYPE_USHORT_565_RGB"; break;
-            case BufferedImage.TYPE_USHORT_555_RGB  : result = "TYPE_USHORT_555_RGB"; break;
-            case BufferedImage.TYPE_BYTE_GRAY  : result = "TYPE_BYTE_GRAY"; break;
-            case BufferedImage.TYPE_USHORT_GRAY  : result = "TYPE_USHORT_GRAY"; break;
-            case BufferedImage.TYPE_BYTE_BINARY  : result = "TYPE_BYTE_BINARY"; break;
-            case BufferedImage.TYPE_BYTE_INDEXED  : result = "TYPE_BYTE_INDEXED"; break;
-        }
-        
-        return result;
-    }
+//    private void updateGlyphs2() {
+//        glyphs.getChildren().clear();
+//        
+//        Text c = new Text(0, 0 , inputLine.getText());
+//        c.setTextOrigin(VPos.TOP);
+//        c.setFont(f);
+//        c.setFill(Color.RED);
+//        Pane gg = new Pane();
+//        gg.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
+//        gg.getChildren().add(c);
+//        glyphs.getChildren().add(gg);
+//    }
+//
+//    // private float xpos = 0;
+//    private float yMin = 0;
+//    private float yMax = 0;
+//    private void updateGlyphs3() {
+//
+//// Calculate all glyphs
+//        glyphData.clear();
+////xpos = 0;
+//        yMin = 0;
+//        yMax = 0;
+//        final FontMetrics fm = Toolkit.getToolkit().getFontLoader().getFontMetrics(f);
+//        // final float charHeight = fm.getXheight();    // height of non-capital "x" letter
+//        ///final float charHeight = fm.getLineHeight();    // line height - might be much larger than the glyph sizes
+//        inputLine.getText().chars().forEach(e -> {
+//            GlyphData gd = new GlyphData();
+//            gd.charWidth = fm.getCharWidth((char) e);  // width of the given character
+//            gd.charBox = reportSize(String.valueOf((char) e), f);
+//            gd.gbi = getGlyphBounds(String.valueOf((char) e), f);
+//            System.err.println(gd.gbi);
+//            gd.character =  (char) e;
+//
+//            if (gd.charBox.getMinY() < yMin) {
+//                yMin = (float) gd.charBox.getMinY();
+//            }
+//            if (gd.charBox.getMaxY() > yMax) {
+//                yMax = (float) gd.charBox.getMaxY();
+//            }
+//
+//            glyphData.add(gd);
+//        });
+//
+//        glyphs.getChildren().clear();
+//        glyphs.setSpacing(0);
+//        glyphs.setPadding(Insets.EMPTY);
+//        final float charHeight = yMax - yMin;
+//        float xpos = 0;
+//        int i = 0;
+//        for (GlyphData gd : glyphData) {
+//            // background shape and container for glyph and bounding boxes
+//        	gd.charHeight = charHeight;
+//            Pane gg = new Pane();
+//            gg.setPrefWidth(gd.charWidth);
+//            gg.setPrefHeight(gd.charHeight);
+//            //gg.setMPrefWidth(gd.charWidth);
+//            gg.setMaxHeight(gd.charHeight);
+//            glyphs.setPadding(Insets.EMPTY);
+//            //gg.setCenterShape(false);
+//            gg.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
+////            if (i % 2 == 0 ) {
+////            	gg.setBackground(new Background(new BackgroundFill(Color.BLUE, null, null)));
+////            } else { 
+////            	gg.setBackground(new Background(new BackgroundFill(Color.YELLOW, null, null)));
+////        	}
+////            i++;
+//        
+//
+////            final Rectangle r = new Rectangle(xpos,  yMin, gd.charWidth, charHeight);
+////            r.setFill(Color.BLACK);
+//////            r.setFill(null);
+//////            r.setStroke(Color.BLACK);
+//////            r.getStrokeDashArray().add(0, 5.0);
+//////            r.getStrokeDashArray().add(1, 5.0);
+////            gg.getChildren().add(r);
+//
+//        // Bounding box of the character
+//            if (showVisualBounds.isSelected()) {
+//              final Rectangle gr = new Rectangle(gd.gbi.getVisualBounds().getMinX(),
+//                                                 gd.gbi.getVisualBounds().getMinY(),
+//                                                 gd.gbi.getVisualBounds().getWidth(),
+//                                                 gd.gbi.getVisualBounds().getHeight());
+////                final Rectangle gr = new Rectangle(gd.charBox.getMinX(), gd.charBox.getMinY(),
+////                                                   gd.charBox.getWidth(), gd.charBox.getHeight());
+//                gr.setManaged(false);
+//                //gr.setFill(Color.BLACK);
+//                //gr.setStroke(null);
+//                gr.setFill(null);
+//                gr.setStroke(Color.WHITE);
+//                gr.getStrokeDashArray().add(0, 5.0);
+//                gr.getStrokeDashArray().add(1, 5.0);
+//                gg.getChildren().add(gr);
+//            }
+//            if (showLogicalBounds.isSelected()) {
+//                final Rectangle gr = new Rectangle(gd.gbi.getLogicalBounds().getMinX(),
+//                                                   gd.gbi.getLogicalBounds().getMinY(),
+//                                                   gd.gbi.getLogicalBounds().getWidth(),
+//                                                   gd.gbi.getLogicalBounds().getHeight());
+//
+//                //final Rectangle gr = new Rectangle(0, gd.charBox.getMinY(),
+//                //        						   gd.charBox.getWidth(), gd.charBox.getHeight());
+//                // final Rectangle gr = new Rectangle(0, 0, 30, 30);
+//                gr.setManaged(false);
+//                gr.setFill(null);
+//                gr.setStroke(Color.RED);
+//                gr.getStrokeDashArray().add(0, 5.0);
+//                gr.getStrokeDashArray().add(1, 5.0);
+//                gg.getChildren().add(gr);
+//            }
+//
+//            // glyph - position is relative to Pane!
+//            Text c = new Text(0, 0 , /* gd.charHeight, */String.valueOf(gd.character));
+//            c.setManaged(false);
+//            // c.setBoundsType(TextBoundsType.LOGICAL_VERTICAL_CENTER);
+//            c.setTextOrigin(VPos.TOP);  // Default is VPos.BASELINE!!!!
+//            c.setFont(f);
+//            c.setFill(Color.RED);
+//            gg.getChildren().add(c);
+//
+//            
+//            gd.glyphNode = gg;
+//            glyphs.getChildren().add(gg);
+//
+//            xpos += gd.gbi.getLogicalBounds().getWidth(); //  gd.charWidth; //  + 4;
+//            
+//
+//            // c.setBoundsType(TextBoundsType.VISUAL);
+//            
+//            System.err.println(c.getBoundsInParent());
+//        }
+//
+//        //Line l1 = new Line(0, yMin, xpos, yMin);
+//        //Line l2 = new Line(0, yMax, xpos, yMax);
+//        //glyphs.getChildren().addAll(l1, l2);
+//    }
+//
+//    private String getImageType(int type) {
+//        String result = "UNKNOWN";
+//        switch(type) {
+//            case BufferedImage.TYPE_CUSTOM  : result = "TYPE_CUSTOM"; break;
+//            case BufferedImage.TYPE_INT_RGB  : result = "TYPE_INT_RGB"; break;
+//            case BufferedImage.TYPE_INT_ARGB  : result = "TYPE_INT_ARGB"; break;
+//            case BufferedImage.TYPE_INT_ARGB_PRE  : result = "TYPE_INT_ARGB_PRE"; break;
+//            case BufferedImage.TYPE_INT_BGR  : result = "TYPE_INT_BGR"; break;
+//            case BufferedImage.TYPE_3BYTE_BGR  : result = "TYPE_3BYTE_BGR"; break;
+//            case BufferedImage.TYPE_4BYTE_ABGR  : result = "TYPE_4BYTE_ABGR"; break;
+//            case BufferedImage.TYPE_4BYTE_ABGR_PRE  : result = "TYPE_4BYTE_ABGR_PRE"; break;
+//            case BufferedImage.TYPE_USHORT_565_RGB  : result = "TYPE_USHORT_565_RGB"; break;
+//            case BufferedImage.TYPE_USHORT_555_RGB  : result = "TYPE_USHORT_555_RGB"; break;
+//            case BufferedImage.TYPE_BYTE_GRAY  : result = "TYPE_BYTE_GRAY"; break;
+//            case BufferedImage.TYPE_USHORT_GRAY  : result = "TYPE_USHORT_GRAY"; break;
+//            case BufferedImage.TYPE_BYTE_BINARY  : result = "TYPE_BYTE_BINARY"; break;
+//            case BufferedImage.TYPE_BYTE_INDEXED  : result = "TYPE_BYTE_INDEXED"; break;
+//        }
+//        
+//        return result;
+//    }
 }
