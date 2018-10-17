@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,11 +41,11 @@ import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Rectangle2D;
 import javafx.geometry.VPos;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -142,9 +143,10 @@ public class FontGenerator extends Application {
         start(new Stage());
     }
 
-    private Font f;
     private TextField inputLine;
-    private HBox glyphs;
+    private Font currentFont;
+    private Color currentColor;
+
     private PaletteView pv;
     private ColorPalette cp; 
     private List<GlyphData> glyphData = new ArrayList<>();
@@ -163,27 +165,27 @@ public class FontGenerator extends Application {
     //private ExportFileFormat exportFileFormat = ExportFileFormat.C_CODE;
     //private ExportImageFormat exportImageFormat = ExportImageFormat.PNG;
 
-    private class Digit extends Group {
-
-        public Digit(int value) {
-            Text background = new Text("8.");
-            background.setTextOrigin(VPos.TOP);
-            background.setFont(f);
-            background.setFill(new Color(0.15, 0.15, 0.15, 1.0));
-
-//            Bounds b = background.getLayoutBounds();
-//            System.err.printf("%s/%s\n", b.getWidth(), b.getHeight());
-//            Rectangle r = new Rectangle(b.getWidth() + 6, b.getHeight());
-//            r.setFill(Color.YELLOW);
-
-            Text sampleText = new Text(Integer.toString(value));
-            sampleText.setTextOrigin(VPos.TOP);
-            sampleText.setFont(f);
-            sampleText.setFill(Color.RED);
-
-            getChildren().addAll(/*r,*/ background, sampleText);
-        }
-    }
+//    private class Digit extends Group {
+//
+//        public Digit(int value) {
+//            Text background = new Text("8.");
+//            background.setTextOrigin(VPos.TOP);
+//            background.setFont(f);
+//            background.setFill(new Color(0.15, 0.15, 0.15, 1.0));
+//
+////            Bounds b = background.getLayoutBounds();
+////            System.err.printf("%s/%s\n", b.getWidth(), b.getHeight());
+////            Rectangle r = new Rectangle(b.getWidth() + 6, b.getHeight());
+////            r.setFill(Color.YELLOW);
+//
+//            Text sampleText = new Text(Integer.toString(value));
+//            sampleText.setTextOrigin(VPos.TOP);
+//            sampleText.setFont(f);
+//            sampleText.setFill(Color.RED);
+//
+//            getChildren().addAll(/*r,*/ background, sampleText);
+//        }
+//    }
     
     
     @Override
@@ -193,24 +195,25 @@ public class FontGenerator extends Application {
         Text t = new Text();
 
         InputStream is = getClass().getResourceAsStream("DSEG7Classic-BoldItalic.ttf");
-        f = Font.loadFont(is, 72);
+        currentFont = Font.loadFont(is, 72);
+        currentColor = Color.RED;
         // f = Font.font("Arial", FontWeight.EXTRA_BOLD, FontPosture.ITALIC, 12.0);
 
-        FontSelectionPanel fsp = new FontSelectionPanel(f);
+        FontSelectionPanel fsp = new FontSelectionPanel(currentFont);
         fsp.setOnFontChanged( e-> {
-            f = Font.font(e.getFamily(), e.getWeight(), e.isItalic() ? FontPosture.ITALIC : FontPosture.REGULAR, e.getSize());
-            t.setFont(f);
+            currentFont = Font.font(e.getFamily(), e.getWeight(), e.isItalic() ? FontPosture.ITALIC : FontPosture.REGULAR, e.getSize());
+            t.setFont(currentFont);
             updateGlyphs();
         });
 
-        inputLine = new TextField("0123456789,mACTUV:Â°");
+        inputLine = new TextField("0123456789,ACTUV:°");
         inputLine.textProperty().addListener((obj, oldVal, newVal) -> {
             t.setText(newVal);
             updateGlyphs();
         });
 
         t.setText(inputLine.getText());
-        t.setFont(f);
+        t.setFont(currentFont);
 
 //
 //        Color[] colors = {Color.RED, Color.VIOLET, Color.BLUE, Color.BLACK, Color.GREEN};
@@ -383,6 +386,12 @@ public class FontGenerator extends Application {
             updateGlyphs();
         });
 
+        final ColorPicker colorPicker = new ColorPicker(Color.RED);
+        colorPicker.setOnAction(e -> {
+            currentColor = colorPicker.getValue(); 
+            updateGlyphs();
+        });
+
         snapshots = new HBox();
         snapshots.setSpacing(2);
 
@@ -390,7 +399,7 @@ public class FontGenerator extends Application {
         pv = new PaletteView();
         previewOptions.getChildren().add(pv);
 
-        reduction = new RadioButtonGroup(ColorReduction.values());
+        reduction = new RadioButtonGroup<>(ColorReduction.values());
         reduction.setOnAction(e -> updatePreview(pv) );
 
 //        reduceRGB565 = new CheckBox("Reduce to RGB565");
@@ -542,9 +551,9 @@ public class FontGenerator extends Application {
         });
 
         bottomBox.getChildren().addAll(showVisualBounds, showLogicalBounds, showTextOrigin, 
-                                       showTopBound, showBottomBound, showEffectiveBounds);
+                                       showTopBound, showBottomBound, showEffectiveBounds, colorPicker);
 
-        glyphs = new HBox();
+//        glyphs = new HBox();
 
         glyphMetricArea = new Pane();
         glyphMetricArea.setStyle("-fx-background-color: black");
@@ -554,9 +563,9 @@ public class FontGenerator extends Application {
         HBox exportComponent = new HBox();
         exportComponent.setSpacing(10);
 
-        exportSelection = new RadioButtonGroup(ExportFileFormat.values());
+        exportSelection = new RadioButtonGroup<>(ExportFileFormat.values());
         exportSelection.setSelectedValue(ExportFileFormat.C_CODE);
-        formatSelection = new RadioButtonGroup(ExportImageFormat.values());
+        formatSelection = new RadioButtonGroup<>(ExportImageFormat.values());
         formatSelection.setSelectedValue(ExportImageFormat.PNG);
 
         exportComponent.getChildren().addAll(exportSelection, formatSelection, exportButton);
@@ -590,7 +599,7 @@ public class FontGenerator extends Application {
         SnapshotParameters params = new SnapshotParameters();
         snapshots.getChildren().clear();
         
-        ImageConverter ic = new ImageConverter();
+        //ImageConverter ic = new ImageConverter();
         /*ColorPalette */ cp = new ColorPalette();
 
         List<Image> allImages = new ArrayList<>();
@@ -796,6 +805,10 @@ public class FontGenerator extends Application {
 
         int overallSize = 0;
         try (PrintStream out = new PrintStream(new FileOutputStream(fileName))) {
+
+/**************** Export the glyph images */
+
+            Map<Integer, GlyphData> charSetMap = new HashMap<>();
             ImageConverter ic = new ImageConverter();
             for (GlyphData gd : glyphData) {
 
@@ -806,11 +819,15 @@ public class FontGenerator extends Application {
                 System.arraycopy(indexedBitmap, 0, compressed, 0, newSize);
                 overallSize += compressed.length;
 
+                charSetMap.put((int) gd.character, gd);
+
                 out.printf("const Bitmap8 %s PROGMEM = {%d, %d,\n", gd.glyphId, (int) gd.glyphImg.getWidth(), (int) gd.glyphImg.getHeight());
                 ArrayDump ad = new ArrayDump(compressed);
                 ad.dumpAll(16, out);
                 out.println("};\n");
             }
+
+/**************** Export the palette */
 
             // Export the palette values (the actual color values) in RGB565 format
             out.printf("uint16_t palette[] =\n{");
@@ -824,7 +841,32 @@ public class FontGenerator extends Application {
                 short rgb565Value = ImageConverter.fromARGBToRGB565(colorValue);
                 out.printf("0x%04x", rgb565Value);
             }
-            out.println("};");
+            out.println("};\n");
+
+/**************** Create ASCII to glyph mapping */
+
+          out.print("const Bitmap8* charSet[224] = {");
+          for (int idx = ' ';  idx < 256;  idx++) {
+              GlyphData gd = charSetMap.get(idx);
+
+              String glyphId = "NULL";
+              if (gd != null) {
+                  glyphId = "&" + gd.glyphId;
+              }
+
+              if (idx > ' ') {
+                  out.print(", ");
+              }
+              if ((idx % 8) == 0) {
+                  out.println();
+              }
+
+              out.print(String.format("%-4s /*%03d'%c'*/", glyphId, idx, (char) idx));
+          }
+          out.println("};");
+
+/********************/
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -930,8 +972,8 @@ public class FontGenerator extends Application {
         inputLine.getText().chars().forEach(e -> {
                 
             Text t = new Text(xpos, 100, String.valueOf((char) e));  // inputLine.getText());
-            t.setFont(f);
-            t.setFill(Color.RED);
+            t.setFont(currentFont);
+            t.setFill(currentColor);
             glyphMetricArea.getChildren().add(t);
 
             if (showTextOrigin.isSelected()) {

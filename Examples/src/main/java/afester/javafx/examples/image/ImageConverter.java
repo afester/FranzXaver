@@ -537,11 +537,9 @@ public class ImageConverter extends Application {
                 Color pixel = reader.getColor(x, y);
                 int idx = cp.indexOf(pixel);
                 result[destIdx++] = (byte) idx; // 0 .. 15
-                System.err.println(idx);
             }
         }
 
-        System.err.printf("%s == %s ?\n", destIdx, result.length);
         return result;
     }
 }
