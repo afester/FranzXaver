@@ -1,5 +1,6 @@
 package afester.javafx.examples.ttf;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -125,5 +126,11 @@ public class ColorPalette {
      */
     public Color colorFor(int index) {
         return null;
+    }
+    
+    public void dumpPalette(PrintStream out) {
+    	colorMap.entrySet().forEach(e -> {
+    		out.printf("%s -> %s\n", e.getKey(), e.getValue());
+    	});
     }
 }

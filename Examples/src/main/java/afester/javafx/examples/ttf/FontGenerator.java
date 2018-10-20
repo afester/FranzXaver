@@ -206,7 +206,7 @@ public class FontGenerator extends Application {
             updateGlyphs();
         });
 
-        inputLine = new TextField("0123456789,ACTUV:°");
+        inputLine = new TextField("0123456789,ACTUV:ï¿½");
         inputLine.textProperty().addListener((obj, oldVal, newVal) -> {
             t.setText(newVal);
             updateGlyphs();
@@ -806,8 +806,11 @@ public class FontGenerator extends Application {
         int overallSize = 0;
         try (PrintStream out = new PrintStream(new FileOutputStream(fileName))) {
 
+        	out.printf("#include <stdlib.h>\n"
+        			  +"#include \"ILI9481.h\"\n"
+        			  +"#include \"avr/pgmspace.h\"\n\n");
+        	
 /**************** Export the glyph images */
-
             Map<Integer, GlyphData> charSetMap = new HashMap<>();
             ImageConverter ic = new ImageConverter();
             for (GlyphData gd : glyphData) {
@@ -828,9 +831,15 @@ public class FontGenerator extends Application {
             }
 
 /**************** Export the palette */
+            System.err.println();
+            int idx1 = 0;
+            for (Color c : cp.getColorList()) {
+            	System.err.printf("%s -> %s -> %s\n",  idx1, c, cp.indexOf(c));
+            	idx1++;
+            }
 
             // Export the palette values (the actual color values) in RGB565 format
-            out.printf("uint16_t palette[] =\n{");
+            out.printf("const uint16_t palette[] PROGMEM =\n{");
             boolean first = true;
             for (Color c : cp.getColorList()) {
                 if (!first) {
@@ -844,8 +853,7 @@ public class FontGenerator extends Application {
             out.println("};\n");
 
 /**************** Create ASCII to glyph mapping */
-
-          out.print("const Bitmap8* charSet[224] = {");
+          out.print("const Bitmap8* const charSet[224] PROGMEM = {");
           for (int idx = ' ';  idx < 256;  idx++) {
               GlyphData gd = charSetMap.get(idx);
 
