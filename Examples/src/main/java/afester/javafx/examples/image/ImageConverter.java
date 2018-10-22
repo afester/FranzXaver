@@ -417,6 +417,27 @@ public class ImageConverter extends Application {
     }
 
 
+    /**
+     * Converts an RGB565 value, stored in a 16 bit short value, into
+     * an RGB value, stored in a 32 bit long value.
+     * <code>
+     *                   rrrrrggg gggbbbbb
+     *
+     * 00000000 rrrrr000 gggggg00 bbbbb000
+     *
+     * </code>
+     *
+     * @param rgb565Value The rgb565 value as a short
+     * @return The converted rgb value, in RGB order!
+     */
+    public static int fromRGB565ToRGB(short rgb565Value) {
+        int result = ((rgb565Value & 0xf800) << 8) +
+                     ((rgb565Value & 0x07e0) << 5) +
+                     ((rgb565Value & 0x001f) << 3);
+        return result;
+    }
+
+
 	/**
 	 * Converts an ARGB value, stored in a 32 bit long value, into
 	 * an GBR565 value, stored in a 16 bit short value.

@@ -4,95 +4,34 @@ import java.io.PrintStream;
 import java.lang.reflect.Array;
 import java.util.List;
 
-public class ArrayDump {
-    protected Object arrayData;
-    private static int VALUES_PER_ROW = 16;
+public class JavaArrayDump extends ArrayDump {
 
-    public ArrayDump(List<? extends Number> data) {
-        arrayData = data;
+    public JavaArrayDump(List<? extends Number> data) {
+        super(data);
     }
 
-    public ArrayDump(Number[] data) {
-        arrayData = data;
+    public JavaArrayDump(Number[] data) {
+        super(data);
     }
 
-    public ArrayDump(byte[] data) {
-        arrayData = data;
+    public JavaArrayDump(byte[] data) {
+        super(data);
     }
 
-    public ArrayDump(short[] data) {
-        arrayData = data;
+    public JavaArrayDump(short[] data) {
+        super(data);
     }
 
-    public ArrayDump(int[] data) {
-        arrayData = data;
+    public JavaArrayDump(int[] data) {
+        super(data);
     }
 
-    public ArrayDump(long[] data) {
-        arrayData = data;
+    public JavaArrayDump(long[] data) {
+        super(data);
     }
 
-// Iterator
-    protected int arrayLength;
-    protected boolean isArray;
-    protected Class<?> elementType;
-    protected int arrayIdx;
 
-    protected String getNextElement() {
-        if (arrayIdx >= arrayLength) {
-            return null;
-        }
-
-        if (isArray) {
-            if (elementType == byte.class) {
-                return String.format("0x%02x", Array.getByte(arrayData, arrayIdx++));
-            } else if (elementType == short.class) {
-                return String.format("0x%04x", Array.getShort(arrayData, arrayIdx++));
-            } else if (elementType == int.class) {
-                return String.format("0x%08x", Array.getInt(arrayData, arrayIdx++));
-            } else if (elementType == long.class) {
-                return String.format("0x%016x", Array.getLong(arrayData, arrayIdx++));
-            } else if (elementType == Byte.class) {
-                return String.format("0x%02x", Array.get(arrayData, arrayIdx++));
-            } else if (elementType == Short.class) {
-                return String.format("0x%04x", Array.get(arrayData, arrayIdx++));
-            } else if (elementType == Integer.class) {
-                return String.format("0x%08x", Array.get(arrayData, arrayIdx++));
-            } else if (elementType == Long.class) {
-                return String.format("0x%016x", Array.get(arrayData, arrayIdx++));
-            } 
-        } else {
-            Object elem = ((List<?>) arrayData).get(arrayIdx++);
-            elementType = elem.getClass();
-
-            if (elementType == Byte.class) {
-                return String.format("0x%02x", elem);
-            } else if (elementType == Short.class) {
-                return String.format("0x%04x", elem);
-            } else if (elementType == Integer.class) {
-                return String.format("0x%08x", elem);
-            } else if (elementType == Long.class) {
-                return String.format("0x%016x", elem);
-            } 
-        }
-
-        return null;
-    }
-////////////////////
-    
-
-    public void dumpAll() {
-        dumpAll(VALUES_PER_ROW, System.err);
-    }
-
-    public void dumpAll(PrintStream out) {
-        dumpAll(VALUES_PER_ROW, out);
-    }
-
-    public void dumpAll(int valuesPerRow) {
-        dumpAll(valuesPerRow, System.err);
-    }
-    
+    @Override
     public void dumpAll(int valuesPerRow, PrintStream out) {
 
         // setup the iterator
@@ -116,6 +55,9 @@ public class ArrayDump {
         String nextElement = null;
         out.print("  {");
         while( (nextElement = getNextElement()) != null) {
+            if (elementType == byte.class || elementType == Byte.class) {
+                out.printf("(byte)");
+            }
             out.printf(nextElement);
             idx++;
 

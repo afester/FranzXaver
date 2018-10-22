@@ -208,16 +208,16 @@ public class MedianCut {
     }
 
 
-    private int blue(int col1) {
+    public static int blue(int col1) {
         return col1 & 0xff;
     }
 
-    private int green(int col1) {
+    public static int green(int col1) {
         return (col1 >> 8) & 0xff;
     }
 
 
-    private int red(int col1) {
+    public static int red(int col1) {
         return (col1 >> 16) & 0xff;
     }
 
@@ -271,7 +271,7 @@ public class MedianCut {
                    int c = col2int(reader.getColor(x, y));
     
                    if(toReturn.containsKey(c)){ 
-                       MyColor temp = (MyColor)toReturn.get(c);
+                       MyColor temp = toReturn.get(c);
                        temp.increment(); //increase its 'count' value (NOTE: Not used anywhere!)
                    }else{
                        MyColor toAdd = new MyColor(c);
