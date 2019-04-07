@@ -40,7 +40,7 @@ public class BouncingBall extends Application {
 
     private static enum Direction { NONE, LEFT,RIGHT, UP, DOWN }
 
-    private Rectangle rect = new Rectangle(60, 8);
+    private Rectangle rect = new Rectangle(100, 8);
     private Circle ball = new Circle(10);
     private Rectangle border;
 
@@ -76,7 +76,7 @@ public class BouncingBall extends Application {
 
         // create rectangle to move
         rect.setFill(Color.BLACK);
-        rect.setTranslateY(200);
+        rect.setTranslateY(300);
         rect.setTranslateX(180);
 
         // the border overlays the background scene

@@ -7,16 +7,26 @@ import javafx.scene.input.MouseEvent;
 
 public class MouseInteractor implements Interactor {
 
-    @Override
+    private double offsetX = 0;
+    private double offsetY = 0;
+    private Part currentSelection = null;
+    private BoardView bv;
+
+    public MouseInteractor(BoardView boardView) {
+    	bv = boardView;
+	}
+
+	@Override
     public void mousePressed(MouseEvent e) {
 
         if (!e.isControlDown()) {
-            System.err.println("BOARD:" + e);
+            // System.err.println("BOARD:" + e);
             
             // determine the clicked object
             Part dev = null;
             EventTarget target = e.getTarget();
-            // System.err.println("TARGET:" + target);
+            System.err.println("TARGET:" + target);
+
             if (target instanceof SelectionShape) { // todo: this is a hack. It should at least be "instanceof Part"
                 dev = (Part) ((SelectionShape) target).getParent();
 
@@ -121,5 +131,35 @@ public class MouseInteractor implements Interactor {
             }
         }
     }
+    
+    public void mouseDragged(MouseEvent e) {
+        if (!e.isControlDown() && e.isPrimaryButtonDown() && currentSelection != null) {
+            // System.err.println("MOVE: " + currentSelection);
 
+            // Snap to center of part
+            // (this is also what the Eagle board editor does)
+
+            Point2D snapPos = snapToGrid(e.getX(), e.getY());
+            currentSelection.move(snapPos);
+        }
+
+    }
+    
+
+    private Point2D snapToGrid(double x, double y) {
+        // final double grid = 2.54;
+        final double grid = 1.27;       // for now, we also allow positions between pads - this is 
+                                        // required to properly position the Eagle parts ...
+
+        double xpos = offsetX + x;
+        double ypos = offsetY + y;
+
+        xpos = (int) ( (xpos - bv.getPadOffset().getX()) / grid);
+        ypos = (int) ( (ypos - bv.getPadOffset().getY()) / grid);
+
+        xpos = xpos * grid + bv.getPadOffset().getX();
+        ypos = ypos * grid + bv.getPadOffset().getY();
+
+        return new Point2D(xpos, ypos);
+    }
 }
