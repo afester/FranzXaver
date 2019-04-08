@@ -72,6 +72,7 @@ public class DrawingView extends Pane {
         setOnScroll(e-> {
             if (e.isControlDown()) {
                 System.err.println(e);
+
                 double delta = 0.5;
                 if (e.getDeltaY() < 0) {
                     delta = - 0.5;
@@ -79,20 +80,40 @@ public class DrawingView extends Pane {
                 double newScale = scaleFactor + delta;
                 if (newScale > 0) {
 
-                    Point2D before = content.localToParent(e.getX(), e.getY());
-                    System.err.printf("BEFORE: %s\n", before);
-
+//                    System.err.println("PAR: " + content.getParent().getParent());
+//                    Point2D before = content.localToParent(e.getX(), e.getY());
+//                    System.err.printf("BEFORE: %s\n", before);
+//                    System.err.printf("        %s\n", getLayoutBounds());
                     scaleFactor = newScale;
-                    updateZoom();
 
+                    // Zoom the content so that its relative position remains constant 
+                    Point2D mPos = new Point2D(e.getX(), e.getY());
+                    Point2D mPosPar = content.localToParent(mPos);
+
+                    updateZoom();
+                    
+                    Point2D mPosPar2 = content.localToParent(mPos);
+                    Point2D diff = mPosPar2.subtract(mPosPar);
+
+                    content.setLayoutX(content.getLayoutX() - diff.getX());
+                    content.setLayoutY(content.getLayoutY() - diff.getY());
+
+//                    
+//                    
+//                    
+//                    
+//                    
+//                    
+//
 //                    Point2D after = content.localToParent(e.getX(), e.getY());
 //                    System.err.printf("AFTER: %s\n", after);
+//                    System.err.printf("        %s\n", getLayoutBounds());
 //
 //                    Point2D diff = after.subtract(before);
 //                    System.err.printf("DIFF: %s\n", diff);
 //
-//                    content.setLayoutX(content.getLayoutX() - diff.getX()*scaleFactor);
-//                    content.setLayoutY(content.getLayoutY() - diff.getY()*scaleFactor);
+////                    content.setLayoutX(content.getLayoutX() - diff.getX()); // *scaleFactor);
+////                    content.setLayoutY(content.getLayoutY() - diff.getY()); // *scaleFactor);
 //
 //                    Point2D after2 = content.localToParent(e.getX(), e.getY());
 //                    System.err.printf("AFTER2: %s\n", after2);
@@ -100,6 +121,7 @@ public class DrawingView extends Pane {
             }
         });
 
+//        Group intermediate = new Group(content);
         getChildren().add(content);
     }
 

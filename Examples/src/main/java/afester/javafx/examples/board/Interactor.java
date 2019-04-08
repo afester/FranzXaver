@@ -6,4 +6,6 @@ public interface Interactor {
 
     void mousePressed(MouseEvent e);
 
+    void mouseDragged(MouseEvent e);
+
 }

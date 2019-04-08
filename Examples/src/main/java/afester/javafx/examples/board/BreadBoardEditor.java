@@ -10,7 +10,6 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -83,14 +82,15 @@ public class BreadBoardEditor extends Application {
         rightBar.getChildren().add(new Text("L"));
         rightBar.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(0), new Insets(0))));
 
-        BorderPane mainLayout = new BorderPane();
-        mainLayout.setTop(menuBar);
-        mainLayout.setBottom(statusBar);
-        mainLayout.setLeft(leftBar);
-        mainLayout.setRight(rightBar);
-        mainLayout.setCenter(drawingView);
+//        BorderPane mainLayout = new BorderPane();
+//        mainLayout.setTop(menuBar);
+//        mainLayout.setBottom(statusBar);
+//        mainLayout.setLeft(leftBar);
+//        mainLayout.setRight(rightBar);
+//        mainLayout.setCenter(drawingView);
 
-        Scene mainScene = new Scene(mainLayout, 800, 600);
+//        Scene mainScene = new Scene(mainLayout, 800, 600);
+        Scene mainScene = new Scene(drawingView, 800, 600);
 
         stage.setScene(mainScene);
         this.stage = stage;

@@ -3,12 +3,10 @@ package afester.javafx.examples.board;
 import java.util.Iterator;
 import java.util.function.BiConsumer;
 
-import javafx.event.EventTarget;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -178,12 +176,16 @@ public class BoardView extends Pane {
             wireGroup.getChildren().add(v);
         });
         
-
-        setOnMousePressed(e -> {
-        	interactor.mousePressed(e);
+        setOnMousePressed(e -> { 
+            if (interactor != null) {
+                interactor.mousePressed(e);
+            }
         });
 
         setOnMouseDragged(e -> {
+            if (interactor != null) {
+                interactor.mouseDragged(e);
+            }
          });
     }
 
