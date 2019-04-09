@@ -143,8 +143,8 @@ public class Part extends Group {
 
         // Finally add a shape which can be used to select the device
         // TODO: This is a Hack
-        SelectionShape selectShape = new SelectionShape(getBoundsInLocal());
-        getChildren().add(selectShape);
+//        SelectionShape selectShape = new SelectionShape(getBoundsInLocal());
+//        getChildren().add(selectShape);
     }
 
     public void addShape(PartShape shape) {

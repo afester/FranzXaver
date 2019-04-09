@@ -28,4 +28,10 @@ public class SelectionShape extends Rectangle {
 //            setOpacity(0.01);
 //        }
 //    }
+    
+    
+    @Override
+    public String toString() {
+        return String.format("SelectionShape[x=%s, y=%s, width=%s, height=%s]", getX(), getY(), getWidth(), getHeight());  
+    }
 }

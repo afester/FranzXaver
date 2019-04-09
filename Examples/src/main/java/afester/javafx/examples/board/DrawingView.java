@@ -10,6 +10,7 @@ public class DrawingView extends Pane {
     private double mx = 0;
     private double my = 0;
     private double scaleFactor = 3.7;
+    private static final double SCALE_STEP = Math.sqrt(1.3);
     private Pane content;
 
     public DrawingView(Pane pContent) {
@@ -71,57 +72,37 @@ public class DrawingView extends Pane {
 
         setOnScroll(e-> {
             if (e.isControlDown()) {
-                System.err.println(e);
+                // System.err.println(e);
 
-                double delta = 0.5;
+                // calculate the new scale factor
+                double newScale;
                 if (e.getDeltaY() < 0) {
-                    delta = - 0.5;
+                    newScale = scaleFactor / SCALE_STEP;
+                }else {
+                    newScale = scaleFactor * SCALE_STEP;
                 }
-                double newScale = scaleFactor + delta;
                 if (newScale > 0) {
-
-//                    System.err.println("PAR: " + content.getParent().getParent());
-//                    Point2D before = content.localToParent(e.getX(), e.getY());
-//                    System.err.printf("BEFORE: %s\n", before);
-//                    System.err.printf("        %s\n", getLayoutBounds());
                     scaleFactor = newScale;
 
-                    // Zoom the content so that its relative position remains constant 
-                    Point2D mPos = new Point2D(e.getX(), e.getY());
-                    Point2D mPosPar = content.localToParent(mPos);
+                    // store current mouse coordinates as a reference point
+                    final Point2D mPos = new Point2D(e.getSceneX(), e.getSceneY());       // scene coordinates of mouse
+                    final Point2D mPosContent = content.sceneToLocal(mPos);               // position in content coordinates
 
-                    updateZoom();
+                    // scale the content
+                    content.setScaleX(scaleFactor);
+                    content.setScaleY(scaleFactor);
+
+                    // move the content so that the reference point is again at the mouse position
+                    Point2D dviewPos = content.localToParent(mPosContent);  // reference point in dview coordinates
+                    Point2D dviewMouse = sceneToLocal(mPos);                // destination point
+                    Point2D diff = dviewMouse.subtract(dviewPos);
                     
-                    Point2D mPosPar2 = content.localToParent(mPos);
-                    Point2D diff = mPosPar2.subtract(mPosPar);
-
-                    content.setLayoutX(content.getLayoutX() - diff.getX());
-                    content.setLayoutY(content.getLayoutY() - diff.getY());
-
-//                    
-//                    
-//                    
-//                    
-//                    
-//                    
-//
-//                    Point2D after = content.localToParent(e.getX(), e.getY());
-//                    System.err.printf("AFTER: %s\n", after);
-//                    System.err.printf("        %s\n", getLayoutBounds());
-//
-//                    Point2D diff = after.subtract(before);
-//                    System.err.printf("DIFF: %s\n", diff);
-//
-////                    content.setLayoutX(content.getLayoutX() - diff.getX()); // *scaleFactor);
-////                    content.setLayoutY(content.getLayoutY() - diff.getY()); // *scaleFactor);
-//
-//                    Point2D after2 = content.localToParent(e.getX(), e.getY());
-//                    System.err.printf("AFTER2: %s\n", after2);
+                    content.setLayoutX(content.getLayoutX() + diff.getX());
+                    content.setLayoutY(content.getLayoutY() + diff.getY());
                 }
             }
         });
 
-//        Group intermediate = new Group(content);
         getChildren().add(content);
     }
 

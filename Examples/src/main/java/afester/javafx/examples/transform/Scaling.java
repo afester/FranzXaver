@@ -70,38 +70,25 @@ public class Scaling extends Application {
             double newScale = scaleFactor + delta;
 
             if (newScale > 0) {
-                final double oldScale = scaleFactor;
                 scaleFactor = newScale;
 
-                // Zoom the content so that its relative position remains constant 
-                final Point2D mPos = new Point2D(e.getSceneX(), e.getSceneY());
-                System.err.println("MPOS IN SCENE: " + mPos);
+                final Point2D mPos = new Point2D(e.getSceneX(), e.getSceneY());       // scene coordinates of mouse
+                final Point2D mPosContent = content.sceneToLocal(mPos);               // position in content coordinates
 
-                Point2D mPosPar = content.sceneToLocal(mPos);   // pos using OLD scaling!!
-                System.err.printf("MPOS in CONTENT: %s\n", mPosPar);
-                Point2D posInDvOld = dView.sceneToLocal(mPos);
-                System.err.printf("MPOS in DVIEW: %s\n", posInDvOld);
+//                Circle cross = new Circle(mPosContent.getX(), mPosContent.getY(), 1.0);
+//                cross.setFill(null);
+//                cross.setStroke(Color.BLUE);
+//                content.getChildren().add(cross);
 
                 content.setScaleX(scaleFactor);
                 content.setScaleY(scaleFactor);
+
+                Point2D dviewPos = content.localToParent(mPosContent);  // reference point in dview coordinates
+                Point2D dviewMouse = dView.sceneToLocal(mPos);          // destination point
+                Point2D diff = dviewMouse.subtract(dviewPos);
                 
-//                Point2D mPosPar2 = content.sceneToLocal(mPos);  // pos using NEW scaling!!!!
-
-                Point2D newPos = content.localToScene(mPosPar);
-                Point2D posInDv = dView.sceneToLocal(newPos);
-                System.err.printf("MPOS in DVIEW AFTER: %s\n", posInDv);
-
-//                System.err.printf("AFTER: %s\n", mPosPar2);
-                Point2D diff = posInDv.subtract(posInDvOld);
-                // diff = diff.multiply(newScale / oldScale);
-
                 content.setLayoutX(content.getLayoutX() + diff.getX());
                 content.setLayoutY(content.getLayoutY() + diff.getY());
-
-//                Point2D mPosPar3 = content.sceneToLocal(mPos);
-//                System.err.printf("FINAL: %s\n\n", mPosPar3);
-
-                updateBoundVisuals();
             }
         });
 
