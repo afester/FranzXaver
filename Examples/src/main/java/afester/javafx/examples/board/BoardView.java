@@ -39,6 +39,7 @@ public class BoardView extends Pane {
     private Group dimensionGroup;
 
     private Interactor interactor = new MouseInteractor(this); 
+    private Interactable selectedObject;
 
     public BoardView() {
     }
@@ -239,4 +240,19 @@ public class BoardView extends Pane {
 	public Point2D getPadOffset() {
 		return padOffset;
 	}
+
+    public void clearSelection() {
+        if (selectedObject != null) {
+            selectedObject.setSelected(false);
+        }
+        selectedObject = null;
+    }
+
+    public Interactable getSelectedObject() {
+        return selectedObject;
+    }
+
+    public void setSelectedObject(Interactable obj) {
+        selectedObject = obj;
+    }
 }

@@ -9,12 +9,14 @@ import java.util.Map;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 
-public class Part extends Group {
+public class Part extends Group implements Interactable {
    
     private String partName;
     private Map<String, Pad> pads = new HashMap<>();
@@ -26,6 +28,7 @@ public class Part extends Group {
     public Part(String partName) {
         this.partName = partName;
         this.setMouseTransparent(false);
+        //this.setPickOnBounds(true);
     }
 
     public void addPad(Pad pin, String pinId) {
@@ -91,7 +94,7 @@ public class Part extends Group {
         });
     }
 
-    
+    @Override
     public void setSelected(boolean isSelected) {
         getChildren().remove(selectionRect);
         if (isSelected) {
@@ -143,8 +146,8 @@ public class Part extends Group {
 
         // Finally add a shape which can be used to select the device
         // TODO: This is a Hack
-//        SelectionShape selectShape = new SelectionShape(getBoundsInLocal());
-//        getChildren().add(selectShape);
+        SelectionShape selectShape = new SelectionShape(getBoundsInLocal());
+        getChildren().add(selectShape);
     }
 
     public void addShape(PartShape shape) {
@@ -157,5 +160,54 @@ public class Part extends Group {
 
     public Collection<Pad> getPads() {
         return pads.values();
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e, BoardView bv) {
+       if (e.getButton() == MouseButton.PRIMARY) {
+          if (e.isControlDown()) {
+          } else if (e.isAltDown()) {
+          } else if (e.isShiftDown()) {
+          } else if (e.isMetaDown()) {
+          } else { // no modifiers pressed
+              Interactable currentSelection = bv.getSelectedObject();
+              if (currentSelection != this) {
+                  if (currentSelection != null) {
+                      currentSelection.setSelected(false);
+                  }
+                  setSelected(true);
+                  bv.setSelectedObject(this);
+              }
+          }
+      } else if (e.getButton() == MouseButton.SECONDARY) {
+          rotatePart();
+      }
+    }
+
+    private Point2D snapToGrid(double x, double y, BoardView bv, Point2D offset) {                                                      
+        // final double grid = 2.54;                                                                      
+        final double grid = 1.27;       // for now, we also allow positions between pads - this is        
+                                        // required to properly position the Eagle parts ...              
+
+        double xpos = offset.getX() + x;                                                                        
+        double ypos = offset.getY() + y;                                                                        
+
+        xpos = (int) ( (xpos - bv.getPadOffset().getX()) / grid);                                         
+        ypos = (int) ( (ypos - bv.getPadOffset().getY()) / grid);                                         
+
+        xpos = xpos * grid + bv.getPadOffset().getX();                                                    
+        ypos = ypos * grid + bv.getPadOffset().getY();                                                    
+
+        return new Point2D(xpos, ypos);                                                                   
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e, BoardView bv, Point2D offset) {
+        // System.err.println("MOVE: " + currentSelection);
+
+        // Snap to center of part
+        // (this is also what the Eagle board editor does)
+        Point2D snapPos = snapToGrid(e.getX(), e.getY(), bv, offset);
+        move(snapPos);
     }
 }

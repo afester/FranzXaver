@@ -5,6 +5,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javafx.geometry.Point2D;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.StrokeLineCap;
@@ -12,7 +13,7 @@ import javafx.scene.shape.StrokeLineCap;
 /**
  * A Trace is a part of a Net which has already been routed. 
  */
-public class Trace extends Line {
+public class Trace extends Line implements Interactable {
     private Junction from;
     private Junction to;
 
@@ -82,5 +83,20 @@ public class Trace extends Line {
 
         return traceNode;
     }
-    
+
+    @Override
+    public void mousePressed(MouseEvent e, BoardView bv) {
+        Net net = (Net) getParent(); // TODO: provide an explicit access path
+        System.err.println("Clicked Trace of " + net);
+    }
+
+    @Override
+    public void setSelected(boolean isSelected) {
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e, BoardView bv, Point2D offset) {
+        // TODO Auto-generated method stub
+        
+    }
 }

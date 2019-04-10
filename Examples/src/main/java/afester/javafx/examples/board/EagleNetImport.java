@@ -3,9 +3,7 @@ package afester.javafx.examples.board;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -26,7 +24,7 @@ public class EagleNetImport extends NetImport {
 
     private XPath xPath = XPathFactory.newInstance().newXPath();
     private Document doc = null;
-    private Map<String, Part> packages = new HashMap<>();
+    // private Map<String, Part> packages = new HashMap<>();
 
     public Board importFile(File file) {
         Board board = new Board();
