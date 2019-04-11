@@ -12,12 +12,14 @@ import javafx.scene.Group;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import javafx.scene.transform.Rotate;
 
 public class Part extends Group implements Interactable {
-   
+
     private String partName;
     private Map<String, Pad> pads = new HashMap<>();
     private List<PartShape> shapes = new ArrayList<>();
@@ -68,7 +70,9 @@ public class Part extends Group implements Interactable {
         reconnectTraces();
     }
 
-
+    
+    private Circle center;
+    Rectangle r;
     /**
      * Rotates the part clockwise at 90 degrees.
      */
@@ -80,7 +84,33 @@ public class Part extends Group implements Interactable {
         }
 
         // set the new rotation of the device
-        setRotate(rotation);
+        //setRotate(rotation);    // this rotates around the center of the Part Group! (BoundsInLocal rect)
+        
+        Bounds b = getBoundsInLocal();
+        final double nonScaledWidth = 1 / getParent().getParent().getScaleX();      // TODO: This is (probably) a hack!
+
+        getChildren().removeAll(center, r);
+
+        // create the visualization for selection
+        r = new Rectangle(b.getMinX(), b.getMinY(), b.getWidth(), b.getHeight());
+        r.setFill(null);
+        r.setStroke(Color.BLACK);
+        r.setStrokeWidth(nonScaledWidth);
+        getChildren().add(r);
+        
+        Point2D groupCenter = new Point2D(b.getMinX() + b.getWidth() / 2, b.getMinY() + b.getHeight() / 2);  
+        center = new Circle(groupCenter.getX(), groupCenter.getY(), 0.2);
+        center.setStrokeWidth(1 / getParent().getParent().getScaleX());      // TODO: This is (probably) a hack!
+        center.setStroke(Color.BLUE);
+        center.setFill(null);
+//        Text t = new Text(groupCenter.getX(), groupCenter.getY(), String.format("%s", groupCenter));
+//        getChildren().add(t);
+
+        if (getTransforms().isEmpty()) {
+            getTransforms().add(new Rotate(0, 0, 0));    
+        }
+        Rotate rot2 = (Rotate) getTransforms().get(0);// .add(rot);
+        rot2.setAngle(90);
 
         // adjust the traces which are connected the pads of this device
         reconnectTraces();
@@ -94,19 +124,35 @@ public class Part extends Group implements Interactable {
         });
     }
 
+    private Line l1;
+    private Line l2;
+
     @Override
     public void setSelected(boolean isSelected) {
         getChildren().remove(selectionRect);
+        getChildren().remove(l1);
+        getChildren().remove(l2);
         if (isSelected) {
             // Calculate bounds of the selected element in the content's coordinates
             Bounds b = getBoundsInLocal();
+
+            final double nonScaledWidth = 1 / getParent().getParent().getScaleX();      // TODO: This is (probably) a hack!
+
+            // create the visualization for selection
             selectionRect = new Rectangle(b.getMinX(), b.getMinY(), b.getWidth(), b.getHeight());
             selectionRect.setFill(null);
             selectionRect.setStroke(Color.RED);
-            selectionRect.setStrokeWidth(1 / getParent().getParent().getScaleX());      // TODO: This is a hack!
+            selectionRect.setStrokeWidth(nonScaledWidth);
             selectionRect.getStrokeDashArray().addAll(1.0, 1.0);
 
-            getChildren().add(selectionRect);
+            l1 = new Line(b.getMinX(), b.getMinY(),               b.getMinX()+b.getWidth(), b.getMinY()+b.getHeight());
+            l1.setStroke(Color.BLUE);
+            l1.setStrokeWidth(nonScaledWidth);
+            l2 = new Line(b.getMinX(), b.getMinY()+b.getHeight(), b.getMinX()+b.getWidth(), b.getMinY());
+            l2.setStroke(Color.BLUE);
+            l2.setStrokeWidth(nonScaledWidth);
+
+            getChildren().addAll(selectionRect, l1, l2);
          }
     }
 

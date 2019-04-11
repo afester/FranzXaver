@@ -9,7 +9,7 @@ public class SelectionShape extends Rectangle {
     public SelectionShape(Bounds bounds) {
         super(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
         setFill(Color.WHITE);
-        setOpacity(0);
+        setOpacity(0.5);
         //setMouseTransparent(false);
         // setOnMousePressed(e -> System.err.println(e));
     }

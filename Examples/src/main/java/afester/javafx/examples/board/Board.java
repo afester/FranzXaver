@@ -231,7 +231,9 @@ public class Board {
                     Double size = Double.parseDouble(textNode.getAttribute("size"));
                     // String layer = textNode.getAttribute("layer");
                     String text = textNode.getTextContent();
-
+//                    if (text.isEmpty()) {
+//                        text = "???";
+//                    }
                     part.addShape(new PartText(x, y, text, size));
                 }
 
