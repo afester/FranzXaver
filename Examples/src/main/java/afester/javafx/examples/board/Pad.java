@@ -37,28 +37,29 @@ public class Pad extends Junction {
 
     @Override
     public Point2D getPos() {
-        return part.localToParent(getXpos(), getYpos());
+        return part.localToParent(getCenterX(), getCenterY());
     }
 
     @Override
     public String toString() {
-        return String.format("Pad[part=\"%s\", padName=%s, pos=%s/%s]", part.getName(), padName, /*pin + "@" + gate,*/ getXpos(), getYpos());  
+        return String.format("Pad[part=\"%s\", padName=%s, pos=%s]", 
+        					 part.getName(), padName, /*pin + "@" + gate,*/ getPos());  
     }
 
     @Override
     public Shape createNode() {
-        Shape pad = new Circle(getXpos(), getYpos(), 0.7); // drill*2);
+        Shape pad = new Circle(getCenterX(), getCenterY(), 0.7); // drill*2);
         pad.setFill(Color.WHITE);
         pad.setStroke(Color.BLACK);
         pad.setStrokeWidth(0.6);
         return pad;
     }
-    
+
     @Override
     public Node getXML(Document doc) {
         Element result = doc.createElement("pad");
-        result.setAttribute("x", Double.toString(getXpos()));
-        result.setAttribute("y", Double.toString(getYpos()));
+        result.setAttribute("x", Double.toString(getCenterX()));
+        result.setAttribute("y", Double.toString(getCenterY()));
         result.setAttribute("id", Integer.toString(id));
 
         return result;

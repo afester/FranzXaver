@@ -9,7 +9,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Shape;
 import javafx.scene.shape.StrokeLineJoin;
 
-public class PartLine extends PartShape {
+public class PartLine implements PartShape {
 
     private Double x1;
     private Double x2;

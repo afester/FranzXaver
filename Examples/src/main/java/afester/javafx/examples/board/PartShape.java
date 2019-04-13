@@ -5,7 +5,7 @@ import org.w3c.dom.Node;
 
 import javafx.scene.shape.Shape;
 
-public abstract class PartShape {
+public interface PartShape {
 
     public abstract Shape createNode();
 

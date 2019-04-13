@@ -5,7 +5,6 @@ import javafx.scene.input.MouseEvent;
 
 public interface Interactable {
 
-    void mousePressed(MouseEvent e, BoardView bv);
 
     void setSelected(boolean isSelected);
 
@@ -14,4 +13,8 @@ public interface Interactable {
     double getLayoutX();
 
     double getLayoutY();
+
+    void leftMouseAction(MouseEvent e, BoardView bv);
+
+	void rightMouseAction(MouseEvent e);
 }

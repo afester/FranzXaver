@@ -38,7 +38,7 @@ public class AirWire extends Trace implements Interactable {
     }
 
     @Override
-    public void mousePressed(MouseEvent e, BoardView bv) {
+    public void leftMouseAction(MouseEvent e, BoardView bv) {
         Net net = (Net) getParent(); // TODO: provide an explicit access path
         System.err.println("Clicked AirWire of " + net);
 
@@ -61,7 +61,7 @@ public class AirWire extends Trace implements Interactable {
               setFrom(newJunction);
 
 //***************************************
-              Junction edge = new Junction(nearest.getPos().getX(), newJunction.getYpos());
+              Junction edge = new Junction(nearest.getPos().getX(), newJunction.getCenterY());
               System.err.println("EDGE1: " + edge);
 
               // create new Trace: nearest - edge - newJunction
@@ -88,7 +88,7 @@ public class AirWire extends Trace implements Interactable {
               setTo(newJunction);
 
 //***************************************                        
-              Junction edge = new Junction(newJunction.getXpos(), nearest.getPos().getY());
+              Junction edge = new Junction(newJunction.getCenterX(), nearest.getPos().getY());
               System.err.println("EDGE2: " + edge);
 
               // create new Trace: newJunction - edge - nearest

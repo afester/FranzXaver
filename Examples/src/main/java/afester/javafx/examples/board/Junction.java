@@ -8,43 +8,41 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javafx.geometry.Point2D;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Shape;
 
-public class Junction extends PartShape {
+public class Junction extends Circle implements PartShape, Interactable {
 
     // The position of this junction 
-    private double xpos;
-    private double ypos;
+//    private double xpos;
+//    private double ypos;
 
     public List<Line> traceStarts = new ArrayList<>();
     public List<Line> traceEnds = new ArrayList<>();
 
     public Junction(double xpos, double ypos) {
-        this.xpos = xpos;
-        this.ypos = ypos;
+    	super(xpos, ypos, 0.5);
+    	setFill(null);
+//        this.xpos = xpos;
+//        this.ypos = ypos;
     }
 
     public Junction(Point2D pos) {
-        this.xpos = pos.getX();
-        this.ypos = pos.getY();
-    }
-
-    public double getXpos() {
-        return xpos;
-    }
-
-    public double getYpos() {
-        return ypos;
+    	super(pos.getX(), pos.getY(), 1.0);
+//        this.xpos = pos.getX();
+//        this.ypos = pos.getY();
     }
 
     public Point2D getPos() {
-        return new Point2D(xpos, ypos);
+        return new Point2D(getCenterX(), getCenterY());
     }
 
     @Override
     public String toString() {
-        return String.format("Junction[pos=%s/%s]", xpos, ypos);  
+        return String.format("Junction[pos=%s/%s]", getCenterX(), getCenterY());  
     }
 
     public void addStart(Line wire) {
@@ -78,8 +76,8 @@ public class Junction extends PartShape {
     @Override
     public Node getXML(Document doc) {
         Element result = doc.createElement("junction");
-        result.setAttribute("x", Double.toString(getXpos()));
-        result.setAttribute("y", Double.toString(getYpos()));
+        result.setAttribute("x", Double.toString(getCenterX()));
+        result.setAttribute("y", Double.toString(getCenterY()));
         result.setAttribute("id", Integer.toString(id));
 
         return result;
@@ -91,4 +89,59 @@ public class Junction extends PartShape {
         id = i;
     }
 
+	public void setSelected(boolean isSelected) {
+		if (isSelected) {
+			setFill(Color.RED);
+		} else {
+			setFill(null);
+		}
+	}
+
+	// TODO: Duplicate code in Part class!
+    private Point2D snapToGrid(double x, double y, BoardView bv, Point2D offset) {                                                      
+        // final double grid = 2.54;                                                                      
+        final double grid = 1.27;       // for now, we also allow positions between pads - this is        
+                                        // required to properly position the Eagle parts ...              
+
+        double xpos = offset.getX() + x;                                                                        
+        double ypos = offset.getY() + y;                                                                        
+
+        xpos = (int) ( (xpos - bv.getPadOffset().getX()) / grid);                                         
+        ypos = (int) ( (ypos - bv.getPadOffset().getY()) / grid);                                         
+
+        xpos = xpos * grid + bv.getPadOffset().getX();                                                    
+        ypos = ypos * grid + bv.getPadOffset().getY();                                                    
+
+        return new Point2D(xpos, ypos);                                                                   
+    }
+
+	@Override
+	public void mouseDragged(MouseEvent e, BoardView bv, Point2D offset) {
+        Point2D snapPos = snapToGrid(e.getX(), e.getY(), bv, offset);
+        // Point2D pos = parentToLocal(snapPos);
+        setLayoutX(snapPos.getX());
+        setLayoutY(snapPos.getY());
+        
+//        Point2D p = this.localToParent(snapPos.getX(), snapPos.getY());
+//        p = getParent().localToParent(p);
+//        p = getParent().localToParent(p);
+        moveTraces2(snapPos.getX(), snapPos.getY());
+	}
+
+	@Override
+	public void leftMouseAction(MouseEvent e, BoardView bv) {
+      Interactable currentSelection = bv.getSelectedObject();
+      if (currentSelection != this) {
+          if (currentSelection != null) {
+              currentSelection.setSelected(false);
+          }
+          setSelected(true);
+          bv.setSelectedObject(this);
+      }
+	}
+
+	@Override
+	public void rightMouseAction(MouseEvent e) {
+        throw new RuntimeException ("NYI");
+	}
 }

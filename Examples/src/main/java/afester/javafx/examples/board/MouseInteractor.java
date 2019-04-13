@@ -3,6 +3,7 @@ package afester.javafx.examples.board;
 import javafx.event.EventTarget;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
 public class MouseInteractor implements Interactor {
@@ -35,7 +36,19 @@ public class MouseInteractor implements Interactor {
     public void mousePressed(MouseEvent e) {
         Interactable clickedObject = getClickedObject(e);
         if (clickedObject != null) {
-            clickedObject.mousePressed(e, bv);
+
+            if (e.getButton() == MouseButton.PRIMARY) {
+                if (e.isControlDown()) {
+                } else if (e.isAltDown()) {
+                } else if (e.isShiftDown()) {
+                } else if (e.isMetaDown()) {
+                } else { // no modifiers pressed
+                    clickedObject.leftMouseAction(e, bv);
+                }
+            } else if (e.getButton() == MouseButton.SECONDARY) {
+                clickedObject.rightMouseAction(e);
+            }
+
             offset = new Point2D(clickedObject.getLayoutX() - e.getX(), clickedObject.getLayoutY() - e.getY());
           } else {
             bv.clearSelection();

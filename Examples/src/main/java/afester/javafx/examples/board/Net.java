@@ -17,8 +17,12 @@ public class Net extends Group {
     private List<Junction> junctionList = new ArrayList<>();    // A list of junctions - not associated to a part. Junctions can be added and removed.
     private List<Trace> traces = new ArrayList<>();
 
+    private Group junctions = new Group();
+    private Group nets= new Group();
+
     public Net(String netName) {
         this.netName = netName;
+        getChildren().addAll(nets, junctions);
     }
 
 
@@ -34,7 +38,9 @@ public class Net extends Group {
 
     public void addJunction(Junction newJunction) {
         junctionList.add(newJunction);
+        junctions.getChildren().add(newJunction);
     }
+
     public List<Junction> getJunctions() {
         return junctionList;
     }
@@ -56,7 +62,7 @@ public class Net extends Group {
 
     public void addTrace(Trace trace) {
         traces.add(trace);
-        getChildren().add(trace);
+        nets.getChildren().add(trace);
     }
 
 

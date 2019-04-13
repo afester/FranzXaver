@@ -10,7 +10,7 @@ import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
-public class PartText extends PartShape {
+public class PartText implements PartShape {
 
     
     private Double x;
@@ -28,7 +28,7 @@ public class PartText extends PartShape {
     @Override
     public Shape createNode() {
         Text textShape = new Text(x, y, text);
-        Font theFont = Font.font("Courier", size);
+        Font theFont = Font.font("Courier", size);	// TODO: The rendered text is messed up if the size is too small!
         textShape.setFont(theFont);
         textShape.setFill(Color.GRAY);
         textShape.setTextOrigin(VPos.TOP);

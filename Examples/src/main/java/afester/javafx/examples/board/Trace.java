@@ -4,7 +4,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -31,6 +35,8 @@ public class Trace extends Line implements Interactable {
         setStrokeLineCap(StrokeLineCap.ROUND);
         from.addStart(this);
         to.addEnd(this);
+        
+        createContextMenu();
     }
 
     public Point2D getStart() {
@@ -84,14 +90,52 @@ public class Trace extends Line implements Interactable {
         return traceNode;
     }
 
+    // TODO: currently each trace has its own context menu instance!
+    private ContextMenu contextMenu;
+    private void createContextMenu() {
+        contextMenu = new ContextMenu();
+    	MenuItem item1 = new MenuItem("Delete");
+    	item1.setOnAction(new EventHandler<ActionEvent>() {
+    	    public void handle(ActionEvent e) {
+    	        System.out.println("Delete " + Trace.this);
+    	    }
+    	});
+    	contextMenu.getItems().addAll(item1);
+    }
+
+
     @Override
-    public void mousePressed(MouseEvent e, BoardView bv) {
-        Net net = (Net) getParent(); // TODO: provide an explicit access path
-        System.err.println("Clicked Trace of " + net);
+    public void leftMouseAction(MouseEvent e, BoardView bv) {
+//        Net net = (Net) getParent(); // TODO: provide an explicit access path
+//        System.err.println("Clicked Trace of " + net);
+
+    	Interactable currentSelection = bv.getSelectedObject();
+        if (currentSelection != this) {
+            if (currentSelection != null) {
+                currentSelection.setSelected(false);
+            }
+            setSelected(true);
+            bv.setSelectedObject(this);
+        }
     }
 
     @Override
+    public void rightMouseAction(MouseEvent e) {
+    	contextMenu.show(this, e.getScreenX(), e.getScreenY());
+    }
+
+
+    @Override
     public void setSelected(boolean isSelected) {
+    	if (isSelected) {
+            from.setSelected(true);
+            to.setSelected(true);
+    		setStroke(Color.DARKGRAY);
+    	} else {
+            from.setSelected(false);
+            to.setSelected(false);
+    		setStroke(Color.SILVER);
+    	}
     }
 
     @Override
