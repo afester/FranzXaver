@@ -100,7 +100,7 @@ public class Board {
                 partNode.setAttribute("name", v.getName());
                 partNode.setAttribute("x", Double.toString(v.getLayoutX()));
                 partNode.setAttribute("y", Double.toString(v.getLayoutY()));
-                partNode.setAttribute("rotation", Double.toString(v.getRotate()));
+                partNode.setAttribute("rotation", Double.toString(v.getRotation()));
 
                 for (PartShape ps : v.getShapes()) {
                     Node shapeNode = ps.getXML(doc);
@@ -196,7 +196,7 @@ public class Board {
                 Part part = new Part(partName);
                 part.setLayoutX(xpos);
                 part.setLayoutY(ypos);
-                part.setRotate(rotation);
+                part.setRotation(rotation);
 
                 NodeList padNodes = (NodeList) xPath.evaluate("./pad", partNode, XPathConstants.NODESET);
                 for (int j = 0; j < padNodes.getLength(); ++j) {

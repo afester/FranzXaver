@@ -23,6 +23,7 @@ public class Part extends Group implements Interactable {
     private String partName;
     private Map<String, Pad> pads = new HashMap<>();
     private List<PartShape> shapes = new ArrayList<>();
+    private Rotate rot = new Rotate();
 
     private Rectangle selectionRect;
     
@@ -31,6 +32,7 @@ public class Part extends Group implements Interactable {
         this.partName = partName;
         this.setMouseTransparent(false);
         //this.setPickOnBounds(true);
+        getTransforms().add(rot);
     }
 
     public void addPad(Pad pin, String pinId) {
@@ -80,17 +82,12 @@ public class Part extends Group implements Interactable {
         //setRotate(rotation);    // this rotates around the center of the Part Group! (BoundsInLocal rect)
         // To be able to set the origin (0, 0) we need to use a rotate transform:
 
-        if (getTransforms().isEmpty()) {
-            getTransforms().add(new Rotate(0, 0, 0));    
-        }
-        Rotate rot2 = (Rotate) getTransforms().get(0);// .add(rot);
-        
-        double rotation = rot2.getAngle();
+        double rotation = rot.getAngle();
         rotation += 90;
         if (rotation >= 360) {
             rotation = 0;
         }
-        rot2.setAngle(rotation);
+        rot.setAngle(rotation);
 
         // adjust the traces which are connected the pads of this device
         reconnectTraces();
@@ -235,5 +232,13 @@ public class Part extends Group implements Interactable {
 	@Override
 	public Point2D getPos() {
 		return new Point2D(getLayoutX(), getLayoutY());
+	}
+
+	public void setRotation(double angle) {
+		rot.setAngle(angle);
+	}
+
+	public double getRotation() {
+		return rot.getAngle();
 	}
 }

@@ -24,7 +24,7 @@ public class Junction extends Circle implements PartShape, Interactable {
     }
 
     public Junction(Point2D pos) {
-    	super(pos.getX(), pos.getY(), 1.0);
+    	this(pos.getX(), pos.getY());
     }
 
     @Override

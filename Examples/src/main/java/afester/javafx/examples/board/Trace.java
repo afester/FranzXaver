@@ -104,9 +104,6 @@ public class Trace extends Line implements Interactable {
 
     @Override
     public void leftMouseAction(MouseEvent e, BoardView bv) {
-//        Net net = (Net) getParent(); // TODO: provide an explicit access path
-//        System.err.println("Clicked Trace of " + net);
-
     	Interactable currentSelection = bv.getSelectedObject();
         if (currentSelection != this) {
             if (currentSelection != null) {
