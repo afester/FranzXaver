@@ -15,28 +15,20 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Shape;
 
 public class Junction extends Circle implements PartShape, Interactable {
-
-    // The position of this junction 
-//    private double xpos;
-//    private double ypos;
-
     public List<Line> traceStarts = new ArrayList<>();
     public List<Line> traceEnds = new ArrayList<>();
 
     public Junction(double xpos, double ypos) {
     	super(xpos, ypos, 0.5);
     	setFill(null);
-//        this.xpos = xpos;
-//        this.ypos = ypos;
     }
 
     public Junction(Point2D pos) {
     	super(pos.getX(), pos.getY(), 1.0);
-//        this.xpos = pos.getX();
-//        this.ypos = pos.getY();
     }
 
-    public Point2D getPos() {
+    @Override
+	public Point2D getPos() {
         return new Point2D(getCenterX(), getCenterY());
     }
 
@@ -89,6 +81,7 @@ public class Junction extends Circle implements PartShape, Interactable {
         id = i;
     }
 
+	@Override
 	public void setSelected(boolean isSelected) {
 		if (isSelected) {
 			setFill(Color.RED);
@@ -118,13 +111,8 @@ public class Junction extends Circle implements PartShape, Interactable {
 	@Override
 	public void mouseDragged(MouseEvent e, BoardView bv, Point2D offset) {
         Point2D snapPos = snapToGrid(e.getX(), e.getY(), bv, offset);
-        // Point2D pos = parentToLocal(snapPos);
-        setLayoutX(snapPos.getX());
-        setLayoutY(snapPos.getY());
-        
-//        Point2D p = this.localToParent(snapPos.getX(), snapPos.getY());
-//        p = getParent().localToParent(p);
-//        p = getParent().localToParent(p);
+        setCenterX(snapPos.getX());
+        setCenterY(snapPos.getY());
         moveTraces2(snapPos.getX(), snapPos.getY());
 	}
 

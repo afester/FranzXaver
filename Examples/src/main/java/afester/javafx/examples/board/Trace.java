@@ -95,10 +95,8 @@ public class Trace extends Line implements Interactable {
     private void createContextMenu() {
         contextMenu = new ContextMenu();
     	MenuItem item1 = new MenuItem("Delete");
-    	item1.setOnAction(new EventHandler<ActionEvent>() {
-    	    public void handle(ActionEvent e) {
+    	item1.setOnAction(e -> {
     	        System.out.println("Delete " + Trace.this);
-    	    }
     	});
     	contextMenu.getItems().addAll(item1);
     }
@@ -143,4 +141,9 @@ public class Trace extends Line implements Interactable {
         // TODO Auto-generated method stub
         
     }
+
+	@Override
+	public Point2D getPos() {
+		return new Point2D(getLayoutX(), getLayoutY());
+	}
 }

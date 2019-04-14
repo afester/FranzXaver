@@ -29,7 +29,8 @@ public class AirWire extends Trace implements Interactable {
         setStroke(Color.ORANGE);
     }
 
-    public Node getXML(Document doc) {
+    @Override
+	public Node getXML(Document doc) {
         Element traceNode = doc.createElement("airwire");
         traceNode.setAttribute("from", Integer.toString(getFrom().id));
         traceNode.setAttribute("to", Integer.toString(getTo().id));

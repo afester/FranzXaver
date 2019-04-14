@@ -49,7 +49,7 @@ public class MouseInteractor implements Interactor {
                 clickedObject.rightMouseAction(e);
             }
 
-            offset = new Point2D(clickedObject.getLayoutX() - e.getX(), clickedObject.getLayoutY() - e.getY());
+            offset = clickedObject.getPos().subtract(e.getX(), e.getY());
           } else {
             bv.clearSelection();
         }

@@ -231,4 +231,9 @@ public class Part extends Group implements Interactable {
         Point2D snapPos = snapToGrid(e.getX(), e.getY(), bv, offset);
         move(snapPos);
     }
+
+	@Override
+	public Point2D getPos() {
+		return new Point2D(getLayoutX(), getLayoutY());
+	}
 }
