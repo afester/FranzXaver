@@ -18,6 +18,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javafx.geometry.Point2D;
+
 
 
 public class EagleNetImport extends NetImport {
@@ -187,19 +189,28 @@ public class EagleNetImport extends NetImport {
         NodeList wireNodes = (NodeList) xPath.evaluate("./wire", packageNode, XPathConstants.NODESET);
         for (int j = 0; j < wireNodes.getLength(); ++j) {
             Element wireNode = (Element) wireNodes.item(j);
-            Double x1 = Double.parseDouble(wireNode.getAttribute("x1"));
-            Double y1 = Double.parseDouble(wireNode.getAttribute("y1"));
-            Double x2 = Double.parseDouble(wireNode.getAttribute("x2"));
-            Double y2 = Double.parseDouble(wireNode.getAttribute("y2"));
+            
+            Point2D p1 = new Point2D(Double.parseDouble(wireNode.getAttribute("x1")),
+                    Double.parseDouble(wireNode.getAttribute("y1")));
+            Point2D p2 = new Point2D(Double.parseDouble(wireNode.getAttribute("x2")),
+                    Double.parseDouble(wireNode.getAttribute("y2")));
+
             Double width = Double.parseDouble(wireNode.getAttribute("width"));
             String layer = wireNode.getAttribute("layer");
 
+            // if the "curve" attribute is defined, a half circle (?) is rendered instead of the line
+            // 
             String curveAttr = wireNode.getAttribute("curve");
-            if (curveAttr != null) {
-                
+            if (curveAttr != null && !curveAttr.isEmpty()) {
+                final double alpha = Double.parseDouble(curveAttr);
+                final Point2D pm = p2.subtract(p1).multiply(0.5);
+                final double beta = (180 - alpha) / 2;
+                final Point2D r = ...;
+                final Point2D pc = p1.add(r);
+                result.addShape(new PartArc(pc, r.magnitude(), alpha, width));
+            } else {
+                result.addShape(new PartLine(p1, p2, width));
             }
-
-            result.addShape(new PartLine(x1, y1, x2, y2, width));
         }
 
         NodeList rectNodes = (NodeList) xPath.evaluate("./rectangle", packageNode, XPathConstants.NODESET);

@@ -4,33 +4,30 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Shape;
-import javafx.scene.shape.StrokeLineJoin;
+import javafx.scene.shape.StrokeLineCap;
 
 public class PartLine implements PartShape {
 
-    private Double x1;
-    private Double x2;
-    private Double y1;
-    private Double y2;
+    private Point2D p1;
+    private Point2D p2;
     private Double width;
 
-    public PartLine(Double x1, Double y1, Double x2, Double y2, Double width) {
-        this.x1 = x1;
-        this.x2 = x2;
-        this.y1 = y1;
-        this.y2 = y2;
+    public PartLine(Point2D p1, Point2D p2, Double width) {
+        this.p1 = p1;
+        this.p2 = p2;
         this.width = width;
     }
 
     @Override
     public Shape createNode() {
-        Shape line = new Line(x1, y1, x2, y2);
+        Shape line = new Line(p1.getX(), p1.getY(), p2.getX(), p2.getY());
         line.setStrokeWidth(width);
         line.setStroke(Color.GRAY);
-        line.setStrokeLineJoin(StrokeLineJoin.ROUND);
+        line.setStrokeLineCap(StrokeLineCap.ROUND);
 
         return line;
     }
@@ -39,10 +36,10 @@ public class PartLine implements PartShape {
     public Node getXML(Document doc) {
         Element result = doc.createElement("line");
         
-        result.setAttribute("x1", x1.toString());
-        result.setAttribute("y1", y1.toString());
-        result.setAttribute("x2", x2.toString());
-        result.setAttribute("y2", y2.toString());
+        result.setAttribute("x1", Double.toString(p1.getX()));
+        result.setAttribute("y1", Double.toString(p1.getY()));
+        result.setAttribute("x2", Double.toString(p2.getX()));
+        result.setAttribute("y2", Double.toString(p2.getY()));
         result.setAttribute("width", width.toString());
 
         return result;

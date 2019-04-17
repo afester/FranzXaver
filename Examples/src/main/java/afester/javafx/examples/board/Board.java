@@ -32,6 +32,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javafx.geometry.Point2D;
+
 public class Board {
 
     
@@ -214,13 +216,13 @@ public class Board {
                 NodeList lineNodes = (NodeList) xPath.evaluate("./line", partNode, XPathConstants.NODESET);
                 for (int j = 0; j < lineNodes.getLength(); ++j) {
                     Element lineNode = (Element) lineNodes.item(j);
-                    Double x1 = Double.parseDouble(lineNode.getAttribute("x1"));
-                    Double y1 = Double.parseDouble(lineNode.getAttribute("y1"));
-                    Double x2 = Double.parseDouble(lineNode.getAttribute("x2"));
-                    Double y2 = Double.parseDouble(lineNode.getAttribute("y2"));
+                    Point2D p1 = new Point2D(Double.parseDouble(lineNode.getAttribute("x1")),
+                                             Double.parseDouble(lineNode.getAttribute("y1")));
+                    Point2D p2 = new Point2D(Double.parseDouble(lineNode.getAttribute("x2")),
+                                             Double.parseDouble(lineNode.getAttribute("y2")));
                     Double width = Double.parseDouble(lineNode.getAttribute("width"));
 
-                    part.addShape(new PartLine(x1, y1, x2, y2, width));
+                    part.addShape(new PartLine(p1, p2, width));
                 }
 
                 NodeList textNodes = (NodeList) xPath.evaluate("./text", partNode, XPathConstants.NODESET);
