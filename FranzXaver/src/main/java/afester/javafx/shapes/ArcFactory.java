@@ -21,6 +21,11 @@ public class ArcFactory {
 
     	// calculate the direction vector between the two points
 		final Point2D dirVec = p2.subtract(p1);
+		 double beta = dirVec.angle(new Point2D(1, 0));
+		if (dirVec.getY() > 0) {
+			System.err.println("BETA:" + beta);
+			beta = 360 - beta;
+		}
 
         // rotate the direction vector
         final double alpha = -Math.toRadians(cAngle / 2 - 90);
@@ -38,10 +43,7 @@ public class ArcFactory {
         // set the new end point
         final Point2D centerPoint = p1.add(p5);
 
-        final double l = dirVec.magnitude();
-        final double dy = p1.getY() - p2.getY();
-        final double gamma = Math.asin(dy / l);
-        final double startAngle = 90 - cAngle/2 + Math.toDegrees(gamma);
+        final double startAngle = 90 - cAngle/2 + beta;
 
         ArcParameters result = new ArcParameters(centerPoint, r, startAngle, cAngle, col);
         System.err.println(result);
@@ -53,13 +55,19 @@ public class ArcFactory {
 
     	// calculate the direction vector between the two points
 		final Point2D dirVec = p1.subtract(p2);
-
+		System.err.println("DIRVEC:" + dirVec);
+		final Point2D unitVec = new Point2D(1, 0);
+		double beta = unitVec.angle(dirVec);
+		if (dirVec.getY() > 0) {
+			beta = 360 - beta;
+		}
+        System.err.println("ANGLE:" + beta);
         // rotate the direction vector
         final double alpha = -Math.toRadians(-cAngle/2 - 90);
 
         // calculate the radius
-        final double r = Math.abs(dirVec.magnitude() / Math.cos(alpha) / 2);
-
+        double r = dirVec.magnitude() / Math.cos(alpha) / 2;
+        r = Math.abs(r);
         final Point2D dirVec2 = new Point2D(Math.cos(alpha) * dirVec.getX() - Math.sin(alpha) * dirVec.getY(), 
                                             Math.sin(alpha) * dirVec.getX() + Math.cos(alpha) * dirVec.getY());
 
@@ -70,12 +78,9 @@ public class ArcFactory {
         // set the new end point
         final Point2D centerPoint = p2.add(p5);
 
-        final double l = dirVec.magnitude();
-        final double dy = p1.getY() - p2.getY();
-        final double gamma = Math.asin(dy / l);
-        final double startAngle = 270 + cAngle/2 + Math.toDegrees(gamma);
+        final double startAngle = 90 - cAngle/2 + beta;
 
-        ArcParameters result = new ArcParameters(centerPoint, r, startAngle, -cAngle, col);
+        ArcParameters result = new ArcParameters(centerPoint, r, startAngle, /*-*/cAngle, col);
         System.err.println(result);
         return result;
 	}

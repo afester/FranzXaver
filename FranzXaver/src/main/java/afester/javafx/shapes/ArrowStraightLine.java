@@ -92,4 +92,16 @@ public class ArrowStraightLine extends ArrowLine {
         start.setStrokeWidth(newWidth);
         end.setStrokeWidth(newWidth);
     }
+
+	public void setStart(Point2D p) {
+        this.startX = p.getX();
+        this.startY = p.getY();
+        update();
+	}
+
+	public void setEnd(Point2D p) {
+        this.endX = p.getX();
+        this.endY = p.getY();
+        update();
+	}
 }

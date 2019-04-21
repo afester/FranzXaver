@@ -18,7 +18,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import afester.javafx.shapes.ArcFactory;
+import afester.javafx.shapes.ArcParameters;
 import javafx.geometry.Point2D;
+import javafx.scene.paint.Color;
 
 
 
@@ -142,6 +145,7 @@ public class EagleNetImport extends NetImport {
     }
 
 
+    int arcCount = 0;
     /**
      * Returns a device package as a JafaFX node.
      * 
@@ -191,23 +195,28 @@ public class EagleNetImport extends NetImport {
             Element wireNode = (Element) wireNodes.item(j);
             
             Point2D p1 = new Point2D(Double.parseDouble(wireNode.getAttribute("x1")),
-                    Double.parseDouble(wireNode.getAttribute("y1")));
+                    				 Double.parseDouble(wireNode.getAttribute("y1")));
             Point2D p2 = new Point2D(Double.parseDouble(wireNode.getAttribute("x2")),
-                    Double.parseDouble(wireNode.getAttribute("y2")));
+                    				 Double.parseDouble(wireNode.getAttribute("y2")));
 
             Double width = Double.parseDouble(wireNode.getAttribute("width"));
             String layer = wireNode.getAttribute("layer");
 
-            // if the "curve" attribute is defined, a half circle (?) is rendered instead of the line
-            // 
+            // if the "curve" attribute is defined, an arc is rendered instead of the line
             String curveAttr = wireNode.getAttribute("curve");
             if (curveAttr != null && !curveAttr.isEmpty()) {
                 final double alpha = Double.parseDouble(curveAttr);
-                final Point2D pm = p2.subtract(p1).multiply(0.5);
-                final double beta = (180 - alpha) / 2;
-                final Point2D r = ...;
-                final Point2D pc = p1.add(r);
-                result.addShape(new PartArc(pc, r.magnitude(), alpha, width));
+                Color color = Color.VIOLET;
+                switch(arcCount) {
+                case 0 : color = Color.RED; break;
+                case 1 : color = Color.GREEN; break;
+                case 2 : color = Color.BLUE; break;
+                case 3 : color = Color.GRAY; break;
+                }
+                arcCount++;
+            	ArcParameters ap = ArcFactory.arcFromPointsAndAngle(p1,  p2,  alpha, color);
+                result.addShape(new PartArc(ap.getCenter(), ap.getRadius(), ap.getStartAngle(),
+                				 			ap.getLength(), width, ap.getColor()));
             } else {
                 result.addShape(new PartLine(p1, p2, width));
             }

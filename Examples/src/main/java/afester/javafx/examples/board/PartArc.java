@@ -9,6 +9,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Shape;
+import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 
 public class PartArc implements PartShape {
@@ -16,23 +17,29 @@ public class PartArc implements PartShape {
     private Point2D center;
     private Double radius;
     private Double angle;
+    private Double startAngle;
     private Double width;
+    private Color color;
+    
 
-    public PartArc(Point2D center, Double radius, Double angle, Double width) {
+    public PartArc(Point2D center, Double radius, Double startAngle, Double angle, Double width, Color color) {
         this.center = center;
         this.radius = radius;
+        this.startAngle = startAngle;
         this.angle = angle;
         this.width = width;
+        this.color = color;
     }
 
 
     @Override
     public Shape createNode() {
-        Arc arc = new Arc(center.getX(), center.getY(), radius, radius, angle, 180.0f);
-        arc.setType(ArcType.ROUND);
+        Arc arc = new Arc(center.getX(), center.getY(), radius, radius, startAngle, angle);
+        arc.setType(ArcType.OPEN);
+        arc.setFill(null);
         arc.setStrokeWidth(width);
-        arc.setStroke(Color.GRAY);
-        arc.setStrokeLineJoin(StrokeLineJoin.ROUND);
+        arc.setStroke(color); // Color.GRAY);
+        arc.setStrokeLineCap(StrokeLineCap.ROUND);
         return arc;
     }
 
