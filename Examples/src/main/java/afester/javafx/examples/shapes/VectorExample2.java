@@ -114,7 +114,7 @@ public class VectorExample2 extends Application {
 
 
     private void updateScene(final double cAngle) {
-    	ArcParameters ap = ArcFactory.arcFromPointsAndAngle(p1, p2, -cAngle, Color.BLUE); //  -cAngle, Color.BLUE);
+    	ArcParameters ap = ArcFactory.arcFromPointsAndAngle(p1, p2, -cAngle, Color.BLUE);
 
         resultCirc.setCenterX(ap.getCenter().getX());
         resultCirc.setCenterY(ap.getCenter().getY());

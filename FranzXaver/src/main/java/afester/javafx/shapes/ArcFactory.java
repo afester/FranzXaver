@@ -5,6 +5,8 @@ import javafx.scene.paint.Color;
 
 public class ArcFactory {
 
+	private final static Point2D UNIT_VECTOR = new Point2D(1, 0);
+
 	/**
 	 * Creates the parameters (center, start angle, radius) for an Arc between two given
 	 * points and the angle of the Arc.
@@ -19,35 +21,34 @@ public class ArcFactory {
 	public static ArcParameters arcFromPointsAndAnglePos(Point2D p1, Point2D p2, double cAngle, Color col) {
 		System.err.printf("IN: %s, %s, %s, %s\n", p1, p2, cAngle, col);
 
-    	// calculate the direction vector between the two points
+		// calculate the direction vector between the two points
 		final Point2D dirVec = p2.subtract(p1);
-		 double beta = dirVec.angle(new Point2D(1, 0));
+		double beta = dirVec.angle(UNIT_VECTOR);
 		if (dirVec.getY() > 0) {
-			System.err.println("BETA:" + beta);
 			beta = 360 - beta;
 		}
 
-        // rotate the direction vector
-        final double alpha = -Math.toRadians(cAngle / 2 - 90);
+		// rotate the direction vector
+		final double alpha = -Math.toRadians(cAngle / 2 - 90);
 
-        // calculate the radius
-        double r = Math.abs(dirVec.magnitude() / Math.cos(alpha) / 2);
+		// calculate the radius
+		final double r = Math.abs(dirVec.magnitude() / Math.cos(alpha) / 2);
 
-        final Point2D dirVec2 = new Point2D(Math.cos(alpha) * dirVec.getX() - Math.sin(alpha) * dirVec.getY(), 
-                                            Math.sin(alpha) * dirVec.getX() + Math.cos(alpha) * dirVec.getY());
+		final Point2D dirVec2 = new Point2D(Math.cos(alpha) * dirVec.getX() - Math.sin(alpha) * dirVec.getY(),
+				                            Math.sin(alpha) * dirVec.getX() + Math.cos(alpha) * dirVec.getY());
 
-        final Point2D dirVec2normal = dirVec2.normalize();
+		final Point2D dirVec2normal = dirVec2.normalize();
 
-        final Point2D p5 = dirVec2normal.multiply(r);
+		final Point2D p5 = dirVec2normal.multiply(r);
 
-        // set the new end point
-        final Point2D centerPoint = p1.add(p5);
+		// set the new end point
+		final Point2D centerPoint = p1.add(p5);
 
-        final double startAngle = 90 - cAngle/2 + beta;
+		final double startAngle = 90 - cAngle / 2 + beta;
 
-        ArcParameters result = new ArcParameters(centerPoint, r, startAngle, cAngle, col);
-        System.err.println(result);
-        return result;
+		ArcParameters result = new ArcParameters(centerPoint, r, startAngle, cAngle, col);
+		System.err.println(result);
+		return result;
 	}
 
 	public static ArcParameters arcFromPointsAndAngleNeg(Point2D p1, Point2D p2, double cAngle, Color col) {
@@ -55,19 +56,17 @@ public class ArcFactory {
 
     	// calculate the direction vector between the two points
 		final Point2D dirVec = p1.subtract(p2);
-		System.err.println("DIRVEC:" + dirVec);
-		final Point2D unitVec = new Point2D(1, 0);
-		double beta = unitVec.angle(dirVec);
+		double beta = dirVec.angle(UNIT_VECTOR);
 		if (dirVec.getY() > 0) {
 			beta = 360 - beta;
 		}
-        System.err.println("ANGLE:" + beta);
-        // rotate the direction vector
+
+		// rotate the direction vector
         final double alpha = -Math.toRadians(-cAngle/2 - 90);
 
         // calculate the radius
-        double r = dirVec.magnitude() / Math.cos(alpha) / 2;
-        r = Math.abs(r);
+        final double r = Math.abs(dirVec.magnitude() / Math.cos(alpha) / 2);
+
         final Point2D dirVec2 = new Point2D(Math.cos(alpha) * dirVec.getX() - Math.sin(alpha) * dirVec.getY(), 
                                             Math.sin(alpha) * dirVec.getX() + Math.cos(alpha) * dirVec.getY());
 
@@ -80,7 +79,7 @@ public class ArcFactory {
 
         final double startAngle = 90 - cAngle/2 + beta;
 
-        ArcParameters result = new ArcParameters(centerPoint, r, startAngle, /*-*/cAngle, col);
+        ArcParameters result = new ArcParameters(centerPoint, r, startAngle, cAngle, col);
         System.err.println(result);
         return result;
 	}
