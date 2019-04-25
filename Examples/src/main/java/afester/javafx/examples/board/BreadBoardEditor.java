@@ -2,6 +2,7 @@ package afester.javafx.examples.board;
 
 import java.io.File;
 
+import afester.javafx.components.StatusBar;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -17,6 +18,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class BreadBoardEditor extends Application {
 
@@ -72,10 +75,25 @@ public class BreadBoardEditor extends Application {
 
         MenuBar menuBar = new MenuBar();
         menuBar.getMenus().addAll(fileMenu, viewMenu, editMenu);
-        
-        HBox statusBar = new HBox();
-        statusBar.getChildren().add(new Text("Ready."));
-        statusBar.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(0), new Insets(0))));
+
+        StatusBar sb = new StatusBar();
+        sb.textProperty().bindBidirectional(bv.selectedObjectProperty(), new StringConverter<Interactable>() {
+
+            @Override
+            public Interactable fromString(String string) {
+                return null;
+            }
+
+            @Override
+            public String toString(Interactable object) {
+                if (object != null) {
+                    return object.getRepr();
+                }
+                return "No selection.";
+            }
+            
+        });
+
         HBox leftBar = new HBox();
         leftBar.getChildren().add(new Text("L"));
         leftBar.setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(0), new Insets(0))));
@@ -85,7 +103,7 @@ public class BreadBoardEditor extends Application {
 
         BorderPane mainLayout = new BorderPane();
         mainLayout.setTop(menuBar);
-        mainLayout.setBottom(statusBar);
+        mainLayout.setBottom(sb);
         mainLayout.setLeft(leftBar);
         mainLayout.setRight(rightBar);
         mainLayout.setCenter(drawingView);

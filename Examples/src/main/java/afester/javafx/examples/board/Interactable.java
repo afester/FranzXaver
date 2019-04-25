@@ -14,4 +14,6 @@ public interface Interactable {
     void leftMouseAction(MouseEvent e, BoardView bv);
 
 	void rightMouseAction(MouseEvent e);
+
+    String getRepr();
 }

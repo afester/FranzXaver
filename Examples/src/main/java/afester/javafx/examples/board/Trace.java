@@ -143,4 +143,10 @@ public class Trace extends Line implements Interactable {
 	public Point2D getPos() {
 		return new Point2D(getLayoutX(), getLayoutY());
 	}
+
+    @Override
+    public String getRepr() {
+        Net net = (Net) getParent().getParent(); // TODO: provide an explicit access path
+        return "Net: " + net.getName(); 
+    }
 }

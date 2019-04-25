@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import afester.javafx.examples.board.Board.IntVal;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -22,6 +26,9 @@ import javafx.scene.transform.Rotate;
 public class Part extends Group implements Interactable {
 
     private String partName;
+    private String partValue;
+    private String packageRef;      // TODO: This should refer to a "package / footprint template"
+
     private Map<String, Pad> pads = new HashMap<>();
     private List<PartShape> shapes = new ArrayList<>();
     private Rotate rot = new Rotate();
@@ -29,8 +36,11 @@ public class Part extends Group implements Interactable {
     private Rectangle selectionRect;
     
 
-    public Part(String partName) {
+    public Part(String partName, String partValue, String packageRef) {
         this.partName = partName;
+        this.partValue = partValue;
+        this.packageRef = packageRef;
+
         this.setMouseTransparent(false);
         //this.setPickOnBounds(true);
         getTransforms().add(rot);
@@ -49,6 +59,13 @@ public class Part extends Group implements Interactable {
      */
     public String getName() {
         return partName;
+    }
+
+    /**
+     * @return The value of this part (like 1,2k / 4,7µF / BC547)
+     */
+    public String getValue() {
+        return partValue;
     }
 
     /**
@@ -242,4 +259,32 @@ public class Part extends Group implements Interactable {
 	public double getRotation() {
 		return rot.getAngle();
 	}
+
+    @Override
+    public String getRepr() {
+        return String.format("Part: %s (%s) - %s", partName, partValue, packageRef); 
+    }
+
+    public Element getXml(Document doc, IntVal junctionId) {
+        Element partNode = doc.createElement("part");
+        partNode.setAttribute("name", partName);
+        partNode.setAttribute("value", partValue);
+        partNode.setAttribute("package", packageRef);
+        partNode.setAttribute("x", Double.toString(getLayoutX()));
+        partNode.setAttribute("y", Double.toString(getLayoutY()));
+        partNode.setAttribute("rotation", Double.toString(getRotation()));
+
+        for (PartShape ps : getShapes()) {
+            org.w3c.dom.Node shapeNode = ps.getXML(doc);
+            partNode.appendChild(shapeNode);
+        }
+
+        for (Pad ps : getPads()) {
+            ps.setId(junctionId.val++);
+            org.w3c.dom.Node padNode = ps.getXML(doc);
+            partNode.appendChild(padNode);
+        }
+
+        return partNode;
+    }
 }

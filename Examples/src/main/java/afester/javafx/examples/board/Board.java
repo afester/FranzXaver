@@ -68,7 +68,7 @@ public class Board {
         nets.add(net);
     }
 
-    private class IntVal {
+    public class IntVal {
         public int val = 0;
     }
     
@@ -95,23 +95,7 @@ public class Board {
 
             IntVal junctionId = new IntVal();
             parts.forEach( (k, v) -> {
-                Element partNode = doc.createElement("part");
-                partNode.setAttribute("name", v.getName());
-                partNode.setAttribute("x", Double.toString(v.getLayoutX()));
-                partNode.setAttribute("y", Double.toString(v.getLayoutY()));
-                partNode.setAttribute("rotation", Double.toString(v.getRotation()));
-
-                for (PartShape ps : v.getShapes()) {
-                    Node shapeNode = ps.getXML(doc);
-                    partNode.appendChild(shapeNode);
-                }
-
-                for (Pad ps : v.getPads()) {
-                    ps.setId(junctionId.val++);
-                    Node padNode = ps.getXML(doc);
-                    partNode.appendChild(padNode);
-                }
-
+                Element partNode = v.getXml(doc, junctionId);
                 rootNode.appendChild(partNode);
             });
 
@@ -187,11 +171,13 @@ public class Board {
             for (int i = 0; i < partNodes.getLength(); ++i) {
                 Element partNode = (Element) partNodes.item(i);
                 String partName = partNode.getAttribute("name");
+                String partValue = partNode.getAttribute("value");
+                String packageRef = partNode.getAttribute("package");
                 Double rotation = Double.parseDouble(partNode.getAttribute("rotation"));
                 Double xpos = Double.parseDouble(partNode.getAttribute("x"));
                 Double ypos = Double.parseDouble(partNode.getAttribute("y"));
 
-                Part part = new Part(partName);
+                Part part = new Part(partName, partValue, packageRef);
                 part.setLayoutX(xpos);
                 part.setLayoutY(ypos);
                 part.setRotation(rotation);

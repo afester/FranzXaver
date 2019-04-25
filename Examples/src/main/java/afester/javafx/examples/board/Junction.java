@@ -131,4 +131,9 @@ public class Junction extends Circle implements PartShape, Interactable {
 	public void rightMouseAction(MouseEvent e) {
         throw new RuntimeException ("NYI");
 	}
+
+    @Override
+    public String getRepr() {
+        return "Junction";
+    }
 }

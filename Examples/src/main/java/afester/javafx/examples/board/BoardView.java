@@ -3,6 +3,8 @@ package afester.javafx.examples.board;
 import java.util.Iterator;
 import java.util.function.BiConsumer;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
@@ -38,8 +40,13 @@ public class BoardView extends Pane {
     private Group wireGroup;
     private Group dimensionGroup;
 
-    private Interactor interactor = new MouseInteractor(this); 
-    private Interactable selectedObject;
+    private Interactor interactor = new MouseInteractor(this);
+
+    private final ObjectProperty<Interactable> selectedObject = new SimpleObjectProperty<>();
+    public ObjectProperty<Interactable> selectedObjectProperty() { return selectedObject; }
+    public Interactable getSelectedObject() { return selectedObject.get(); }
+    public void setSelectedObject(Interactable obj) { selectedObject.set(obj); }
+    
 
     public BoardView() {
     }
@@ -242,17 +249,10 @@ public class BoardView extends Pane {
 	}
 
     public void clearSelection() {
-        if (selectedObject != null) {
-            selectedObject.setSelected(false);
+        if (getSelectedObject() != null) {
+            getSelectedObject().setSelected(false);
         }
-        selectedObject = null;
+        setSelectedObject(null);
     }
 
-    public Interactable getSelectedObject() {
-        return selectedObject;
-    }
-
-    public void setSelectedObject(Interactable obj) {
-        selectedObject = obj;
-    }
 }

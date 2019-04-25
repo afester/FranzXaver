@@ -156,6 +156,7 @@ public class EagleNetImport extends NetImport {
      * @throws XPathExpressionException
      */
     private Part createPart(String partName, String partValue, String partLibrary, String packageRef, Element connects) throws XPathExpressionException {
+
         // select the package for the given part
         String packageSelector = "/eagle/drawing/schematic/libraries/library[@name='"+ partLibrary + 
                 "']/packages/package[@name='"+ packageRef + "']";
@@ -167,7 +168,9 @@ public class EagleNetImport extends NetImport {
             return null;
         }
 
-        Part part = new Part(partName);
+        Part part = new Part(partName, partValue, packageRef);
+
+        // load through-hole pads
         NodeList padNodes = (NodeList) xPath.evaluate("./pad", packageNode, XPathConstants.NODESET);
         for (int j = 0; j < padNodes.getLength(); ++j) {
             Element padNode = (Element) padNodes.item(j);
@@ -178,14 +181,38 @@ public class EagleNetImport extends NetImport {
             // padNode.getAttribute("shape");
 
             final String xpathQuery = "./connects/connect[@pad='" + pinNumber + "']";
-            System.err.println("Q:" + xpathQuery);
             Element connect = (Element) xPath.evaluate(xpathQuery, connects, XPathConstants.NODE);
-            System.err.println("C:" + connect);
+            // A Pad connection might not exist at all!
+            if (connect != null) {
+    
+                // logical pin names - referenced by the nets
+                String gate = connect.getAttribute("gate");
+                String pin = connect.getAttribute("pin");
+                System.err.printf("   Pad %s <=> Pin %s@%s\n", pinNumber, gate, pin);
+    
+                // Model
+                part.addPad(new Pad(part, pinNumber, padX, padY), pin + "@" + gate);
+            }
+        }
+
+        
+        // load SMD pads
+        NodeList smdPadNodes = (NodeList) xPath.evaluate("./smd", packageNode, XPathConstants.NODESET);
+        for (int j = 0; j < smdPadNodes.getLength(); ++j) {
+            Element smdPadNode = (Element) smdPadNodes.item(j);
+            String pinNumber = smdPadNode.getAttribute("name");
+            Double padX = Double.parseDouble(smdPadNode.getAttribute("x"));
+            Double padY = -Double.parseDouble(smdPadNode.getAttribute("y"));
+            Double padDx = Double.parseDouble(smdPadNode.getAttribute("dx"));
+            Double padDy = -Double.parseDouble(smdPadNode.getAttribute("dy"));
+
+            final String xpathQuery = "./connects/connect[@pad='" + pinNumber + "']";
+            Element connect = (Element) xPath.evaluate(xpathQuery, connects, XPathConstants.NODE);
 
             // logical pin names - referenced by the nets
             String gate = connect.getAttribute("gate");
             String pin = connect.getAttribute("pin");
-            System.err.printf("   Pad %s <=> Pin %s@%s\n", pinNumber, gate, pin);
+            System.err.printf("   SMD %s <=> Pin %s@%s\n", pinNumber, gate, pin);
 
             // Model
             part.addPad(new Pad(part, pinNumber, padX, padY), pin + "@" + gate);
