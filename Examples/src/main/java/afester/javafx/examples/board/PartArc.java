@@ -10,7 +10,6 @@ import javafx.scene.shape.Arc;
 import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Shape;
 import javafx.scene.shape.StrokeLineCap;
-import javafx.scene.shape.StrokeLineJoin;
 
 public class PartArc implements PartShape {
 
@@ -38,7 +37,7 @@ public class PartArc implements PartShape {
         arc.setType(ArcType.OPEN);
         arc.setFill(null);
         arc.setStrokeWidth(width);
-        arc.setStroke(color); // Color.GRAY);
+        arc.setStroke(Color.GRAY);
         arc.setStrokeLineCap(StrokeLineCap.ROUND);
         return arc;
     }
@@ -50,8 +49,8 @@ public class PartArc implements PartShape {
         result.setAttribute("cx", Double.toString(center.getX()));
         result.setAttribute("cy", Double.toString(center.getY()));
         result.setAttribute("radius", Double.toString(radius));
-        result.setAttribute("start", Double.toString(180.0f));
-        result.setAttribute("end", Double.toString(angle));
+        result.setAttribute("start", Double.toString(startAngle));
+        result.setAttribute("angle", Double.toString(angle));
         result.setAttribute("width", width.toString());
 
         return result;

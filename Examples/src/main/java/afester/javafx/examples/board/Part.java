@@ -9,6 +9,7 @@ import java.util.Map;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -44,7 +45,7 @@ public class Part extends Group implements Interactable {
     }
 
     /**
-     * @return The name / reference of this part.
+     * @return The name / reference of this part (like R1, U3, C2)
      */
     public String getName() {
         return partName;
@@ -145,12 +146,12 @@ public class Part extends Group implements Interactable {
     public void createNode() {
 
         for (PartShape ps : shapes) {
-            Shape s = ps.createNode();
+            Node s = ps.createNode();
             getChildren().add(s);
         }
 
         for (Junction ps : pads.values()) {
-            Shape s = ps.createNode();
+            Node s = ps.createNode();
             getChildren().add(s);
         }
 

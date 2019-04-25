@@ -66,7 +66,7 @@ public class EagleNetImport extends NetImport {
                     
                     String gate = partInstance.getAttribute("gate");
                     xpos = Double.parseDouble(partInstance.getAttribute("x"));
-                    ypos = Double.parseDouble(partInstance.getAttribute("y"));
+                    ypos = -Double.parseDouble(partInstance.getAttribute("y"));
 
                     System.err.printf("PI: %s %s/%s\n", gate, xpos, ypos);
                 }
@@ -167,27 +167,28 @@ public class EagleNetImport extends NetImport {
             return null;
         }
 
-        Part result = new Part(partName);
+        Part part = new Part(partName);
         NodeList padNodes = (NodeList) xPath.evaluate("./pad", packageNode, XPathConstants.NODESET);
         for (int j = 0; j < padNodes.getLength(); ++j) {
             Element padNode = (Element) padNodes.item(j);
-            String padName = padNode.getAttribute("name");
+            String pinNumber = padNode.getAttribute("name");
             Double padX = Double.parseDouble(padNode.getAttribute("x"));
-            Double padY = Double.parseDouble(padNode.getAttribute("y"));
+            Double padY = -Double.parseDouble(padNode.getAttribute("y"));
             // Double drill = Double.parseDouble(padNode.getAttribute("drill"));
             // padNode.getAttribute("shape");
 
-            final String xpathQuery = "./connects/connect[@pad='" + padName + "']";
+            final String xpathQuery = "./connects/connect[@pad='" + pinNumber + "']";
             System.err.println("Q:" + xpathQuery);
             Element connect = (Element) xPath.evaluate(xpathQuery, connects, XPathConstants.NODE);
             System.err.println("C:" + connect);
 
+            // logical pin names - referenced by the nets
             String gate = connect.getAttribute("gate");
             String pin = connect.getAttribute("pin");
-            System.err.printf("   Pad %s <=> Pin %s@%s\n", padName, gate, pin);
+            System.err.printf("   Pad %s <=> Pin %s@%s\n", pinNumber, gate, pin);
 
             // Model
-            result.addPad(new Pad(result, padName, /*gate, pin, */ padX, padY), pin + "@" + gate);
+            part.addPad(new Pad(part, pinNumber, padX, padY), pin + "@" + gate);
         }
 
         NodeList wireNodes = (NodeList) xPath.evaluate("./wire", packageNode, XPathConstants.NODESET);
@@ -195,9 +196,9 @@ public class EagleNetImport extends NetImport {
             Element wireNode = (Element) wireNodes.item(j);
             
             Point2D p1 = new Point2D(Double.parseDouble(wireNode.getAttribute("x1")),
-                    				 Double.parseDouble(wireNode.getAttribute("y1")));
+                    				 -Double.parseDouble(wireNode.getAttribute("y1")));
             Point2D p2 = new Point2D(Double.parseDouble(wireNode.getAttribute("x2")),
-                    				 Double.parseDouble(wireNode.getAttribute("y2")));
+                    				 -Double.parseDouble(wireNode.getAttribute("y2")));
 
             Double width = Double.parseDouble(wireNode.getAttribute("width"));
             String layer = wireNode.getAttribute("layer");
@@ -206,19 +207,12 @@ public class EagleNetImport extends NetImport {
             String curveAttr = wireNode.getAttribute("curve");
             if (curveAttr != null && !curveAttr.isEmpty()) {
                 final double alpha = Double.parseDouble(curveAttr);
-                Color color = Color.VIOLET;
-                switch(arcCount) {
-                case 0 : color = Color.RED; break;
-                case 1 : color = Color.GREEN; break;
-                case 2 : color = Color.BLUE; break;
-                case 3 : color = Color.GRAY; break;
-                }
-                arcCount++;
-            	ArcParameters ap = ArcFactory.arcFromPointsAndAngle(p1,  p2,  alpha, color);
-                result.addShape(new PartArc(ap.getCenter(), ap.getRadius(), ap.getStartAngle(),
-                				 			ap.getLength(), width, ap.getColor()));
+                // NOTE: -alpha is required due to the transformation of the y coordinate!
+            	ArcParameters ap = ArcFactory.arcFromPointsAndAngle(p1,  p2, -alpha);
+                part.addShape(new PartArc(ap.getCenter(), ap.getRadius(), ap.getStartAngle(),
+                                          ap.getLength(), width, ap.getColor()));
             } else {
-                result.addShape(new PartLine(p1, p2, width));
+                part.addShape(new PartLine(p1, p2, width));
             }
         }
 
@@ -226,9 +220,9 @@ public class EagleNetImport extends NetImport {
         for (int j = 0; j < rectNodes.getLength(); ++j) {
             Element rectNode = (Element) rectNodes.item(j);
             Double x1 = Double.parseDouble(rectNode.getAttribute("x1"));
-            Double y1 = Double.parseDouble(rectNode.getAttribute("y1"));
+            Double y1 = -Double.parseDouble(rectNode.getAttribute("y1"));
             Double x2 = Double.parseDouble(rectNode.getAttribute("x2"));
-            Double y2 = Double.parseDouble(rectNode.getAttribute("y2"));
+            Double y2 = -Double.parseDouble(rectNode.getAttribute("y2"));
             String layer = rectNode.getAttribute("layer");
 
             // result.addShape(new PartRectangle(x1, y1, x2, y2));
@@ -238,7 +232,7 @@ public class EagleNetImport extends NetImport {
         for (int j = 0; j < textNodes.getLength(); ++j) {
             Element textNode = (Element) textNodes.item(j);
             Double x = Double.parseDouble(textNode.getAttribute("x"));
-            Double y = Double.parseDouble(textNode.getAttribute("y"));
+            Double y = -Double.parseDouble(textNode.getAttribute("y"));
             Double size = Double.parseDouble(textNode.getAttribute("size"));
             
             Double ratio = 1.0;
@@ -257,10 +251,10 @@ public class EagleNetImport extends NetImport {
                 text = partValue;
             }
 
-            result.addShape(new PartText(x, y, text, size * ratio / 10));
+            part.addShape(new PartText(x, y, text, size * ratio / 10));
         }
 
-        result.createNode();
-        return result;
+        part.createNode();
+        return part;
     }
 }

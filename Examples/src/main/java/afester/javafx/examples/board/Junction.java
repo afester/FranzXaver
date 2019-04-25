@@ -5,18 +5,19 @@ import java.util.List;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Shape;
 
 public class Junction extends Circle implements PartShape, Interactable {
     public List<Line> traceStarts = new ArrayList<>();
     public List<Line> traceEnds = new ArrayList<>();
+
+    protected int id;	// currently only required for serialization and deserialization
 
     public Junction(double xpos, double ypos) {
     	super(xpos, ypos, 0.5);
@@ -25,6 +26,10 @@ public class Junction extends Circle implements PartShape, Interactable {
 
     public Junction(Point2D pos) {
     	this(pos.getX(), pos.getY());
+    }
+
+    public void setId(int i) {
+       id = i;
     }
 
     @Override
@@ -61,24 +66,18 @@ public class Junction extends Circle implements PartShape, Interactable {
     }
 
     @Override
-    public Shape createNode() {
+    public Node createNode() {
         throw new RuntimeException ("NYI");
     }
 
     @Override
-    public Node getXML(Document doc) {
+    public org.w3c.dom.Node getXML(Document doc) {
         Element result = doc.createElement("junction");
         result.setAttribute("x", Double.toString(getCenterX()));
         result.setAttribute("y", Double.toString(getCenterY()));
         result.setAttribute("id", Integer.toString(id));
 
         return result;
-    }
-    
-    public int id;
-
-    public void setId(int i) {
-        id = i;
     }
 
 	@Override

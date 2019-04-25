@@ -33,13 +33,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javafx.geometry.Point2D;
+import javafx.scene.paint.Color;
 
 public class Board {
 
-    
-    private double width = 160.0;
-    private double height = 100.0;
-    
     private Map<String, Part> parts = new HashMap<>();
     private List<Net> nets = new ArrayList<>();    
 
@@ -145,7 +142,6 @@ public class Board {
 
             FileOutputStream fos = new FileOutputStream(result);
             Writer out = new OutputStreamWriter(fos, "UTF-8");
-            // Writer out = new FileWriter(result);
             tf.transform(new DOMSource(doc), new StreamResult(out));
             out.close();
         } catch (ParserConfigurationException e) {
@@ -203,12 +199,12 @@ public class Board {
                 NodeList padNodes = (NodeList) xPath.evaluate("./pad", partNode, XPathConstants.NODESET);
                 for (int j = 0; j < padNodes.getLength(); ++j) {
                     Element padNode = (Element) padNodes.item(j);
-                    // String padName = padNode.getAttribute("name");
+                    String pinNumber = padNode.getAttribute("pinNumber");
                     String padId = padNode.getAttribute("id");
                     Double padX = Double.parseDouble(padNode.getAttribute("x"));
                     Double padY = Double.parseDouble(padNode.getAttribute("y"));
 
-                    Pad junction = new Pad(part, padId /*padName*/, /* "", "", */ padX, padY);
+                    Pad junction = new Pad(part, pinNumber, padX, padY);
                     pads.put(padId, junction);
                     part.addPad(junction, padId);
                 }
@@ -223,6 +219,21 @@ public class Board {
                     Double width = Double.parseDouble(lineNode.getAttribute("width"));
 
                     part.addShape(new PartLine(p1, p2, width));
+                }
+
+
+                NodeList arcNodes = (NodeList) xPath.evaluate("./arc", partNode, XPathConstants.NODESET);
+                for (int j = 0; j < arcNodes.getLength(); ++j) {
+                    Element arcNode = (Element) arcNodes.item(j);
+                    
+                    Point2D cx = new Point2D(Double.parseDouble(arcNode.getAttribute("cx")),
+                                             Double.parseDouble(arcNode.getAttribute("cy")));
+                    Double radius = Double.parseDouble(arcNode.getAttribute("radius"));
+                    Double start = Double.parseDouble(arcNode.getAttribute("start"));
+                    Double angle = Double.parseDouble(arcNode.getAttribute("angle"));
+                    Double width = Double.parseDouble(arcNode.getAttribute("width"));
+
+                    part.addShape(new PartArc(cx, radius, start, angle, width, Color.GREEN));
                 }
 
                 NodeList textNodes = (NodeList) xPath.evaluate("./text", partNode, XPathConstants.NODESET);

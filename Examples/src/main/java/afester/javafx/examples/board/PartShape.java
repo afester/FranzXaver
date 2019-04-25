@@ -1,14 +1,13 @@
 package afester.javafx.examples.board;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
-import javafx.scene.shape.Shape;
+import javafx.scene.Node;
 
 public interface PartShape {
 
-    public abstract Shape createNode();
+    public abstract Node createNode();
 
     // TODO: Probably not a good idea to depend on an XML Node/Document here
-    public abstract Node getXML(Document doc);
+    public abstract org.w3c.dom.Node getXML(Document doc);
 }
