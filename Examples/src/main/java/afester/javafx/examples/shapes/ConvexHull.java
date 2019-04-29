@@ -59,16 +59,6 @@ public class ConvexHull extends Application {
         points.add(new Point2D(180, 130));
         
         renderScene(points);
-//        
-//        points.forEach(e -> drawPane.getChildren().add(new PointShape(e.getX(), e.getY())));
-//
-//        List<Point2D> convexHull = calculateConvexHull(points);
-//
-//        Polygon p = new PolygonShape(convexHull);
-//        p.setFill(null);
-//        p.setStroke(Color.BLACK);
-//
-//        drawPane.getChildren().add(p);
 
         BorderPane mainLayout = new BorderPane();
         HBox controls = new HBox();
@@ -89,6 +79,7 @@ public class ConvexHull extends Application {
     private boolean odd = true;
     private Integer xpos = 0;
 
+
     private void createRandomPointSet() {
 
         List<Point2D> points = new ArrayList<>();
@@ -99,7 +90,6 @@ public class ConvexHull extends Application {
                 xpos = e;
             } else {
                 Point2D p = new Point2D(xpos, e);
-                System.err.println(p);
                 points.add(p);
             }
 
@@ -126,19 +116,24 @@ public class ConvexHull extends Application {
     
     final static Point2D UNIT_X = new Point2D(1, 0);
 
-    private List<Point2D> calculateConvexHull(List<Point2D> points) {
+    private List<Point2D> calculateConvexHull(final List<Point2D> points) {
         Stack<Point2D> stack = new Stack<>();
 
-        // find the lowest y-coordinate and leftmost point, called P0
+        // find the lowest y-coordinate and 
+        // !! TODO: leftmost point, 
+        // called P0
         System.err.println(points);
         final Point2D P0 = points.stream().max((a, b) -> Double.compare(a.getY(), b.getY())).get();
         System.err.println("P0: " + P0);
 
-//        sort remaining points by polar angle with P0, if several points have the same polar angle then only keep the farthest
-        points.remove(P0);
+        // sort remaining points by polar angle with P0, 
+        // !! TODO: if several points have the same polar angle then only keep the farthest
         // Note: can be at most 180° since P0 is the lowest point!
         List<Point2D> sorted = new ArrayList<>();
-        points.stream().sorted((a, b) -> (int) Math.signum((UNIT_X.angle(a.subtract(P0)) - UNIT_X.angle(b.subtract(P0))))).forEach(e -> sorted.add(e));
+        points.stream()
+              .filter(e -> e != P0)
+              .sorted((a, b) -> (int) Math.signum(UNIT_X.angle(a.subtract(P0)) - UNIT_X.angle(b.subtract(P0))))
+              .forEach(e -> sorted.add(e));
 
         System.err.println("INPUT:");
         dumpAngles(P0, points);
