@@ -4,8 +4,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -109,6 +107,7 @@ public class Trace extends Line implements Interactable {
             if (currentSelection != null) {
                 currentSelection.setSelected(false);
             }
+
             setSelected(true);
             bv.setSelectedObject(this);
         }
@@ -122,15 +121,30 @@ public class Trace extends Line implements Interactable {
 
     @Override
     public void setSelected(boolean isSelected) {
-    	if (isSelected) {
-            from.setSelected(true);
-            to.setSelected(true);
-    		setStroke(Color.DARKGRAY);
-    	} else {
-            from.setSelected(false);
-            to.setSelected(false);
-    		setStroke(Color.SILVER);
-    	}
+//    	if (isSelected) {
+            Net net = (Net) getParent().getParent(); // TODO: provide an explicit access path
+            net.getTraces().forEach(e -> e.setSegmentSelected(isSelected));
+
+            //from.setSelected(true);
+            //to.setSelected(true);
+    		//setStroke(Color.DARKGRAY);
+  //  	} else {
+            //from.setSelected(false);
+            //to.setSelected(false);
+    		//setStroke(Color.SILVER);
+    //	}
+    }
+
+    private void setSegmentSelected(boolean isSelected) {
+      if (isSelected) {
+        //from.setSelected(true);
+        //to.setSelected(true);
+        setStroke(Color.RED);
+      } else {
+        //from.setSelected(false);
+        //to.setSelected(false);
+        setStroke(Color.ORANGE);
+      }
     }
 
     @Override

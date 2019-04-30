@@ -7,8 +7,10 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -38,7 +40,8 @@ import javafx.scene.paint.Color;
 public class Board {
 
     private Map<String, Part> parts = new HashMap<>();
-    private List<Net> nets = new ArrayList<>();    
+    private List<Net> nets = new ArrayList<>();
+    private String schematicFile;
 
     public void addDevice(Part pkg) {
         parts.put(pkg.getName(), pkg);
@@ -159,7 +162,7 @@ public class Board {
             Element breadboardNode = (Element) xPath.evaluate("/breadboard", doc, XPathConstants.NODE);
             //String widthAttr = breadboardNode.getAttribute("width");
             //String heightAttr = breadboardNode.getAttribute("height");
-            String schematic = breadboardNode.getAttribute("schematic");
+            schematicFile = breadboardNode.getAttribute("schematic");
 
             //width = Double.parseDouble(widthAttr);
             //height = Double.parseDouble(heightAttr);
@@ -308,4 +311,45 @@ public class Board {
         }
     }
 
+    public String getSchematicFile() {
+        return schematicFile;
+    }
+
+    /**
+     * Updates this board from the board passed as parameter.
+     * All parts are compared and updated if they have changed.
+     * Pending: Also update nets
+     *
+     * @param updatedBoard The new board
+     */
+    public void update(Board updatedBoard) {
+        System.err.printf("New    : %s parts and %s nets ...\n", updatedBoard.getParts().size(), updatedBoard.getNets().size());
+        System.err.printf("Current: %s parts and %s nets ...\n", getParts().size(), getNets().size());
+
+        // verify parts - changed, added, deleted!
+        Set<String> updatedParts = new HashSet<>(updatedBoard.getParts().keySet());
+        
+        Set<String> removedParts = new HashSet<>(getParts().keySet());
+        removedParts.removeAll(updatedParts);
+
+        Set<String> addedParts = new HashSet<>(updatedBoard.getParts().keySet());
+        addedParts.removeAll(getParts().keySet());
+
+        Set<String> potentiallyModified = new HashSet<>(getParts().keySet());
+        potentiallyModified.removeAll(removedParts);
+        potentiallyModified.removeAll(addedParts);
+
+        System.err.printf("Removed: %s parts\n", removedParts.size());
+        System.err.printf("Added  : %s parts\n", addedParts.size());
+        System.err.printf("Potentially replaced: %s parts\n", potentiallyModified.size());
+        potentiallyModified.forEach(partName -> {
+            Part p1 = getParts().get(partName);
+            Part p2 = updatedBoard.getParts().get(partName);
+            boolean replaced = false;
+            if (p1.replacedWith(p2)) {
+                replaced = true;
+            }
+            System.err.printf("   %s: %s\n", partName, replaced);
+        });
+    }
 }

@@ -38,8 +38,12 @@ public class AirWire extends Trace implements Interactable {
         return traceNode;
     }
 
-    @Override
-    public void leftMouseAction(MouseEvent e, BoardView bv) {
+//    @Override
+//    public void leftMouseAction(MouseEvent e, BoardView bv) {
+//        
+//    }
+    
+    private void convertToTrace(MouseEvent e) {
 		Net net = (Net) getParent().getParent(); // TODO: provide an explicit access path
 		System.err.println("Clicked AirWire of " + net);
 

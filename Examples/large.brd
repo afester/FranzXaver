@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><breadboard schematic="small.sch">
+<?xml version="1.0" encoding="UTF-8"?><breadboard schematic="..\..\CNC\schematic\Labornetzteil3.sch">
   <part name="Q1" package="SOT93" rotation="270.0" value="" x="-8.93" y="-130.08">
     <line width="0.1524" x1="-7.62" x2="7.62" y1="6.35" y2="6.35"/>
     <line width="0.1524" x1="7.62" x2="7.62" y1="-6.223" y2="6.35"/>

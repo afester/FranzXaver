@@ -14,13 +14,10 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 import javafx.scene.transform.Rotate;
 
 public class Part extends Group implements Interactable {
@@ -286,5 +283,10 @@ public class Part extends Group implements Interactable {
         }
 
         return partNode;
+    }
+
+    protected boolean replacedWith(Part p2) {
+        // This is a first trivial attempt to decide whether the package for the part has changed:
+        return packageRef.equals(p2.packageRef);
     }
 }

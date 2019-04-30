@@ -19,7 +19,6 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class BreadBoardEditor extends Application {
 
@@ -50,16 +49,20 @@ public class BreadBoardEditor extends Application {
         // Create the menu bar
 
         Menu fileMenu = new Menu("File");
-        MenuItem menuItem0 = new MenuItem("New Board ...");
+        MenuItem menuItem0 = new MenuItem("New board ...");
         menuItem0.setOnAction(e -> newBoard());
-        MenuItem menuItem1 = new MenuItem("Open Board ...");
+        MenuItem menuItem1 = new MenuItem("Open board ...");
         menuItem1.setOnAction(e -> openBoard());
-        MenuItem menuItem2 = new MenuItem("Save Board ...");
+        MenuItem menuItem2 = new MenuItem("Save board ...");
         menuItem2.setOnAction(e -> saveBoard());
-        MenuItem menuItem3 = new MenuItem("Import Schematic ...");
+        MenuItem menuItem3 = new MenuItem("Import schematic ...");
         menuItem3.setOnAction(e -> importSchematic());
+        MenuItem menuItem4 = new MenuItem("Synchronize schematic ...");
+        menuItem4.setOnAction(e -> synchronizeSchematic());
+        MenuItem menuItem5 = new MenuItem("Quit");
+        menuItem5.setOnAction(e -> stage.close());
 
-        fileMenu.getItems().addAll(menuItem0, menuItem1, menuItem2, menuItem3);
+        fileMenu.getItems().addAll(menuItem0, menuItem1, menuItem2, menuItem3, menuItem4, menuItem5);
 
         Menu viewMenu = new Menu("View");
         MenuItem viewItem1 = new MenuItem("Center");
@@ -117,7 +120,16 @@ public class BreadBoardEditor extends Application {
         drawingView.fitContentToWindow();
     }
 
-    
+
+    private void synchronizeSchematic() {
+        String schematicFile = bv.getBoard().getSchematicFile();
+        System.err.println("Synchronizing " + schematicFile);
+        NetImport ni = new EagleNetImport();
+        Board updatedBoard = ni.importFile(new File(schematicFile));
+        bv.getBoard().update(updatedBoard);
+    }
+
+
     private void newBoard() {
         Board board = new Board();
         bv.setBoard(board);

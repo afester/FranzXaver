@@ -42,6 +42,7 @@ public class BoardView extends Pane {
 
     private Interactor interactor = new MouseInteractor(this);
 
+    // The interactable object which is currently selected
     private final ObjectProperty<Interactable> selectedObject = new SimpleObjectProperty<>();
     public ObjectProperty<Interactable> selectedObjectProperty() { return selectedObject; }
     public Interactable getSelectedObject() { return selectedObject.get(); }
