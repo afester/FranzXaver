@@ -21,10 +21,10 @@ import javafx.stage.Stage;
 
 class PointShape extends Group {
 
-    public PointShape(double x, double y) {
+    public PointShape(double x, double y, Color col) {
         
         Circle c = new Circle(x, y, 3);
-        c.setFill(Color.RED);
+        c.setFill(col);
         c.setStroke(null);
         
         Text t = new Text(x, y, String.format("%d/%d",  (int) x, (int) y));
@@ -99,6 +99,7 @@ public class ConvexHull extends Application {
         renderScene(points);
     }
     
+    
     private void renderScene(List<Point2D> points) {
         List<Point2D> convexHull = calculateConvexHull(points);
 
@@ -108,7 +109,12 @@ public class ConvexHull extends Application {
         p.setFill(null);
         p.setStroke(Color.BLACK);
 
-        points.forEach(e -> drawPane.getChildren().add(new PointShape(e.getX(), e.getY())));
+        points.forEach(e -> {
+            if (e == convexHull.get(0))
+                drawPane.getChildren().add(new PointShape(e.getX(), e.getY(), Color.BLUE));
+            else
+                drawPane.getChildren().add(new PointShape(e.getX(), e.getY(), Color.RED));
+        });
         drawPane.getChildren().add(p);
     }
 
@@ -119,12 +125,18 @@ public class ConvexHull extends Application {
     private List<Point2D> calculateConvexHull(final List<Point2D> points) {
         Stack<Point2D> stack = new Stack<>();
 
-        // find the lowest y-coordinate and 
-        // !! TODO: leftmost point, 
-        // called P0
-        System.err.println(points);
-        final Point2D P0 = points.stream().max((a, b) -> Double.compare(a.getY(), b.getY())).get();
-        System.err.println("P0: " + P0);
+        // find the lowest y-coordinate and leftmost point, called P0
+        //System.err.println(points);
+        final Point2D P0 = points.stream()
+                                 .max( (p1, p2) -> {
+                                    final int yCompare = Double.compare(p1.getY(), p2.getY());
+                                    if (yCompare == 0) {
+                                        return -Double.compare(p1.getX(), p2.getX());
+                                    }
+                                    return yCompare;
+                                 })
+                                .get();
+        //System.err.println("P0: " + P0);
 
         // sort remaining points by polar angle with P0, 
         // !! TODO: if several points have the same polar angle then only keep the farthest
@@ -135,34 +147,33 @@ public class ConvexHull extends Application {
               .sorted((a, b) -> (int) Math.signum(UNIT_X.angle(a.subtract(P0)) - UNIT_X.angle(b.subtract(P0))))
               .forEach(e -> sorted.add(e));
 
-        System.err.println("INPUT:");
-        dumpAngles(P0, points);
-        System.err.println("SORTED:");
-        dumpAngles(P0, sorted);
-        System.err.println("SORTED:" + sorted);
+        //System.err.println("INPUT:");
+        //dumpAngles(P0, points);
+        //System.err.println("SORTED:");
+        //dumpAngles(P0, sorted);
+        //System.err.println("SORTED:" + sorted);
 
         stack.push(P0);
         stack.push(sorted.get(0));
         for (int i = 1;  i < sorted.size();  i++) {
             Point2D e = sorted.get(i);
-//        sorted.forEach(e -> {
             // pop the last point from the stack if we turn clockwise to reach this point
             while(stack.size() > 1 && ccw(stack.get(stack.size() - 2), stack.get(stack.size() - 1), e) > 0) {
                 stack.pop();
             }
             stack.push(e);
-        } // );
-        
-        System.err.println(stack);
+        }
+
+        //System.err.println(stack);
         return stack.subList(0,  stack.size());
     }
 
-    private void dumpAngles(Point2D P0, List<Point2D> points) {
-        for (Point2D p : points) {
-            double angle = UNIT_X.angle(p.subtract(P0));
-            System.err.printf("  %s -> %s°\n", p, angle);
-        }
-    }
+//    private void dumpAngles(Point2D P0, List<Point2D> points) {
+//        for (Point2D p : points) {
+//            double angle = UNIT_X.angle(p.subtract(P0));
+//            System.err.printf("  %s -> %s°\n", p, angle);
+//        }
+//    }
 
     private int ccw(Point2D p1, Point2D p2, Point2D p3) {
         double crossZ = (p2.getX() - p1.getX()) * (p3.getY() - p1.getY()) - (p2.getY() - p1.getY()) * (p3.getX() - p1.getX());
