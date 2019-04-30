@@ -26,7 +26,7 @@ public class Part extends Group implements Interactable {
     private String partValue;
     private String packageRef;      // TODO: This should refer to a "package / footprint template"
 
-    private Map<String, Pad> pads = new HashMap<>();
+    Map<String, Pad> pads = new HashMap<>();
     private List<PartShape> shapes = new ArrayList<>();
     private Rotate rot = new Rotate();
 
@@ -287,6 +287,6 @@ public class Part extends Group implements Interactable {
 
     protected boolean replacedWith(Part p2) {
         // This is a first trivial attempt to decide whether the package for the part has changed:
-        return packageRef.equals(p2.packageRef);
+        return !packageRef.equals(p2.packageRef);
     }
 }

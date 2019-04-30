@@ -40,6 +40,10 @@ public class Pad extends Junction {
         return part;
     }
 
+    public String getPinNumber() {
+        return pinNumber;
+    }
+
     @Override
     public Point2D getPos() {
         return part.localToParent(getCenterX(), getCenterY());

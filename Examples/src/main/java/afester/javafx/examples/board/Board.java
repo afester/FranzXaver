@@ -36,6 +36,7 @@ import org.xml.sax.SAXException;
 
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 
 public class Board {
 
@@ -54,14 +55,6 @@ public class Board {
     public List<Net> getNets() {
         return nets;
     }
-
-//    public Double getWidth() {
-//        return width;
-//    }
-//
-//    public Double getHeight() {
-//        return height;
-//    }
 
     public Part getDevice(String partName) {
         return parts.get(partName);
@@ -195,7 +188,7 @@ public class Board {
 
                     Pad junction = new Pad(part, pinNumber, padX, padY);
                     pads.put(padId, junction);
-                    part.addPad(junction, padId);
+                    part.addPad(junction, pinNumber);
                 }
 
                 NodeList lineNodes = (NodeList) xPath.evaluate("./line", partNode, XPathConstants.NODESET);
@@ -323,8 +316,8 @@ public class Board {
      * @param updatedBoard The new board
      */
     public void update(Board updatedBoard) {
-        System.err.printf("New    : %s parts and %s nets ...\n", updatedBoard.getParts().size(), updatedBoard.getNets().size());
-        System.err.printf("Current: %s parts and %s nets ...\n", getParts().size(), getNets().size());
+        //System.err.printf("New    : %s parts and %s nets ...\n", updatedBoard.getParts().size(), updatedBoard.getNets().size());
+        //System.err.printf("Current: %s parts and %s nets ...\n", getParts().size(), getNets().size());
 
         // verify parts - changed, added, deleted!
         Set<String> updatedParts = new HashSet<>(updatedBoard.getParts().keySet());
@@ -339,17 +332,50 @@ public class Board {
         potentiallyModified.removeAll(removedParts);
         potentiallyModified.removeAll(addedParts);
 
-        System.err.printf("Removed: %s parts\n", removedParts.size());
-        System.err.printf("Added  : %s parts\n", addedParts.size());
-        System.err.printf("Potentially replaced: %s parts\n", potentiallyModified.size());
+
+        Set<String> modifiedParts = new HashSet<>();
+
+        // System.err.printf("Potentially replaced: %s parts\n", potentiallyModified.size());
         potentiallyModified.forEach(partName -> {
             Part p1 = getParts().get(partName);
             Part p2 = updatedBoard.getParts().get(partName);
-            boolean replaced = false;
             if (p1.replacedWith(p2)) {
-                replaced = true;
+                modifiedParts.add(partName);
             }
-            System.err.printf("   %s: %s\n", partName, replaced);
         });
+
+        System.err.printf("Removed : %s\n", removedParts);
+        System.err.printf("Added   : %s\n", addedParts);
+        System.err.printf("Modified: %s\n", modifiedParts);
+        modifiedParts.forEach(partName -> {
+            Part p1 = getParts().get(partName);
+            Part p2 = updatedBoard.getParts().get(partName);
+
+            System.err.printf("  %s => %s\n", p1, p2);
+            for (Pad p : p2.getPads()) {
+                String pinNr = p.getPinNumber();
+                Pad oldPad = p1.getPad(pinNr);
+
+                p.traceStarts = oldPad.traceStarts;
+                for (Line l : p.traceStarts) {
+                    Trace t = (Trace) l;
+                    t.setFrom(p);
+                }
+            
+                p.traceEnds = oldPad.traceEnds;
+                for (Line l : p.traceEnds) {
+                    Trace t = (Trace) l;
+                    t.setTo(p);
+                }
+            }
+
+            parts.remove(partName);
+            parts.put(partName, p2);
+
+            p2.setRotation(p1.getRotation());
+            p2.setLayoutX(p1.getLayoutX());
+            p2.setLayoutY(p1.getLayoutY());
+        });
+
     }
 }

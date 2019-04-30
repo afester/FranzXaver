@@ -126,7 +126,9 @@ public class BreadBoardEditor extends Application {
         System.err.println("Synchronizing " + schematicFile);
         NetImport ni = new EagleNetImport();
         Board updatedBoard = ni.importFile(new File(schematicFile));
-        bv.getBoard().update(updatedBoard);
+        Board currentBoard = bv.getBoard();
+        currentBoard.update(updatedBoard);
+        bv.setBoard(currentBoard);  // re-render board
     }
 
 
