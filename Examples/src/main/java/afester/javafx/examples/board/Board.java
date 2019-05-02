@@ -5,10 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,7 +39,7 @@ import javafx.scene.shape.Line;
 public class Board {
 
     private Map<String, Part> parts = new HashMap<>();
-    private List<Net> nets = new ArrayList<>();
+    private Map<String, Net> nets = new HashMap<>();
     private String schematicFile;
 
     public void addDevice(Part pkg) {
@@ -52,7 +50,7 @@ public class Board {
         return parts;
     }
 
-    public List<Net> getNets() {
+    public Map<String, Net> getNets() {
         return nets;
     }
 
@@ -61,7 +59,7 @@ public class Board {
     }
 
     public void addNet(Net net) {
-        nets.add(net);
+        nets.put(net.getName(), net);
     }
 
     public class IntVal {
@@ -95,19 +93,19 @@ public class Board {
                 rootNode.appendChild(partNode);
             });
 
-            nets.forEach(n -> {
+            nets.forEach((netName, net) -> {
                 Element netNode = doc.createElement("net");
-                netNode.setAttribute("name", n.getName());
+                netNode.setAttribute("name", net.getName());
 
                 // Junctions are just points which connect traces WITHIN a net
-                for (Junction j : n.getJunctions()) {
+                for (Junction j : net.getJunctions()) {
                     j.setId(junctionId.val++);
                     Node junctionNode = j.getXML(doc);
                     netNode.appendChild(junctionNode);
                 }
 
                 // Traces are direct lines which connect two Junctions and/or Pads
-                for (Trace t : n.getTraces()) {
+                for (Trace t : net.getTraces()) {
                     Node traceNode = t.getXML(doc);
                     netNode.appendChild(traceNode);
                 }
@@ -344,9 +342,9 @@ public class Board {
             }
         });
 
-        System.err.printf("Removed : %s\n", removedParts);
-        System.err.printf("Added   : %s\n", addedParts);
-        System.err.printf("Modified: %s\n", modifiedParts);
+        System.err.printf("Removed  parts: %s\n", removedParts);
+        System.err.printf("Added    parts: %s\n", addedParts);
+        System.err.printf("Modified parts: %s\n", modifiedParts);
         modifiedParts.forEach(partName -> {
             Part p1 = getParts().get(partName);
             Part p2 = updatedBoard.getParts().get(partName);
@@ -377,5 +375,31 @@ public class Board {
             p2.setLayoutY(p1.getLayoutY());
         });
 
+        // ********************* Nets *********************************
+        final Set<String> existingNetNames = getNets().keySet();
+        final Set<String> newNetNames = updatedBoard.getNets().keySet();
+        
+        Set<String> removedNets = new HashSet<>(existingNetNames);
+        removedNets.removeAll(newNetNames);
+
+        Set<String> addedNets = new HashSet<>(newNetNames);
+        addedNets.removeAll(existingNetNames);
+
+        Set<String> potentiallyModifiedNets = new HashSet<>(existingNetNames);
+        potentiallyModifiedNets.removeAll(removedNets);
+        /// potentiallyModified.removeAll(addedParts);
+
+        Set<String> modifiedNets = new HashSet<>();
+        potentiallyModifiedNets.forEach(netName -> {
+            Net n1 = getNets().get(netName);
+            Net n2 = updatedBoard.getNets().get(netName);
+            if (!n1.sameAs(n2)) {
+                modifiedNets.add(netName);
+            }
+        });
+
+        System.err.printf("Removed  nets: %s\n", removedNets);
+        System.err.printf("Added    nets: %s\n", addedNets);
+        System.err.printf("Modified nets: %s\n", modifiedNets);
     }
 }

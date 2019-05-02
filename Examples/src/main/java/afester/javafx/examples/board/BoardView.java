@@ -180,9 +180,9 @@ public class BoardView extends Pane {
         });
 
         System.err.println("Adding Nets ...");
-        board.getNets().forEach(v -> {
-            System.err.println("  " + v);
-            wireGroup.getChildren().add(v);
+        board.getNets().forEach((netName, net) -> {
+            System.err.println("  " + net);
+            wireGroup.getChildren().add(net);
         });
         
         setOnMousePressed(e -> { 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javafx.scene.Group;
 
@@ -72,6 +73,36 @@ public class Net extends Group {
         getAllJunctions().forEach(e -> { buffer.append(e); buffer.append(", "); } );
         buffer.append("]");
         return String.format("Net[netName=%s, %s]", netName, buffer);
+    }
+
+
+    private Set<Pad> getPads() {
+        final Set<Pad> result = new HashSet<>();
+        for (Trace t : traces) {
+            Junction j1 = t.getFrom();
+            if (j1 instanceof Pad) {
+                result.add((Pad) j1);
+            }
+
+            Junction j2 = t.getTo();
+            if (j2 instanceof Pad) {
+                result.add((Pad) j2);
+            }
+        }
+        return result;
+    }
+    
+    public boolean sameAs(Net n2) {
+        Set<String> thisPads = getPads().stream()
+                                        .map(e -> e.getPadId())
+                                        .collect(Collectors.toSet());
+
+        Set<String> otherPads = n2.getPads().stream()
+                                            .map(e -> e.getPadId())
+                                            .collect(Collectors.toSet());
+
+        otherPads.removeAll(thisPads);
+        return otherPads.isEmpty(); // if S2 - S1 == empty then nets are the same (they connect the same pads)
     }
 
 }

@@ -91,5 +91,13 @@ public class Pad extends Junction {
 
         return result;
     }
-    
+
+    /**
+     * Returns a unique pad id, consisting of the part number and the pin number
+     *
+     * @return A board-unique pad id in the form "partName$pinNumber"
+     */
+    public String getPadId() {
+        return part.getName() + "$" + pinNumber;
+    }
  }
