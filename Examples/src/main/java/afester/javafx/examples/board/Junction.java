@@ -14,8 +14,8 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
 public class Junction extends Circle implements PartShape, Interactable {
-    public List<Line> traceStarts = new ArrayList<>();
-    public List<Line> traceEnds = new ArrayList<>();
+    public List<Trace> traceStarts = new ArrayList<>();
+    public List<Trace> traceEnds = new ArrayList<>();
 
     protected int id;	// currently only required for serialization and deserialization
 
@@ -42,11 +42,11 @@ public class Junction extends Circle implements PartShape, Interactable {
         return String.format("Junction[pos=%s/%s]", getCenterX(), getCenterY());  
     }
 
-    public void addStart(Line wire) {
+    public void addStart(Trace wire) {
         traceStarts.add(wire);
     }
 
-    public void addEnd(Line wire) {
+    public void addEnd(Trace wire) {
         traceEnds.add(wire);
     }
 

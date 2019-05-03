@@ -22,16 +22,17 @@ import javafx.scene.transform.Rotate;
 
 public class Part extends Group implements Interactable {
 
+    // Model
     private String partName;
     private String partValue;
     private String packageRef;      // TODO: This should refer to a "package / footprint template"
-
     Map<String, Pad> pads = new HashMap<>();
-    private List<PartShape> shapes = new ArrayList<>();
     private Rotate rot = new Rotate();
 
+    // View
+    private List<PartShape> shapes = new ArrayList<>();
     private Rectangle selectionRect;
-    
+
 
     public Part(String partName, String partValue, String packageRef) {
         this.partName = partName;

@@ -14,10 +14,12 @@ import javafx.scene.Group;
  */
 public class Net extends Group {
 
+    // Model
     private String netName;
     private List<Junction> junctionList = new ArrayList<>();    // A list of junctions - not associated to a part. Junctions can be added and removed.
     private List<Trace> traces = new ArrayList<>();
 
+    // View (TODO: separate in own class)
     private Group junctions = new Group();
     private Group nets= new Group();
 
@@ -103,6 +105,16 @@ public class Net extends Group {
 
         otherPads.removeAll(thisPads);
         return otherPads.isEmpty(); // if S2 - S1 == empty then nets are the same (they connect the same pads)
+    }
+
+
+    public void clear() {
+        junctionList.clear();
+        traces.clear();
+
+        // View (TODO: separate into own class)
+        junctions.getChildren().clear();
+        nets.getChildren().clear();
     }
 
 }

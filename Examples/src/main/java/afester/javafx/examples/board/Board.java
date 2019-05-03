@@ -374,6 +374,19 @@ public class Board {
             p2.setLayoutX(p1.getLayoutX());
             p2.setLayoutY(p1.getLayoutY());
         });
+        
+        removedParts.forEach(partName -> {
+            removePart(partName);
+        });
+
+        addedParts.forEach(partName -> {
+            Part newPart = updatedBoard.getParts().get(partName);
+            newPart.pads.values().forEach(pad -> {
+                pad.traceStarts.clear();    // remove references to "new" board
+                pad.traceEnds.clear();      // remove references to "new" board
+            });
+            addDevice(newPart);
+        });
 
         // ********************* Nets *********************************
         final Set<String> existingNetNames = getNets().keySet();
@@ -401,5 +414,48 @@ public class Board {
         System.err.printf("Removed  nets: %s\n", removedNets);
         System.err.printf("Added    nets: %s\n", addedNets);
         System.err.printf("Modified nets: %s\n", modifiedNets);
+
+        removedNets.forEach(netName -> {
+            Net net = getNets().get(netName);
+            net.clear();
+            getNets().remove(netName);
+        });
+
+        modifiedNets.forEach(netName -> {
+            Net net = getNets().get(netName);
+            net.clear();
+        });
+        
+        addedNets.forEach(netName -> {
+            
+        });
+    }
+
+    /**
+     * Removes a part from this board.
+     * This removes the part and all airwires which originate from this part.
+     *
+     * @param partName The name of the part to remove.
+     */
+    private void removePart(String partName) {
+        Part part = getParts().get(partName);
+        if (part != null) {
+            part.getPads().forEach(pad -> {
+                pad.traceStarts.forEach(trace -> {
+                    Net net = (Net) trace.getParent();    // todo: provide explicit access path  
+                    net.getTraces().remove(trace);
+                });
+                pad.traceStarts.clear();
+
+                pad.traceEnds.forEach(trace -> {
+                    Net net = (Net) trace.getParent();    // todo: provide explicit access path
+                    net.getTraces().remove(trace);
+                    
+                });
+                pad.traceEnds.clear();
+            });
+
+            parts.remove(partName);
+        }
     }
 }
