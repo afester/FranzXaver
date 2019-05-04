@@ -1,19 +1,27 @@
 package afester.javafx.examples.board;
 
 import java.io.File;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import afester.javafx.components.StatusBar;
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Separator;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -79,6 +87,25 @@ public class BreadBoardEditor extends Application {
         MenuBar menuBar = new MenuBar();
         menuBar.getMenus().addAll(fileMenu, viewMenu, editMenu);
 
+        // Create the toolbar
+        final Button shortestPathButton = new Button("Shortest");
+        shortestPathButton.setOnAction(e -> calculateShortestPath());
+
+        final Button resetNetButton = new Button("Reset Net");
+        resetNetButton.setOnAction(e -> resetNet());
+
+        ToolBar toolBar = new ToolBar(
+                new Button("New"),
+                new Button("Open"),
+                new Button("Save"),
+                new Separator(),
+                shortestPathButton,
+                resetNetButton
+            );
+        
+        VBox topBar = new VBox();
+        topBar.getChildren().addAll(menuBar, toolBar);
+        
         StatusBar sb = new StatusBar();
         sb.textProperty().bindBidirectional(bv.selectedObjectProperty(), new StringConverter<Interactable>() {
 
@@ -105,7 +132,7 @@ public class BreadBoardEditor extends Application {
         rightBar.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(0), new Insets(0))));
 
         BorderPane mainLayout = new BorderPane();
-        mainLayout.setTop(menuBar);
+        mainLayout.setTop(topBar);
         mainLayout.setBottom(sb);
         mainLayout.setLeft(leftBar);
         mainLayout.setRight(rightBar);
@@ -118,6 +145,30 @@ public class BreadBoardEditor extends Application {
 
         stage.show();
         drawingView.fitContentToWindow();
+    }
+
+
+    private void calculateShortestPath() {
+        Interactable selectedObject = bv.getSelectedObject();
+        if (selectedObject instanceof Trace) {
+            Trace trace = (Trace) selectedObject;
+            Net net = (Net) trace.getNet();
+            System.err.printf("NET: %s\n", net.getName());
+
+            if (net.getJunctions().size() != 0) {
+                System.err.printf("Can not calculate shortest paths - RESET the net first\n");
+                return;
+            }
+
+            List<Point2D> padPoints = net.getPads().stream()
+                                                   .map(pad -> pad.getPos())
+                                                   .collect(Collectors.toList());
+            System.err.println(padPoints);
+        }
+    }
+
+
+    private void resetNet() {
     }
 
 

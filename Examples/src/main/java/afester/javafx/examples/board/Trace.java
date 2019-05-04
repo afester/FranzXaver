@@ -122,7 +122,7 @@ public class Trace extends Line implements Interactable {
     @Override
     public void setSelected(boolean isSelected) {
 //    	if (isSelected) {
-            Net net = (Net) getParent().getParent(); // TODO: provide an explicit access path
+            Net net = getNet();
             net.getTraces().forEach(e -> e.setSegmentSelected(isSelected));
 
             //from.setSelected(true);
@@ -160,7 +160,14 @@ public class Trace extends Line implements Interactable {
 
     @Override
     public String getRepr() {
-        Net net = (Net) getParent().getParent(); // TODO: provide an explicit access path
-        return "Net: " + net.getName(); 
+        return "Net: " + getNet().getName(); 
+    }
+
+    /**
+     * @return The net this Trace is part of.
+     */
+    public Net getNet() {
+        Net net = (Net) getParent().getParent();
+        return net; 
     }
 }
