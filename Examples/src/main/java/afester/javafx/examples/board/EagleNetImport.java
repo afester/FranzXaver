@@ -95,7 +95,6 @@ public class EagleNetImport extends NetImport {
             for (int i = 0; i < nodes.getLength(); ++i) {
                 Element netNode = (Element) nodes.item(i);
                 String netName = netNode.getAttribute("name");
-                Net net = new Net(netName);
 
                 // get all pin references for the net
                 List<Pad> padList = new ArrayList<>();
@@ -120,7 +119,8 @@ public class EagleNetImport extends NetImport {
 
                 }
 
-                // connect all pads through an AirWire
+                // Create a new net and connect all pads through an AirWire
+                Net net = new Net(netName);
                 Pad p1 = null;
                 for (Pad p2 : padList) {
                     if (p1 != null) {

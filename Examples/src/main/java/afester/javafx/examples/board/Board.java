@@ -5,8 +5,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -427,7 +429,35 @@ public class Board {
         });
         
         addedNets.forEach(netName -> {
-            
+            List<Pad> padList = new ArrayList<>();
+            Net newNet = updatedBoard.getNets().get(netName);
+            newNet.getPads().forEach(pad -> {
+                String partName = pad.getPart().getName();
+                Part part = getParts().get(partName);
+                if (part != null) {
+                    String pinNumber = pad.getPinNumber();
+                    Pad p = part.getPad(pinNumber);
+                    if (p != null) {
+                        padList.add(p);
+                    } else {
+                        System.err.printf("WARNING: Pin %s not found in Part %s\n", pinNumber, partName);
+                    }
+                } else {
+                    System.err.printf("WARNING: Part %s not found in board\n", partName);
+                }
+            });
+
+            // Create a new net and connect all pads through an AirWire (TODO: duplicate code in EagleNetImport)
+            Net net = new Net(netName);
+            Pad p1 = null;
+            for (Pad p2 : padList) {
+                if (p1 != null) {
+                    net.addTrace(new AirWire(p1, p2));
+                }
+                p1 = p2;
+            }
+
+            addNet(net);
         });
     }
 

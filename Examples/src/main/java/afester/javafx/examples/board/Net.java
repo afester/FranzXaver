@@ -78,7 +78,7 @@ public class Net extends Group {
     }
 
 
-    private Set<Pad> getPads() {
+    public Set<Pad> getPads() {
         final Set<Pad> result = new HashSet<>();
         for (Trace t : traces) {
             Junction j1 = t.getFrom();
