@@ -245,13 +245,24 @@ public class EagleNetImport extends NetImport {
         NodeList rectNodes = (NodeList) xPath.evaluate("./rectangle", packageNode, XPathConstants.NODESET);
         for (int j = 0; j < rectNodes.getLength(); ++j) {
             Element rectNode = (Element) rectNodes.item(j);
-            Double x1 = Double.parseDouble(rectNode.getAttribute("x1"));
-            Double y1 = -Double.parseDouble(rectNode.getAttribute("y1"));
-            Double x2 = Double.parseDouble(rectNode.getAttribute("x2"));
-            Double y2 = -Double.parseDouble(rectNode.getAttribute("y2"));
+            Point2D p1 = new Point2D(Double.parseDouble(rectNode.getAttribute("x1")),
+                                     -Double.parseDouble(rectNode.getAttribute("y1")));
+            Point2D p2 = new Point2D(Double.parseDouble(rectNode.getAttribute("x2")),
+                                     -Double.parseDouble(rectNode.getAttribute("y2")));
             String layer = rectNode.getAttribute("layer");
 
-            part.addShape(new PartRectangle(x1, y1, x2, y2));
+            part.addShape(new PartRectangle(p1, p2));
+        }
+
+        NodeList circleNodes = (NodeList) xPath.evaluate("./circle", packageNode, XPathConstants.NODESET);
+        for (int j = 0; j < circleNodes.getLength(); ++j) {
+            Element circleNode = (Element) circleNodes.item(j);
+            Point2D center = new Point2D(Double.parseDouble(circleNode.getAttribute("x")),
+                                         -Double.parseDouble(circleNode.getAttribute("y")));
+            Double radius = Double.parseDouble(circleNode.getAttribute("radius"));
+            Double width = Double.parseDouble(circleNode.getAttribute("width"));
+
+            part.addShape(new PartCircle(center, radius, width));
         }
 
         NodeList textNodes = (NodeList) xPath.evaluate("./text", packageNode, XPathConstants.NODESET);

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><breadboard schematic="..\..\cnc\schematic\Labornetzteil3.sch">
+<?xml version="1.0" encoding="UTF-8"?><breadboard schematic="small.sch">
   <part name="Q1" package="SOT93" rotation="270.0" value="" x="-8.93" y="-130.08">
     <line width="0.1524" x1="-7.62" x2="7.62" y1="6.35" y2="6.35"/>
     <line width="0.1524" x1="7.62" x2="7.62" y1="-6.223" y2="6.35"/>
@@ -1537,6 +1537,8 @@
     <line width="0.254" x1="0.8" x2="0.8" y1="-3.2" y2="3.2"/>
     <line width="0.254" x1="0.8" x2="1.05" y1="3.2" y2="3.2"/>
     <line width="0.254" x1="1.05" x2="1.05" y1="3.2" y2="4.8"/>
+    <rectangle x1="-2.1" x2="-1.7" y1="4.4" y2="2.3"/>
+    <circle radius="1.1" width="0.1524" x="-1.9" y="3.35"/>
     <text size="0.127" x="-3.84" y="4.95">P6</text>
     <text size="0.127" x="2.75" y="4.95">1k</text>
     <pad id="172" pinNumber="3" x="0.0" y="-2.54"/>

@@ -203,6 +203,29 @@ public class Board {
                     part.addShape(new PartLine(p1, p2, width));
                 }
 
+                NodeList rectNodes = (NodeList) xPath.evaluate("./rectangle", partNode, XPathConstants.NODESET);
+                for (int j = 0; j < rectNodes.getLength(); ++j) {
+                    Element rectNode = (Element) rectNodes.item(j);
+
+                    Point2D p1 = new Point2D(Double.parseDouble(rectNode.getAttribute("x1")),
+                                             Double.parseDouble(rectNode.getAttribute("y1")));
+                    Point2D p2 = new Point2D(Double.parseDouble(rectNode.getAttribute("x2")),
+                                             Double.parseDouble(rectNode.getAttribute("y2")));
+
+                    part.addShape(new PartRectangle(p1, p2));
+                }
+
+                NodeList circleNodes = (NodeList) xPath.evaluate("./circle", partNode, XPathConstants.NODESET);
+                for (int j = 0; j < circleNodes.getLength(); ++j) {
+                    Element circleNode = (Element) circleNodes.item(j);
+
+                    Point2D center = new Point2D(Double.parseDouble(circleNode.getAttribute("x")),
+                                                 Double.parseDouble(circleNode.getAttribute("y")));
+                    double radius = Double.parseDouble(circleNode.getAttribute("radius"));
+                    double width = Double.parseDouble(circleNode.getAttribute("width"));
+
+                    part.addShape(new PartCircle(center, radius, width));
+                }
 
                 NodeList arcNodes = (NodeList) xPath.evaluate("./arc", partNode, XPathConstants.NODESET);
                 for (int j = 0; j < arcNodes.getLength(); ++j) {
