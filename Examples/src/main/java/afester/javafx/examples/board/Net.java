@@ -117,4 +117,69 @@ public class Net extends Group {
         nets.getChildren().clear();
     }
 
+    
+    /**
+     * Calculate the shortest path using the nearest point heuristic. 
+     *
+     * @param pads The input list of Pads.
+     * @return The list of Pads in the order of their nearest point.
+     */
+    private List<Pad> calculateNearestPath(List<Pad> pads) {
+        List<Pad> result = new ArrayList<>(pads);
+
+        for (int idx2 = 0;  idx2 < pads.size() - 1;  idx2++) {
+            Pad P0 = result.get(idx2);
+
+            double minDist = Double.MAX_VALUE;
+            int nearestIdx = -1;
+            Pad nearest = null;
+            for (int idx = idx2+1;  idx < result.size();  idx++) {
+                Pad p = result.get(idx);
+                double dist = P0.getPos().distance(p.getPos());
+                if (dist < minDist) {
+                    nearestIdx = idx;
+                    minDist = dist;
+                    nearest = p;
+                }
+            }
+
+            // swap the next point with the nearest one.
+            Pad tmp = result.get(idx2+1);
+            result.set(idx2+1, nearest);
+            result.set(nearestIdx, tmp);
+        }
+
+        return result;
+    }
+
+
+    /**
+     * Calculates the shortest path of this net by
+     *
+     * <ul>
+     *   <li>clearing the net</li>
+     *   <li>taking the first pad in the net</li>
+     *   <li>calculating the next pad by its minimum distance</li>
+     * </ul>
+     */
+    public void calculateShortestPath() {
+        if (getJunctions().size() != 0) {
+            System.err.printf("Can not calculate shortest paths - RESET the net first\n");
+            return;
+        }
+    
+        List<Pad> pads = getPads().stream().collect(Collectors.toList());
+        List<Pad> sortedPads = calculateNearestPath(pads);
+        clear();
+    
+        // Connect all pads through an AirWire (TODO: duplicate code in EagleNetImport)
+        // TODO: Use a lineIterator
+        Pad p1 = null;
+        for (Pad p2 : sortedPads) {
+            if (p1 != null) {
+                addTrace(new AirWire(p1, p2));
+            }
+            p1 = p2;
+        }
+    }
 }

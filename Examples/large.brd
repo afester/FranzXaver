@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><breadboard schematic="small.sch">
+<?xml version="1.0" encoding="UTF-8"?><breadboard schematic="..\..\cnc\schematic\Labornetzteil3.sch">
   <part name="Q1" package="SOT93" rotation="270.0" value="" x="-8.93" y="-130.08">
     <line width="0.1524" x1="-7.62" x2="7.62" y1="6.35" y2="6.35"/>
     <line width="0.1524" x1="7.62" x2="7.62" y1="-6.223" y2="6.35"/>
@@ -109,7 +109,7 @@
     <pad id="23" pinNumber="C" x="-2.54" y="1.27"/>
     <pad id="24" pinNumber="E" x="2.54" y="1.27"/>
   </part>
-  <part name="R21" package="0204/5" rotation="270.0" value="5,6k" x="53.3" y="113.76">
+  <part name="R21" package="0204/5" rotation="90.0" value="5,6k" x="73.62" y="116.3">
     <line width="0.508" x1="2.54" x2="2.032" y1="-0.0" y2="-0.0"/>
     <line width="0.508" x1="-2.54" x2="-2.032" y1="-0.0" y2="-0.0"/>
     <line width="0.1524" x1="-1.778" x2="-1.778" y1="0.635" y2="-0.635"/>
@@ -325,7 +325,7 @@
     <pad id="41" pinNumber="1" x="-2.54" y="0.0"/>
     <pad id="42" pinNumber="2" x="2.54" y="0.0"/>
   </part>
-  <part name="R1" package="0617/17" rotation="270.0" value="0,1R / 2W" x="73.62" y="69.31">
+  <part name="R1" package="0617/17" rotation="270.0" value="0,1R / 2W" x="76.16" y="66.77">
     <line width="0.8128" x1="-8.89" x2="-8.636" y1="-0.0" y2="-0.0"/>
     <line width="0.1524" x1="-7.874" x2="-6.985" y1="-3.048" y2="-3.048"/>
     <line width="0.1524" x1="-6.731" x2="-6.985" y1="-2.794" y2="-3.048"/>
@@ -605,7 +605,7 @@
     <pad id="68" pinNumber="5" x="1.905" y="-8.89"/>
     <pad id="69" pinNumber="6" x="3.175" y="-6.35"/>
   </part>
-  <part name="F1" package="PTH" rotation="0.0" value="30V/1.1A" x="86.32000000000001" y="116.3">
+  <part name="F1" package="PTH" rotation="0.0" value="30V/1.1A" x="86.32000000000001" y="106.14">
     <line width="0.2032" x1="-3.81" x2="3.81" y1="-1.524" y2="-1.524"/>
     <line width="0.2032" x1="3.81" x2="3.81" y1="-1.524" y2="1.524"/>
     <line width="0.2032" x1="3.81" x2="-3.81" y1="1.524" y2="1.524"/>
@@ -615,7 +615,7 @@
     <pad id="70" pinNumber="P$1" x="-2.54" y="0.0"/>
     <pad id="71" pinNumber="P$2" x="2.54" y="0.0"/>
   </part>
-  <part name="F2" package="PTH" rotation="0.0" value="30V/1.1A" x="73.62" y="111.22">
+  <part name="F2" package="PTH" rotation="0.0" value="30V/1.1A" x="76.16" y="101.06">
     <line width="0.2032" x1="-3.81" x2="3.81" y1="-1.524" y2="-1.524"/>
     <line width="0.2032" x1="3.81" x2="3.81" y1="-1.524" y2="1.524"/>
     <line width="0.2032" x1="3.81" x2="-3.81" y1="1.524" y2="1.524"/>
@@ -877,7 +877,7 @@
     <pad id="106" pinNumber="1" x="-1.27" y="0.0"/>
     <pad id="107" pinNumber="2" x="1.27" y="0.0"/>
   </part>
-  <part name="C3" package="C025-025X050" rotation="270.0" value="100 nF" x="72.35" y="120.11">
+  <part name="C3" package="C025-025X050" rotation="270.0" value="100 nF" x="76.16" y="112.49">
     <line width="0.1524" x1="-2.159" x2="2.159" y1="-1.27" y2="-1.27"/>
     <line width="0.1524" x1="2.159" x2="-2.159" y1="1.27" y2="1.27"/>
     <line width="0.1524" x1="2.413" x2="2.413" y1="-1.016" y2="1.016"/>
@@ -1059,7 +1059,7 @@
     <pad id="142" pinNumber="7" x="-1.27" y="-3.81"/>
     <pad id="143" pinNumber="8" x="-3.81" y="-3.81"/>
   </part>
-  <part name="X1" package="AK500/4" rotation="90.0" value="" x="93.94" y="85.82000000000001">
+  <part name="X1" package="AK500/4" rotation="90.0" value="" x="93.94" y="95.98">
     <line width="0.1524" x1="-10.0838" x2="-10.0838" y1="3.556" y2="2.159"/>
     <line width="0.1524" x1="-10.0838" x2="0.0" y1="3.556" y2="3.556"/>
     <line width="0.1524" x1="-10.0838" x2="-10.5918" y1="-3.048" y2="-3.175"/>
@@ -1528,7 +1528,7 @@
     <pad id="170" pinNumber="2" x="-2.54" y="0.0"/>
     <pad id="171" pinNumber="3" x="0.0" y="-2.54"/>
   </part>
-  <part name="P6" package="RTRIM64Z" rotation="270.0" value="1k" x="74.89" y="141.7">
+  <part name="P6" package="RTRIM64Y" rotation="90.0" value="1k" x="78.7" y="123.92">
     <line width="0.254" x1="1.05" x2="-3.3" y1="4.8" y2="4.8"/>
     <line width="0.254" x1="-3.3" x2="-3.3" y1="4.8" y2="-4.8"/>
     <line width="0.254" x1="-3.3" x2="1.05" y1="-4.8" y2="-4.8"/>
@@ -1537,18 +1537,11 @@
     <line width="0.254" x1="0.8" x2="0.8" y1="-3.2" y2="3.2"/>
     <line width="0.254" x1="0.8" x2="1.05" y1="3.2" y2="3.2"/>
     <line width="0.254" x1="1.05" x2="1.05" y1="3.2" y2="4.8"/>
-    <line width="0.1524" x1="-3.1" x2="-3.1" y1="-4.95" y2="-6.15"/>
-    <line width="0.1524" x1="-3.1" x2="-2.3" y1="-6.15" y2="-6.15"/>
-    <line width="0.1524" x1="-2.3" x2="-2.3" y1="-6.15" y2="-5.7"/>
-    <line width="0.1524" x1="-2.3" x2="-1.75" y1="-5.7" y2="-5.7"/>
-    <line width="0.1524" x1="-1.75" x2="-1.75" y1="-5.7" y2="-6.15"/>
-    <line width="0.1524" x1="-1.75" x2="-0.9" y1="-6.15" y2="-6.15"/>
-    <line width="0.1524" x1="-0.9" x2="-0.9" y1="-6.15" y2="-4.95"/>
-    <text size="0.127" x="-3.65" y="4.9">P6</text>
-    <text size="0.127" x="2.69" y="4.92">1k</text>
-    <pad id="172" pinNumber="1" x="0.0" y="2.54"/>
-    <pad id="173" pinNumber="2" x="-2.54" y="0.0"/>
-    <pad id="174" pinNumber="3" x="0.0" y="-2.54"/>
+    <text size="0.127" x="-3.84" y="4.95">P6</text>
+    <text size="0.127" x="2.75" y="4.95">1k</text>
+    <pad id="172" pinNumber="3" x="0.0" y="-2.54"/>
+    <pad id="173" pinNumber="1" x="0.0" y="2.54"/>
+    <pad id="174" pinNumber="2" x="-2.54" y="0.0"/>
   </part>
   <part name="P7" package="RTRIM64Z" rotation="0.0" value="2 k" x="165.1" y="-195.58">
     <line width="0.254" x1="1.05" x2="-3.3" y1="4.8" y2="4.8"/>
@@ -1666,7 +1659,7 @@
     <pad id="185" pinNumber="1" x="-2.54" y="0.0"/>
     <pad id="186" pinNumber="2" x="2.54" y="0.0"/>
   </part>
-  <part name="R14" package="0617/17" rotation="270.0" value="0,1R / 2W" x="86.32000000000001" y="97.25">
+  <part name="R14" package="0617/17" rotation="270.0" value="0,1R / 2W" x="86.32000000000001" y="94.71000000000001">
     <line width="0.8128" x1="-8.89" x2="-8.636" y1="-0.0" y2="-0.0"/>
     <line width="0.1524" x1="-7.874" x2="-6.985" y1="-3.048" y2="-3.048"/>
     <line width="0.1524" x1="-6.731" x2="-6.985" y1="-2.794" y2="-3.048"/>
@@ -1718,7 +1711,7 @@
     <pad id="189" pinNumber="1" x="-2.54" y="0.0"/>
     <pad id="190" pinNumber="2" x="2.54" y="0.0"/>
   </part>
-  <part name="R16" package="0617/17" rotation="270.0" value="0,1R / 2W" x="76.16" y="92.17">
+  <part name="R16" package="0617/17" rotation="270.0" value="0,1R / 2W" x="76.16" y="89.63">
     <line width="0.8128" x1="-8.89" x2="-8.636" y1="-0.0" y2="-0.0"/>
     <line width="0.1524" x1="-7.874" x2="-6.985" y1="-3.048" y2="-3.048"/>
     <line width="0.1524" x1="-6.731" x2="-6.985" y1="-2.794" y2="-3.048"/>
@@ -1746,7 +1739,7 @@
     <pad id="191" pinNumber="1" x="-8.89" y="0.0"/>
     <pad id="192" pinNumber="2" x="8.89" y="0.0"/>
   </part>
-  <part name="R15" package="0204/5" rotation="180.0" value="5,6k" x="87.59" y="141.7">
+  <part name="R15" package="0204/5" rotation="180.0" value="5,6k" x="86.32000000000001" y="123.92">
     <line width="0.508" x1="2.54" x2="2.032" y1="-0.0" y2="-0.0"/>
     <line width="0.508" x1="-2.54" x2="-2.032" y1="-0.0" y2="-0.0"/>
     <line width="0.1524" x1="-1.778" x2="-1.778" y1="0.635" y2="-0.635"/>
@@ -1872,7 +1865,7 @@
     <pad id="209" pinNumber="4" x="2.54" y="-3.81"/>
     <pad id="210" pinNumber="6" x="-2.54" y="-3.81"/>
   </part>
-  <part name="U3" package="DIL06" rotation="0.0" value="" x="83.78" y="123.92">
+  <part name="U3" package="DIL06" rotation="0.0" value="" x="83.78" y="115.03">
     <line width="0.1524" x1="3.81" x2="-3.81" y1="-2.921" y2="-2.921"/>
     <line width="0.1524" x1="-3.81" x2="3.81" y1="2.921" y2="2.921"/>
     <line width="0.1524" x1="3.81" x2="3.81" y1="-2.921" y2="2.921"/>
@@ -1888,36 +1881,36 @@
     <pad id="215" pinNumber="6" x="-2.54" y="-3.81"/>
   </part>
   <net name="PB3">
-    <airwire from="88" to="15"/>
+    <airwire from="15" to="88"/>
   </net>
   <net name="RESET">
     <airwire from="91" to="68"/>
   </net>
   <net name="N$53">
-    <airwire from="162" to="185"/>
+    <airwire from="185" to="162"/>
   </net>
   <net name="N$10">
-    <airwire from="50" to="31"/>
-    <airwire from="31" to="21"/>
+    <airwire from="31" to="50"/>
+    <airwire from="50" to="21"/>
   </net>
   <net name="N$11">
     <airwire from="47" to="152"/>
   </net>
   <net name="N$55">
-    <airwire from="194" to="172"/>
+    <airwire from="173" to="194"/>
   </net>
   <net name="E$2">
-    <airwire from="0" to="62"/>
+    <airwire from="62" to="0"/>
   </net>
   <net name="N$12">
-    <airwire from="32" to="34"/>
-    <airwire from="34" to="121"/>
+    <airwire from="121" to="34"/>
+    <airwire from="34" to="32"/>
   </net>
   <net name="N$56">
     <airwire from="160" to="95"/>
   </net>
   <net name="E$1">
-    <airwire from="61" to="1"/>
+    <airwire from="1" to="61"/>
   </net>
   <net name="E$3">
     <airwire from="2" to="63"/>
@@ -1925,47 +1918,47 @@
   <net name="N$50"/>
   <net name="N$51"/>
   <net name="N$52">
-    <airwire from="165" to="183"/>
+    <airwire from="183" to="165"/>
   </net>
   <net name="N$17">
-    <airwire from="175" to="58"/>
+    <airwire from="58" to="175"/>
   </net>
   <net name="N$18">
     <airwire from="188" to="156"/>
     <airwire from="156" to="213"/>
   </net>
   <net name="N$19">
-    <airwire from="52" to="29"/>
+    <airwire from="38" to="29"/>
     <airwire from="29" to="176"/>
-    <airwire from="176" to="38"/>
+    <airwire from="176" to="52"/>
   </net>
   <net name="N$13">
-    <airwire from="49" to="12"/>
-    <airwire from="12" to="138"/>
+    <airwire from="12" to="49"/>
+    <airwire from="49" to="138"/>
   </net>
   <net name="N$57">
     <airwire from="163" to="97"/>
   </net>
   <net name="N$14">
-    <airwire from="51" to="115"/>
-    <airwire from="115" to="137"/>
+    <airwire from="115" to="51"/>
+    <airwire from="51" to="137"/>
   </net>
   <net name="N$58">
-    <airwire from="182" to="101"/>
-    <airwire from="101" to="118"/>
-    <airwire from="118" to="116"/>
-    <airwire from="116" to="180"/>
-    <airwire from="180" to="3"/>
+    <airwire from="101" to="116"/>
+    <airwire from="116" to="182"/>
+    <airwire from="182" to="118"/>
+    <airwire from="118" to="180"/>
+    <airwire from="180" to="19"/>
+    <airwire from="19" to="14"/>
+    <airwire from="14" to="3"/>
     <airwire from="3" to="8"/>
-    <airwire from="8" to="14"/>
-    <airwire from="14" to="19"/>
   </net>
   <net name="N$15">
+    <airwire from="203" to="44"/>
     <airwire from="44" to="154"/>
-    <airwire from="154" to="203"/>
   </net>
   <net name="N$16">
-    <airwire from="55" to="177"/>
+    <airwire from="177" to="55"/>
   </net>
   <net name="+5V">
     <airwire from="84" to="83"/>
@@ -1977,54 +1970,54 @@
   <net name="N$43"/>
   <net name="N$44"/>
   <net name="N$45">
-    <airwire from="99" to="5"/>
     <airwire from="5" to="16"/>
+    <airwire from="16" to="99"/>
   </net>
   <net name="N$40">
-    <airwire from="23" to="153"/>
+    <airwire from="153" to="23"/>
   </net>
   <net name="N$41">
-    <airwire from="86" to="4"/>
+    <airwire from="4" to="86"/>
   </net>
   <net name="GND">
-    <airwire from="104" to="144"/>
-    <airwire from="144" to="117"/>
-    <airwire from="117" to="96"/>
-    <airwire from="96" to="33"/>
-    <airwire from="33" to="41"/>
-    <airwire from="41" to="9"/>
-    <airwire from="9" to="94"/>
-    <airwire from="94" to="150"/>
-    <airwire from="150" to="189"/>
-    <airwire from="189" to="59"/>
-    <airwire from="59" to="92"/>
-    <airwire from="92" to="119"/>
-    <airwire from="119" to="108"/>
-    <airwire from="108" to="134"/>
-    <airwire from="134" to="212"/>
-    <airwire from="212" to="106"/>
-    <airwire from="106" to="20"/>
-    <airwire from="20" to="24"/>
-    <airwire from="24" to="82"/>
-    <airwire from="82" to="200"/>
-    <airwire from="200" to="193"/>
-    <airwire from="193" to="13"/>
-    <airwire from="13" to="181"/>
-    <airwire from="181" to="113"/>
-    <airwire from="113" to="54"/>
-    <airwire from="54" to="7"/>
-    <airwire from="7" to="57"/>
-    <airwire from="57" to="207"/>
-    <airwire from="207" to="139"/>
-    <airwire from="139" to="18"/>
-    <airwire from="18" to="25"/>
-    <airwire from="25" to="69"/>
-    <airwire from="69" to="202"/>
+    <airwire from="181" to="117"/>
+    <airwire from="117" to="119"/>
+    <airwire from="119" to="200"/>
+    <airwire from="200" to="13"/>
+    <airwire from="13" to="113"/>
+    <airwire from="113" to="33"/>
+    <airwire from="33" to="57"/>
+    <airwire from="57" to="41"/>
+    <airwire from="41" to="24"/>
+    <airwire from="24" to="54"/>
+    <airwire from="54" to="134"/>
+    <airwire from="134" to="69"/>
+    <airwire from="69" to="7"/>
+    <airwire from="7" to="9"/>
+    <airwire from="9" to="20"/>
+    <airwire from="20" to="18"/>
+    <airwire from="18" to="82"/>
+    <airwire from="82" to="92"/>
+    <airwire from="92" to="104"/>
+    <airwire from="104" to="202"/>
+    <airwire from="202" to="189"/>
+    <airwire from="189" to="106"/>
+    <airwire from="106" to="207"/>
+    <airwire from="207" to="25"/>
+    <airwire from="25" to="108"/>
+    <airwire from="108" to="212"/>
+    <airwire from="212" to="193"/>
+    <airwire from="193" to="144"/>
+    <airwire from="144" to="150"/>
+    <airwire from="150" to="139"/>
+    <airwire from="139" to="96"/>
+    <airwire from="96" to="94"/>
+    <airwire from="94" to="59"/>
   </net>
   <net name="N$46"/>
   <net name="N$47">
-    <airwire from="103" to="6"/>
     <airwire from="6" to="17"/>
+    <airwire from="17" to="103"/>
   </net>
   <net name="N$48">
     <airwire from="190" to="166"/>
@@ -2037,14 +2030,14 @@
     <airwire from="70" to="214"/>
   </net>
   <net name="N$32">
-    <airwire from="198" to="10"/>
+    <airwire from="10" to="198"/>
   </net>
   <net name="N$33">
-    <airwire from="110" to="27"/>
-    <airwire from="27" to="131"/>
+    <airwire from="131" to="27"/>
+    <airwire from="27" to="110"/>
   </net>
   <net name="N$34">
-    <airwire from="178" to="42"/>
+    <airwire from="42" to="178"/>
   </net>
   <net name="N$30">
     <airwire from="197" to="111"/>
@@ -2054,51 +2047,51 @@
     <airwire from="22" to="39"/>
   </net>
   <net name="MOSI">
-    <airwire from="89" to="67"/>
-    <airwire from="67" to="102"/>
+    <airwire from="89" to="102"/>
+    <airwire from="102" to="67"/>
   </net>
   <net name="N$3">
-    <airwire from="196" to="168"/>
-    <airwire from="168" to="167"/>
-    <airwire from="167" to="201"/>
-    <airwire from="201" to="174"/>
-    <airwire from="174" to="173"/>
-    <airwire from="173" to="211"/>
+    <airwire from="167" to="168"/>
+    <airwire from="168" to="201"/>
+    <airwire from="201" to="211"/>
+    <airwire from="211" to="174"/>
+    <airwire from="174" to="172"/>
+    <airwire from="172" to="196"/>
   </net>
   <net name="N$35">
-    <airwire from="35" to="40"/>
-    <airwire from="40" to="142"/>
+    <airwire from="40" to="35"/>
+    <airwire from="35" to="142"/>
   </net>
   <net name="MISO">
     <airwire from="87" to="64"/>
   </net>
   <net name="N$36">
-    <airwire from="37" to="36"/>
-    <airwire from="36" to="140"/>
+    <airwire from="36" to="37"/>
+    <airwire from="37" to="140"/>
   </net>
   <net name="+24V">
     <airwire from="53" to="135"/>
-    <airwire from="135" to="151"/>
-    <airwire from="151" to="143"/>
+    <airwire from="135" to="143"/>
+    <airwire from="143" to="151"/>
   </net>
   <net name="N$2">
-    <airwire from="147" to="56"/>
-    <airwire from="56" to="204"/>
-    <airwire from="204" to="43"/>
-    <airwire from="43" to="46"/>
+    <airwire from="43" to="204"/>
+    <airwire from="204" to="147"/>
+    <airwire from="147" to="46"/>
+    <airwire from="46" to="56"/>
   </net>
   <net name="N$37">
-    <airwire from="48" to="114"/>
-    <airwire from="114" to="136"/>
+    <airwire from="114" to="48"/>
+    <airwire from="48" to="136"/>
   </net>
   <net name="+12V">
-    <airwire from="148" to="105"/>
-    <airwire from="105" to="205"/>
-    <airwire from="205" to="107"/>
+    <airwire from="205" to="105"/>
+    <airwire from="105" to="107"/>
     <airwire from="107" to="210"/>
     <airwire from="210" to="109"/>
     <airwire from="109" to="215"/>
-    <airwire from="215" to="100"/>
+    <airwire from="215" to="148"/>
+    <airwire from="148" to="100"/>
   </net>
   <net name="N$4">
     <airwire from="195" to="133"/>
@@ -2109,23 +2102,23 @@
     <airwire from="72" to="209"/>
   </net>
   <net name="N$9">
-    <airwire from="11" to="199"/>
-    <airwire from="199" to="112"/>
-    <airwire from="112" to="28"/>
+    <airwire from="28" to="112"/>
+    <airwire from="112" to="199"/>
+    <airwire from="199" to="11"/>
   </net>
   <net name="N$8">
-    <airwire from="60" to="157"/>
+    <airwire from="157" to="60"/>
   </net>
   <net name="N$20">
-    <airwire from="184" to="71"/>
     <airwire from="71" to="145"/>
+    <airwire from="145" to="184"/>
   </net>
   <net name="N$21">
-    <airwire from="30" to="122"/>
+    <airwire from="122" to="30"/>
   </net>
   <net name="N$22"/>
   <net name="N$23">
-    <airwire from="159" to="45"/>
+    <airwire from="45" to="159"/>
   </net>
   <net name="N$28">
     <airwire from="171" to="170"/>
@@ -2133,17 +2126,17 @@
   </net>
   <net name="N$29"/>
   <net name="SCK">
-    <airwire from="85" to="66"/>
-    <airwire from="66" to="98"/>
+    <airwire from="85" to="98"/>
+    <airwire from="98" to="66"/>
   </net>
   <net name="N$24"/>
   <net name="N$25"/>
   <net name="N$26">
-    <airwire from="192" to="155"/>
-    <airwire from="155" to="208"/>
+    <airwire from="155" to="192"/>
+    <airwire from="192" to="208"/>
   </net>
   <net name="N$27">
-    <airwire from="146" to="186"/>
-    <airwire from="186" to="73"/>
+    <airwire from="186" to="146"/>
+    <airwire from="146" to="73"/>
   </net>
 </breadboard>

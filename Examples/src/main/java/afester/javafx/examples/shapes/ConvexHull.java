@@ -5,10 +5,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Stack;
 
-import afester.javafx.shapes.Circle;
 import javafx.application.Application;
 import javafx.geometry.Point2D;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
@@ -16,22 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
-class PointShape extends Group {
-
-    public PointShape(double x, double y, Color col) {
-        
-        Circle c = new Circle(x, y, 3);
-        c.setFill(col);
-        c.setStroke(null);
-        
-        Text t = new Text(x, y, String.format("%d/%d",  (int) x, (int) y));
-        getChildren().addAll(c, t);
-    }
-    
-}
 
 public class ConvexHull extends Application {
 

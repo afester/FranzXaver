@@ -21,7 +21,6 @@ import org.xml.sax.SAXException;
 import afester.javafx.shapes.ArcFactory;
 import afester.javafx.shapes.ArcParameters;
 import javafx.geometry.Point2D;
-import javafx.scene.paint.Color;
 
 
 
@@ -252,7 +251,7 @@ public class EagleNetImport extends NetImport {
             Double y2 = -Double.parseDouble(rectNode.getAttribute("y2"));
             String layer = rectNode.getAttribute("layer");
 
-            // result.addShape(new PartRectangle(x1, y1, x2, y2));
+            part.addShape(new PartRectangle(x1, y1, x2, y2));
         }
 
         NodeList textNodes = (NodeList) xPath.evaluate("./text", packageNode, XPathConstants.NODESET);

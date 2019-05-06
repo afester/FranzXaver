@@ -1,14 +1,10 @@
 package afester.javafx.examples.board;
 
 import java.io.File;
-import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import afester.javafx.components.StatusBar;
 import javafx.application.Application;
 import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
@@ -91,8 +87,8 @@ public class BreadBoardEditor extends Application {
         final Button shortestPathButton = new Button("Shortest");
         shortestPathButton.setOnAction(e -> calculateShortestPath());
 
-        final Button resetNetButton = new Button("Reset Net");
-        resetNetButton.setOnAction(e -> resetNet());
+        final Button resetNetButton = new Button("Shortest all");
+        resetNetButton.setOnAction(e -> calculateShortestPathAll());
 
         ToolBar toolBar = new ToolBar(
                 new Button("New"),
@@ -147,28 +143,38 @@ public class BreadBoardEditor extends Application {
         drawingView.fitContentToWindow();
     }
 
-
+    /**
+     * Calculates the shortest path for the currently selected net. 
+     */
     private void calculateShortestPath() {
         Interactable selectedObject = bv.getSelectedObject();
         if (selectedObject instanceof Trace) {
+            bv.clearSelection();
+
             Trace trace = (Trace) selectedObject;
             Net net = (Net) trace.getNet();
             System.err.printf("NET: %s\n", net.getName());
 
-            if (net.getJunctions().size() != 0) {
-                System.err.printf("Can not calculate shortest paths - RESET the net first\n");
-                return;
-            }
+            // calculate the shortest path of the net
+            net.calculateShortestPath();
 
-            List<Point2D> padPoints = net.getPads().stream()
-                                                   .map(pad -> pad.getPos())
-                                                   .collect(Collectors.toList());
-            System.err.println(padPoints);
+            // re-render board
+            bv.setBoard(bv.getBoard());
         }
     }
 
 
-    private void resetNet() {
+    /**
+     * Calculates the shortest path for all nets.
+     */
+    private void calculateShortestPathAll() {
+        bv.clearSelection();
+
+        // calculate the shortest path for all nets
+        bv.getBoard().getNets().values().forEach(net -> net.calculateShortestPath());
+
+        // re-render board
+        bv.setBoard(bv.getBoard());
     }
 
 
@@ -179,6 +185,7 @@ public class BreadBoardEditor extends Application {
         Board updatedBoard = ni.importFile(new File(schematicFile));
         Board currentBoard = bv.getBoard();
         currentBoard.update(updatedBoard);
+
         bv.setBoard(currentBoard);  // re-render board
     }
 
