@@ -84,7 +84,7 @@ public class Board {
 
             // The root node represents the complete board
             Element rootNode = doc.createElement("breadboard");
-            rootNode.setAttribute("schematic", "small.sch");
+            rootNode.setAttribute("schematic", schematicFile);
 //            rootNode.setAttribute("width",  Double.toString(getWidth()));
 //            rootNode.setAttribute("height", Double.toString(getHeight()));
             doc.appendChild(rootNode);
@@ -431,6 +431,8 @@ public class Board {
         potentiallyModifiedNets.forEach(netName -> {
             Net n1 = getNets().get(netName);
             Net n2 = updatedBoard.getNets().get(netName);
+            System.err.println("    " + n1);
+            System.err.println(" <=>" + n2);
             if (!n1.sameAs(n2)) {
                 modifiedNets.add(netName);
             }
@@ -447,10 +449,42 @@ public class Board {
         });
 
         modifiedNets.forEach(netName -> {
-            Net net = getNets().get(netName);
-            net.clear();
+            Net oldnet = getNets().get(netName);
+            oldnet.clear();
+            getNets().remove(netName);
+            
+            // TODO: The following code is the same as in addedNets below! 
+            List<Pad> padList = new ArrayList<>();
+            Net newNet = updatedBoard.getNets().get(netName);
+            newNet.getPads().forEach(pad -> {
+                String partName = pad.getPart().getName();
+                Part part = getParts().get(partName);
+                if (part != null) {
+                    String pinNumber = pad.getPinNumber();
+                    Pad p = part.getPad(pinNumber);
+                    if (p != null) {
+                        padList.add(p);
+                    } else {
+                        System.err.printf("WARNING: Pin %s not found in Part %s\n", pinNumber, partName);
+                    }
+                } else {
+                    System.err.printf("WARNING: Part %s not found in board\n", partName);
+                }
+            });
+
+            // Create a new net and connect all pads through an AirWire (TODO: duplicate code in EagleNetImport)
+            Net net = new Net(netName);
+            Pad p1 = null;
+            for (Pad p2 : padList) {
+                if (p1 != null) {
+                    net.addTrace(new AirWire(p1, p2));
+                }
+                p1 = p2;
+            }
+
+            addNet(net);
         });
-        
+
         addedNets.forEach(netName -> {
             List<Pad> padList = new ArrayList<>();
             Net newNet = updatedBoard.getNets().get(netName);

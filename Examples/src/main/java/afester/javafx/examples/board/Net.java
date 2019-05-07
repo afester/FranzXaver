@@ -103,8 +103,8 @@ public class Net extends Group {
                                             .map(e -> e.getPadId())
                                             .collect(Collectors.toSet());
 
-        otherPads.removeAll(thisPads);
-        return otherPads.isEmpty(); // if S2 - S1 == empty then nets are the same (they connect the same pads)
+        // otherPads.removeAll(thisPads);
+        return thisPads.equals(otherPads); // otherPads.isEmpty(); // if S2 - S1 == empty then nets are the same (they connect the same pads)
     }
 
 

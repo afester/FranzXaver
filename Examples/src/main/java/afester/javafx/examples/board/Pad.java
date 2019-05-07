@@ -100,4 +100,31 @@ public class Pad extends Junction {
     public String getPadId() {
         return part.getName() + "$" + pinNumber;
     }
+
+    @Override
+    public int hashCode() {
+        final String key = getPadId();
+
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + key.hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Pad other = (Pad) obj;
+        
+        final String key = getPadId();
+
+        if (!key.equals(other.getPadId()))
+            return false;
+        return true;
+    }
  }
