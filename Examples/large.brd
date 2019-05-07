@@ -1528,7 +1528,7 @@
     <pad id="170" pinNumber="2" x="-2.54" y="0.0"/>
     <pad id="171" pinNumber="3" x="0.0" y="-2.54"/>
   </part>
-  <part name="P6" package="RTRIM64Y" rotation="90.0" value="1k" x="78.7" y="123.92">
+  <part name="P6" package="RTRIM64Y" rotation="90.0" value="1k" x="71.08" y="126.46000000000001">
     <line width="0.254" x1="1.05" x2="-3.3" y1="4.8" y2="4.8"/>
     <line width="0.254" x1="-3.3" x2="-3.3" y1="4.8" y2="-4.8"/>
     <line width="0.254" x1="-3.3" x2="1.05" y1="-4.8" y2="-4.8"/>
@@ -1541,9 +1541,9 @@
     <circle radius="1.1" width="0.1524" x="-1.9" y="3.35"/>
     <text size="0.127" x="-3.84" y="4.95">P6</text>
     <text size="0.127" x="2.75" y="4.95">1k</text>
-    <pad id="172" pinNumber="3" x="0.0" y="-2.54"/>
-    <pad id="173" pinNumber="1" x="0.0" y="2.54"/>
-    <pad id="174" pinNumber="2" x="-2.54" y="0.0"/>
+    <pad id="172" pinNumber="1" x="0.0" y="2.54"/>
+    <pad id="173" pinNumber="2" x="-2.54" y="0.0"/>
+    <pad id="174" pinNumber="3" x="0.0" y="-2.54"/>
   </part>
   <part name="P7" package="RTRIM64Z" rotation="0.0" value="2 k" x="165.1" y="-195.58">
     <line width="0.254" x1="1.05" x2="-3.3" y1="4.8" y2="4.8"/>
@@ -1898,9 +1898,6 @@
   <net name="N$11">
     <airwire from="47" to="152"/>
   </net>
-  <net name="N$55">
-    <airwire from="173" to="194"/>
-  </net>
   <net name="E$2">
     <airwire from="62" to="0"/>
   </net>
@@ -2052,14 +2049,7 @@
     <airwire from="89" to="102"/>
     <airwire from="102" to="67"/>
   </net>
-  <net name="N$3">
-    <airwire from="167" to="168"/>
-    <airwire from="168" to="201"/>
-    <airwire from="201" to="211"/>
-    <airwire from="211" to="174"/>
-    <airwire from="174" to="172"/>
-    <airwire from="172" to="196"/>
-  </net>
+  <net name="N$3"/>
   <net name="N$35">
     <airwire from="40" to="35"/>
     <airwire from="35" to="142"/>
@@ -2094,6 +2084,9 @@
     <airwire from="109" to="215"/>
     <airwire from="215" to="148"/>
     <airwire from="148" to="100"/>
+  </net>
+  <net name="N$5">
+    <airwire from="194" to="174"/>
   </net>
   <net name="N$4">
     <airwire from="195" to="133"/>
