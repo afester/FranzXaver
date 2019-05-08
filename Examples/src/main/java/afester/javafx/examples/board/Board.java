@@ -43,6 +43,7 @@ public class Board {
     private Map<String, Part> parts = new HashMap<>();
     private Map<String, Net> nets = new HashMap<>();
     private String schematicFile;
+    private File boardFile;
 
     public void addDevice(Part pkg) {
         parts.put(pkg.getName(), pkg);
@@ -69,8 +70,11 @@ public class Board {
     }
     
 
-    public void save(File result) {
-        System.err.println("Saving " + result.getAbsolutePath());
+    public void saveAs(File file) {
+    }
+
+    public void save() {
+        System.err.println("Saving " + boardFile.getAbsolutePath());
 
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder;
@@ -120,7 +124,7 @@ public class Board {
             tf.setOutputProperty(OutputKeys.INDENT, "yes");
             tf.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 
-            FileOutputStream fos = new FileOutputStream(result);
+            FileOutputStream fos = new FileOutputStream(boardFile);
             Writer out = new OutputStreamWriter(fos, "UTF-8");
             tf.transform(new DOMSource(doc), new StreamResult(out));
             out.close();
@@ -135,12 +139,13 @@ public class Board {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
-        System.err.println("Saved " + result.getAbsolutePath());
+
+        System.err.println("Saved " + boardFile.getAbsolutePath());
     }
 
     public void load(File file) {
         System.err.println("Loading " + file.getAbsolutePath());
+        boardFile = file;
 
         XPath xPath = XPathFactory.newInstance().newXPath();
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();

@@ -1932,8 +1932,8 @@
     <airwire from="29" to="38"/>
   </net>
   <net name="N$13">
-    <airwire from="138" to="49"/>
-    <airwire from="49" to="12"/>
+    <airwire from="138" to="12"/>
+    <airwire from="12" to="49"/>
   </net>
   <net name="N$57">
     <airwire from="97" to="163"/>
@@ -1943,14 +1943,14 @@
     <airwire from="115" to="51"/>
   </net>
   <net name="N$58">
-    <airwire from="180" to="118"/>
-    <airwire from="118" to="182"/>
-    <airwire from="182" to="101"/>
-    <airwire from="101" to="116"/>
-    <airwire from="116" to="14"/>
-    <airwire from="14" to="19"/>
-    <airwire from="19" to="3"/>
+    <airwire from="180" to="3"/>
     <airwire from="3" to="8"/>
+    <airwire from="8" to="19"/>
+    <airwire from="19" to="14"/>
+    <airwire from="14" to="101"/>
+    <airwire from="101" to="182"/>
+    <airwire from="182" to="118"/>
+    <airwire from="118" to="116"/>
   </net>
   <net name="N$15">
     <airwire from="154" to="44"/>
@@ -1987,31 +1987,31 @@
     <airwire from="144" to="106"/>
     <airwire from="106" to="207"/>
     <airwire from="207" to="25"/>
-    <airwire from="25" to="189"/>
-    <airwire from="189" to="202"/>
-    <airwire from="202" to="104"/>
-    <airwire from="104" to="57"/>
-    <airwire from="57" to="59"/>
-    <airwire from="59" to="117"/>
-    <airwire from="117" to="119"/>
-    <airwire from="119" to="181"/>
+    <airwire from="25" to="113"/>
+    <airwire from="113" to="200"/>
+    <airwire from="200" to="24"/>
+    <airwire from="24" to="13"/>
+    <airwire from="13" to="41"/>
+    <airwire from="41" to="139"/>
+    <airwire from="139" to="134"/>
+    <airwire from="134" to="54"/>
+    <airwire from="54" to="119"/>
+    <airwire from="119" to="117"/>
+    <airwire from="117" to="181"/>
     <airwire from="181" to="92"/>
     <airwire from="92" to="82"/>
-    <airwire from="82" to="20"/>
+    <airwire from="82" to="57"/>
+    <airwire from="57" to="59"/>
+    <airwire from="59" to="189"/>
+    <airwire from="189" to="202"/>
+    <airwire from="202" to="104"/>
+    <airwire from="104" to="150"/>
+    <airwire from="150" to="20"/>
     <airwire from="20" to="18"/>
     <airwire from="18" to="7"/>
     <airwire from="7" to="9"/>
     <airwire from="9" to="69"/>
-    <airwire from="69" to="139"/>
-    <airwire from="139" to="134"/>
-    <airwire from="134" to="54"/>
-    <airwire from="54" to="33"/>
-    <airwire from="33" to="13"/>
-    <airwire from="13" to="24"/>
-    <airwire from="24" to="200"/>
-    <airwire from="200" to="41"/>
-    <airwire from="41" to="113"/>
-    <airwire from="113" to="150"/>
+    <airwire from="69" to="33"/>
   </net>
   <net name="N$46"/>
   <net name="N$47">
@@ -2050,8 +2050,8 @@
     <airwire from="102" to="67"/>
   </net>
   <net name="N$35">
-    <airwire from="35" to="142"/>
-    <airwire from="142" to="40"/>
+    <airwire from="35" to="40"/>
+    <airwire from="40" to="142"/>
   </net>
   <net name="MISO">
     <airwire from="64" to="87"/>
@@ -2106,8 +2106,8 @@
   </net>
   <net name="N$9">
     <airwire from="28" to="199"/>
-    <airwire from="199" to="11"/>
-    <airwire from="11" to="112"/>
+    <airwire from="199" to="112"/>
+    <airwire from="112" to="11"/>
   </net>
   <net name="N$8">
     <airwire from="60" to="157"/>

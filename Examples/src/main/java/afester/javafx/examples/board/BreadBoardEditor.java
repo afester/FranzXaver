@@ -3,6 +3,7 @@ package afester.javafx.examples.board;
 import java.io.File;
 
 import afester.javafx.components.StatusBar;
+import afester.javafx.components.ToolbarButton;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -11,6 +12,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -57,16 +59,18 @@ public class BreadBoardEditor extends Application {
         menuItem0.setOnAction(e -> newBoard());
         MenuItem menuItem1 = new MenuItem("Open board ...");
         menuItem1.setOnAction(e -> openBoard());
-        MenuItem menuItem2 = new MenuItem("Save board ...");
+        MenuItem menuItem2 = new MenuItem("Save board");
         menuItem2.setOnAction(e -> saveBoard());
-        MenuItem menuItem3 = new MenuItem("Import schematic ...");
-        menuItem3.setOnAction(e -> importSchematic());
-        MenuItem menuItem4 = new MenuItem("Synchronize schematic ...");
-        menuItem4.setOnAction(e -> synchronizeSchematic());
-        MenuItem menuItem5 = new MenuItem("Quit");
-        menuItem5.setOnAction(e -> stage.close());
+        MenuItem menuItem3 = new MenuItem("Save board as ...");
+        menuItem3.setOnAction(e -> saveBoardAs());
+        MenuItem menuItem4 = new MenuItem("Import schematic ...");
+        menuItem4.setOnAction(e -> importSchematic());
+        MenuItem menuItem5 = new MenuItem("Synchronize schematic ...");
+        menuItem5.setOnAction(e -> synchronizeSchematic());
+        MenuItem menuItem6 = new MenuItem("Quit");
+        menuItem6.setOnAction(e -> stage.close());
 
-        fileMenu.getItems().addAll(menuItem0, menuItem1, menuItem2, menuItem3, menuItem4, menuItem5);
+        fileMenu.getItems().addAll(menuItem0, menuItem1, menuItem2, menuItem3, menuItem4, menuItem5, menuItem6);
 
         Menu viewMenu = new Menu("View");
         MenuItem viewItem1 = new MenuItem("Center");
@@ -90,15 +94,26 @@ public class BreadBoardEditor extends Application {
         final Button resetNetButton = new Button("Shortest all");
         resetNetButton.setOnAction(e -> calculateShortestPathAll());
 
+        ToggleGroup toggleGroup = new ToggleGroup();
+        ToolbarButton selectToolButton = new ToolbarButton("Select", "afester/javafx/examples/board/edit-select.png");
+        ToolbarButton traceToolButton = new ToolbarButton("Trace", "afester/javafx/examples/board/edit-trace.png");
+
+        selectToolButton.setToggleGroup(toggleGroup);
+        traceToolButton.setToggleGroup(toggleGroup);
+
         ToolBar toolBar = new ToolBar(
-                new Button("New"),
-                new Button("Open"),
-                new Button("Save"),
+                new ToolbarButton("New board", "afester/javafx/examples/board/file-new.png"),
+                new ToolbarButton("Open board", "afester/javafx/examples/board/file-open.png"),
+                new ToolbarButton("Save board", "afester/javafx/examples/board/file-save.png"),
+                new ToolbarButton("Save board as", "afester/javafx/examples/board/file-saveas.png"),
+                new Separator(),
+                selectToolButton,
+                traceToolButton,
                 new Separator(),
                 shortestPathButton,
                 resetNetButton
             );
-        
+
         VBox topBar = new VBox();
         topBar.getChildren().addAll(menuBar, toolBar);
         
@@ -208,12 +223,17 @@ public class BreadBoardEditor extends Application {
     }
 
     private void saveBoard() {
+        Board board = bv.getBoard();
+        board.save();
+    }
+
+    private void saveBoardAs() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save Board ...");
+        fileChooser.setTitle("Save Board as ...");
         File result = fileChooser.showSaveDialog(stage);
         if (result != null) {
             Board board = bv.getBoard();
-            board.save(result);
+            board.saveAs(result);
         }
     }
 
