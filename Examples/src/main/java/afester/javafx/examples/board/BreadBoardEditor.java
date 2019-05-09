@@ -4,6 +4,7 @@ import java.io.File;
 
 import afester.javafx.components.StatusBar;
 import afester.javafx.components.ToolbarButton;
+import afester.javafx.components.ToolbarToggleButton;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -95,11 +96,23 @@ public class BreadBoardEditor extends Application {
         resetNetButton.setOnAction(e -> calculateShortestPathAll());
 
         ToggleGroup toggleGroup = new ToggleGroup();
-        ToolbarButton selectToolButton = new ToolbarButton("Select", "afester/javafx/examples/board/edit-select.png");
-        ToolbarButton traceToolButton = new ToolbarButton("Trace", "afester/javafx/examples/board/edit-trace.png");
-
+        ToolbarToggleButton selectToolButton = new ToolbarToggleButton("Select", "afester/javafx/examples/board/edit-select.png");
+        selectToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
+            if (newValue) {
+                bv.setSelectMode();
+            }
+        });
+        ToolbarToggleButton traceToolButton = new ToolbarToggleButton("Trace", "afester/javafx/examples/board/edit-trace.png");
+        traceToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
+            if (newValue) {
+                bv.setTraceMode();   
+            }
+        });
+        
         selectToolButton.setToggleGroup(toggleGroup);
         traceToolButton.setToggleGroup(toggleGroup);
+
+        selectToolButton.setSelected(true);
 
         ToolBar toolBar = new ToolBar(
                 new ToolbarButton("New board", "afester/javafx/examples/board/file-new.png"),

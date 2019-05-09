@@ -44,7 +44,7 @@ public class AirWire extends Trace implements Interactable {
 //    }
     
     private void convertToTrace(MouseEvent e) {
-		Net net = (Net) getParent().getParent(); // TODO: provide an explicit access path
+		Net net = getNet();
 		System.err.println("Clicked AirWire of " + net);
 
 		Point2D clickPoint = new Point2D(e.getX(), e.getY());
@@ -115,6 +115,47 @@ public class AirWire extends Trace implements Interactable {
 			// ***************************************
 		}
 	}
+
+
+    /**
+     * Converts this AirWire to a straight trace.
+     * This airwire connects two pads - the AirWire is replaced by two AirWires, two junctions and one Trace:
+     *
+     * PAD - AirWire - Junction1 - Trace - Junction2 - AirWire2 - PAD  
+     * 
+     * The junctions are at the locations of the Pads, so that initially the 
+     * complete airwire is rendered as being replaced by the Trace. So, the 
+     * junctions and the associated parts can still be moved!
+     */
+    public void convertToStraightTrace() {
+        Net net = getNet();
+
+        Junction pFrom = this.getFrom();
+        Junction pTo = this.getTo();
+
+        Junction j1 = new Junction(pFrom.getPos());
+        net.addJunction(j1);
+        Junction j2 = new Junction(pTo.getPos());
+        net.addJunction(j2);
+
+        pTo.traceEnds.remove(this);
+        this.setTo(j1);
+        j1.traceEnds.add(this);
+
+        Trace t = new Trace(j1, j2);
+        net.addTrace(t);
+        j1.traceStarts.add(t);
+        t.setFrom(j1);
+        j2.traceEnds.add(t);
+        t.setTo(j2);
+
+        AirWire aw2 = new AirWire(j2, pTo);
+        net.addTrace(aw2);
+        j2.traceStarts.add(aw2);
+        aw2.setFrom(j2);
+        pTo.traceEnds.add(aw2);
+        aw2.setTo(pTo);
+    }
 
     @Override
     public String toString() {

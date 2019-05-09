@@ -16,7 +16,7 @@ public class MouseInteractor implements Interactor {
 	}
 
     // TODO: This is a mess.
-    private Interactable getClickedObject(MouseEvent e) {
+    protected Interactable getClickedObject(MouseEvent e) {
         Interactable result = null;
         EventTarget target = e.getTarget();
         if (target instanceof Interactable) {
@@ -31,6 +31,7 @@ public class MouseInteractor implements Interactor {
 
         return result;
     }
+
 
 	@Override
     public void mousePressed(MouseEvent e) {
@@ -54,11 +55,6 @@ public class MouseInteractor implements Interactor {
             bv.clearSelection();
         }
 	}
-
-
-
-//	private void updateSelectedObjects(MouseEvent e) {
-
 
 	
 	@Override

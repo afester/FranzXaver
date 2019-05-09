@@ -1960,8 +1960,16 @@
     <airwire from="177" to="55"/>
   </net>
   <net name="+5V">
-    <airwire from="83" to="84"/>
-    <airwire from="84" to="149"/>
+    <junction id="216" x="73.62000274658203" y="37.560001373291016"/>
+    <junction id="217" x="83.77999877929688" y="37.78860092163086"/>
+    <junction id="218" x="73.62000274658203" y="35.02000045776367"/>
+    <junction id="219" x="73.62000274658203" y="37.560001373291016"/>
+    <airwire from="83" to="218"/>
+    <airwire from="84" to="216"/>
+    <airwire from="217" to="149"/>
+    <trace from="216" to="217"/>
+    <trace from="218" to="219"/>
+    <airwire from="219" to="84"/>
   </net>
   <net name="N$42">
     <airwire from="179" to="141"/>

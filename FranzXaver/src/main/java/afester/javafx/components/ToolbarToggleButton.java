@@ -2,14 +2,14 @@ package afester.javafx.components;
 
 import java.io.InputStream;
 
-import javafx.scene.control.Button;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-public class ToolbarButton extends Button {
+public class ToolbarToggleButton extends ToggleButton {
 
-    public ToolbarButton(String toolTip, String fileName) {
+    public ToolbarToggleButton(String toolTip, String fileName) {
 
         InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
         if (is != null) {
@@ -20,4 +20,5 @@ public class ToolbarButton extends Button {
         }
         setTooltip(new Tooltip(toolTip));
     }
+
 }

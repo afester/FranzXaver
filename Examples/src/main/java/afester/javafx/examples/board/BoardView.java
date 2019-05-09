@@ -40,7 +40,7 @@ public class BoardView extends Pane {
     private Group wireGroup;
     private Group dimensionGroup;
 
-    private Interactor interactor = new MouseInteractor(this);
+    private Interactor interactor = null;
 
     // The interactable object which is currently selected
     private final ObjectProperty<Interactable> selectedObject = new SimpleObjectProperty<>();
@@ -254,6 +254,19 @@ public class BoardView extends Pane {
             getSelectedObject().setSelected(false);
         }
         setSelectedObject(null);
+    }
+
+    private final Interactor mouseInteractor = new MouseInteractor(this);
+    private final Interactor traceInteractor = new TraceInteractor(this);
+
+    public void setSelectMode() {
+        System.err.println("Setting SELECT mode");
+        interactor = mouseInteractor;
+    }
+
+    public void setTraceMode() {
+        System.err.println("Setting TRACE mode");
+        interactor = traceInteractor;
     }
 
 }
