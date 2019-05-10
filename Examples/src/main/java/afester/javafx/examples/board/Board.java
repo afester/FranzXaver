@@ -111,7 +111,7 @@ public class Board {
                 }
 
                 // Traces are direct lines which connect two Junctions and/or Pads
-                for (Trace t : net.getTraces()) {
+                for (AbstractWire t : net.getTraces()) {
                     Node traceNode = t.getXML(doc);
                     netNode.appendChild(traceNode);
                 }
@@ -292,9 +292,9 @@ public class Board {
                     String fromId = airwireNode.getAttribute("from");
                     String toId = airwireNode.getAttribute("to");
 
-                    Junction from = junctions.get(fromId);
+                    AbstractNode from = junctions.get(fromId);
                     if (from == null) from = pads.get(fromId);  // TODO: This is a bad hack!!!!
-                    Junction to = junctions.get(toId);
+                    AbstractNode to = junctions.get(toId);
                     if (to == null) to = pads.get(toId);        // TODO: This is a bad hack!!!!
                     System.err.printf("  AW: %s -> %s\n", from, to);
 
@@ -307,9 +307,9 @@ public class Board {
                     String fromId = traceNode.getAttribute("from");
                     String toId = traceNode.getAttribute("to");
 
-                    Junction from = junctions.get(fromId);
+                    AbstractNode from = junctions.get(fromId);
                     if (from == null) from = pads.get(fromId);      // TODO: This is a bad hack!!!!
-                    Junction to = junctions.get(toId);
+                    AbstractNode to = junctions.get(toId);
                     if (to == null) to = pads.get(toId);          // TODO: This is a bad hack!!!!
                     System.err.printf("  T : %s -> %s\n", from, to);
 

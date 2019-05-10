@@ -17,7 +17,7 @@ public class Net extends Group {
     // Model
     private String netName;
     private List<Junction> junctionList = new ArrayList<>();    // A list of junctions - not associated to a part. Junctions can be added and removed.
-    private List<Trace> traces = new ArrayList<>();
+    private List<AbstractWire> traces = new ArrayList<>();
 
     // View (TODO: separate in own class)
     private Group junctions = new Group();
@@ -48,8 +48,8 @@ public class Net extends Group {
         return junctionList;
     }
 
-    public Set<Junction> getAllJunctions() {
-        Set<Junction> result = new HashSet<>();
+    public Set<AbstractNode> getAllJunctions() {
+        Set<AbstractNode> result = new HashSet<>();
 
         traces.forEach(t -> {
             result.add(t.getFrom());
@@ -59,11 +59,11 @@ public class Net extends Group {
         return result;
     }
 
-    public List<Trace> getTraces() {
+    public List<AbstractWire> getTraces() {
         return traces;
     }
 
-    public void addTrace(Trace trace) {
+    public void addTrace(AbstractWire trace) {
         traces.add(trace);
         nets.getChildren().add(trace);
     }
@@ -80,13 +80,13 @@ public class Net extends Group {
 
     public Set<Pad> getPads() {
         final Set<Pad> result = new HashSet<>();
-        for (Trace t : traces) {
-            Junction j1 = t.getFrom();
+        for (AbstractWire t : traces) {
+            AbstractNode j1 = t.getFrom();
             if (j1 instanceof Pad) {
                 result.add((Pad) j1);
             }
 
-            Junction j2 = t.getTo();
+            AbstractNode j2 = t.getTo();
             if (j2 instanceof Pad) {
                 result.add((Pad) j2);
             }

@@ -96,21 +96,28 @@ public class BreadBoardEditor extends Application {
         resetNetButton.setOnAction(e -> calculateShortestPathAll());
 
         ToggleGroup toggleGroup = new ToggleGroup();
-        ToolbarToggleButton selectToolButton = new ToolbarToggleButton("Select", "afester/javafx/examples/board/edit-select.png");
+        ToolbarToggleButton selectToolButton = new ToolbarToggleButton("Select", "afester/javafx/examples/board/mode-select.png");
         selectToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
                 bv.setSelectMode();
             }
         });
-        ToolbarToggleButton traceToolButton = new ToolbarToggleButton("Trace", "afester/javafx/examples/board/edit-trace.png");
+        ToolbarToggleButton traceToolButton = new ToolbarToggleButton("Trace", "afester/javafx/examples/board/mode-trace.png");
         traceToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
                 bv.setTraceMode();   
             }
         });
+        ToolbarToggleButton editTraceToolButton = new ToolbarToggleButton("Edit Trace", "afester/javafx/examples/board/mode-edittrace.png");
+        editTraceToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
+            if (newValue) {
+                bv.setEditTraceMode();   
+            }
+        });
         
         selectToolButton.setToggleGroup(toggleGroup);
         traceToolButton.setToggleGroup(toggleGroup);
+        editTraceToolButton.setToggleGroup(toggleGroup);
 
         selectToolButton.setSelected(true);
 
@@ -122,6 +129,7 @@ public class BreadBoardEditor extends Application {
                 new Separator(),
                 selectToolButton,
                 traceToolButton,
+                editTraceToolButton,
                 new Separator(),
                 shortestPathButton,
                 resetNetButton

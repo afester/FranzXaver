@@ -11,7 +11,7 @@ import javafx.scene.paint.Color;
 /**
  * An AirWire is a line between two Junctions which has not been routed yet.
  */
-public class AirWire extends Trace implements Interactable {
+public class AirWire extends AbstractWire {
 
     /**
      * Creates a new AirWire.
@@ -19,7 +19,7 @@ public class AirWire extends Trace implements Interactable {
      * @param from The start junction for the AirWire.
      * @param from The end junction for the AirWire.
      */
-    public AirWire(Junction from, Junction to) {
+    public AirWire(AbstractNode from, AbstractNode to) {
         super(from, to);
 
         // TODO: We need a thicker selectionShape (a thicker transparent line) with the
@@ -37,11 +37,6 @@ public class AirWire extends Trace implements Interactable {
 
         return traceNode;
     }
-
-//    @Override
-//    public void leftMouseAction(MouseEvent e, BoardView bv) {
-//        
-//    }
     
     private void convertToTrace(MouseEvent e) {
 		Net net = getNet();
@@ -58,7 +53,7 @@ public class AirWire extends Trace implements Interactable {
 
 		if (d1 < d2) {
 			// keep To
-			Junction nearest = getFrom();
+			AbstractNode nearest = getFrom();
 			System.err.println("NEARBY: " + nearest);
 
 			// connect existing wire to new junction
@@ -86,7 +81,7 @@ public class AirWire extends Trace implements Interactable {
 			// ***************************************
 		} else {
 			// keep From
-			Junction nearest = getTo();
+			AbstractNode nearest = getTo();
 			System.err.println("NEARBY: " + nearest);
 
 			// connect existing wire to new junction
@@ -118,43 +113,106 @@ public class AirWire extends Trace implements Interactable {
 
 
     /**
-     * Converts this AirWire to a straight trace.
-     * This airwire connects two pads - the AirWire is replaced by two AirWires, two junctions and one Trace:
+     * Converts this AirWire to a straight Trace.
+     * An Airwire connects two Junctions - the AirWire is replaced by two AirWires, two junctions and one Trace:
      *
-     * PAD - AirWire - Junction1 - Trace - Junction2 - AirWire2 - PAD  
+     *     Junction - AirWire - Junction 
+     * ==> Junction - Trace - Junction
+     *  
+     *     Pad - AirWire - Pad 
+     * ==> Pad - AirWire - (Junction1 - Trace - Junction2 - AirWire2) - Pad
+     *
+     *     Junction - AirWire - Pad 
+     * ==> Junction - (Trace - Junction1) - AirWire - Pad
+     *
+     *     Pad - AirWire - Junction
+     * ==> Pad - AirWire - (Junction1 - Trace) - Junction
      * 
-     * The junctions are at the locations of the Pads, so that initially the 
+     * The new junctions are initially at the locations of the existing junctions, so that initially the 
      * complete airwire is rendered as being replaced by the Trace. So, the 
      * junctions and the associated parts can still be moved!
+     *
+     * TODO: There might already exist a junction at one or both of the locations!
+     * In that case, the new trace can be directly connected to the existing junction.
      */
     public void convertToStraightTrace() {
         Net net = getNet();
 
-        Junction pFrom = this.getFrom();
-        Junction pTo = this.getTo();
+        AbstractNode pFrom = this.getFrom();
+        AbstractNode pTo = this.getTo();
 
-        Junction j1 = new Junction(pFrom.getPos());
-        net.addJunction(j1);
-        Junction j2 = new Junction(pTo.getPos());
-        net.addJunction(j2);
+        // TODO: remove the instanceof's
+        if (pFrom instanceof Junction && pTo instanceof Junction) {
+            System.err.println("JUNCTION/JUNCTION");
 
-        pTo.traceEnds.remove(this);
-        this.setTo(j1);
-        j1.traceEnds.add(this);
+            pFrom.traceStarts.remove(this);
+            pTo.traceEnds.remove(this);
+            net.getTraces().remove(this);
+        } else if (pFrom instanceof Pad && pTo instanceof Pad) { 
+            System.err.println("PAD/PAD");
 
-        Trace t = new Trace(j1, j2);
-        net.addTrace(t);
-        j1.traceStarts.add(t);
-        t.setFrom(j1);
-        j2.traceEnds.add(t);
-        t.setTo(j2);
+            Junction j1 = new Junction(pFrom.getPos());
+            net.addJunction(j1);
+            Junction j2 = new Junction(pTo.getPos());
+            net.addJunction(j2);
+    
+            pTo.traceEnds.remove(this);
+            this.setTo(j1);
+            j1.traceEnds.add(this);
+    
+            Trace t = new Trace(j1, j2);
+            net.addTrace(t);
+            j1.traceStarts.add(t);
+            t.setFrom(j1);
+            j2.traceEnds.add(t);
+            t.setTo(j2);
+    
+            AirWire aw2 = new AirWire(j2, pTo);
+            net.addTrace(aw2);
+            j2.traceStarts.add(aw2);
+            aw2.setFrom(j2);
+            pTo.traceEnds.add(aw2);
+            aw2.setTo(pTo);
+        } else if (pFrom instanceof Junction && pTo instanceof Pad) {
+            System.err.println("JUNCTION/PAD");
+            //    Junction -                       AirWire - Pad 
+            //    Junction - (Trace - Junction2) - AirWire - Pad
+            //    pFrom       new     new          this      pTo
 
-        AirWire aw2 = new AirWire(j2, pTo);
-        net.addTrace(aw2);
-        j2.traceStarts.add(aw2);
-        aw2.setFrom(j2);
-        pTo.traceEnds.add(aw2);
-        aw2.setTo(pTo);
+            Junction j2 = new Junction(pTo.getPos());
+            net.addJunction(j2);
+
+            pFrom.traceStarts.remove(this);
+            this.setFrom(j2);
+            j2.traceStarts.add(this);
+
+            Trace t = new Trace(pFrom, j2);
+            net.addTrace(t);
+            pFrom.traceStarts.add(t);
+            t.setFrom(pFrom);
+            j2.traceEnds.add(t);
+            t.setTo(j2);
+        } else if (pFrom instanceof Pad && pTo instanceof Junction) {
+            System.err.println("PAD/JUNCTION");
+
+            //    Pad - AirWire - Junction 
+            //    Pad - AirWire - (Junction2 - Trace) - Junction
+            //    pFrom this       new         new      pTo
+
+            Junction j2 = new Junction(pFrom.getPos());
+            net.addJunction(j2);
+
+            pTo.traceEnds.remove(this);
+            this.setTo(j2);
+            j2.traceEnds.add(this);
+
+            Trace t = new Trace(j2, pTo);
+            net.addTrace(t);
+            pTo.traceEnds.add(t);
+            t.setTo(pTo);
+            j2.traceStarts.add(t);
+            t.setFrom(j2);
+        }
     }
 
     @Override

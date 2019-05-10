@@ -16,7 +16,7 @@ import javafx.scene.text.Text;
 /**
  * A Pad is a junction which refers to a specific pin of a Part.
  */
-public class Pad extends Junction {
+public class Pad extends AbstractNode {
 
     private final Part part;
     private final String pinNumber;
@@ -126,5 +126,10 @@ public class Pad extends Junction {
         if (!key.equals(other.getPadId()))
             return false;
         return true;
+    }
+
+    @Override
+    public String getRepr() {
+        return "Pad: " + getPadId();
     }
  }

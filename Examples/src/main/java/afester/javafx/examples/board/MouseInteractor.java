@@ -6,9 +6,10 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
-public class MouseInteractor implements Interactor {
+public abstract class MouseInteractor implements Interactor {
 
     private Point2D offset; 
+    private Point2D pos; 
     private BoardView bv;
 
     public MouseInteractor(BoardView boardView) {
@@ -32,9 +33,22 @@ public class MouseInteractor implements Interactor {
         return result;
     }
 
+    
+    public BoardView getBoardView() {
+        return bv;
+    }
+
+    public Point2D getOffset() {
+        return offset;
+    }
+
+    public Point2D getPos() {
+        return pos;
+    }
 
 	@Override
-    public void mousePressed(MouseEvent e) {
+    public final void mousePressed(MouseEvent e) {
+	    pos = new Point2D(e.getX(), e.getY());
         Interactable clickedObject = getClickedObject(e);
         if (clickedObject != null) {
 
@@ -44,10 +58,10 @@ public class MouseInteractor implements Interactor {
                 } else if (e.isShiftDown()) {
                 } else if (e.isMetaDown()) {
                 } else { // no modifiers pressed
-                    clickedObject.leftMouseAction(e, bv);
+                    clickObjectLeft(clickedObject);
                 }
             } else if (e.getButton() == MouseButton.SECONDARY) {
-                clickedObject.rightMouseAction(e);
+                clickObjectRight(clickedObject);
             }
 
             offset = clickedObject.getPos().subtract(e.getX(), e.getY());
@@ -58,11 +72,40 @@ public class MouseInteractor implements Interactor {
 
 	
 	@Override
-    public void mouseDragged(MouseEvent e) {
+    public final void mouseDragged(MouseEvent e) {
+	    pos = new Point2D(e.getX(), e.getY());
         Interactable currentObject = bv.getSelectedObject();
         if (!e.isControlDown() && e.isPrimaryButtonDown() && currentObject != null) {
-            currentObject.mouseDragged(e, bv, offset);
+            dragObject(currentObject);
         }
     }
 
+	
+    protected Point2D snapToGrid(Point2D pos, BoardView bv, Point2D offset) {                                                      
+        // final double grid = 2.54;                                                                      
+        final double grid = 1.27;       // for now, we also allow positions between pads - this is        
+                                        // required to properly position the Eagle parts ...              
+
+        double xpos = offset.getX() + pos.getX();                                                                        
+        double ypos = offset.getY() + pos.getY();                                                                        
+
+        xpos = (int) ( (xpos - bv.getPadOffset().getX()) / grid);                                         
+        ypos = (int) ( (ypos - bv.getPadOffset().getY()) / grid);                                         
+    
+        xpos = xpos * grid + bv.getPadOffset().getX();                                                    
+        ypos = ypos * grid + bv.getPadOffset().getY();                                                    
+    
+        return new Point2D(xpos, ypos);                                                                   
+    }
+
+    
+    
+	protected void dragObject(Interactable obj) {
+	}
+
+    protected void clickObjectLeft(Interactable obj) {
+    }
+
+    protected void clickObjectRight(Interactable obj) {
+    }
 }

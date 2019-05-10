@@ -196,6 +196,8 @@ public class BoardView extends Pane {
                 interactor.mouseDragged(e);
             }
          });
+        
+        // setOnMouseR
     }
 
 
@@ -256,17 +258,22 @@ public class BoardView extends Pane {
         setSelectedObject(null);
     }
 
-    private final Interactor mouseInteractor = new MouseInteractor(this);
+    private final Interactor selectInteractor = new SelectInteractor(this);
     private final Interactor traceInteractor = new TraceInteractor(this);
+    private final Interactor editTraceInteractor = new EditTraceInteractor(this);
 
     public void setSelectMode() {
         System.err.println("Setting SELECT mode");
-        interactor = mouseInteractor;
+        interactor = selectInteractor;
     }
 
     public void setTraceMode() {
         System.err.println("Setting TRACE mode");
         interactor = traceInteractor;
+    }
+    public void setEditTraceMode() {
+        System.err.println("Setting EDIT TRACE mode");
+        interactor = editTraceInteractor;
     }
 
 }

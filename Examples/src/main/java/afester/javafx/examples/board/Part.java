@@ -14,7 +14,6 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -165,7 +164,7 @@ public class Part extends Group implements Interactable {
             getChildren().add(s);
         }
 
-        for (Junction ps : pads.values()) {
+        for (AbstractNode ps : pads.values()) {
             Node s = ps.createNode();
             getChildren().add(s);
         }
@@ -199,50 +198,6 @@ public class Part extends Group implements Interactable {
 
     public Collection<Pad> getPads() {
         return pads.values();
-    }
-
-    @Override
-    public void leftMouseAction(MouseEvent e, BoardView bv) {
-      Interactable currentSelection = bv.getSelectedObject();
-      if (currentSelection != this) {
-          if (currentSelection != null) {
-              currentSelection.setSelected(false);
-          }
-          setSelected(true);
-          bv.setSelectedObject(this);
-      }
-    }
-    
-    @Override
-    public void rightMouseAction(MouseEvent e) {
-    	rotatePart();
-    }
-
-    private Point2D snapToGrid(double x, double y, BoardView bv, Point2D offset) {                                                      
-        // final double grid = 2.54;                                                                      
-        final double grid = 1.27;       // for now, we also allow positions between pads - this is        
-                                        // required to properly position the Eagle parts ...              
-
-        double xpos = offset.getX() + x;                                                                        
-        double ypos = offset.getY() + y;                                                                        
-
-        xpos = (int) ( (xpos - bv.getPadOffset().getX()) / grid);                                         
-        ypos = (int) ( (ypos - bv.getPadOffset().getY()) / grid);                                         
-
-        xpos = xpos * grid + bv.getPadOffset().getX();                                                    
-        ypos = ypos * grid + bv.getPadOffset().getY();                                                    
-
-        return new Point2D(xpos, ypos);                                                                   
-    }
-
-    @Override
-    public void mouseDragged(MouseEvent e, BoardView bv, Point2D offset) {
-        // System.err.println("MOVE: " + currentSelection);
-
-        // Snap to center of part
-        // (this is also what the Eagle board editor does)
-        Point2D snapPos = snapToGrid(e.getX(), e.getY(), bv, offset);
-        move(snapPos);
     }
 
 	@Override
