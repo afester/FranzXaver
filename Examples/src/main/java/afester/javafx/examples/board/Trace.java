@@ -7,9 +7,12 @@ import org.w3c.dom.Node;
 import javafx.scene.paint.Color;
 
 /**
- * A Trace is a part of a Net which has already been routed. 
+ * A Trace is a part of a Net which has already been routed.
+ * It can either be rendered as trace or as bridge. 
  */
 public class Trace extends AbstractWire {
+
+    private boolean isBridge = false;
 
     public Trace(AbstractNode from, AbstractNode to) {
         super(from, to);
@@ -21,11 +24,17 @@ public class Trace extends AbstractWire {
       if (isSelected) {
         from.setSelected(true);
         to.setSelected(true);
+
         setStroke(Color.RED);
       } else {
         from.setSelected(false);
         to.setSelected(false);
-        setStroke(Color.SILVER);
+
+        if (isBridge) {
+            setStroke(Color.GREEN);
+        } else {
+            setStroke(Color.SILVER);
+        }
       }
     }
 
@@ -41,7 +50,16 @@ public class Trace extends AbstractWire {
         Element traceNode = doc.createElement("trace");
         traceNode.setAttribute("from", Integer.toString(getFrom().id));
         traceNode.setAttribute("to",   Integer.toString(getTo().id));
+        traceNode.setAttribute("isBridge",  Boolean.toString(isBridge));
 
         return traceNode;
+    }
+
+
+    public void setAsBridge() {
+        isBridge = true;
+
+        setStroke(Color.GREEN);
+        setStrokeWidth(0.5);
     }
 }

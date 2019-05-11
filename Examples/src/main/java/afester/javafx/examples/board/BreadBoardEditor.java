@@ -89,11 +89,14 @@ public class BreadBoardEditor extends Application {
         menuBar.getMenus().addAll(fileMenu, viewMenu, editMenu);
 
         // Create the toolbar
-        final Button shortestPathButton = new Button("Shortest");
+        final Button shortestPathButton = new ToolbarButton("Shortest", "afester/javafx/examples/board/net-shortest.png");
         shortestPathButton.setOnAction(e -> calculateShortestPath());
 
-        final Button resetNetButton = new Button("Shortest all");
+        final Button resetNetButton = new ToolbarButton("Shortest all", "afester/javafx/examples/board/net-shortestall.png");
         resetNetButton.setOnAction(e -> calculateShortestPathAll());
+
+        final Button traceToBridge = new ToolbarButton("Bridge", "afester/javafx/examples/board/net-tracetobridge.png");
+        traceToBridge.setOnAction(e -> traceToBridge());
 
         ToggleGroup toggleGroup = new ToggleGroup();
         ToolbarToggleButton selectToolButton = new ToolbarToggleButton("Select", "afester/javafx/examples/board/mode-select.png");
@@ -114,7 +117,7 @@ public class BreadBoardEditor extends Application {
                 bv.setEditTraceMode();   
             }
         });
-        
+
         selectToolButton.setToggleGroup(toggleGroup);
         traceToolButton.setToggleGroup(toggleGroup);
         editTraceToolButton.setToggleGroup(toggleGroup);
@@ -132,7 +135,8 @@ public class BreadBoardEditor extends Application {
                 editTraceToolButton,
                 new Separator(),
                 shortestPathButton,
-                resetNetButton
+                resetNetButton,
+                traceToBridge
             );
 
         VBox topBar = new VBox();
@@ -177,6 +181,19 @@ public class BreadBoardEditor extends Application {
 
         stage.show();
         drawingView.fitContentToWindow();
+    }
+
+    /**
+     * Converts the currently selected trace into a bridge wire
+     *
+     * @return
+     */
+    private void traceToBridge() {
+        Interactable obj = bv.getSelectedObject();
+        if (obj != null && obj instanceof Trace) {
+            Trace t = (Trace) obj;
+            t.setAsBridge();
+        }
     }
 
     /**

@@ -306,6 +306,7 @@ public class Board {
                     Element traceNode = (Element) traceNodes.item(j);
                     String fromId = traceNode.getAttribute("from");
                     String toId = traceNode.getAttribute("to");
+                    boolean isBridge = Boolean.parseBoolean(traceNode.getAttribute("isBridge"));
 
                     AbstractNode from = junctions.get(fromId);
                     if (from == null) from = pads.get(fromId);      // TODO: This is a bad hack!!!!
@@ -313,7 +314,11 @@ public class Board {
                     if (to == null) to = pads.get(toId);          // TODO: This is a bad hack!!!!
                     System.err.printf("  T : %s -> %s\n", from, to);
 
-                    net.addTrace(new Trace(from, to));
+                    Trace t = new Trace(from, to);
+                    if (isBridge) {
+                        t.setAsBridge();
+                    }
+                    net.addTrace(t);
                 }
 
                 System.err.printf("Net: %s\n", net);
