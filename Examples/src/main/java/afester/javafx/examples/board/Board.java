@@ -385,16 +385,10 @@ public class Board {
                 Pad oldPad = p1.getPad(pinNr);
 
                 p.traceStarts = oldPad.traceStarts;
-                for (Line l : p.traceStarts) {
-                    Trace t = (Trace) l;
-                    t.setFrom(p);
-                }
+                p.traceStarts.forEach(wire -> wire.setFrom(p));
             
                 p.traceEnds = oldPad.traceEnds;
-                for (Line l : p.traceEnds) {
-                    Trace t = (Trace) l;
-                    t.setTo(p);
-                }
+                p.traceEnds.forEach(wire -> wire.setTo(p));
             }
 
             parts.remove(partName);
