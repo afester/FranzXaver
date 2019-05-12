@@ -92,11 +92,18 @@ public class BreadBoardEditor extends Application {
         final Button shortestPathButton = new ToolbarButton("Shortest", "afester/javafx/examples/board/net-shortest.png");
         shortestPathButton.setOnAction(e -> calculateShortestPath());
 
-        final Button resetNetButton = new ToolbarButton("Shortest all", "afester/javafx/examples/board/net-shortestall.png");
-        resetNetButton.setOnAction(e -> calculateShortestPathAll());
+        final Button shortestAllButton = new ToolbarButton("Shortest all", "afester/javafx/examples/board/net-shortestall.png");
+        shortestAllButton.setOnAction(e -> calculateShortestPathAll());
 
         final Button traceToBridge = new ToolbarButton("Bridge", "afester/javafx/examples/board/net-tracetobridge.png");
         traceToBridge.setOnAction(e -> traceToBridge());
+
+        final Button resetNetButton = new ToolbarButton("Reset net", "afester/javafx/examples/board/net-reset.png");
+        resetNetButton.setOnAction(e -> resetNet());
+
+
+        final Button deleteSegmentButton = new ToolbarButton("Delete segment", "afester/javafx/examples/board/net-delsegment.png");
+        deleteSegmentButton.setOnAction(e -> deleteSegment());
 
         ToggleGroup toggleGroup = new ToggleGroup();
         ToolbarToggleButton selectToolButton = new ToolbarToggleButton("Select", "afester/javafx/examples/board/mode-select.png");
@@ -135,8 +142,10 @@ public class BreadBoardEditor extends Application {
                 editTraceToolButton,
                 new Separator(),
                 shortestPathButton,
+                shortestAllButton,
+                traceToBridge,
                 resetNetButton,
-                traceToBridge
+                deleteSegmentButton
             );
 
         VBox topBar = new VBox();
@@ -183,10 +192,59 @@ public class BreadBoardEditor extends Application {
         drawingView.fitContentToWindow();
     }
 
+
+    private void deleteSegment() {
+        Interactable selectedObject = bv.getSelectedObject();
+        if (selectedObject instanceof Trace) {
+            bv.clearSelection();
+            
+            Trace trace = (Trace) selectedObject;
+
+            // TODO: move into model layer
+            Net net  = trace.getNet();
+            AbstractNode from = trace.getFrom();
+            AbstractNode to = trace.getTo();
+
+            if (from.traceStarts.size() > 1 || to.traceEnds.size() > 1) {
+                System.err.println("Currently only intermediate traces can be removed");
+                return;
+            }
+
+            System.err.println("Removing segment ...");
+
+            net.removeTrace(trace);
+            from.traceStarts.remove(trace);
+            to.traceEnds.remove(trace);
+
+            //to.traceEnds.addAll(from.traceEnds);
+            //net.removeJunction(from);
+
+            // re-render board
+            bv.setBoard(bv.getBoard());
+        }
+    }
+
+
+    private void resetNet() {
+        Interactable selectedObject = bv.getSelectedObject();
+        if (selectedObject instanceof Trace) {
+            bv.clearSelection();
+
+            Trace trace = (Trace) selectedObject;
+            Net net = trace.getNet();
+            System.err.printf("NET: %s\n", net.getName());
+
+            // calculate the shortest path of the net
+            net.resetNet();
+
+            // re-render board
+            bv.setBoard(bv.getBoard());
+        }
+    }
+
+
     /**
-     * Converts the currently selected trace into a bridge wire
-     *
-     * @return
+     * Converts the currently selected trace into a bridge wire.
      */
     private void traceToBridge() {
         Interactable obj = bv.getSelectedObject();

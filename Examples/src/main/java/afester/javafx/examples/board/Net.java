@@ -17,15 +17,15 @@ public class Net extends Group {
     // Model
     private String netName;
     private List<Junction> junctionList = new ArrayList<>();    // A list of junctions - not associated to a part. Junctions can be added and removed.
-    private List<AbstractWire> traces = new ArrayList<>();
+    private List<AbstractWire> traceList = new ArrayList<>();
 
     // View (TODO: separate in own class)
     private Group junctions = new Group();
-    private Group nets= new Group();
+    private Group traces = new Group();
 
     public Net(String netName) {
         this.netName = netName;
-        getChildren().addAll(nets, junctions);
+        getChildren().addAll(traces, junctions);
     }
 
 
@@ -44,6 +44,11 @@ public class Net extends Group {
         junctions.getChildren().add(newJunction);
     }
 
+    public void removeJunction(AbstractNode junction) {
+        junctionList.remove(junction);
+        junctions.getChildren().remove(junction);
+    }
+    
     public List<Junction> getJunctions() {
         return junctionList;
     }
@@ -51,7 +56,7 @@ public class Net extends Group {
     public Set<AbstractNode> getAllJunctions() {
         Set<AbstractNode> result = new HashSet<>();
 
-        traces.forEach(t -> {
+        traceList.forEach(t -> {
             result.add(t.getFrom());
             result.add(t.getTo());
         });
@@ -60,27 +65,24 @@ public class Net extends Group {
     }
 
     public List<AbstractWire> getTraces() {
-        return traces;
+        return traceList;
     }
 
     public void addTrace(AbstractWire trace) {
-        traces.add(trace);
-        nets.getChildren().add(trace);
+        traceList.add(trace);
+        traces.getChildren().add(trace);
     }
 
-
-    @Override
-    public String toString() {
-        StringBuffer buffer = new StringBuffer("Junctions[");
-        getAllJunctions().forEach(e -> { buffer.append(e); buffer.append(", "); } );
-        buffer.append("]");
-        return String.format("Net[netName=%s, %s]", netName, buffer);
+    
+    public void removeTrace(AbstractWire trace) {
+        traceList.remove(trace);
+        traces.getChildren().remove(trace);
     }
 
 
     public Set<Pad> getPads() {
         final Set<Pad> result = new HashSet<>();
-        for (AbstractWire t : traces) {
+        for (AbstractWire t : traceList) {
             AbstractNode j1 = t.getFrom();
             if (j1 instanceof Pad) {
                 result.add((Pad) j1);
@@ -109,11 +111,11 @@ public class Net extends Group {
 
     public void clear() {
         junctionList.clear();
-        traces.clear();
+        traceList.clear();
 
         // View (TODO: separate into own class)
         junctions.getChildren().clear();
-        nets.getChildren().clear();
+        traces.getChildren().clear();
     }
 
     
@@ -167,7 +169,16 @@ public class Net extends Group {
             return;
         }
     
+        resetNet();
+    }
+    
+    /**
+     * Removes all traces and re-applies the "shortest path" algorithm to this net.
+     * 
+     */
+    public void resetNet() {
         List<Pad> pads = getPads().stream().collect(Collectors.toList());
+        System.err.println("ALL PADS:" + pads);
         List<Pad> sortedPads = calculateNearestPath(pads);
         clear();
     
@@ -180,5 +191,14 @@ public class Net extends Group {
             }
             p1 = p2;
         }
+    }
+    
+
+    @Override
+    public String toString() {
+        StringBuffer buffer = new StringBuffer("Junctions[");
+        getAllJunctions().forEach(e -> { buffer.append(e); buffer.append(", "); } );
+        buffer.append("]");
+        return String.format("Net[netName=%s, %s]", netName, buffer);
     }
 }
