@@ -4,8 +4,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import javafx.geometry.Point2D;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 /**
@@ -38,78 +36,78 @@ public class AirWire extends AbstractWire {
         return traceNode;
     }
     
-    private void convertToTrace(MouseEvent e) {
-		Net net = getNet();
-		System.err.println("Clicked AirWire of " + net);
-
-		Point2D clickPoint = new Point2D(e.getX(), e.getY());
-
-		// determine which part of the AirWire to keep
-		double d1 = clickPoint.distance(getStart());
-		double d2 = clickPoint.distance(getEnd());
-		System.err.printf("CLICKED: %s -> %s (%s, %s)\n", clickPoint, this, d1, d2);
-
-		Junction newJunction = new Junction(clickPoint);
-
-		if (d1 < d2) {
-			// keep To
-			AbstractNode nearest = getFrom();
-			System.err.println("NEARBY: " + nearest);
-
-			// connect existing wire to new junction
-			nearest.traceStarts.remove(this);
-			setFrom(newJunction);
-			newJunction.traceStarts.add(this);
-
-			// ***************************************
-			Junction edge = new Junction(nearest.getPos().getX(), newJunction.getCenterY());
-			System.err.println("EDGE1: " + edge);
-
-			// create new Trace: nearest - edge - newJunction
-			Trace t = new Trace(nearest, edge);
-			net.addTrace(t); // TODO: Here, one operation should be sufficient
-			nearest.traceStarts.add(t); // to add the new trace ... (the second line should not be required)
-			edge.traceEnds.add(t);
-
-			Trace t2 = new Trace(edge, newJunction);
-			net.addTrace(t2);
-			edge.traceStarts.add(t2);
-			newJunction.traceEnds.add(t2);
-
-			net.addJunction(edge);
-			net.addJunction(newJunction);
-			// ***************************************
-		} else {
-			// keep From
-			AbstractNode nearest = getTo();
-			System.err.println("NEARBY: " + nearest);
-
-			// connect existing wire to new junction
-			nearest.traceEnds.remove(this);
-			setTo(newJunction);
-			newJunction.traceEnds.add(this);
-
-			// ***************************************
-			Junction edge = new Junction(newJunction.getCenterX(), nearest.getPos().getY());
-			System.err.println("EDGE2: " + edge);
-
-			// create new Trace: newJunction - edge - nearest
-			Trace t = new Trace(newJunction, edge);
-			net.addTrace(t); // TODO: Here, one operation should be sufficient
-			newJunction.traceStarts.add(t);
-			edge.traceEnds.add(t);
-
-			Trace t2 = new Trace(edge, nearest);
-			net.addTrace(t2);
-			edge.traceStarts.add(t2);
-			nearest.traceEnds.add(t2); // to add the new trace ... (the second line should not be required)
-
-			net.addJunction(edge);
-			net.addJunction(newJunction);
-
-			// ***************************************
-		}
-	}
+//    private void convertToTrace(MouseEvent e) {
+//		Net net = getNet();
+//		System.err.println("Clicked AirWire of " + net);
+//
+//		Point2D clickPoint = new Point2D(e.getX(), e.getY());
+//
+//		// determine which part of the AirWire to keep
+//		double d1 = clickPoint.distance(getStart());
+//		double d2 = clickPoint.distance(getEnd());
+//		System.err.printf("CLICKED: %s -> %s (%s, %s)\n", clickPoint, this, d1, d2);
+//
+//		Junction newJunction = new Junction(clickPoint);
+//
+//		if (d1 < d2) {
+//			// keep To
+//			AbstractNode nearest = getFrom();
+//			System.err.println("NEARBY: " + nearest);
+//
+//			// connect existing wire to new junction
+//			nearest.traceStarts.remove(this);
+//			setFrom(newJunction);
+//			newJunction.traceStarts.add(this);
+//
+//			// ***************************************
+//			Junction edge = new Junction(nearest.getPos().getX(), newJunction.getCenterY());
+//			System.err.println("EDGE1: " + edge);
+//
+//			// create new Trace: nearest - edge - newJunction
+//			Trace t = new Trace(nearest, edge);
+//			net.addTrace(t); // TODO: Here, one operation should be sufficient
+//			nearest.traceStarts.add(t); // to add the new trace ... (the second line should not be required)
+//			edge.traceEnds.add(t);
+//
+//			Trace t2 = new Trace(edge, newJunction);
+//			net.addTrace(t2);
+//			edge.traceStarts.add(t2);
+//			newJunction.traceEnds.add(t2);
+//
+//			net.addJunction(edge);
+//			net.addJunction(newJunction);
+//			// ***************************************
+//		} else {
+//			// keep From
+//			AbstractNode nearest = getTo();
+//			System.err.println("NEARBY: " + nearest);
+//
+//			// connect existing wire to new junction
+//			nearest.traceEnds.remove(this);
+//			setTo(newJunction);
+//			newJunction.traceEnds.add(this);
+//
+//			// ***************************************
+//			Junction edge = new Junction(newJunction.getCenterX(), nearest.getPos().getY());
+//			System.err.println("EDGE2: " + edge);
+//
+//			// create new Trace: newJunction - edge - nearest
+//			Trace t = new Trace(newJunction, edge);
+//			net.addTrace(t); // TODO: Here, one operation should be sufficient
+//			newJunction.traceStarts.add(t);
+//			edge.traceEnds.add(t);
+//
+//			Trace t2 = new Trace(edge, nearest);
+//			net.addTrace(t2);
+//			edge.traceStarts.add(t2);
+//			nearest.traceEnds.add(t2); // to add the new trace ... (the second line should not be required)
+//
+//			net.addJunction(edge);
+//			net.addJunction(newJunction);
+//
+//			// ***************************************
+//		}
+//	}
 
 
     /**

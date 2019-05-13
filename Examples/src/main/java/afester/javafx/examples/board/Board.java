@@ -36,7 +36,6 @@ import org.xml.sax.SAXException;
 
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 
 public class Board {
 
@@ -178,6 +177,7 @@ public class Board {
                 Double xpos = Double.parseDouble(partNode.getAttribute("x"));
                 Double ypos = Double.parseDouble(partNode.getAttribute("y"));
 
+
                 Part part = new Part(partName, partValue, packageRef);
                 part.setLayoutX(xpos);
                 part.setLayoutY(ypos);
@@ -185,13 +185,13 @@ public class Board {
 
                 NodeList padNodes = (NodeList) xPath.evaluate("./pad", partNode, XPathConstants.NODESET);
                 for (int j = 0; j < padNodes.getLength(); ++j) {
-                    Element padNode = (Element) padNodes.item(j);
-                    String pinNumber = padNode.getAttribute("pinNumber");
-                    String padId = padNode.getAttribute("id");
-                    Double padX = Double.parseDouble(padNode.getAttribute("x"));
-                    Double padY = Double.parseDouble(padNode.getAttribute("y"));
+                    final Element padNode = (Element) padNodes.item(j);
+                    final String pinNumber = padNode.getAttribute("pinNumber");
+                    final String padId = padNode.getAttribute("id");
+                    final Point2D padPos = new Point2D(Double.parseDouble(padNode.getAttribute("x")),
+                                                       Double.parseDouble(padNode.getAttribute("y")));
 
-                    Pad junction = new Pad(part, pinNumber, padX, padY);
+                    Pad junction = new Pad(part, pinNumber, padPos);
                     pads.put(padId, junction);
                     part.addPad(junction, pinNumber);
                 }
@@ -276,10 +276,10 @@ public class Board {
                 for (int j = 0; j < junctionNodes.getLength(); ++j) {
                     Element junctionNode = (Element) junctionNodes.item(j);
                     String junctionId = junctionNode.getAttribute("id");
-                    Double xpos = Double.parseDouble(junctionNode.getAttribute("x"));
-                    Double ypos = Double.parseDouble(junctionNode.getAttribute("y"));
+                    Point2D jPos = new Point2D(Double.parseDouble(junctionNode.getAttribute("x")),
+                                               Double.parseDouble(junctionNode.getAttribute("y")));
 
-                    Junction junction = new Junction(xpos, ypos);
+                    Junction junction = new Junction(jPos);
                     junctions.put(junctionId, junction);
                     System.err.printf("  %s\n", junction);
                     
@@ -533,13 +533,13 @@ public class Board {
         if (part != null) {
             part.getPads().forEach(pad -> {
                 pad.traceStarts.forEach(trace -> {
-                    Net net = (Net) trace.getParent();    // todo: provide explicit access path  
+                    Net net = trace.getNet();
                     net.getTraces().remove(trace);
                 });
                 pad.traceStarts.clear();
 
                 pad.traceEnds.forEach(trace -> {
-                    Net net = (Net) trace.getParent();    // todo: provide explicit access path
+                    Net net = trace.getNet();
                     net.getTraces().remove(trace);
                     
                 });

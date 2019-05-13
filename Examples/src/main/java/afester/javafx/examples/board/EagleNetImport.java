@@ -172,10 +172,10 @@ public class EagleNetImport extends NetImport {
         // load through-hole pads
         NodeList padNodes = (NodeList) xPath.evaluate("./pad", packageNode, XPathConstants.NODESET);
         for (int j = 0; j < padNodes.getLength(); ++j) {
-            Element padNode = (Element) padNodes.item(j);
-            String pinNumber = padNode.getAttribute("name");
-            Double padX = Double.parseDouble(padNode.getAttribute("x"));
-            Double padY = -Double.parseDouble(padNode.getAttribute("y"));
+            final Element padNode = (Element) padNodes.item(j);
+            final String pinNumber = padNode.getAttribute("name");
+            final Point2D padPos = new Point2D(Double.parseDouble(padNode.getAttribute("x")),
+                                               -Double.parseDouble(padNode.getAttribute("y")));
             // Double drill = Double.parseDouble(padNode.getAttribute("drill"));
             // padNode.getAttribute("shape");
 
@@ -190,7 +190,7 @@ public class EagleNetImport extends NetImport {
                 System.err.printf("   Pad %s <=> Pin %s@%s\n", pinNumber, gate, pin);
     
                 // Model
-                part.addPad(new Pad(part, pinNumber, padX, padY), pin + "@" + gate);
+                part.addPad(new Pad(part, pinNumber, padPos), pin + "@" + gate);
             }
         }
 
@@ -198,12 +198,12 @@ public class EagleNetImport extends NetImport {
         // load SMD pads
         NodeList smdPadNodes = (NodeList) xPath.evaluate("./smd", packageNode, XPathConstants.NODESET);
         for (int j = 0; j < smdPadNodes.getLength(); ++j) {
-            Element smdPadNode = (Element) smdPadNodes.item(j);
-            String pinNumber = smdPadNode.getAttribute("name");
-            Double padX = Double.parseDouble(smdPadNode.getAttribute("x"));
-            Double padY = -Double.parseDouble(smdPadNode.getAttribute("y"));
-            Double padDx = Double.parseDouble(smdPadNode.getAttribute("dx"));
-            Double padDy = -Double.parseDouble(smdPadNode.getAttribute("dy"));
+            final Element smdPadNode = (Element) smdPadNodes.item(j);
+            final String pinNumber = smdPadNode.getAttribute("name");
+            final Point2D padPos = new Point2D(Double.parseDouble(smdPadNode.getAttribute("x")),
+                                               -Double.parseDouble(smdPadNode.getAttribute("y")));
+            //Double padDx = Double.parseDouble(smdPadNode.getAttribute("dx"));
+            //Double padDy = -Double.parseDouble(smdPadNode.getAttribute("dy"));
 
             final String xpathQuery = "./connects/connect[@pad='" + pinNumber + "']";
             Element connect = (Element) xPath.evaluate(xpathQuery, connects, XPathConstants.NODE);
@@ -214,7 +214,7 @@ public class EagleNetImport extends NetImport {
             System.err.printf("   SMD %s <=> Pin %s@%s\n", pinNumber, gate, pin);
 
             // Model
-            part.addPad(new Pad(part, pinNumber, padX, padY), pin + "@" + gate);
+            part.addPad(new Pad(part, pinNumber, padPos), pin + "@" + gate);
         }
 
         NodeList wireNodes = (NodeList) xPath.evaluate("./wire", packageNode, XPathConstants.NODESET);
@@ -249,7 +249,7 @@ public class EagleNetImport extends NetImport {
                                      -Double.parseDouble(rectNode.getAttribute("y1")));
             Point2D p2 = new Point2D(Double.parseDouble(rectNode.getAttribute("x2")),
                                      -Double.parseDouble(rectNode.getAttribute("y2")));
-            String layer = rectNode.getAttribute("layer");
+            // String layer = rectNode.getAttribute("layer");
 
             part.addShape(new PartRectangle(p1, p2));
         }

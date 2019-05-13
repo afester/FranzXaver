@@ -200,7 +200,6 @@ public class BreadBoardEditor extends Application {
             
             Trace trace = (Trace) selectedObject;
 
-            // TODO: move into model layer
             Net net  = trace.getNet();
             AbstractNode from = trace.getFrom();
             AbstractNode to = trace.getTo();
@@ -211,13 +210,7 @@ public class BreadBoardEditor extends Application {
             }
 
             System.err.println("Removing segment ...");
-
             net.removeTrace(trace);
-            from.traceStarts.remove(trace);
-            to.traceEnds.remove(trace);
-
-            //to.traceEnds.addAll(from.traceEnds);
-            //net.removeJunction(from);
 
             // re-render board
             bv.setBoard(bv.getBoard());

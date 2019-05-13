@@ -24,9 +24,11 @@ public class PartRectangle implements PartShape {
     public Shape createNode() {
         final double width = Math.abs(p2.getX() - p1.getX());
         final double height = Math.abs(p2.getY() - p1.getY());
-        System.err.printf("RECT: %s x %s\n", width, height);
-        Shape rect = new Rectangle(p2.getX(), p2.getY(),  width, height);   // TODO!!!!!
-        rect.setFill(Color.BLUE);
+        final double x = Math.min(p1.getX(), p2.getX());
+        final double y = Math.min(p1.getY(), p2.getY());
+
+        Shape rect = new Rectangle(x, y, width, height);
+        rect.setFill(Color.GRAY);
         rect.setStroke(null);
         rect.setStrokeLineCap(StrokeLineCap.ROUND);
 

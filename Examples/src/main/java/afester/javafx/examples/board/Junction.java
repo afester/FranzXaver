@@ -7,13 +7,15 @@ import javafx.geometry.Point2D;
 
 public class Junction extends AbstractNode {
 
-    public Junction(double xpos, double ypos) {
-    	super(xpos, ypos);
-    	setFill(null);
-    }
+
+//    public Junction(double xpos, double ypos) {
+//    	super(xpos, ypos);
+//    	setFill(null);
+//    }
 
     public Junction(Point2D pos) {
-    	this(pos.getX(), pos.getY());
+        super(pos);
+        setFill(null);
     }
     
 

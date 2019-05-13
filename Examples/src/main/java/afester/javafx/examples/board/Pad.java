@@ -24,13 +24,12 @@ public class Pad extends AbstractNode {
     /**
      * Creates a new Pad.
      *
-     * @param part	  The part to which this pad is attached
+     * @param part	    The part to which this pad is attached
      * @param pinNumber The (physical) pin number of this pad
-     * @param xpos    The x position of the Pad
-     * @param ypos    The y position of the Pad
+     * @param padPos    The position of the pad
      */
-    public Pad(Part part, String pinNumber, double xpos, double ypos) {
-        super(xpos, ypos);
+    public Pad(Part part, String pinNumber, Point2D padPos) {
+        super(padPos);
 
         this.part = part;
         this.pinNumber = pinNumber;

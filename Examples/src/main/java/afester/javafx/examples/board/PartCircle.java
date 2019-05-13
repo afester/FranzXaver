@@ -25,7 +25,7 @@ public class PartCircle implements PartShape {
     public Shape createNode() {
         Shape circle = new Circle(center.getX(), center.getY(), radius);
         circle.setFill(null);
-        circle.setStroke(Color.BLUE);
+        circle.setStroke(Color.GRAY);
         circle.setStrokeWidth(width);
 
         return circle;

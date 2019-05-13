@@ -15,13 +15,15 @@ public abstract class AbstractNode extends Circle implements PartShape, Interact
 
     protected int id;	// currently only required for serialization and deserialization
 
-    public AbstractNode(double xpos, double ypos) {
-    	super(xpos, ypos, 0.5);
-    	setFill(null);
-    }
-
+//    public AbstractNode(double xpos, double ypos) {
+//    	super(xpos, ypos, 0.5);
+//    	setFill(null);
+//    }
+//
     public AbstractNode(Point2D pos) {
-    	this(pos.getX(), pos.getY());
+        super(pos.getX(), pos.getY(), 0.5);
+        setFill(null);
+//    	this(pos.getX(), pos.getY());
     }
 
     public void setId(int i) {

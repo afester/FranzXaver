@@ -46,6 +46,7 @@ public class Net extends Group {
 
     public void removeJunction(AbstractNode junction) {
         junctionList.remove(junction);
+
         junctions.getChildren().remove(junction);
     }
     
@@ -73,9 +74,30 @@ public class Net extends Group {
         traces.getChildren().add(trace);
     }
 
-    
+    /**
+     * Removes a trace from this net. Also, the "from" junction is removed
+     * and all traces which ended in the from junction will now end at the "to" junction.
+     *
+     * @param trace The trace to remove.
+     */
     public void removeTrace(AbstractWire trace) {
+        AbstractNode from = trace.getFrom();
+        AbstractNode to = trace.getTo();
+
+        from.traceStarts.remove(trace);
+        to.traceEnds.remove(trace);
+
+        to.traceEnds.addAll(from.traceEnds);
+        from.traceEnds.forEach(xtrace -> {
+            xtrace.setEndX(to.getCenterX());
+            xtrace.setEndY(to.getCenterY());
+            xtrace.to = to;
+        });
+        removeJunction(from);
+
         traceList.remove(trace);
+
+        // update view
         traces.getChildren().remove(trace);
     }
 
