@@ -223,4 +223,22 @@ public class Net extends Group {
         buffer.append("]");
         return String.format("Net[netName=%s, %s]", netName, buffer);
     }
+
+
+    public AbstractNode getNearestNode(AbstractNode from) {
+        List<AbstractNode> allNodes = getPads().stream().collect(Collectors.toList());
+        allNodes.addAll(junctionList);
+        allNodes.remove(from);
+
+        double minDist = Double.MAX_VALUE;
+        AbstractNode result = null;
+        for (AbstractNode node: allNodes) {
+            double dist = node.getPos().distance(from.getPos());
+            if (dist < minDist) {
+                result = node;
+            }
+        }
+
+        return result;
+    }
 }

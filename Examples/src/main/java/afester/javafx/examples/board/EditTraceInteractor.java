@@ -1,5 +1,7 @@
 package afester.javafx.examples.board;
 
+import java.util.List;
+
 import javafx.geometry.Point2D;
 
 public class EditTraceInteractor  extends MouseInteractor {
@@ -63,6 +65,17 @@ public class EditTraceInteractor  extends MouseInteractor {
         if (junctionToMove != null) {
             Point2D snapPos = snapToGrid(getPos(), getBoardView(), getOffset());
             junctionToMove.setPos(snapPos);
+
+            List<AirWire> airWires = junctionToMove.getAirwires();
+            airWires.forEach(aw -> {
+                AbstractNode otherNode = aw.getOtherNode(junctionToMove);
+
+                Net net = aw.getNet();
+                AbstractNode nearestNode = net.getNearestNode(junctionToMove);
+
+                System.err.println("Other node on AirWire: " + otherNode);
+                System.err.println("Nearest node         : " + nearestNode);
+            });
         }
     }
 }

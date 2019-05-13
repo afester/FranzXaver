@@ -1,5 +1,8 @@
 package afester.javafx.examples.board;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -7,11 +10,6 @@ import javafx.geometry.Point2D;
 
 public class Junction extends AbstractNode {
 
-
-//    public Junction(double xpos, double ypos) {
-//    	super(xpos, ypos);
-//    	setFill(null);
-//    }
 
     public Junction(Point2D pos) {
         super(pos);
@@ -40,6 +38,20 @@ public class Junction extends AbstractNode {
     @Override
     public String toString() {
         return String.format("Junction[pos=%s/%s]", getCenterX(), getCenterY());  
+    }
+
+
+
+    public List<AirWire> getAirwires() {
+        List<AirWire> result = traceStarts.stream()
+                                          .filter(trace -> trace instanceof AirWire)
+                                          .map(trace -> (AirWire) trace)
+                                          .collect(Collectors.toList());
+        result.addAll(traceEnds.stream()
+                               .filter(trace -> trace instanceof AirWire)
+                               .map(trace -> (AirWire) trace)
+                               .collect(Collectors.toList()));
+        return result;
     }
 
 }
