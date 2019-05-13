@@ -2109,9 +2109,8 @@
     <junction id="300" x="27.9" y="24.86"/>
     <junction id="301" x="50.76" y="42.64"/>
     <junction id="302" x="83.77999877929688" y="42.766998291015625"/>
-    <junction id="303" x="50.7599983215332" y="35.02000045776367"/>
-    <junction id="304" x="50.76" y="42.64"/>
-    <junction id="305" x="53.3" y="42.64"/>
+    <junction id="303" x="53.3" y="40.1"/>
+    <junction id="304" x="62.19" y="40.1"/>
     <airwire from="96" to="94"/>
     <airwire from="94" to="108"/>
     <airwire from="108" to="212"/>
@@ -2154,6 +2153,7 @@
     <airwire from="292" to="7"/>
     <airwire from="284" to="18"/>
     <airwire from="296" to="33"/>
+    <airwire from="304" to="57"/>
     <trace from="261" isBridge="false" to="262"/>
     <trace from="263" isBridge="false" to="264"/>
     <trace from="264" isBridge="false" to="265"/>
@@ -2188,29 +2188,27 @@
     <trace from="301" isBridge="true" to="261"/>
     <trace from="302" isBridge="false" to="301"/>
     <trace from="303" isBridge="false" to="304"/>
-    <airwire from="305" to="57"/>
-    <trace from="304" isBridge="false" to="305"/>
   </net>
   <net name="N$46"/>
   <net name="N$47">
-    <junction id="306" x="50.76" y="22.32"/>
-    <junction id="307" x="50.76" y="19.78"/>
-    <junction id="308" x="43.14" y="19.78"/>
-    <junction id="309" x="50.7599983215332" y="19.780000686645508"/>
-    <junction id="310" x="43.14" y="19.78"/>
-    <junction id="311" x="43.14" y="14.7"/>
-    <junction id="312" x="25.36" y="14.7"/>
-    <junction id="313" x="25.360000610351562" y="19.780000686645508"/>
-    <airwire from="17" to="308"/>
-    <airwire from="103" to="306"/>
-    <airwire from="313" to="6"/>
-    <airwire from="309" to="103"/>
-    <trace from="306" isBridge="false" to="307"/>
-    <trace from="308" isBridge="false" to="309"/>
-    <trace from="307" isBridge="false" to="310"/>
+    <junction id="305" x="50.76" y="22.32"/>
+    <junction id="306" x="50.76" y="19.78"/>
+    <junction id="307" x="43.14" y="19.78"/>
+    <junction id="308" x="50.7599983215332" y="19.780000686645508"/>
+    <junction id="309" x="43.14" y="19.78"/>
+    <junction id="310" x="43.14" y="14.7"/>
+    <junction id="311" x="25.36" y="14.7"/>
+    <junction id="312" x="25.360000610351562" y="19.780000686645508"/>
+    <airwire from="17" to="307"/>
+    <airwire from="103" to="305"/>
+    <airwire from="312" to="6"/>
+    <airwire from="308" to="103"/>
+    <trace from="305" isBridge="false" to="306"/>
+    <trace from="307" isBridge="false" to="308"/>
+    <trace from="306" isBridge="false" to="309"/>
+    <trace from="309" isBridge="false" to="310"/>
     <trace from="310" isBridge="false" to="311"/>
     <trace from="311" isBridge="false" to="312"/>
-    <trace from="312" isBridge="false" to="313"/>
   </net>
   <net name="N$48">
     <airwire from="166" to="190"/>
@@ -2223,15 +2221,15 @@
     <airwire from="187" to="214"/>
   </net>
   <net name="N$32">
-    <junction id="314" x="17.739999771118164" y="27.399999618530273"/>
-    <junction id="315" x="17.740000000000002" y="29.94"/>
-    <junction id="316" x="12.66" y="29.94"/>
-    <junction id="317" x="12.66" y="43.910000000000004"/>
-    <airwire from="10" to="314"/>
-    <airwire from="317" to="198"/>
-    <trace from="314" isBridge="false" to="315"/>
-    <trace from="315" isBridge="true" to="316"/>
-    <trace from="316" isBridge="false" to="317"/>
+    <junction id="313" x="17.739999771118164" y="27.399999618530273"/>
+    <junction id="314" x="17.740000000000002" y="29.94"/>
+    <junction id="315" x="12.66" y="29.94"/>
+    <junction id="316" x="12.66" y="43.910000000000004"/>
+    <airwire from="10" to="313"/>
+    <airwire from="316" to="198"/>
+    <trace from="313" isBridge="false" to="314"/>
+    <trace from="314" isBridge="true" to="315"/>
+    <trace from="315" isBridge="false" to="316"/>
   </net>
   <net name="N$33">
     <airwire from="110" to="27"/>
@@ -2283,27 +2281,27 @@
     <airwire from="136" to="48"/>
   </net>
   <net name="+12V">
-    <junction id="318" x="83.77999877929688" y="32.7848014831543"/>
-    <junction id="319" x="48.22" y="32.480000000000004"/>
-    <junction id="320" x="48.22" y="35.02"/>
-    <junction id="321" x="43.14" y="35.02"/>
-    <junction id="322" x="48.22" y="32.480000000000004"/>
+    <junction id="317" x="83.77999877929688" y="32.7848014831543"/>
+    <junction id="318" x="48.22" y="32.480000000000004"/>
+    <junction id="319" x="48.22" y="35.02"/>
+    <junction id="320" x="43.14" y="35.02"/>
+    <junction id="321" x="48.22" y="32.480000000000004"/>
+    <junction id="322" x="48.22" y="45.18"/>
     <junction id="323" x="48.22" y="45.18"/>
-    <junction id="324" x="48.22" y="45.18"/>
-    <airwire from="148" to="318"/>
+    <airwire from="148" to="317"/>
     <airwire from="105" to="205"/>
     <airwire from="205" to="107"/>
     <airwire from="107" to="210"/>
     <airwire from="210" to="109"/>
     <airwire from="109" to="215"/>
-    <airwire from="215" to="323"/>
-    <airwire from="324" to="105"/>
-    <airwire from="321" to="100"/>
-    <trace from="318" isBridge="false" to="319"/>
-    <trace from="320" isBridge="false" to="321"/>
-    <trace from="322" isBridge="false" to="320"/>
-    <trace from="323" isBridge="false" to="322"/>
-    <trace from="319" isBridge="false" to="324"/>
+    <airwire from="215" to="322"/>
+    <airwire from="323" to="105"/>
+    <airwire from="320" to="100"/>
+    <trace from="317" isBridge="false" to="318"/>
+    <trace from="319" isBridge="false" to="320"/>
+    <trace from="321" isBridge="false" to="319"/>
+    <trace from="322" isBridge="false" to="321"/>
+    <trace from="318" isBridge="false" to="323"/>
   </net>
   <net name="N$5">
     <airwire from="174" to="194"/>
