@@ -72,10 +72,52 @@ public abstract class AbstractNode extends Circle implements PartShape, Interact
 		}
 	}
 
+    public void setSelected(boolean isSelected, Color col) {
+        if (isSelected) {
+            setFill(col);
+        } else {
+            setFill(null);
+        }
+    }
+
 
     public void setPos(Point2D snapPos) {
         setCenterX(snapPos.getX());
         setCenterY(snapPos.getY());
         moveTraces2(snapPos.getX(), snapPos.getY());
+    }
+
+
+    /**
+     * @return A list of all edges which are connected to this node.
+     */
+    public List<AbstractWire> getEdges() {
+        List<AbstractWire> result = new ArrayList<>();
+
+        result.addAll(traceStarts);
+        result.addAll(traceEnds);
+
+        return result;
+    }
+
+
+    /**
+     * From a collection of nodes, get the one which is nearest to this one.
+     *
+     * @param nodeList The list of nodes from which to get the nearest one.
+     * @return The node which is the nearest to this one.
+     */
+    public AbstractNode getNearestNode(List<AbstractNode> nodeList) {
+        double minDist = Double.MAX_VALUE;
+        AbstractNode result = null;
+        for (AbstractNode node: nodeList) {
+            double dist = node.getPos().distance(getPos());
+            if (dist < minDist) {
+                result = node;
+                minDist = dist;
+            }
+        }
+
+        return result;
     }
 }

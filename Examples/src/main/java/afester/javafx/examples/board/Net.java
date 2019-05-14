@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
 import javafx.scene.Group;
@@ -225,20 +226,40 @@ public class Net extends Group {
     }
 
 
-    public AbstractNode getNearestNode(AbstractNode from) {
+
+    /**
+     * @param startWith The start node.
+     * @param aw The edge to disregard.
+     * @return A list of nodes which are reachable from a given node, without traversing the given edge.
+     */
+    public List<AbstractNode> getNodesWithout(final AbstractNode startWith, final AirWire ignore) {
+        Set<AbstractNode> result = new HashSet<>();
+        Stack<AbstractNode> nodeStack = new Stack<>();
+
+        // get a list of ALL nodes in the net
         List<AbstractNode> allNodes = getPads().stream().collect(Collectors.toList());
         allNodes.addAll(junctionList);
-        allNodes.remove(from);
 
-        double minDist = Double.MAX_VALUE;
-        AbstractNode result = null;
-        for (AbstractNode node: allNodes) {
-            double dist = node.getPos().distance(from.getPos());
-            if (dist < minDist) {
-                result = node;
+        // start with the given node and add all destination nodes to the result set
+        AbstractNode currentNode = startWith;
+        while(currentNode != null) {
+            List<AbstractWire> edges = currentNode.getEdges();
+            edges.remove(ignore);
+
+            for(AbstractWire edge : edges) {
+                AbstractNode dest = edge.getOtherNode(currentNode);
+                if (!result.contains(dest) ) {
+                    result.add(dest);
+                    nodeStack.push(dest);
+                }
+            }
+            if (!nodeStack.empty()) {
+                currentNode = nodeStack.pop();
+            } else {
+                currentNode = null;
             }
         }
 
-        return result;
+        return result.stream().collect(Collectors.toList());
     }
 }

@@ -2014,7 +2014,7 @@
     <junction id="275" x="48.22" y="35.02"/>
     <junction id="276" x="43.13999938964844" y="35.02000045776367"/>
     <junction id="277" x="71.08000183105469" y="57.880001068115234"/>
-    <junction id="278" x="71.08" y="45.18"/>
+    <junction id="278" x="63.46" y="45.18"/>
     <airwire from="109" to="215"/>
     <airwire from="215" to="210"/>
     <airwire from="210" to="107"/>
@@ -2023,11 +2023,11 @@
     <airwire from="105" to="277"/>
     <airwire from="148" to="273"/>
     <airwire from="276" to="100"/>
+    <airwire from="278" to="275"/>
     <trace from="273" isBridge="false" to="274"/>
     <trace from="274" isBridge="false" to="275"/>
     <trace from="275" isBridge="false" to="276"/>
     <trace from="277" isBridge="false" to="278"/>
-    <airwire from="278" to="148"/>
   </net>
   <net name="N$4">
     <airwire from="133" to="195"/>

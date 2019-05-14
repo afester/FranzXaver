@@ -1,6 +1,7 @@
 package afester.javafx.examples.board;
 
 import java.util.List;
+import java.util.Random;
 
 import javafx.geometry.Point2D;
 
@@ -59,22 +60,50 @@ public class EditTraceInteractor  extends MouseInteractor {
 
     }
 
+    
+    private Random r = new Random(System.currentTimeMillis());
+
     @Override
     protected void dragObject(Interactable obj) {
+
+//        final double red = r.nextDouble();
+//        final double green = r.nextDouble();
+//        final double blue = r.nextDouble();
+//        final Color c = new Color(red, green, blue, 1.0);
+
         // System.err.println("MOVE: " + junctionToMove);
         if (junctionToMove != null) {
+            // move the junction to the new position
             Point2D snapPos = snapToGrid(getPos(), getBoardView(), getOffset());
             junctionToMove.setPos(snapPos);
 
             List<AirWire> airWires = junctionToMove.getAirwires();
             airWires.forEach(aw -> {
                 AbstractNode otherNode = aw.getOtherNode(junctionToMove);
-
-                Net net = aw.getNet();
-                AbstractNode nearestNode = net.getNearestNode(junctionToMove);
-
-                System.err.println("Other node on AirWire: " + otherNode);
-                System.err.println("Nearest node         : " + nearestNode);
+                if (otherNode.getEdges().size() > 1) {
+                    Net net = aw.getNet();
+    
+                    // get all nodes which are reachable in the net from otherNode IF the given airwire would not exist
+                    List<AbstractNode> possibleNodes = net.getNodesWithout(otherNode, aw);
+                    Trace t = (Trace) obj;                  // TODO .... hack ...
+                    possibleNodes.remove(t.getFrom());
+                    possibleNodes.remove(t.getTo());
+    
+    //                System.err.println("Possible nodes: " + possibleNodes);
+    //                possibleNodes.forEach(node -> node.setSelected(true,  c));
+    
+                    // These are the nodes where we could POTENTIALLY move the airwire without breaking the net
+                    // from the candidate nodes, get the nearest one
+                    AbstractNode nearestNode = junctionToMove.getNearestNode(possibleNodes);
+    
+    //              System.err.println("This node            : " + junctionToMove);
+    //              System.err.println("Other node on AirWire: " + otherNode);
+    //              System.err.println("Nearest node         : " + nearestNode);
+    //                nearestNode.setSelected(true, c);
+    
+                    // Reconnect the edge from the old node to the new nearest node
+                    aw.reconnect(otherNode, nearestNode);
+                }
             });
         }
     }

@@ -214,17 +214,6 @@ public class AirWire extends AbstractWire {
     }
 
 
-    public AbstractNode getOtherNode(AbstractNode node) {
-        if (from == node) {
-            return to;
-        }
-        if (to == node) {
-            return from;
-        }
-
-        throw new RuntimeException("Unexpected: neither FROM nor TO node is the given one");
-    }
-
     @Override
     public String toString() {
         return String.format("AirWire[%s - %s]", getFrom(), getTo());
