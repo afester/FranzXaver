@@ -22,7 +22,7 @@ public class Net extends Group {
 
     // View (TODO: separate in own class)
     private Group junctions = new Group();
-    private Group traces = new Group();
+    Group traces = new Group();
 
     public Net(String netName) {
         this.netName = netName;

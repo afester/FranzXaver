@@ -146,6 +146,16 @@ public class AirWire extends AbstractWire {
             pFrom.traceStarts.remove(this);
             pTo.traceEnds.remove(this);
             net.getTraces().remove(this);
+            // update view
+            net.traces.getChildren().remove(this);
+
+            Trace t = new Trace(pFrom, pTo);
+            net.addTrace(t);
+            pFrom.traceStarts.add(t);
+            t.setFrom(pFrom);
+            pTo.traceEnds.add(t);
+            t.setTo(pTo);
+
         } else if (pFrom instanceof Pad && pTo instanceof Pad) { 
             System.err.println("PAD/PAD");
 
