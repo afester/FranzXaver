@@ -1,7 +1,6 @@
 package afester.javafx.examples.board;
 
 import java.util.List;
-import java.util.Random;
 
 import javafx.geometry.Point2D;
 
@@ -52,7 +51,7 @@ public class EditTraceInteractor  extends MouseInteractor {
         if (trace != null) {            // clicked a trace (probably the same one, but this should not matter)
             trace.setSegmentSelected(true);
             bv.setSelectedObject(trace);
-            
+            junctionToMove = null;
         } else if (junction != null) {  // clicked a junction of the currently selected trace
             System.err.println("JUNCTION:" + junction);
             junctionToMove = junction;
@@ -61,7 +60,7 @@ public class EditTraceInteractor  extends MouseInteractor {
     }
 
     
-    private Random r = new Random(System.currentTimeMillis());
+//    private Random r = new Random(System.currentTimeMillis());
 
     @Override
     protected void dragObject(Interactable obj) {
@@ -74,7 +73,7 @@ public class EditTraceInteractor  extends MouseInteractor {
         // System.err.println("MOVE: " + junctionToMove);
         if (junctionToMove != null) {
             // move the junction to the new position
-            Point2D snapPos = snapToGrid(getPos(), getBoardView(), getOffset());
+            Point2D snapPos = snapToGrid(getClickPos(), getBoardView(), getOffset());
             junctionToMove.setPos(snapPos);
 
             List<AirWire> airWires = junctionToMove.getAirwires();

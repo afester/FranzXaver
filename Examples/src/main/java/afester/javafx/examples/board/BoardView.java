@@ -258,22 +258,19 @@ public class BoardView extends Pane {
         setSelectedObject(null);
     }
 
-    private final Interactor selectInteractor = new SelectInteractor(this);
-    private final Interactor traceInteractor = new TraceInteractor(this);
-    private final Interactor editTraceInteractor = new EditTraceInteractor(this);
 
-    public void setSelectMode() {
+    public void setInteractor(Interactor newInteractor) {
         System.err.println("Setting SELECT mode");
-        interactor = selectInteractor;
+        interactor = newInteractor;
     }
-
-    public void setTraceMode() {
-        System.err.println("Setting TRACE mode");
-        interactor = traceInteractor;
-    }
-    public void setEditTraceMode() {
-        System.err.println("Setting EDIT TRACE mode");
-        interactor = editTraceInteractor;
-    }
+//
+//    public void setTraceMode() {
+//        System.err.println("Setting TRACE mode");
+//        interactor = traceInteractor;
+//    }
+//    public void setEditTraceMode() {
+//        System.err.println("Setting EDIT TRACE mode");
+//        interactor = editTraceInteractor;
+//    }
 
 }

@@ -42,7 +42,10 @@ public abstract class MouseInteractor implements Interactor {
         return offset;
     }
 
-    public Point2D getPos() {
+    /**
+     * @return The position where the mouse click occurred.
+     */
+    public final Point2D getClickPos() {
         return pos;
     }
 
@@ -51,6 +54,8 @@ public abstract class MouseInteractor implements Interactor {
 	    pos = new Point2D(e.getX(), e.getY());
         Interactable clickedObject = getClickedObject(e);
         if (clickedObject != null) {
+
+            offset = clickedObject.getPos().subtract(e.getX(), e.getY());
 
             if (e.getButton() == MouseButton.PRIMARY) {
                 if (e.isControlDown()) {
@@ -64,7 +69,6 @@ public abstract class MouseInteractor implements Interactor {
                 clickObjectRight(clickedObject);
             }
 
-            offset = clickedObject.getPos().subtract(e.getX(), e.getY());
           } else {
             bv.clearSelection();
         }
@@ -81,24 +85,56 @@ public abstract class MouseInteractor implements Interactor {
     }
 
 	
-    protected Point2D snapToGrid(Point2D pos, BoardView bv, Point2D offset) {                                                      
-        // final double grid = 2.54;                                                                      
-        final double grid = 1.27;       // for now, we also allow positions between pads - this is        
-                                        // required to properly position the Eagle parts ...              
+	// private final static double GRID = 2.54;
+	private final static double GRID = 1.27;   // for now, we also allow positions between pads - this is        
+                                               // required to properly position the Eagle parts ...
 
+	@Deprecated
+    protected Point2D snapToGrid(Point2D pos, BoardView bv, Point2D offset) {                                                      
+        System.err.println("OFFSET:" + offset);
+        System.err.println("POS   :" + pos);
         double xpos = offset.getX() + pos.getX();                                                                        
         double ypos = offset.getY() + pos.getY();                                                                        
 
-        xpos = (int) ( (xpos - bv.getPadOffset().getX()) / grid);                                         
-        ypos = (int) ( (ypos - bv.getPadOffset().getY()) / grid);                                         
+        xpos = (int) ( (xpos - bv.getPadOffset().getX()) / GRID);                                         
+        ypos = (int) ( (ypos - bv.getPadOffset().getY()) / GRID);                                         
     
-        xpos = xpos * grid + bv.getPadOffset().getX();                                                    
-        ypos = ypos * grid + bv.getPadOffset().getY();                                                    
+        xpos = xpos * GRID + bv.getPadOffset().getX();                                                    
+        ypos = ypos * GRID + bv.getPadOffset().getY();                                                    
     
         return new Point2D(xpos, ypos);                                                                   
     }
 
+
+    protected Point2D snapToGrid(Point2D clickPos, boolean useOffset){
+        if (useOffset) {
+            System.err.println("OFFSET:" + offset);
+            System.err.println("POS   :" + pos);
+            double xpos = offset.getX() + pos.getX();                                                                        
+            double ypos = offset.getY() + pos.getY();                                                                        
     
+            xpos = (int) ( (xpos - bv.getPadOffset().getX()) / GRID);                                         
+            ypos = (int) ( (ypos - bv.getPadOffset().getY()) / GRID);                                         
+        
+            xpos = xpos * GRID + bv.getPadOffset().getX();                                                    
+            ypos = ypos * GRID + bv.getPadOffset().getY();                                                    
+        
+            return new Point2D(xpos, ypos);
+        } else {
+            System.err.println("POS   :" + pos);
+            double xpos = pos.getX();                                                                        
+            double ypos = pos.getY();                                                                        
+    
+            xpos = (int) ( (xpos - bv.getPadOffset().getX()) / GRID);                                         
+            ypos = (int) ( (ypos - bv.getPadOffset().getY()) / GRID);                                         
+        
+            xpos = xpos * GRID + bv.getPadOffset().getX();                                                    
+            ypos = ypos * GRID + bv.getPadOffset().getY();                                                    
+
+            return new Point2D(xpos, ypos);
+        }
+    }
+
     
 	protected void dragObject(Interactable obj) {
 	}

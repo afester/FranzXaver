@@ -105,29 +105,42 @@ public class BreadBoardEditor extends Application {
         final Button deleteSegmentButton = new ToolbarButton("Delete segment", "afester/javafx/examples/board/net-delsegment.png");
         deleteSegmentButton.setOnAction(e -> deleteSegment());
 
+        
+        final Interactor selectInteractor = new SelectInteractor(bv);
+        final Interactor traceInteractor = new TraceInteractor(bv);
+        final Interactor editTraceInteractor = new EditTraceInteractor(bv);
+        final Interactor splitTraceInteractor = new SplitTraceInteractor(bv);
+        
         ToggleGroup toggleGroup = new ToggleGroup();
         ToolbarToggleButton selectToolButton = new ToolbarToggleButton("Select", "afester/javafx/examples/board/mode-select.png");
         selectToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                bv.setSelectMode();
+                bv.setInteractor(selectInteractor);
             }
         });
         ToolbarToggleButton traceToolButton = new ToolbarToggleButton("Trace", "afester/javafx/examples/board/mode-trace.png");
         traceToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                bv.setTraceMode();   
+                bv.setInteractor(traceInteractor);   
             }
         });
         ToolbarToggleButton editTraceToolButton = new ToolbarToggleButton("Edit Trace", "afester/javafx/examples/board/mode-edittrace.png");
         editTraceToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                bv.setEditTraceMode();   
+                bv.setInteractor(editTraceInteractor);   
+            }
+        });
+        ToolbarToggleButton splitTraceToolButton = new ToolbarToggleButton("Split Trace", "afester/javafx/examples/board/mode-splittrace.png");
+        splitTraceToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
+            if (newValue) {
+                bv.setInteractor(splitTraceInteractor);   
             }
         });
 
         selectToolButton.setToggleGroup(toggleGroup);
         traceToolButton.setToggleGroup(toggleGroup);
         editTraceToolButton.setToggleGroup(toggleGroup);
+        splitTraceToolButton.setToggleGroup(toggleGroup);
 
         selectToolButton.setSelected(true);
 
@@ -140,6 +153,7 @@ public class BreadBoardEditor extends Application {
                 selectToolButton,
                 traceToolButton,
                 editTraceToolButton,
+                splitTraceToolButton,
                 new Separator(),
                 shortestPathButton,
                 shortestAllButton,

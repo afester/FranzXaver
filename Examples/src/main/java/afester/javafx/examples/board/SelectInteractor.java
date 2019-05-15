@@ -41,7 +41,7 @@ public class SelectInteractor extends MouseInteractor {
     
             // Snap to center of part
             // (this is also what the Eagle board editor does)
-            Point2D snapPos = snapToGrid(getPos(), getBoardView(), getOffset());
+            Point2D snapPos = snapToGrid(getClickPos(), getBoardView(), getOffset());
             part.move(snapPos);
         }
     }
