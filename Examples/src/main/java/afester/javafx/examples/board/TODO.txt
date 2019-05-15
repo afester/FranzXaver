@@ -1,1 +1,1 @@
-1. Split function ->  Add a new Junction into an existing Trace
+Bug: Net consistency - sometimes a wrong destination junction for an AirWire is selected when dragging an existing junction.

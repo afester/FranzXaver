@@ -1,8 +1,10 @@
 package afester.javafx.examples.board;
 
 import java.util.List;
+import java.util.Random;
 
 import javafx.geometry.Point2D;
+import javafx.scene.paint.Color;
 
 public class EditTraceInteractor  extends MouseInteractor {
 
@@ -60,15 +62,15 @@ public class EditTraceInteractor  extends MouseInteractor {
     }
 
     
-//    private Random r = new Random(System.currentTimeMillis());
+    private Random r = new Random(System.currentTimeMillis());
 
     @Override
     protected void dragObject(Interactable obj) {
 
-//        final double red = r.nextDouble();
-//        final double green = r.nextDouble();
-//        final double blue = r.nextDouble();
-//        final Color c = new Color(red, green, blue, 1.0);
+        final double red = r.nextDouble();
+        final double green = r.nextDouble();
+        final double blue = r.nextDouble();
+        final Color c = new Color(red, green, blue, 1.0);
 
         // System.err.println("MOVE: " + junctionToMove);
         if (junctionToMove != null) {
@@ -89,7 +91,7 @@ public class EditTraceInteractor  extends MouseInteractor {
                     possibleNodes.remove(t.getTo());
     
     //                System.err.println("Possible nodes: " + possibleNodes);
-    //                possibleNodes.forEach(node -> node.setSelected(true,  c));
+                    possibleNodes.forEach(node -> node.setSelected(true,  c));
     
                     // These are the nodes where we could POTENTIALLY move the airwire without breaking the net
                     // from the candidate nodes, get the nearest one
