@@ -1,1 +1,2 @@
 Bug: Net consistency - sometimes a wrong destination junction for an AirWire is selected when dragging an existing junction.
+Bug: "Reset Net" needs to remove all junctions from the net!
