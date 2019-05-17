@@ -81,7 +81,7 @@ public class Net extends Group {
      *
      * @param trace The trace to remove.
      */
-    public void removeTrace(AbstractWire trace) {
+    public void removeTraceAndFrom(AbstractWire trace) {
         AbstractNode from = trace.getFrom();
         AbstractNode to = trace.getTo();
 
@@ -261,5 +261,83 @@ public class Net extends Group {
         }
 
         return result.stream().collect(Collectors.toList());
+    }
+
+
+    private class DuplicateJunctions {
+        public DuplicateJunctions(Junction j1, Junction j2) {
+            this.j1 = j1;
+            this.j2 = j2;
+        }
+        public Junction j1;
+        public Junction j2;
+        
+        
+        @Override
+        public String toString() {
+            return j1 + "== " + j2;
+        }
+    }
+
+    public void cleanup() {
+        junctionList.forEach(junction -> System.err.println("   " + junction));
+        traceList.forEach(trace -> System.err.println("   " + trace));
+
+        // get all redundant junctions
+        final List<DuplicateJunctions> duplicates = new ArrayList<>();
+        for (int outer = 0;  outer < junctionList.size();  outer++) {
+            for (int inner = outer + 1;  inner < junctionList.size();  inner++) {
+                Junction j1 = junctionList.get(outer);
+
+                Junction j2 = junctionList.get(inner);
+                if (j1.samePositionAs(j2)) {
+                    duplicates.add(new DuplicateJunctions(j1, j2));
+                }
+            }
+        }
+
+        // remove all redundant junctions
+        duplicates.forEach(d -> {
+            Junction keep = d.j1;
+            Junction remove = d.j2;
+
+            keep.traceStarts.addAll(remove.traceStarts);
+            remove.traceStarts.forEach(trace -> trace.setFrom(keep));
+            remove.traceStarts.clear();
+
+            keep.traceEnds.addAll(remove.traceEnds);
+            remove.traceEnds.forEach(trace -> trace.setTo(keep));
+            remove.traceEnds.clear();
+
+            removeJunction(remove);
+        });
+
+        // get all traces which connect to the same junction on both ends
+        List<AbstractWire> selfTraces = new ArrayList<>();
+        traceList.forEach(wire -> {
+            if (wire.getFrom() == wire.getTo()) {
+                selfTraces.add(wire);
+            }
+        });
+
+        selfTraces.forEach(wire -> { 
+            wire.from.traceStarts.remove(wire);
+            wire.from = null;
+            wire.to.traceEnds.remove(wire);
+            wire.to = null;
+    
+            traceList.remove(wire);
+    
+            // update view
+            traces.getChildren().remove(wire);
+        });
+
+//        junctionList.forEach(j1 -> {
+//            junctionList.forEach(j2 -> {
+//               if (j1 != j2 && j1.samePositionAs(j2)) {
+//                   System.err.println("   " + j1 + "<=>" + j2);
+//               }
+//            });
+//        });
     }
 }

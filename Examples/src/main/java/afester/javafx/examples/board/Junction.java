@@ -54,4 +54,19 @@ public class Junction extends AbstractNode {
         return result;
     }
 
+
+    final private static double MIN_DIST = 0.1;
+
+    /** 
+     * @param other The other junction to validate
+     * @return <code>true</code> if this junction is at the same position as 
+     *         another one, <code>false</code> otherwise.
+     */
+    public boolean samePositionAs(Junction j2) {
+        if (getPos().distance(j2.getPos()) < MIN_DIST) {
+            return true;
+        }
+        return false;
+    }
+
 }

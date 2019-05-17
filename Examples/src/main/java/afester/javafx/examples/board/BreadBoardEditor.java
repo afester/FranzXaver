@@ -101,6 +101,8 @@ public class BreadBoardEditor extends Application {
         final Button resetNetButton = new ToolbarButton("Reset net", "afester/javafx/examples/board/net-reset.png");
         resetNetButton.setOnAction(e -> resetNet());
 
+        final Button cleanupNetButton = new ToolbarButton("Validate/Cleanup net", "afester/javafx/examples/board/net-cleanup.png");
+        cleanupNetButton.setOnAction(e -> cleanupNet());
 
         final Button deleteSegmentButton = new ToolbarButton("Delete segment", "afester/javafx/examples/board/net-delsegment.png");
         deleteSegmentButton.setOnAction(e -> deleteSegment());
@@ -159,6 +161,7 @@ public class BreadBoardEditor extends Application {
                 shortestAllButton,
                 traceToBridge,
                 resetNetButton,
+                cleanupNetButton,
                 deleteSegmentButton
             );
 
@@ -197,13 +200,26 @@ public class BreadBoardEditor extends Application {
         mainLayout.setRight(rightBar);
         mainLayout.setCenter(drawingView);
 
-        Scene mainScene = new Scene(mainLayout, 800, 600);
+        Scene mainScene = new Scene(mainLayout, 1024, 768);
 
         stage.setScene(mainScene);
         this.stage = stage;
 
         stage.show();
         drawingView.fitContentToWindow();
+    }
+
+
+    private void cleanupNet() {
+        Interactable selectedObject = bv.getSelectedObject();
+        if (selectedObject instanceof Trace) {
+            bv.clearSelection();
+            Trace trace = (Trace) selectedObject;
+            Net net = trace.getNet();
+            System.err.println("Cleaning up " + net);
+            
+            net.cleanup();
+        }
     }
 
 
@@ -224,7 +240,7 @@ public class BreadBoardEditor extends Application {
             }
 
             System.err.println("Removing segment ...");
-            net.removeTrace(trace);
+            net.removeTraceAndFrom(trace);
 
             // re-render board
             bv.setBoard(bv.getBoard());
@@ -234,11 +250,11 @@ public class BreadBoardEditor extends Application {
 
     private void resetNet() {
         Interactable selectedObject = bv.getSelectedObject();
-        if (selectedObject instanceof Trace) {
+        if (selectedObject instanceof AbstractWire) {
             bv.clearSelection();
 
-            Trace trace = (Trace) selectedObject;
-            Net net = trace.getNet();
+            AbstractWire wire = (AbstractWire) selectedObject;
+            Net net = wire.getNet();
             System.err.printf("NET: %s\n", net.getName());
 
             // calculate the shortest path of the net
