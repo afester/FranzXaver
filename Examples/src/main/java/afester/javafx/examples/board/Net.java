@@ -133,6 +133,10 @@ public class Net extends Group {
 
 
     public void clear() {
+        getPads().forEach(pad -> {
+            pad.traceEnds.clear();
+            pad.traceStarts.clear();
+        });
         junctionList.clear();
         traceList.clear();
 
@@ -141,7 +145,7 @@ public class Net extends Group {
         traces.getChildren().clear();
     }
 
-    
+
     /**
      * Calculate the shortest path using the nearest point heuristic. 
      *
@@ -201,30 +205,21 @@ public class Net extends Group {
      */
     public void resetNet() {
         List<Pad> pads = getPads().stream().collect(Collectors.toList());
-        System.err.println("ALL PADS:" + pads);
         List<Pad> sortedPads = calculateNearestPath(pads);
+
         clear();
-    
+
         // Connect all pads through an AirWire (TODO: duplicate code in EagleNetImport)
-        // TODO: Use a lineIterator
-        Pad p1 = null;
-        for (Pad p2 : sortedPads) {
-            if (p1 != null) {
-                addTrace(new AirWire(p1, p2));
-            }
-            p1 = p2;
-        }
+        sortedPads.stream()
+                  .reduce((p1, p2) -> {
+            System.err.println("ADDING:" + p1 + "=>" + p2);
+            addTrace(new AirWire(p1, p2));
+            return p2;
+        });
+
+        // dumpNet();
     }
     
-
-    @Override
-    public String toString() {
-        StringBuffer buffer = new StringBuffer("Junctions[");
-        getAllJunctions().forEach(e -> { buffer.append(e); buffer.append(", "); } );
-        buffer.append("]");
-        return String.format("Net[netName=%s, %s]", netName, buffer);
-    }
-
 
 
     /**
@@ -236,9 +231,7 @@ public class Net extends Group {
         Set<AbstractNode> result = new HashSet<>();
         Stack<AbstractNode> nodeStack = new Stack<>();
 
-        // get a list of ALL nodes in the net
-        List<AbstractNode> allNodes = getPads().stream().collect(Collectors.toList());
-        allNodes.addAll(junctionList);
+        // dumpNet();
 
         // start with the given node and add all destination nodes to the result set
         AbstractNode currentNode = startWith;
@@ -260,6 +253,7 @@ public class Net extends Group {
             }
         }
 
+        System.err.println("RESULT: " + result);
         return result.stream().collect(Collectors.toList());
     }
 
@@ -339,5 +333,25 @@ public class Net extends Group {
 //               }
 //            });
 //        });
+    }
+
+    
+    public void dumpNet() {
+        List<AbstractNode> allNodes = getPads().stream().collect(Collectors.toList());
+        allNodes.addAll(junctionList);
+
+        allNodes.forEach(node -> {
+            System.err.println("   " + node);
+            node.traceStarts.forEach(trace -> System.err.println("     >> " + trace));
+            node.traceEnds.forEach(trace -> System.err.println("     << " + trace));
+        });
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer buffer = new StringBuffer("Junctions[");
+        getAllJunctions().forEach(e -> { buffer.append(e); buffer.append(", "); } );
+        buffer.append("]");
+        return String.format("Net[netName=%s, %s]", netName, buffer);
     }
 }
