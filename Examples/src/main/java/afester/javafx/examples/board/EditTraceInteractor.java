@@ -22,16 +22,16 @@ public class EditTraceInteractor  extends MouseInteractor {
         System.err.println("CLICK: " + obj);
         Interactable currentSelection = bv.getSelectedObject();
 
-        // obj can be Junction, Trace or something else
+        // obj can be Junction, Wire (Trace or AirWire) or something else
         //            Junction can be part of the currently selected Trace or something else
 
         // if something else: deselect current selection if any
         // if Trace: select Trace
         // if junction: do nothing - will be processed in dragObject
-        AirWire wire = null;
+        AbstractWire wire = null;
         Junction junction = null;
-        if (obj instanceof AirWire) {
-            wire = (AirWire) obj;
+        if (obj instanceof AbstractWire) {
+            wire = (AbstractWire) obj;
         } else if (obj instanceof Junction) {
             junction = (Junction) obj;
             if (currentSelection instanceof Trace) {
@@ -51,6 +51,7 @@ public class EditTraceInteractor  extends MouseInteractor {
         }
 
         if (wire != null) {            // clicked a trace (probably the same one, but this should not matter)
+            System.err.println("X");
             wire.setSegmentSelected(true);
             bv.setSelectedObject(wire);
             junctionToMove = null;
@@ -84,15 +85,18 @@ public class EditTraceInteractor  extends MouseInteractor {
                 if (otherNode.getEdges().size() > 1) {
                     Net net = aw.getNet();
     
-                    net.dumpNet();
+                    // net.dumpNet();
 
                     // get all nodes which are reachable in the net from otherNode IF the given airwire would not exist
                     List<AbstractNode> possibleNodes = net.getNodesWithout(otherNode, aw);
-                    AirWire t = (AirWire) obj;                  // TODO .... hack ...
-                    possibleNodes.remove(t.getFrom());
-                    possibleNodes.remove(t.getTo());
-    
-    //                System.err.println("Possible nodes: " + possibleNodes);
+
+                 // Filter out any nodes which are not allowed
+                    //AbstractWire t = (AbstractWire) obj;                  // TODO .... hack ...
+                    //possibleNodes.remove(t.getFrom());
+                    //possibleNodes.remove(t.getTo());
+                    possibleNodes.remove(junctionToMove);
+
+                    System.err.println("Possible nodes: " + possibleNodes);
                     possibleNodes.forEach(node -> node.setSelected(true,  c));
     
                     // These are the nodes where we could POTENTIALLY move the airwire without breaking the net
