@@ -7,6 +7,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 
 public class Junction extends AbstractNode {
 
@@ -28,7 +29,12 @@ public class Junction extends AbstractNode {
         return result;
     }
 
-    
+
+    @Override
+    public Node createNode() {
+        throw new RuntimeException("NYI!");
+    }
+
 
     @Override
     public String getRepr() {

@@ -54,9 +54,15 @@ public class Pad extends AbstractNode {
         					 part.getName(), pinNumber, /*pin + "@" + gate,*/ getPos());  
     }
 
+    
+    
+    
+    private Group view = null;
+
     @Override
     public Node createNode() {
-    	Group result = new Group();
+    	// Group result = new Group();
+        view = new Group();
 
         Shape pad = new Circle(getCenterX(), getCenterY(), 0.7); // drill*2);
         pad.setFill(Color.WHITE);
@@ -76,8 +82,19 @@ public class Pad extends AbstractNode {
         padName.setFill(Color.RED);
         padName.setTextOrigin(VPos.CENTER);
 
-        result.getChildren().addAll(pad, padName);
-        return result;
+        view.getChildren().addAll(pad, padName);
+        return view;
+    }
+
+    
+    @Override   // DEBUG ONLY
+    public void setSelected(boolean isSelected, Color col) {
+        Shape pad = (Shape) view.getChildrenUnmodifiable().get(0);  // HACK
+        if (isSelected) {
+            pad.setFill(col);
+        } else {
+            pad.setFill(null);
+        }
     }
 
     @Override

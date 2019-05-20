@@ -151,10 +151,6 @@ public class AirWire extends AbstractWire {
 
             Trace t = new Trace(pFrom, pTo);
             net.addTrace(t);
-            pFrom.traceStarts.add(t);
-            t.setFrom(pFrom);
-            pTo.traceEnds.add(t);
-            t.setTo(pTo);
 
         } else if (pFrom instanceof Pad && pTo instanceof Pad) { 
             System.err.println("PAD/PAD");
@@ -170,17 +166,9 @@ public class AirWire extends AbstractWire {
     
             Trace t = new Trace(j1, j2);
             net.addTrace(t);
-            j1.traceStarts.add(t);
-            t.setFrom(j1);
-            j2.traceEnds.add(t);
-            t.setTo(j2);
     
             AirWire aw2 = new AirWire(j2, pTo);
             net.addTrace(aw2);
-            j2.traceStarts.add(aw2);
-            aw2.setFrom(j2);
-            pTo.traceEnds.add(aw2);
-            aw2.setTo(pTo);
         } else if (pFrom instanceof Junction && pTo instanceof Pad) {
             System.err.println("JUNCTION/PAD");
             //    Junction -                       AirWire - Pad 
@@ -196,10 +184,6 @@ public class AirWire extends AbstractWire {
 
             Trace t = new Trace(pFrom, j2);
             net.addTrace(t);
-            pFrom.traceStarts.add(t);
-            t.setFrom(pFrom);
-            j2.traceEnds.add(t);
-            t.setTo(j2);
         } else if (pFrom instanceof Pad && pTo instanceof Junction) {
             System.err.println("PAD/JUNCTION");
 
@@ -216,10 +200,6 @@ public class AirWire extends AbstractWire {
 
             Trace t = new Trace(j2, pTo);
             net.addTrace(t);
-            pTo.traceEnds.add(t);
-            t.setTo(pTo);
-            j2.traceStarts.add(t);
-            t.setFrom(j2);
         }
     }
 

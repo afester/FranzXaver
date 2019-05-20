@@ -4,22 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
+
+// TODO: The AbstractNode should be the model only (not the view, means not extend Circle)
 public abstract class AbstractNode extends Circle implements PartShape, Interactable {
     public List<AbstractWire> traceStarts = new ArrayList<>();
     public List<AbstractWire> traceEnds = new ArrayList<>();
 
     protected int id;	// currently only required for serialization and deserialization
 
-//    public AbstractNode(double xpos, double ypos) {
-//    	super(xpos, ypos, 0.5);
-//    	setFill(null);
-//    }
-//
     public AbstractNode(Point2D pos) {
         super(pos.getX(), pos.getY(), 0.5);
         setFill(null);
@@ -58,11 +54,6 @@ public abstract class AbstractNode extends Circle implements PartShape, Interact
         
     }
 
-    @Override
-    public Node createNode() {
-        throw new RuntimeException ("NYI");
-    }
-
 	@Override
 	public void setSelected(boolean isSelected) {
 		if (isSelected) {
@@ -74,7 +65,7 @@ public abstract class AbstractNode extends Circle implements PartShape, Interact
 
     public void setSelected(boolean isSelected, Color col) {
         if (isSelected) {
-            setFill(col);
+            setFill(Color.BLUE); // col);
         } else {
             setFill(null);
         }

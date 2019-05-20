@@ -84,6 +84,8 @@ public class EditTraceInteractor  extends MouseInteractor {
                 if (otherNode.getEdges().size() > 1) {
                     Net net = aw.getNet();
     
+                    net.dumpNet();
+
                     // get all nodes which are reachable in the net from otherNode IF the given airwire would not exist
                     List<AbstractNode> possibleNodes = net.getNodesWithout(otherNode, aw);
                     Trace t = (Trace) obj;                  // TODO .... hack ...
