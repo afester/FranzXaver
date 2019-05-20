@@ -28,10 +28,10 @@ public class EditTraceInteractor  extends MouseInteractor {
         // if something else: deselect current selection if any
         // if Trace: select Trace
         // if junction: do nothing - will be processed in dragObject
-        Trace trace = null;
+        AirWire wire = null;
         Junction junction = null;
-        if (obj instanceof Trace) {
-            trace = (Trace) obj;
+        if (obj instanceof AirWire) {
+            wire = (AirWire) obj;
         } else if (obj instanceof Junction) {
             junction = (Junction) obj;
             if (currentSelection instanceof Trace) {
@@ -43,16 +43,16 @@ public class EditTraceInteractor  extends MouseInteractor {
         }
 
         // clicked no trace, no junction of selected trace, or another trace
-        if ((trace == null && junction == null) || (junction == null && trace != currentSelection)) {
+        if ((wire == null && junction == null) || (junction == null && wire != currentSelection)) {
             if (currentSelection != null) {
                 currentSelection.setSelected(false);
                 bv.setSelectedObject(null);
             }
         }
 
-        if (trace != null) {            // clicked a trace (probably the same one, but this should not matter)
-            trace.setSegmentSelected(true);
-            bv.setSelectedObject(trace);
+        if (wire != null) {            // clicked a trace (probably the same one, but this should not matter)
+            wire.setSegmentSelected(true);
+            bv.setSelectedObject(wire);
             junctionToMove = null;
         } else if (junction != null) {  // clicked a junction of the currently selected trace
             System.err.println("JUNCTION:" + junction);
@@ -88,7 +88,7 @@ public class EditTraceInteractor  extends MouseInteractor {
 
                     // get all nodes which are reachable in the net from otherNode IF the given airwire would not exist
                     List<AbstractNode> possibleNodes = net.getNodesWithout(otherNode, aw);
-                    Trace t = (Trace) obj;                  // TODO .... hack ...
+                    AirWire t = (AirWire) obj;                  // TODO .... hack ...
                     possibleNodes.remove(t.getFrom());
                     possibleNodes.remove(t.getTo());
     
