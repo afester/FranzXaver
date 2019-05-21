@@ -39,6 +39,7 @@ public class BoardView extends Pane {
     private Group partsGroup;
     private Group wireGroup;
     private Group dimensionGroup;
+    private Group handleGroup;
 
     private Interactor interactor = null;
 
@@ -157,16 +158,12 @@ public class BoardView extends Pane {
         clipShape.getPoints().addAll(boardDims);
 
         padsGroup.setClip(clipShape);
-        getChildren().add(padsGroup);
-
         partsGroup = new Group();
-        getChildren().add(partsGroup);
-
         wireGroup = new Group();
-        getChildren().add(wireGroup);
-
         dimensionGroup = new Group();
-        getChildren().add(dimensionGroup);
+        handleGroup = new Group();
+
+        getChildren().addAll(padsGroup, partsGroup, wireGroup, dimensionGroup, handleGroup);
 
         // add the board dimensions
         System.err.println("Adding Board dimensions ...");
@@ -183,6 +180,7 @@ public class BoardView extends Pane {
         board.getNets().forEach((netName, net) -> {
             System.err.println("  " + net);
             wireGroup.getChildren().add(net);
+            net.setBoardView(this);
         });
         
         setOnMousePressed(e -> { 
@@ -263,14 +261,10 @@ public class BoardView extends Pane {
         System.err.println("Setting SELECT mode");
         interactor = newInteractor;
     }
-//
-//    public void setTraceMode() {
-//        System.err.println("Setting TRACE mode");
-//        interactor = traceInteractor;
-//    }
-//    public void setEditTraceMode() {
-//        System.err.println("Setting EDIT TRACE mode");
-//        interactor = editTraceInteractor;
-//    }
+   
+
+    public Group getHandleGroup() {
+        return handleGroup;
+    }
 
 }

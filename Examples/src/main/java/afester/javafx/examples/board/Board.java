@@ -177,7 +177,6 @@ public class Board {
                 Double xpos = Double.parseDouble(partNode.getAttribute("x"));
                 Double ypos = Double.parseDouble(partNode.getAttribute("y"));
 
-
                 Part part = new Part(partName, partValue, packageRef);
                 part.setLayoutX(xpos);
                 part.setLayoutY(ypos);

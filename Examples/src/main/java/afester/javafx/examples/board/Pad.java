@@ -86,7 +86,7 @@ public class Pad extends AbstractNode {
         return view;
     }
 
-    
+
     @Override   // DEBUG ONLY
     public void setSelected(boolean isSelected, Color col) {
         Shape pad = (Shape) view.getChildrenUnmodifiable().get(0);  // HACK

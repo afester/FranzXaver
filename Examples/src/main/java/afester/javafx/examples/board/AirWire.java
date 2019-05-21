@@ -35,6 +35,10 @@ public class AirWire extends AbstractWire {
 
         return traceNode;
     }
+
+    
+    
+    
     
 //    private void convertToTrace(MouseEvent e) {
 //		Net net = getNet();
@@ -203,6 +207,37 @@ public class AirWire extends AbstractWire {
         }
     }
 
+
+    protected void setSegmentSelected(boolean isSelected) {
+        BoardView bv = getNet().getBoardView();
+        bv.getHandleGroup().getChildren().clear();
+        if (isSelected) {
+            if (from instanceof Junction) {
+                from.setSelected(true);
+            } else {
+                System.err.println("Adding handle for FROM: " + from.getPos());
+                Handle handle = new Handle(from.getPos(), 0.5);
+                bv.getHandleGroup().getChildren().add(handle);
+            }
+            if (to instanceof Junction) {
+                to.setSelected(true);
+            } else {
+                System.err.println("Adding handle for TO: " + to.getPos());
+                Handle handle = new Handle(to.getPos(), 0.5);
+                bv.getHandleGroup().getChildren().add(handle);
+            }
+
+            setStroke(Color.RED);
+        } else {
+            if (from instanceof Junction) {
+                from.setSelected(false);
+            }
+            if (to instanceof Junction) {
+                to.setSelected(false);
+            }
+            setStroke(Color.ORANGE);
+        }
+    }
 
     @Override
     public String toString() {

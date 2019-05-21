@@ -13,7 +13,7 @@ public class EditTraceInteractor  extends MouseInteractor {
     public EditTraceInteractor(BoardView boardView) {
         super(boardView);
     }
-    
+
 
     @Override
     protected void clickObjectLeft(Interactable obj) {
@@ -30,7 +30,10 @@ public class EditTraceInteractor  extends MouseInteractor {
         // if junction: do nothing - will be processed in dragObject
         AbstractWire wire = null;
         Junction junction = null;
-        if (obj instanceof AbstractWire) {
+        if (obj instanceof Handle) {
+            Handle h = (Handle) obj;
+            System.err.println("Clicked " + h);
+        } else if (obj instanceof AbstractWire) {
             wire = (AbstractWire) obj;
         } else if (obj instanceof Junction) {
             junction = (Junction) obj;
@@ -51,7 +54,6 @@ public class EditTraceInteractor  extends MouseInteractor {
         }
 
         if (wire != null) {            // clicked a trace (probably the same one, but this should not matter)
-            System.err.println("X");
             wire.setSegmentSelected(true);
             bv.setSelectedObject(wire);
             junctionToMove = null;

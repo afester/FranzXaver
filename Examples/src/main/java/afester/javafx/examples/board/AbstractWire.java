@@ -103,14 +103,12 @@ public abstract class AbstractWire extends Line implements Interactable {
 
     protected void setSegmentSelected(boolean isSelected) {
       if (isSelected) {
-from.setSelected(true);
-to.setSelected(true);
-
+        from.setSelected(true);
+        to.setSelected(true);
         setStroke(Color.RED);
       } else {
-from.setSelected(false);
-to.setSelected(false);
-
+        from.setSelected(false);
+        to.setSelected(false);
         setStroke(Color.ORANGE);
       }
     }

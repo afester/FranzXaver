@@ -28,6 +28,8 @@ public abstract class MouseInteractor implements Interactor {
             if (parent instanceof Interactable) {
                 result = (Interactable) parent;
             }
+        } else if (target instanceof Handle) {
+            result = (Interactable) target;
         }
 
         return result;

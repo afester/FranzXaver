@@ -19,6 +19,7 @@ public class Net extends Group {
     private String netName;
     private List<Junction> junctionList = new ArrayList<>();    // A list of junctions - not associated to a part. Junctions can be added and removed.
     private List<AbstractWire> traceList = new ArrayList<>();
+    private BoardView bv = null;   // the BoardView which shows this net
 
     // View (TODO: separate in own class)
     private Group junctions = new Group();
@@ -27,6 +28,15 @@ public class Net extends Group {
     public Net(String netName) {
         this.netName = netName;
         getChildren().addAll(traces, junctions);
+    }
+
+
+    public void setBoardView(BoardView bv) {
+        this.bv = bv;
+    }
+    
+    public BoardView getBoardView() {
+        return this.bv;
     }
 
 
