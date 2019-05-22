@@ -216,14 +216,14 @@ public class AirWire extends AbstractWire {
                 from.setSelected(true);
             } else {
                 System.err.println("Adding handle for FROM: " + from.getPos());
-                Handle handle = new Handle(from.getPos(), 0.5);
+                Handle handle = new FromHandle(this);
                 bv.getHandleGroup().getChildren().add(handle);
             }
             if (to instanceof Junction) {
                 to.setSelected(true);
             } else {
                 System.err.println("Adding handle for TO: " + to.getPos());
-                Handle handle = new Handle(to.getPos(), 0.5);
+                Handle handle = new ToHandle(this);
                 bv.getHandleGroup().getChildren().add(handle);
             }
 

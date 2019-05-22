@@ -9,6 +9,7 @@ import javafx.scene.paint.Color;
 public class EditTraceInteractor  extends MouseInteractor {
 
     private Junction junctionToMove;
+    private AirWireHandle handleToMove;
 
     public EditTraceInteractor(BoardView boardView) {
         super(boardView);
@@ -30,9 +31,10 @@ public class EditTraceInteractor  extends MouseInteractor {
         // if junction: do nothing - will be processed in dragObject
         AbstractWire wire = null;
         Junction junction = null;
-        if (obj instanceof Handle) {
-            Handle h = (Handle) obj;
-            System.err.println("Clicked " + h);
+        AirWireHandle handle = null;
+        if (obj instanceof AirWireHandle) {
+            handle = (AirWireHandle) obj;
+            System.err.println("Clicked " + handle);
         } else if (obj instanceof AbstractWire) {
             wire = (AbstractWire) obj;
         } else if (obj instanceof Junction) {
@@ -46,20 +48,25 @@ public class EditTraceInteractor  extends MouseInteractor {
         }
 
         // clicked no trace, no junction of selected trace, or another trace
-        if ((wire == null && junction == null) || (junction == null && wire != currentSelection)) {
+        if ((wire == null && junction == null && handle == null) || ( (junction == null && handle == null) && wire != currentSelection)) {
             if (currentSelection != null) {
+                System.err.println("DESELECTING ...");
                 currentSelection.setSelected(false);
                 bv.setSelectedObject(null);
             }
         }
 
+        junctionToMove = null;
+        handleToMove = null;
         if (wire != null) {            // clicked a trace (probably the same one, but this should not matter)
             wire.setSegmentSelected(true);
             bv.setSelectedObject(wire);
-            junctionToMove = null;
         } else if (junction != null) {  // clicked a junction of the currently selected trace
             System.err.println("JUNCTION:" + junction);
             junctionToMove = junction;
+        } else if (handle != null) {
+            System.err.println("HANDLE:" + handle);
+            handleToMove = handle;
         }
 
     }
@@ -114,6 +121,29 @@ public class EditTraceInteractor  extends MouseInteractor {
                     aw.reconnect(otherNode, nearestNode);
                 }
             });
+        } else if (handleToMove != null) {
+            System.err.println("MOVING HANDLE: " + handleToMove);
+
+            // move the handle to the new position
+            Point2D snapPos = snapToGrid(getClickPos(), getBoardView(), getOffset());
+            handleToMove.setPos(snapPos);
+
+            AirWire aw = handleToMove.getAirWire();
+            Net net = aw.getNet();
+            AbstractNode node = handleToMove.getNode();
+
+            // get all nodes which are reachable in the net from the otherNode IF the given airwire would not exist
+            List<AbstractNode> possibleNodes = net.getNodesWithout(node, aw);
+
+            System.err.println("Possible nodes: " + possibleNodes);
+            possibleNodes.forEach(n -> n.setSelected(true,  c));
+            AbstractNode nearestNode = handleToMove.getNearestNode(possibleNodes);
+
+            System.err.println("Current node: " + node);
+            System.err.println("Nearest node: " + nearestNode);
+
+            // Reconnect the edge from the old node to the new nearest node
+            aw.reconnect(node, nearestNode);
         }
     }
 }

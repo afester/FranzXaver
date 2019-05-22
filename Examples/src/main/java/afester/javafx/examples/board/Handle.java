@@ -1,20 +1,16 @@
 package afester.javafx.examples.board;
 
-import javafx.geometry.Point2D;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
+import org.w3c.dom.Document;
 
-public class Handle extends Circle implements Interactable {
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
+import javafx.scene.paint.Color;
+
+public class Handle extends AbstractNode { // Circle implements Interactable {
 
     public Handle(Point2D pos, double radius) {
-        super(pos.getX(), pos.getY(), radius);
+        super(pos); // pos.getX(), pos.getY(), radius);
         setFill(Color.GREEN);
-    }
-
-    
-    @Override
-    public String toString() {
-        return String.format("Handle[pos=%s/%s]", getCenterX(), getCenterY());  
     }
 
 
@@ -32,5 +28,24 @@ public class Handle extends Circle implements Interactable {
     @Override
     public String getRepr() {
         return "";
+    }
+
+
+    
+    @Override
+    public String toString() {
+        return String.format("Handle[pos=%s/%s]", getCenterX(), getCenterY());  
+    }
+
+
+    @Override
+    public Node createNode() {
+        throw new RuntimeException("NYI");
+    }
+
+
+    @Override
+    public org.w3c.dom.Node getXML(Document doc) {
+        throw new RuntimeException("NYI");
     }
 }
