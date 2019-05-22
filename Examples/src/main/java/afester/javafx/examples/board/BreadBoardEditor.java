@@ -13,6 +13,8 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.Background;
@@ -40,6 +42,7 @@ public class BreadBoardEditor extends Application {
         //Board board = ni.importFile(new File("schem.xml"));
 
         bv = new BoardView();
+
         bv.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, new CornerRadii(0), new Insets(0))));
 
         Board board = new Board();
@@ -52,6 +55,14 @@ public class BreadBoardEditor extends Application {
         // The pane is exactly the size of the center component. Its children (which is the BoardView) are clipped
         // and the view can be panned and zoomed.
         DrawingView drawingView = new DrawingView(bv);
+
+        TabPane tabPane = new TabPane();
+        tabPane.getSelectionModel().selectedIndexProperty().addListener((obj, oldIdx, newIdx) -> System.err.printf("%s -> %s", oldIdx, newIdx));
+        Tab editTab = new Tab("Edit Layout");
+        editTab.setContent(drawingView);
+        Tab mirrorTab = new Tab("Show mirrored");
+        mirrorTab.setOnSelectionChanged(e -> System.err.println(e.getTarget()));
+        tabPane.getTabs().addAll(editTab, mirrorTab);
 
         // Create the menu bar
 
@@ -198,7 +209,7 @@ public class BreadBoardEditor extends Application {
         mainLayout.setBottom(sb);
         mainLayout.setLeft(leftBar);
         mainLayout.setRight(rightBar);
-        mainLayout.setCenter(drawingView);
+        mainLayout.setCenter(tabPane);
 
         Scene mainScene = new Scene(mainLayout, 1024, 768);
 
