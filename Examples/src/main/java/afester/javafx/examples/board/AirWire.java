@@ -212,29 +212,31 @@ public class AirWire extends AbstractWire {
         BoardView bv = getNet().getBoardView();
         bv.getHandleGroup().getChildren().clear();
         if (isSelected) {
-            if (from instanceof Junction) {
-                from.setSelected(true);
-            } else {
+            // Both ends of an Airwire can ALLWAYS be moved to a different node  
+
+//            if (from instanceof Junction) {
+//                from.setSelected(true);
+//            } else {
                 System.err.println("Adding handle for FROM: " + from.getPos());
                 Handle handle = new FromHandle(this);
                 bv.getHandleGroup().getChildren().add(handle);
-            }
-            if (to instanceof Junction) {
-                to.setSelected(true);
-            } else {
+//            }
+//            if (to instanceof Junction) {
+//                to.setSelected(true);
+//            } else {
                 System.err.println("Adding handle for TO: " + to.getPos());
-                Handle handle = new ToHandle(this);
+                handle = new ToHandle(this);
                 bv.getHandleGroup().getChildren().add(handle);
-            }
+//            }
 
             setStroke(Color.RED);
         } else {
-            if (from instanceof Junction) {
-                from.setSelected(false);
-            }
-            if (to instanceof Junction) {
-                to.setSelected(false);
-            }
+//            if (from instanceof Junction) {
+//                from.setSelected(false);
+//            }
+//            if (to instanceof Junction) {
+//                to.setSelected(false);
+//            }
             setStroke(Color.ORANGE);
         }
     }
