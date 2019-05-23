@@ -174,12 +174,10 @@ public class Board {
                 String partValue = partNode.getAttribute("value");
                 String packageRef = partNode.getAttribute("package");
                 Double rotation = Double.parseDouble(partNode.getAttribute("rotation"));
-                Double xpos = Double.parseDouble(partNode.getAttribute("x"));
-                Double ypos = Double.parseDouble(partNode.getAttribute("y"));
-
+                Point2D partPosition = new Point2D(Double.parseDouble(partNode.getAttribute("x")),
+                                                   Double.parseDouble(partNode.getAttribute("y")));
                 Part part = new Part(partName, partValue, packageRef);
-                part.setLayoutX(xpos);
-                part.setLayoutY(ypos);
+                part.setPosition(partPosition);
                 part.setRotation(rotation);
 
                 NodeList padNodes = (NodeList) xPath.evaluate("./pad", partNode, XPathConstants.NODESET);
@@ -261,16 +259,14 @@ public class Board {
 
                 System.err.printf("Part: %s\n", part);
                 addDevice(part);
-                part.createNode();
             }
 
             NodeList netNodes = (NodeList) xPath.evaluate("net", breadboardNode, XPathConstants.NODESET);
             for (int i = 0; i < netNodes.getLength(); ++i) {
                 Element netNode = (Element) netNodes.item(i);
                 String netName = netNode.getAttribute("name");
-                Net net = new Net(netName); // , netPads);
+                Net net = new Net(netName);
 
-                // List<Pad> netPads = new ArrayList<>();
                 NodeList junctionNodes = (NodeList) xPath.evaluate("./junction", netNode, XPathConstants.NODESET);
                 for (int j = 0; j < junctionNodes.getLength(); ++j) {
                     Element junctionNode = (Element) junctionNodes.item(j);
@@ -297,7 +293,8 @@ public class Board {
                     if (to == null) to = pads.get(toId);        // TODO: This is a bad hack!!!!
                     System.err.printf("  AW: %s -> %s\n", from, to);
 
-                    net.addTrace(new AirWire(from, to));
+                    AirWire aw = new AirWire(from, to);
+                    net.addTrace(aw);
                 }
 
                 NodeList traceNodes = (NodeList) xPath.evaluate("./trace", netNode, XPathConstants.NODESET);
@@ -399,8 +396,7 @@ public class Board {
             parts.put(partName, p2);
 
             p2.setRotation(p1.getRotation());
-            p2.setLayoutX(p1.getLayoutX());
-            p2.setLayoutY(p1.getLayoutY());
+            p2.setPosition(p1.getPosition());
         });
         
         removedParts.forEach(partName -> {

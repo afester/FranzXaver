@@ -19,7 +19,6 @@ public abstract class AbstractNode extends Circle implements PartShape, Interact
     public AbstractNode(Point2D pos) {
         super(pos.getX(), pos.getY(), 0.5);
         setFill(null);
-//    	this(pos.getX(), pos.getY());
     }
 
     public void setId(int i) {

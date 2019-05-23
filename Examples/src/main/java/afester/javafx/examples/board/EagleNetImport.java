@@ -47,27 +47,26 @@ public class EagleNetImport extends NetImport {
             // load all parts
             NodeList partNodes = (NodeList) xPath.evaluate("/eagle/drawing/schematic/parts/part", doc, XPathConstants.NODESET);
             for (int i = 0; i < partNodes.getLength(); ++i) {
-                Element part = (Element) partNodes.item(i);
-                String partName = part.getAttribute("name");
-                String partValue = part.getAttribute("value");
-                String partLibrary = part.getAttribute("library");
-                String partDeviceSet = part.getAttribute("deviceset");
-                String partDevice = part.getAttribute("device");
+                Element partNode = (Element) partNodes.item(i);
+                String partName = partNode.getAttribute("name");
+                String partValue = partNode.getAttribute("value");
+                String partLibrary = partNode.getAttribute("library");
+                String partDeviceSet = partNode.getAttribute("deviceset");
+                String partDevice = partNode.getAttribute("device");
 
                 // try to determine a reasonable position
                 // The idea is to make the initial layout similar to the schematic so that the parts can easily be
                 // located. Also, the assumption is that the schematic is already somewhat formatted. 
-                Double xpos = Double.valueOf(0);
-                Double ypos = Double.valueOf(0);
+                Point2D partPos = new Point2D(0, 0);
                 NodeList partInstances = (NodeList) xPath.evaluate("/eagle/drawing/schematic/sheets/sheet/instances/instance[@part='"+partName+"']", doc, XPathConstants.NODESET);
                 if (partInstances.getLength() > 0) {
                     Element partInstance = (Element) partInstances.item(0);   // take first if more than one gate is available on the sheet
                     
                     String gate = partInstance.getAttribute("gate");
-                    xpos = Double.parseDouble(partInstance.getAttribute("x"));
-                    ypos = -Double.parseDouble(partInstance.getAttribute("y"));
+                    partPos = new Point2D(Double.parseDouble(partInstance.getAttribute("x")),
+                                                  -Double.parseDouble(partInstance.getAttribute("y")));
 
-                    System.err.printf("PI: %s %s/%s\n", gate, xpos, ypos);
+                    System.err.printf("PI: %s %s\n", gate, partPos);
                 }
 
                 System.err.printf("Part: %s - library: \"%s\", deviceset: \"%s\", device: \"%s\"\n", partName, partLibrary, partDeviceSet, partDevice);
@@ -81,11 +80,10 @@ public class EagleNetImport extends NetImport {
                 System.err.println("   Package:" + packageRef);
 
                 // load the package
-                Part pkg = createPart(partName, partValue, partLibrary, packageRef, deviceNode);
-                if (pkg != null) {
-                    pkg.setLayoutX(xpos);
-                    pkg.setLayoutY(ypos);
-                    board.addDevice(pkg);
+                Part part = createPart(partName, partValue, partLibrary, packageRef, deviceNode);
+                if (part != null) {
+                    part.setPosition(partPos);
+                    board.addDevice(part);
                 }
             }
 
@@ -291,7 +289,7 @@ public class EagleNetImport extends NetImport {
             part.addShape(new PartText(x, y, text, size * ratio / 10));
         }
 
-        part.createNode();
+//        part.createNode();
         return part;
     }
 }

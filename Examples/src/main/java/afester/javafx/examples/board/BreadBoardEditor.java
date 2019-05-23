@@ -25,6 +25,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -33,6 +34,7 @@ public class BreadBoardEditor extends Application {
 
     private Stage stage;
     private BoardView bv;
+    private Tab mirrorTab;
 
     @Override
     public void start(Stage stage){
@@ -57,11 +59,11 @@ public class BreadBoardEditor extends Application {
         DrawingView drawingView = new DrawingView(bv);
 
         TabPane tabPane = new TabPane();
-        tabPane.getSelectionModel().selectedIndexProperty().addListener((obj, oldIdx, newIdx) -> System.err.printf("%s -> %s", oldIdx, newIdx));
+        tabPane.getSelectionModel().selectedIndexProperty().addListener((obj, oldIdx, newIdx) -> switchTab(newIdx.intValue()));
         Tab editTab = new Tab("Edit Layout");
         editTab.setContent(drawingView);
-        Tab mirrorTab = new Tab("Show mirrored");
-        mirrorTab.setOnSelectionChanged(e -> System.err.println(e.getTarget()));
+        mirrorTab = new Tab("Show mirrored");
+        // mirrorTab.setOnSelectionChanged(e -> System.err.println(e.getTarget()));
         tabPane.getTabs().addAll(editTab, mirrorTab);
 
         // Create the menu bar
@@ -218,6 +220,24 @@ public class BreadBoardEditor extends Application {
 
         stage.show();
         drawingView.fitContentToWindow();
+    }
+
+
+    private void switchTab(int newIdx) {
+        if (newIdx == 0) {
+            System.err.println("Switch to EDIT tab");
+        } else if (newIdx == 1) {
+            System.err.println("Switch to MIRROR tab");
+            Board b = bv.getBoard();
+            BoardView mirror = new BoardView();
+            mirror.setBoard(b);
+            mirror.setReadOnly(true);
+            
+            mirror.getTransforms().add(Transform.scale(-1, 1));
+            DrawingView mirrorView = new DrawingView(mirror);
+            mirrorTab.setContent(mirrorView);
+//            mirrorView.centerContent();
+        }
     }
 
 

@@ -42,6 +42,7 @@ public class BoardView extends Pane {
     private Group handleGroup;
 
     private Interactor interactor = null;
+    private boolean isReadOnly = false;
 
     // The interactable object which is currently selected
     private final ObjectProperty<Interactable> selectedObject = new SimpleObjectProperty<>();
@@ -169,18 +170,26 @@ public class BoardView extends Pane {
         System.err.println("Adding Board dimensions ...");
         updateBoardDimensions(boardShape);
 
-        // Add all devices
-        System.err.println("Adding Parts ...");
-        board.getParts().forEach((k, g) -> {
-            System.err.println("  " + g);
-            partsGroup.getChildren().add(g);
-        });
-
         System.err.println("Adding Nets ...");
         board.getNets().forEach((netName, net) -> {
             System.err.println("  " + net);
             wireGroup.getChildren().add(net);
             net.setBoardView(this);
+
+            // HACK!!!!
+            net.getPads().forEach(pad -> {
+                pad.partNode = this;
+            });
+        });
+        
+        // Add all devices
+        System.err.println("Adding Parts ...");
+        board.getParts().forEach((k, g) -> {
+            // Create a PartView from the model
+            PartView partView = new PartView(g);
+            System.err.println("  " + g);
+            partsGroup.getChildren().add(partView);
+            partView.reconnectTraces();
         });
         
         setOnMousePressed(e -> { 
@@ -194,8 +203,6 @@ public class BoardView extends Pane {
                 interactor.mouseDragged(e);
             }
          });
-        
-        // setOnMouseR
     }
 
 
@@ -258,13 +265,22 @@ public class BoardView extends Pane {
 
 
     public void setInteractor(Interactor newInteractor) {
-        System.err.println("Setting SELECT mode");
-        interactor = newInteractor;
+        if (!isReadOnly) {
+            System.err.println("Setting SELECT mode");
+            interactor = newInteractor;
+        } else {
+            interactor = null;
+        }
     }
    
 
     public Group getHandleGroup() {
         return handleGroup;
     }
+    
 
+    public void setReadOnly(boolean b) {
+        interactor = null;
+        isReadOnly = b;
+    }
 }

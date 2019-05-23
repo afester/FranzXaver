@@ -26,8 +26,8 @@ public class SelectInteractor extends MouseInteractor {
     
     @Override
     protected void clickObjectRight(Interactable obj) {
-        if (obj instanceof Part) {
-            Part part = (Part) obj;
+        if (obj instanceof PartView) {
+            PartView part = (PartView) obj;
             part.rotatePart();
         }
     }
@@ -35,14 +35,14 @@ public class SelectInteractor extends MouseInteractor {
 
     @Override
     protected void dragObject(Interactable obj) {
-        if (obj instanceof Part) {
-            Part part = (Part) obj;
+        if (obj instanceof PartView) {
+            PartView partView = (PartView) obj;
             // System.err.println("MOVE: " + obj);
     
             // Snap to center of part
             // (this is also what the Eagle board editor does)
             Point2D snapPos = snapToGrid(getClickPos(), getBoardView(), getOffset());
-            part.move(snapPos);
+            partView.move(snapPos);
         }
     }
 }

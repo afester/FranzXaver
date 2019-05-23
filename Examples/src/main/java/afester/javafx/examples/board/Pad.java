@@ -30,7 +30,6 @@ public class Pad extends AbstractNode {
      */
     public Pad(Part part, String pinNumber, Point2D padPos) {
         super(padPos);
-
         this.part = part;
         this.pinNumber = pinNumber;
     }
@@ -43,18 +42,21 @@ public class Pad extends AbstractNode {
         return pinNumber;
     }
 
+
+/*****************************/
+    
+
+    Node partNode = null;
     @Override
     public Point2D getPos() {
-        return part.localToParent(getCenterX(), getCenterY());
+        if (partNode != null) {
+            return partNode.localToParent(getCenterX(), getCenterY());
+        }
+        return new Point2D(0, 0); 
     }
+/*****************************/
 
-    @Override
-    public String toString() {
-        return String.format("Pad[part=\"%s\", padName=%s, pos=%s]", 
-        					 part.getName(), pinNumber, /*pin + "@" + gate,*/ getPos());  
-    }
 
-    
     
     
     private Group view = null;
@@ -148,4 +150,11 @@ public class Pad extends AbstractNode {
     public String getRepr() {
         return "Pad: " + getPadId();
     }
- }
+
+
+    @Override
+    public String toString() {
+        return String.format("Pad[part=\"%s\", padName=%s, pos=%s]", 
+                             part.getName(), pinNumber, /*pin + "@" + gate,*/ getPos());  
+    }
+}
