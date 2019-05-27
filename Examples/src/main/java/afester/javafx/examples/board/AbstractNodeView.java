@@ -5,6 +5,7 @@ import java.util.List;
 
 import afester.javafx.examples.board.model.AbstractNode;
 import afester.javafx.examples.board.model.AbstractWire;
+import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
@@ -30,9 +31,9 @@ public abstract class AbstractNodeView extends Circle implements Interactable { 
 //    }
 
 //    // @Override
-//	public Point2D getPos() {
-//        return pos; // return new Point2D(getCenterX(), getCenterY());
-//    }
+	public Point2D getPos() {
+        return new Point2D(getCenterX(), getCenterY());
+    }
 
     public void addStart(AbstractWire wire) {
         traceStarts.add(wire);

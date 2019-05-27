@@ -1,8 +1,6 @@
 package afester.javafx.examples.board;
 
 import afester.javafx.examples.board.model.Pad;
-import javafx.geometry.Point2D;
-import javafx.scene.Node;
 import javafx.scene.paint.Color;
 
 /**
@@ -21,18 +19,18 @@ public class PadView extends AbstractNodeView {
         this.pad = pad;
     }
 
-/*****************************/
-    
-
-    Node partNode = null;
-    @Override
-    public Point2D getPos() {
-        if (partNode != null) {
-            return partNode.localToParent(getCenterX(), getCenterY());
-        }
-        return new Point2D(0, 0); 
-    }
-/*****************************/
+///*****************************/
+//    
+//
+//    Node partNode = null;
+//    @Override
+//    public Point2D getPos() {
+//        if (partNode != null) {
+//            return partNode.localToParent(getCenterX(), getCenterY());
+//        }
+//        return new Point2D(0, 0); 
+//    }
+///*****************************/
 
 
 

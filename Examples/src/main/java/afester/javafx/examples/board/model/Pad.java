@@ -60,8 +60,12 @@ public class Pad extends AbstractNode {
 /*****************************/
 
 
-    
-    
+    // NOTE: This shall return the global position of the pad, however this also depends on the rotation!!! 
+//    public Point2D getPos() {
+//        Point2D result = part.getPosition().add(super.getPos()); // pad. pos; // return new Point2D(getCenterX(), getCenterY());
+//    }
+
+
     private Group view = null;
 
     @Override
@@ -69,12 +73,12 @@ public class Pad extends AbstractNode {
     	// Group result = new Group();
         view = new Group();
 
-        Shape pad = new Circle(getPos().getX(), getPos().getY(), 0.7); // drill*2);
+        Shape pad = new Circle(super.getPos().getX(), super.getPos().getY(), 0.7); // drill*2);
         pad.setFill(Color.WHITE);
         pad.setStroke(Color.BLACK);
         pad.setStrokeWidth(0.6);
 
-        Text padName = new Text(getPos().getX(), getPos().getY(), this.pinNumber);
+        Text padName = new Text(super.getPos().getX(), super.getPos().getY(), this.pinNumber);
 
     	// TODO: The rendered text is messed up if the size is too small!
         // A possible solution seems to be to keep the text size larger and 
@@ -90,6 +94,7 @@ public class Pad extends AbstractNode {
         view.getChildren().addAll(pad, padName);
         return view;
     }
+
 //
 //
 //    @Override   // DEBUG ONLY

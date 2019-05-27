@@ -1,6 +1,6 @@
 package afester.javafx.examples.board;
 
-import afester.javafx.examples.board.model.Trace;
+import afester.javafx.examples.board.model.AbstractWire;
 
 /**
  * A Trace is a part of a Net which has already been routed.
@@ -10,11 +10,11 @@ public class TraceView extends AbstractWireView {
 
     private boolean isBridge = false;
 
-    public TraceView(Trace trace) {
+    public TraceView(AbstractWire trace) {
         super(trace); // from, to);
     }
 
-    
+
     @Override
     protected void setSegmentSelected(boolean isSelected) {
 //      if (isSelected) {
