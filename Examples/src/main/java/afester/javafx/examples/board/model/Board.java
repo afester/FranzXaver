@@ -1,4 +1,4 @@
-package afester.javafx.examples.board;
+package afester.javafx.examples.board.model;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -274,7 +274,7 @@ public class Board {
                     Point2D jPos = new Point2D(Double.parseDouble(junctionNode.getAttribute("x")),
                                                Double.parseDouble(junctionNode.getAttribute("y")));
 
-                    Junction junction = new Junction(jPos);
+                    Junction junction = new Junction(net, jPos);
                     junctions.put(junctionId, junction);
                     System.err.printf("  %s\n", junction);
                     
@@ -386,10 +386,10 @@ public class Board {
                 Pad oldPad = p1.getPad(pinNr);
 
                 p.traceStarts = oldPad.traceStarts;
-                p.traceStarts.forEach(wire -> wire.setFrom(p));
+//                p.traceStarts.forEach(wire -> wire.setFrom(p));
             
                 p.traceEnds = oldPad.traceEnds;
-                p.traceEnds.forEach(wire -> wire.setTo(p));
+//                p.traceEnds.forEach(wire -> wire.setTo(p));
             }
 
             parts.remove(partName);
@@ -543,5 +543,17 @@ public class Board {
 
             parts.remove(partName);
         }
+    }
+
+    public Double[] getBoardShape() {
+        return new Double[]{
+                0.0, 0.0,
+                55.0, 0.0,
+                55.0, 31.0,
+                90.0, 31.0,
+                90.0, 68.0,
+                100.0, 81.0,
+                100.0, 132.0,
+                0.0, 132.0};
     }
 }

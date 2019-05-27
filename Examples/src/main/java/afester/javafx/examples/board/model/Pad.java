@@ -1,4 +1,4 @@
-package afester.javafx.examples.board;
+package afester.javafx.examples.board.model;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -29,7 +29,7 @@ public class Pad extends AbstractNode {
      * @param padPos    The position of the pad
      */
     public Pad(Part part, String pinNumber, Point2D padPos) {
-        super(padPos);
+        super(null, padPos);
         this.part = part;
         this.pinNumber = pinNumber;
     }
@@ -42,18 +42,21 @@ public class Pad extends AbstractNode {
         return pinNumber;
     }
 
+    public void seNet(Net net) {
+        this.net = net;
+    }
 
 /*****************************/
-    
-
-    Node partNode = null;
-    @Override
-    public Point2D getPos() {
-        if (partNode != null) {
-            return partNode.localToParent(getCenterX(), getCenterY());
-        }
-        return new Point2D(0, 0); 
-    }
+//    
+//
+//    Node partNode = null;
+//    @Override
+//    public Point2D getPos() {
+//        if (partNode != null) {
+//            return partNode.localToParent(getCenterX(), getCenterY());
+//        }
+//        return new Point2D(0, 0); 
+//    }
 /*****************************/
 
 
@@ -66,12 +69,12 @@ public class Pad extends AbstractNode {
     	// Group result = new Group();
         view = new Group();
 
-        Shape pad = new Circle(getCenterX(), getCenterY(), 0.7); // drill*2);
+        Shape pad = new Circle(getPos().getX(), getPos().getY(), 0.7); // drill*2);
         pad.setFill(Color.WHITE);
         pad.setStroke(Color.BLACK);
         pad.setStrokeWidth(0.6);
 
-        Text padName = new Text(getCenterX(), getCenterY(), this.pinNumber);
+        Text padName = new Text(getPos().getX(), getPos().getY(), this.pinNumber);
 
     	// TODO: The rendered text is messed up if the size is too small!
         // A possible solution seems to be to keep the text size larger and 
@@ -87,23 +90,23 @@ public class Pad extends AbstractNode {
         view.getChildren().addAll(pad, padName);
         return view;
     }
-
-
-    @Override   // DEBUG ONLY
-    public void setSelected(boolean isSelected, Color col) {
-        Shape pad = (Shape) view.getChildrenUnmodifiable().get(0);  // HACK
-        if (isSelected) {
-            pad.setFill(col);
-        } else {
-            pad.setFill(null);
-        }
-    }
+//
+//
+//    @Override   // DEBUG ONLY
+//    public void setSelected(boolean isSelected, Color col) {
+//        Shape pad = (Shape) view.getChildrenUnmodifiable().get(0);  // HACK
+//        if (isSelected) {
+//            pad.setFill(col);
+//        } else {
+//            pad.setFill(null);
+//        }
+//    }
 
     @Override
     public org.w3c.dom.Node getXML(Document doc) {
         Element result = doc.createElement("pad");
-        result.setAttribute("x", Double.toString(getCenterX()));
-        result.setAttribute("y", Double.toString(getCenterY()));
+        result.setAttribute("x", Double.toString(getPos().getX()));
+        result.setAttribute("y", Double.toString(getPos().getY()));
         result.setAttribute("pinNumber", pinNumber);
         result.setAttribute("id", Integer.toString(id));
 
@@ -146,10 +149,10 @@ public class Pad extends AbstractNode {
         return true;
     }
 
-    @Override
-    public String getRepr() {
-        return "Pad: " + getPadId();
-    }
+//    @Override
+//    public String getRepr() {
+//        return "Pad: " + getPadId();
+//    }
 
 
     @Override

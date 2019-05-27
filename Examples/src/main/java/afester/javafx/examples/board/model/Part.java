@@ -1,4 +1,4 @@
-package afester.javafx.examples.board;
+package afester.javafx.examples.board.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,7 +9,7 @@ import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import afester.javafx.examples.board.Board.IntVal;
+import afester.javafx.examples.board.model.Board.IntVal;
 import javafx.geometry.Point2D;
 
 public class Part {

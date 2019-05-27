@@ -1,4 +1,4 @@
-package afester.javafx.examples.board;
+package afester.javafx.examples.board.model;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -7,13 +7,13 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-import javafx.scene.Group;
+import afester.javafx.examples.board.BoardView;
 
 /**
  * A net is a collection of (Pads and) Junctions which are connected through Traces.
  * (The pads are currenty not required - they are implicitly defined through the traces!)   
  */
-public class Net extends Group {
+public class Net {
 
     // Model
     private String netName;
@@ -21,13 +21,12 @@ public class Net extends Group {
     private List<AbstractWire> traceList = new ArrayList<>();
     private BoardView bv = null;   // the BoardView which shows this net
 
-    // View (TODO: separate in own class)
-    private Group junctions = new Group();
-    Group traces = new Group();
+//    // View (TODO: separate in own class)
+//    private Group junctions = new Group();
+//    Group traces = new Group();
 
     public Net(String netName) {
         this.netName = netName;
-        getChildren().addAll(traces, junctions);
     }
 
 
@@ -52,13 +51,13 @@ public class Net extends Group {
 
     public void addJunction(Junction newJunction) {
         junctionList.add(newJunction);
-        junctions.getChildren().add(newJunction);
+//        junctions.getChildren().add(newJunction);
     }
 
     public void removeJunction(AbstractNode junction) {
         junctionList.remove(junction);
 
-        junctions.getChildren().remove(junction);
+//        junctions.getChildren().remove(junction);
     }
     
     public List<Junction> getJunctions() {
@@ -82,7 +81,8 @@ public class Net extends Group {
 
     public void addTrace(AbstractWire trace) {
         traceList.add(trace);
-        traces.getChildren().add(trace);
+
+//        traces.getChildren().add(trace);
     }
 
     /**
@@ -100,8 +100,8 @@ public class Net extends Group {
 
         to.traceEnds.addAll(from.traceEnds);
         from.traceEnds.forEach(xtrace -> {
-            xtrace.setEndX(to.getCenterX());
-            xtrace.setEndY(to.getCenterY());
+//            xtrace.setEndX(to.getCenterX());
+//            xtrace.setEndY(to.getCenterY());
             xtrace.to = to;
         });
         removeJunction(from);
@@ -109,7 +109,7 @@ public class Net extends Group {
         traceList.remove(trace);
 
         // update view
-        traces.getChildren().remove(trace);
+//        traces.getChildren().remove(trace);
     }
 
 
@@ -151,8 +151,8 @@ public class Net extends Group {
         traceList.clear();
 
         // View (TODO: separate into own class)
-        junctions.getChildren().clear();
-        traces.getChildren().clear();
+//        junctions.getChildren().clear();
+//        traces.getChildren().clear();
     }
 
 
@@ -306,11 +306,11 @@ public class Net extends Group {
             Junction remove = d.j2;
 
             keep.traceStarts.addAll(remove.traceStarts);
-            remove.traceStarts.forEach(trace -> trace.setFrom(keep));
+//            remove.traceStarts.forEach(trace -> trace.setFrom(keep));
             remove.traceStarts.clear();
 
             keep.traceEnds.addAll(remove.traceEnds);
-            remove.traceEnds.forEach(trace -> trace.setTo(keep));
+//            remove.traceEnds.forEach(trace -> trace.setTo(keep));
             remove.traceEnds.clear();
 
             removeJunction(remove);
@@ -333,7 +333,7 @@ public class Net extends Group {
             traceList.remove(wire);
     
             // update view
-            traces.getChildren().remove(wire);
+//            traces.getChildren().remove(wire);
         });
 
 //        junctionList.forEach(j1 -> {

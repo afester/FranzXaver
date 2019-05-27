@@ -1,4 +1,4 @@
-package afester.javafx.examples.board;
+package afester.javafx.examples.board.model;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,9 +12,9 @@ import javafx.scene.Node;
 public class Junction extends AbstractNode {
 
 
-    public Junction(Point2D pos) {
-        super(pos);
-        setFill(null);
+    public Junction(Net net, Point2D pos) {
+        super(net, pos);
+//        setFill(null);
     }
     
 
@@ -22,8 +22,8 @@ public class Junction extends AbstractNode {
     @Override
     public org.w3c.dom.Node getXML(Document doc) {
         Element result = doc.createElement("junction");
-        result.setAttribute("x", Double.toString(getCenterX()));
-        result.setAttribute("y", Double.toString(getCenterY()));
+        result.setAttribute("x", Double.toString(getPos().getX()));
+        result.setAttribute("y", Double.toString(getPos().getY()));
         result.setAttribute("id", Integer.toString(id));
 
         return result;
@@ -36,14 +36,14 @@ public class Junction extends AbstractNode {
     }
 
 
-    @Override
+//    @Override
     public String getRepr() {
         return "Junction";
     }
 
     @Override
     public String toString() {
-        return String.format("Junction[pos=%s/%s]", getCenterX(), getCenterY());  
+        return String.format("Junction[pos=%s]", getPos());  
     }
 
 

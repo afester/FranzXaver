@@ -2,6 +2,9 @@ package afester.javafx.examples.board;
 
 import java.util.Collection;
 
+import afester.javafx.examples.board.model.Pad;
+import afester.javafx.examples.board.model.Part;
+import afester.javafx.examples.board.model.PartShape;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -80,8 +83,8 @@ public class PartView extends Group implements Interactable {
     
     void reconnectTraces() {
         part.getPads().forEach(pad -> { // );pads.forEach( (k, v) -> {
-            Point2D p = this.localToParent(pad.getCenterX(), pad.getCenterY());
-            pad.moveTraces2(p.getX(), p.getY());
+//            Point2D p = this.localToParent(pad.getCenterX(), pad.getCenterY());
+//            pad.moveTraces2(p.getX(), p.getY());
         });
     }
 

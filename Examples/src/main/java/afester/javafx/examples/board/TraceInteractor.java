@@ -1,5 +1,7 @@
 package afester.javafx.examples.board;
 
+import afester.javafx.examples.board.model.AirWire;
+
 public class TraceInteractor extends MouseInteractor {
 
     public TraceInteractor(BoardView boardView) {

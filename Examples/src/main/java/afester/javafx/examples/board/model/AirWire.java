@@ -1,10 +1,8 @@
-package afester.javafx.examples.board;
+package afester.javafx.examples.board.model;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-
-import javafx.scene.paint.Color;
 
 /**
  * An AirWire is a line between two Junctions which has not been routed yet.
@@ -23,8 +21,8 @@ public class AirWire extends AbstractWire {
         // TODO: We need a thicker selectionShape (a thicker transparent line) with the
         // same coordinates
         // so that selecting the line is easier
-        setStrokeWidth(0.3); // 0.2);
-        setStroke(Color.ORANGE);
+//        setStrokeWidth(0.3); // 0.2);
+//        setStroke(Color.ORANGE);
     }
 
     @Override
@@ -138,108 +136,108 @@ public class AirWire extends AbstractWire {
      * In that case, the new trace can be directly connected to the existing junction.
      */
     public void convertToStraightTrace() {
-        Net net = getNet();
-
-        AbstractNode pFrom = this.getFrom();
-        AbstractNode pTo = this.getTo();
-
-        // TODO: remove the instanceof's
-        if (pFrom instanceof Junction && pTo instanceof Junction) {
-            System.err.println("JUNCTION/JUNCTION");
-
-            pFrom.traceStarts.remove(this);
-            pTo.traceEnds.remove(this);
-            net.getTraces().remove(this);
-            // update view
-            net.traces.getChildren().remove(this);
-
-            Trace t = new Trace(pFrom, pTo);
-            net.addTrace(t);
-
-        } else if (pFrom instanceof Pad && pTo instanceof Pad) { 
-            System.err.println("PAD/PAD");
-
-            Junction j1 = new Junction(pFrom.getPos());
-            net.addJunction(j1);
-            Junction j2 = new Junction(pTo.getPos());
-            net.addJunction(j2);
-    
-            pTo.traceEnds.remove(this);
-            this.setTo(j1);
-            j1.traceEnds.add(this);
-    
-            Trace t = new Trace(j1, j2);
-            net.addTrace(t);
-    
-            AirWire aw2 = new AirWire(j2, pTo);
-            net.addTrace(aw2);
-        } else if (pFrom instanceof Junction && pTo instanceof Pad) {
-            System.err.println("JUNCTION/PAD");
-            //    Junction -                       AirWire - Pad 
-            //    Junction - (Trace - Junction2) - AirWire - Pad
-            //    pFrom       new     new          this      pTo
-
-            Junction j2 = new Junction(pTo.getPos());
-            net.addJunction(j2);
-
-            pFrom.traceStarts.remove(this);
-            this.setFrom(j2);
-            j2.traceStarts.add(this);
-
-            Trace t = new Trace(pFrom, j2);
-            net.addTrace(t);
-        } else if (pFrom instanceof Pad && pTo instanceof Junction) {
-            System.err.println("PAD/JUNCTION");
-
-            //    Pad - AirWire - Junction 
-            //    Pad - AirWire - (Junction2 - Trace) - Junction
-            //    pFrom this       new         new      pTo
-
-            Junction j2 = new Junction(pFrom.getPos());
-            net.addJunction(j2);
-
-            pTo.traceEnds.remove(this);
-            this.setTo(j2);
-            j2.traceEnds.add(this);
-
-            Trace t = new Trace(j2, pTo);
-            net.addTrace(t);
-        }
+//        Net net = getNet();
+//
+//        AbstractNode pFrom = this.getFrom();
+//        AbstractNode pTo = this.getTo();
+//
+//        // TODO: remove the instanceof's
+//        if (pFrom instanceof Junction && pTo instanceof Junction) {
+//            System.err.println("JUNCTION/JUNCTION");
+//
+//            pFrom.traceStarts.remove(this);
+//            pTo.traceEnds.remove(this);
+//            net.getTraces().remove(this);
+//            // update view
+//            net.traces.getChildren().remove(this);
+//
+//            Trace t = new Trace(pFrom, pTo);
+//            net.addTrace(t);
+//
+//        } else if (pFrom instanceof Pad && pTo instanceof Pad) { 
+//            System.err.println("PAD/PAD");
+//
+//            Junction j1 = new Junction(getNet(), pFrom.getPos());
+//            net.addJunction(j1);
+//            Junction j2 = new Junction(getNet(), pTo.getPos());
+//            net.addJunction(j2);
+//    
+//            pTo.traceEnds.remove(this);
+//            this.setTo(j1);
+//            j1.traceEnds.add(this);
+//    
+//            Trace t = new Trace(j1, j2);
+//            net.addTrace(t);
+//    
+//            AirWire aw2 = new AirWire(j2, pTo);
+//            net.addTrace(aw2);
+//        } else if (pFrom instanceof Junction && pTo instanceof Pad) {
+//            System.err.println("JUNCTION/PAD");
+//            //    Junction -                       AirWire - Pad 
+//            //    Junction - (Trace - Junction2) - AirWire - Pad
+//            //    pFrom       new     new          this      pTo
+//
+//            Junction j2 = new Junction(getNet(), pTo.getPos());
+//            net.addJunction(j2);
+//
+//            pFrom.traceStarts.remove(this);
+//            this.setFrom(j2);
+//            j2.traceStarts.add(this);
+//
+//            Trace t = new Trace(pFrom, j2);
+//            net.addTrace(t);
+//        } else if (pFrom instanceof Pad && pTo instanceof Junction) {
+//            System.err.println("PAD/JUNCTION");
+//
+//            //    Pad - AirWire - Junction 
+//            //    Pad - AirWire - (Junction2 - Trace) - Junction
+//            //    pFrom this       new         new      pTo
+//
+//            Junction j2 = new Junction(getNet(), pFrom.getPos());
+//            net.addJunction(j2);
+//
+//            pTo.traceEnds.remove(this);
+//            this.setTo(j2);
+//            j2.traceEnds.add(this);
+//
+//            Trace t = new Trace(j2, pTo);
+//            net.addTrace(t);
+//        }
     }
-
-
-    protected void setSegmentSelected(boolean isSelected) {
-        BoardView bv = getNet().getBoardView();
-        bv.getHandleGroup().getChildren().clear();
-        if (isSelected) {
-            // Both ends of an Airwire can ALLWAYS be moved to a different node  
-
-//            if (from instanceof Junction) {
-//                from.setSelected(true);
-//            } else {
-                System.err.println("Adding handle for FROM: " + from.getPos());
-                Handle handle = new FromHandle(this);
-                bv.getHandleGroup().getChildren().add(handle);
-//            }
-//            if (to instanceof Junction) {
-//                to.setSelected(true);
-//            } else {
-                System.err.println("Adding handle for TO: " + to.getPos());
-                handle = new ToHandle(this);
-                bv.getHandleGroup().getChildren().add(handle);
-//            }
-
-            setStroke(Color.RED);
-        } else {
-//            if (from instanceof Junction) {
-//                from.setSelected(false);
-//            }
-//            if (to instanceof Junction) {
-//                to.setSelected(false);
-//            }
-            setStroke(Color.ORANGE);
-        }
-    }
+//
+//
+//    protected void setSegmentSelected(boolean isSelected) {
+//        BoardView bv = getNet().getBoardView();
+//        bv.getHandleGroup().getChildren().clear();
+//        if (isSelected) {
+//            // Both ends of an Airwire can ALLWAYS be moved to a different node  
+//
+////            if (from instanceof Junction) {
+////                from.setSelected(true);
+////            } else {
+//                System.err.println("Adding handle for FROM: " + from.getPos());
+//                Handle handle = new FromHandle(getNet(), this);
+//                bv.getHandleGroup().getChildren().add(handle);
+////            }
+////            if (to instanceof Junction) {
+////                to.setSelected(true);
+////            } else {
+//                System.err.println("Adding handle for TO: " + to.getPos());
+//                handle = new ToHandle(getNet(), this);
+//                bv.getHandleGroup().getChildren().add(handle);
+////            }
+//
+//            setStroke(Color.RED);
+//        } else {
+////            if (from instanceof Junction) {
+////                from.setSelected(false);
+////            }
+////            if (to instanceof Junction) {
+////                to.setSelected(false);
+////            }
+//            setStroke(Color.ORANGE);
+//        }
+//    }
 
     @Override
     public String toString() {

@@ -3,6 +3,7 @@ package afester.javafx.examples.board;
 import java.util.Iterator;
 import java.util.function.BiConsumer;
 
+import afester.javafx.examples.board.model.Board;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Bounds;
@@ -93,21 +94,10 @@ public class BoardView extends Pane {
     public void setBoard(Board board) {
         getChildren().clear();
 
-        // TODO: store the board dimensions in the board file
-        Double[] boardDims = new Double[]{
-                0.0, 0.0,
-                55.0, 0.0,
-                55.0, 31.0,
-                90.0, 31.0,
-                90.0, 68.0,
-                100.0, 81.0,
-                100.0, 132.0,
-                0.0, 132.0};
- 
         this.board = board;
-        
-        System.err.println("\nCreating board background ...");
 
+        System.err.println("\nCreating board background ...");
+        Double[] boardDims = board.getBoardShape();
         Polygon boardShape = new Polygon();
         boardShape.setFill(boardColor);
         boardShape.setStroke(Color.BLACK);
@@ -173,13 +163,14 @@ public class BoardView extends Pane {
         System.err.println("Adding Nets ...");
         board.getNets().forEach((netName, net) -> {
             System.err.println("  " + net);
-            wireGroup.getChildren().add(net);
+            NetView netView = new NetView(net);
+            wireGroup.getChildren().add(netView);
             net.setBoardView(this);
 
             // HACK!!!!
-            net.getPads().forEach(pad -> {
-                pad.partNode = this;
-            });
+//            net.getPads().forEach(pad -> {
+//                pad.partNode = this;
+//            });
         });
         
         // Add all devices
@@ -191,7 +182,7 @@ public class BoardView extends Pane {
             partsGroup.getChildren().add(partView);
             partView.reconnectTraces();
         });
-        
+
         setOnMousePressed(e -> { 
             if (interactor != null) {
                 interactor.mousePressed(e);

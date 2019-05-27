@@ -1,10 +1,8 @@
-package afester.javafx.examples.board;
+package afester.javafx.examples.board.model;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-
-import javafx.scene.paint.Color;
 
 /**
  * A Trace is a part of a Net which has already been routed.
@@ -18,30 +16,30 @@ public class Trace extends AbstractWire {
         super(from, to);
     }
 
-    
-    @Override
-    protected void setSegmentSelected(boolean isSelected) {
-      if (isSelected) {
-        from.setSelected(true);
-        to.setSelected(true);
-
-        setStroke(Color.RED);
-      } else {
-        from.setSelected(false);
-        to.setSelected(false);
-
-        if (isBridge) {
-            setStroke(Color.GREEN);
-        } else {
-            setStroke(Color.SILVER);
-        }
-      }
-    }
+//    
+//    @Override
+//    protected void setSegmentSelected(boolean isSelected) {
+//      if (isSelected) {
+//        from.setSelected(true);
+//        to.setSelected(true);
+//
+//        setStroke(Color.RED);
+//      } else {
+//        from.setSelected(false);
+//        to.setSelected(false);
+//
+//        if (isBridge) {
+//            setStroke(Color.GREEN);
+//        } else {
+//            setStroke(Color.SILVER);
+//        }
+//      }
+//    }
 
 
     @Override
     public String toString() {
-        return String.format("Trace[%s - %s]", this.getStart(), this.getEnd());
+        return String.format("Trace[%s - %s]", this.getFrom(), this.getTo());
     }
 
 
@@ -59,7 +57,7 @@ public class Trace extends AbstractWire {
     public void setAsBridge() {
         isBridge = true;
 
-        setStroke(Color.GREEN);
-        setStrokeWidth(0.5);
+//        setStroke(Color.GREEN);
+//        setStrokeWidth(0.5);
     }
 }
