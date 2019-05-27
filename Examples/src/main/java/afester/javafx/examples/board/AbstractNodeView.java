@@ -96,25 +96,25 @@ public abstract class AbstractNodeView extends Circle implements Interactable { 
     }
 
 
-    /**
-     * From a collection of nodes, get the one which is nearest to this one.
-     *
-     * @param nodeList The list of nodes from which to get the nearest one.
-     * @return The node which is the nearest to this one.
-     */
-    public AbstractNode getNearestNode(List<AbstractNode> nodeList) {
-        double minDist = Double.MAX_VALUE;
-        AbstractNode result = null;
-        for (AbstractNode node: nodeList) {
-            double dist = node.getPos().distance(getPos());
-            if (dist < minDist) {
-                result = node;
-                minDist = dist;
-            }
-        }
-
-        return result;
-    }
+//    /**
+//     * From a collection of nodes, get the one which is nearest to this one.
+//     *
+//     * @param nodeList The list of nodes from which to get the nearest one.
+//     * @return The node which is the nearest to this one.
+//     */
+//    public AbstractNode getNearestNode(List<AbstractNode> nodeList) {
+//        double minDist = Double.MAX_VALUE;
+//        AbstractNode result = null;
+//        for (AbstractNode node: nodeList) {
+//            double dist = node.getConnectPosition().distance(getPos());
+//            if (dist < minDist) {
+//                result = node;
+//                minDist = dist;
+//            }
+//        }
+//
+//        return result;
+//    }
 //
 //    public Net getNet() {
 //        return net;

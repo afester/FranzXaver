@@ -6,8 +6,7 @@ import java.util.List;
 import javafx.geometry.Point2D;
 
 
-// TODO: The AbstractNode should be the model only (not the view, means not extend Circle)
-public abstract class AbstractNode /* extends Circle */ implements PartShape /*, Interactable*/ {
+public abstract class AbstractNode implements PartShape {
     private Point2D pos;
 
     protected Net net;
@@ -32,7 +31,10 @@ public abstract class AbstractNode /* extends Circle */ implements PartShape /*,
         return pos; // return new Point2D(getCenterX(), getCenterY());
     }
 	
-	
+	public Point2D getConnectPosition2() {
+	    return pos;
+	}
+
     public void setPos(Point2D pos) {
         this.pos = pos;
 //      setCenterX(snapPos.getX());

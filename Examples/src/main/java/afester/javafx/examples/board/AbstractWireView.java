@@ -19,8 +19,13 @@ public abstract class AbstractWireView extends Line implements Interactable  {
 //        this.from = from;
 //        this.to = to;
 
-        setStart(wire.getTo().getPos());
-        setEnd(wire.getFrom().getPos());
+        Point2D startPos = wire.getTo().getPos();
+        Point2D endPos = wire.getFrom().getPos();
+
+        
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        setStart(wire.getTo().getConnectPosition());
+        setEnd(wire.getFrom().getConnectPosition());
 
         // TODO: We need a thicker selectionShape (a thicker transparent line) with the same coordinates
         // so that selecting the line is easier
