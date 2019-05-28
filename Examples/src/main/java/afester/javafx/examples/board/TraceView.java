@@ -1,6 +1,8 @@
 package afester.javafx.examples.board;
 
 import afester.javafx.examples.board.model.AbstractWire;
+import afester.javafx.examples.board.model.AirWire;
+import javafx.scene.paint.Color;
 
 /**
  * A Trace is a part of a Net which has already been routed.
@@ -12,6 +14,14 @@ public class TraceView extends AbstractWireView {
 
     public TraceView(AbstractWire trace) {
         super(trace); // from, to);
+        
+        if (trace instanceof AirWire) {
+            // TODO: We need a thicker selectionShape (a thicker transparent line) with the
+            // same coordinates
+            // so that selecting the line is easier
+            setStrokeWidth(0.3); // 0.2);
+            setStroke(Color.ORANGE);
+        }
     }
 
 
