@@ -4,14 +4,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javafx.geometry.Point2D;
-import javafx.geometry.VPos;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Shape;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 
 /**
  * A Pad is a junction which refers to a specific pin of a Part.
@@ -64,39 +56,16 @@ public class Pad extends AbstractNode {
 //    public Point2D getPos() {
 //        Point2D result = part.getPosition().add(super.getPos()); // pad. pos; // return new Point2D(getCenterX(), getCenterY());
 //    }
-    public Point2D getConnectPosition2() {
-        return part.getPosition().add(getPos());
+
+// This is a hack to track the global connect position for the Pad.
+    private Point2D connectPos = new Point2D(0, 0);
+    public Point2D getConnectPosition() {
+        return connectPos;
+    }
+    public void setConnectPosition(Point2D pos) {
+        connectPos = pos;
     }
 
-
-    private Group view = null;
-
-    @Override
-    public Node createNode() {
-    	// Group result = new Group();
-        view = new Group();
-
-        Shape pad = new Circle(getPos().getX(), getPos().getY(), 0.7); // drill*2);
-        pad.setFill(Color.WHITE);
-        pad.setStroke(Color.BLACK);
-        pad.setStrokeWidth(0.6);
-
-        Text padName = new Text(getPos().getX(), getPos().getY(), this.pinNumber);
-
-    	// TODO: The rendered text is messed up if the size is too small!
-        // A possible solution seems to be to keep the text size larger and 
-        // apply an appropriate scaling (and translation) to the Text node
-        Font theFont = Font.font("Courier", 10.0);
-        padName.setScaleX(0.1);
-        padName.setScaleY(0.1);
-        padName.setTranslateX(-3);
-        padName.setFont(theFont);
-        padName.setFill(Color.RED);
-        padName.setTextOrigin(VPos.CENTER);
-
-        view.getChildren().addAll(pad, padName);
-        return view;
-    }
 
 //
 //
@@ -110,7 +79,7 @@ public class Pad extends AbstractNode {
 //        }
 //    }
 
-    @Override
+//    @Override
     public org.w3c.dom.Node getXML(Document doc) {
         Element result = doc.createElement("pad");
         result.setAttribute("x", Double.toString(getPos().getX()));
@@ -168,4 +137,9 @@ public class Pad extends AbstractNode {
         return String.format("Pad[part=\"%s\", padName=%s, pos=%s]", 
                              part.getName(), pinNumber, /*pin + "@" + gate,*/ getPos());  
     }
+//
+//    @Override
+//    public Node createNode() {
+//        throw new RuntimeException("NYI");
+//    }
 }

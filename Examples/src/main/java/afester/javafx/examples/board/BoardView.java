@@ -172,7 +172,7 @@ public class BoardView extends Pane {
 //                pad.partNode = this;
 //            });
         });
-        
+
         // Add all devices
         System.err.println("Adding Parts ...");
         board.getParts().forEach((k, g) -> {

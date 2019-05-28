@@ -19,11 +19,21 @@ public abstract class AbstractWireView extends Line implements Interactable  {
 //        this.from = from;
 //        this.to = to;
 
-        Point2D startPos = wire.getTo().getPos();
-        Point2D endPos = wire.getFrom().getPos();
+        // Remember: the change listener is REALLY only called when the value CHANGES (i.e. is not equals() to the old value)
+        wire.startPointProperty().addListener((obj, oldValue, newValue) -> {
+            System.err.println("New start point:" + newValue);
+            setStart(newValue);
+        });
+        wire.endPointProperty().addListener((obj, oldValue, newValue) -> {
+            System.err.println("New end point:" + newValue);
+            setEnd(newValue);
+        });
+
+//        Point2D startPos = wire.getTo().getPos();
+//        Point2D endPos = wire.getFrom().getPos();
 
         
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         setStart(wire.getTo().getConnectPosition());
         setEnd(wire.getFrom().getConnectPosition());
 

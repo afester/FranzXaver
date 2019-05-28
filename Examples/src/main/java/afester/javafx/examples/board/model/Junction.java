@@ -7,19 +7,16 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
 
 public class Junction extends AbstractNode {
 
 
     public Junction(Net net, Point2D pos) {
         super(net, pos);
-//        setFill(null);
     }
     
 
-
-    @Override
+//    @Override
     public org.w3c.dom.Node getXML(Document doc) {
         Element result = doc.createElement("junction");
         result.setAttribute("x", Double.toString(getPos().getX()));
@@ -27,18 +24,6 @@ public class Junction extends AbstractNode {
         result.setAttribute("id", Integer.toString(id));
 
         return result;
-    }
-
-
-    @Override
-    public Node createNode() {
-        throw new RuntimeException("NYI!");
-    }
-
-
-//    @Override
-    public String getRepr() {
-        return "Junction";
     }
 
     @Override

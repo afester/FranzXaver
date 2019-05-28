@@ -19,11 +19,12 @@ import javafx.scene.transform.Rotate;
  */
 public class PartView extends Group implements Interactable {
 
-    // View
     private Part part;  // reference to model
     private Rectangle selectionRect;
     private Rotate rot = new Rotate();
-
+    private Group padViews = new Group();
+    private Group shapeViews = new Group();
+    
     public PartView(Part part) {
         this.part = part;
 
@@ -80,9 +81,32 @@ public class PartView extends Group implements Interactable {
         reconnectTraces();
     }
 
-    
+
     void reconnectTraces() {
         part.getPads().forEach(pad -> { // );pads.forEach( (k, v) -> {
+            pad.traceStarts.forEach(wire -> {
+                System.err.printf("START: %s -> %s\n", wire, getPos());
+                wire.setStart(getPos());
+            });
+            pad.traceEnds.forEach(wire -> {
+                System.err.printf("END: %s -> %s\n", wire, getPos());    
+                wire.setEnd(getPos());
+            });
+
+//
+//            //Point2D p = this.localToParent(pad.getPos()); //.getCenterX(), pad.getCenterY());
+//            //pad.setConnectPosition(p);
+//
+//            getChildrenUnmodifiable().forEach(node -> {
+//                if (node instanceof PadView) {
+//                    PadView pv = (PadView) node; 
+//                    Point2D p = this.getParent().localToParent(this.localToParent(pv.localToParent(pv.getPos()))); //.getCenterX(), pad.getCenterY());
+//                    System.err.println("PART POS: " + this.getPos());
+//                    Object x = this.getParent();
+//                    pv.moveTraces2(this.getPos().getX(), this.getPos().getY()); // p.getX(), p.getY());                    
+//                }
+//            });
+
 //            Point2D p = this.localToParent(pad.getCenterX(), pad.getCenterY());
 //            pad.moveTraces2(p.getX(), p.getY());
         });
@@ -122,13 +146,16 @@ public class PartView extends Group implements Interactable {
 
         for (PartShape ps : part.getShapes()) {
             Node s = ps.createNode();
-            getChildren().add(s);
+            shapeViews.getChildren().add(s);
         }
 
         for (Pad ps : part.getPads()) {
-            Node s = ps.createNode();
-            getChildren().add(s);
+            Node s = new PadView(ps); // ps.createNode();
+            padViews.getChildren().add(s);
         }
+
+        getChildren().add(padViews);
+        getChildren().add(shapeViews);
 
         // Create a marker for the mid point
         //Circle c = new Circle(0, 0, 0.5);

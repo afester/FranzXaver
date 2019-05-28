@@ -6,11 +6,10 @@ import java.util.List;
 import afester.javafx.examples.board.model.AbstractNode;
 import afester.javafx.examples.board.model.AbstractWire;
 import javafx.geometry.Point2D;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
+import javafx.scene.Group;
 
 
-public abstract class AbstractNodeView extends Circle implements Interactable { // */ implements PartShape /*, Interactable*/ {
+public abstract class AbstractNodeView extends Group implements Interactable { // */ implements PartShape /*, Interactable*/ {
 //    private Point2D pos;
 //    protected Net net;
     public List<AbstractWire> traceStarts = new ArrayList<>();
@@ -32,7 +31,8 @@ public abstract class AbstractNodeView extends Circle implements Interactable { 
 
 //    // @Override
 	public Point2D getPos() {
-        return new Point2D(getCenterX(), getCenterY());
+	    return node.getPos();
+        // return new Point2D(node.getPgetCenterX(), getCenterY());
     }
 
     public void addStart(AbstractWire wire) {
@@ -58,22 +58,22 @@ public abstract class AbstractNodeView extends Circle implements Interactable { 
         
     }
 
-	@Override
-	public void setSelected(boolean isSelected) {
-		if (isSelected) {
-			setFill(Color.DARKRED);
-		} else {
-			setFill(null);
-		}
-	}
-
-    public void setSelected(boolean isSelected, Color col) {
-        if (isSelected) {
-            setFill(Color.BLUE); // col);
-        } else {
-            setFill(null);
-        }
-    }
+//	@Override
+//	public void setSelected(boolean isSelected) {
+//		if (isSelected) {
+//			setFill(Color.DARKRED);
+//		} else {
+//			setFill(null);
+//		}
+//	}
+//
+//    public void setSelected(boolean isSelected, Color col) {
+//        if (isSelected) {
+//            setFill(Color.BLUE); // col);
+//        } else {
+//            setFill(null);
+//        }
+//    }
 
 
 //    public void setPos(Point2D snapPos) {
@@ -82,18 +82,18 @@ public abstract class AbstractNodeView extends Circle implements Interactable { 
 //        moveTraces2(snapPos.getX(), snapPos.getY());
 //    }
 //
-
-    /**
-     * @return A list of all edges which are connected to this node.
-     */
-    public List<AbstractWire> getEdges() {
-        List<AbstractWire> result = new ArrayList<>();
-
-        result.addAll(traceStarts);
-        result.addAll(traceEnds);
-
-        return result;
-    }
+//
+//    /**
+//     * @return A list of all edges which are connected to this node.
+//     */
+//    public List<AbstractWire> getEdges() {
+//        List<AbstractWire> result = new ArrayList<>();
+//
+//        result.addAll(traceStarts);
+//        result.addAll(traceEnds);
+//
+//        return result;
+//    }
 
 
 //    /**

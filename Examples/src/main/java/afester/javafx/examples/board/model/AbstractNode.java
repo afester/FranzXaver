@@ -6,7 +6,7 @@ import java.util.List;
 import javafx.geometry.Point2D;
 
 
-public abstract class AbstractNode implements PartShape {
+public abstract class AbstractNode {
     private Point2D pos;
 
     protected Net net;
@@ -31,7 +31,7 @@ public abstract class AbstractNode implements PartShape {
         return pos; // return new Point2D(getCenterX(), getCenterY());
     }
 	
-	public Point2D getConnectPosition2() {
+	public Point2D getConnectPosition() {
 	    return pos;
 	}
 
@@ -43,15 +43,14 @@ public abstract class AbstractNode implements PartShape {
     }
 
 
-//
-//    public void addStart(AbstractWire wire) {
-//        traceStarts.add(wire);
-//    }
-//
-//    public void addEnd(AbstractWire wire) {
-//        traceEnds.add(wire);
-//    }
-//
+    public void addStart(AbstractWire wire) {
+        traceStarts.add(wire);
+    }
+
+    public void addEnd(AbstractWire wire) {
+        traceEnds.add(wire);
+    }
+
 //    public void moveTraces2(double x, double y) {
 //        // TODO: This requires a reference to a real "Trace" object.
 //        // Depending on the Trace type, it might also require to move the other coordinates ....

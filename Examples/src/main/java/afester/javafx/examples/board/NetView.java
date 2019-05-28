@@ -10,6 +10,7 @@ public class NetView extends Group {
             getChildren().add(new TraceView(trace));
         });
 
+//        net.getJunctions().forEach(action);
 
 //        getChildren().addAll(net.getTraces());
 //        getChildren().addAll(net.getJunctions());

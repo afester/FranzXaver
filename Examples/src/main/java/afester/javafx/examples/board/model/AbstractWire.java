@@ -3,6 +3,10 @@ package afester.javafx.examples.board.model;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Point2D;
+
 /**
  * An AbstractWire is the basic edge in a net graph. It connects exactly two junctions.
  */
@@ -22,8 +26,8 @@ public abstract class AbstractWire /*extends Line implements Interactable */ {
 //        setStrokeWidth(1.0); // 0.2);
 //        setStroke(Color.SILVER);
 //        setStrokeLineCap(StrokeLineCap.ROUND);
-//        from.addStart(this);
-//        to.addEnd(this);
+        from.addStart(this);
+        to.addEnd(this);
 //        
 //        createContextMenu();
     }
@@ -36,24 +40,19 @@ public abstract class AbstractWire /*extends Line implements Interactable */ {
         // Net net = (Net) getParent().getParent();
         return from.getNet();   // from and to are part of the same net! 
     }
-//
-//    public Point2D getStart() {
-//        return new Point2D(getStartX(), getStartY());
-//    }
-//
-//    public void setStart(Point2D p) {
-//        setStartX(p.getX());
-//        setStartY(p.getY());
-//    }
-//
-//    public Point2D getEnd() {
-//        return new Point2D(getEndX(), getEndY());
-//    }
-//
-//    public void setEnd(Point2D p) {
-//        setEndX(p.getX());
-//        setEndY(p.getY());
-//    }
+
+
+    // some geometric stuff - not part of the persistet model!
+    private ObjectProperty<Point2D> startPoint = new SimpleObjectProperty<Point2D>(Point2D.ZERO);
+    public ObjectProperty<Point2D> startPointProperty() { return startPoint; }
+    public void setStart(Point2D pos) { startPoint.setValue(pos); }
+    public Point2D getStart() { return startPoint.get();  }
+
+    private ObjectProperty<Point2D> endPoint = new SimpleObjectProperty<Point2D>();
+    public ObjectProperty<Point2D> endPointProperty() { return endPoint; }
+    public void setEnd(Point2D pos) { endPoint.setValue(pos); }
+    public Point2D getEnd() { return endPoint.get(); }
+
 
     public AbstractNode getFrom() {
         return from;
@@ -135,6 +134,7 @@ public abstract class AbstractWire /*extends Line implements Interactable */ {
 
         throw new RuntimeException("Unexpected: Edge does neither go FROM nor TO the given node!");
     }
+
 
 //
 //    /**

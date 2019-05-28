@@ -1,7 +1,12 @@
 package afester.javafx.examples.board;
 
 import afester.javafx.examples.board.model.Pad;
+import javafx.geometry.VPos;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Shape;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 /**
  * A Pad is a junction which refers to a specific pin of a Part.
@@ -14,9 +19,32 @@ public class PadView extends AbstractNodeView {
      * Creates a new PadView.
      *
      */
-    public PadView(Pad pad) {
-        super(pad);
-        this.pad = pad;
+    public PadView(Pad pad1) {
+        super(pad1);
+        this.pad = pad1;
+
+        // Group result = new Group();
+        //view = new Group();
+
+        Shape pad = new Circle(getPos().getX(), getPos().getY(), 0.7); // drill*2);
+        pad.setFill(Color.WHITE);
+        pad.setStroke(Color.BLACK);
+        pad.setStrokeWidth(0.6);
+
+        Text padName = new Text(getPos().getX(), getPos().getY(), this.pad.getPinNumber());
+
+        // TODO: The rendered text is messed up if the size is too small!
+        // A possible solution seems to be to keep the text size larger and 
+        // apply an appropriate scaling (and translation) to the Text node
+        Font theFont = Font.font("Courier", 10.0);
+        padName.setScaleX(0.1);
+        padName.setScaleY(0.1);
+        padName.setTranslateX(-3);
+        padName.setFont(theFont);
+        padName.setFill(Color.RED);
+        padName.setTextOrigin(VPos.CENTER);
+
+        getChildren().addAll(pad, padName);
     }
 
 ///*****************************/
@@ -34,7 +62,7 @@ public class PadView extends AbstractNodeView {
 
 
 
-    @Override   // DEBUG ONLY
+//    @Override   // DEBUG ONLY
     public void setSelected(boolean isSelected, Color col) {
 //        Shape pad = (Shape) view.getChildrenUnmodifiable().get(0);  // HACK
 //        if (isSelected) {
@@ -89,5 +117,11 @@ public class PadView extends AbstractNodeView {
     @Override
     public String toString() {
         return String.format("PadView[pad=%s]", pad); 
+    }
+
+    @Override
+    public void setSelected(boolean isSelected) {
+        // TODO Auto-generated method stub
+        
     }
 }
