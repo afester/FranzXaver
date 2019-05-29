@@ -31,9 +31,9 @@ public abstract class AbstractNode {
         return pos; // return new Point2D(getCenterX(), getCenterY());
     }
 	
-	public Point2D getConnectPosition() {
-	    return pos;
-	}
+//	public Point2D getConnectPosition() {
+//	    return pos;
+//	}
 
     public void setPos(Point2D pos) {
         this.pos = pos;

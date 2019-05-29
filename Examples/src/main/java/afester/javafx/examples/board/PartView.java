@@ -20,20 +20,32 @@ import javafx.scene.transform.Rotate;
 public class PartView extends Group implements Interactable {
 
     private Part part;  // reference to model
+
     private Rectangle selectionRect;
     private Rotate rot = new Rotate();
     private Group padViews = new Group();
     private Group shapeViews = new Group();
-    
+
     public PartView(Part part) {
         this.part = part;
 
         this.setMouseTransparent(false);
         //this.setPickOnBounds(true);
+
         rot.setAngle(part.getRotation());
+        getTransforms().add(rot);
+        part.rotationProperty().addListener((obj, oldValue, newValue) -> {
+            rot.setAngle(newValue.doubleValue());
+            reconnectTraces();
+        });
+
         setLayoutX(part.getPosition().getX());
         setLayoutY(part.getPosition().getY());
-        getTransforms().add(rot);
+        part.positionProperty().addListener((obj, oldValue, newValue) -> {
+            setLayoutX(newValue.getX());
+            setLayoutY(newValue.getY());
+            reconnectTraces();
+        });
 
         createNode();
     }
@@ -45,19 +57,7 @@ public class PartView extends Group implements Interactable {
      * @param y The new y coordinate of the device origin.
      */
     public void move(Point2D pos) {
-
-//        System.err.printf("MOVE: %s/%s\n", x, y);
-        
-//        for (Pad p : pads.values()) {
-//            System.err.printf("   %s\n", p);
-//        }
-
-        // Set the new location of the device
-        setLayoutX(pos.getX());
-        setLayoutY(pos.getY());
-
-        // adjust the traces which are connected the pads of this device
-        reconnectTraces();
+        part.setPosition(pos);
     }
 
     
@@ -65,50 +65,25 @@ public class PartView extends Group implements Interactable {
      * Rotates the part clockwise at 90 degrees.
      */
     public void rotatePart() {
-
-        // set the new rotation of the device
-        //setRotate(rotation);    // this rotates around the center of the Part Group! (BoundsInLocal rect)
-        // To be able to set the origin (0, 0) we need to use a rotate transform:
-
-        double rotation = rot.getAngle();
-        rotation += 90;
-        if (rotation >= 360) {
-            rotation = 0;
-        }
-        rot.setAngle(rotation);
-
-        // adjust the traces which are connected the pads of this device
-        reconnectTraces();
+        part.rotate();
     }
 
+    public Object getPart() {
+        return part;
+    }
 
     void reconnectTraces() {
-        part.getPads().forEach(pad -> { // );pads.forEach( (k, v) -> {
+        part.getPads().forEach(pad -> {
             pad.traceStarts.forEach(wire -> {
-                System.err.printf("START: %s -> %s\n", wire, getPos());
-                wire.setStart(getPos());
+                Point2D pos = this.localToParent(pad.getPos());
+                System.err.printf("START: %s -> %s\n", wire, pos);
+                wire.setStart(pos);
             });
             pad.traceEnds.forEach(wire -> {
-                System.err.printf("END: %s -> %s\n", wire, getPos());    
-                wire.setEnd(getPos());
+                Point2D pos = this.localToParent(pad.getPos());
+                System.err.printf("END: %s -> %s\n", wire, pos);    
+                wire.setEnd(pos);
             });
-
-//
-//            //Point2D p = this.localToParent(pad.getPos()); //.getCenterX(), pad.getCenterY());
-//            //pad.setConnectPosition(p);
-//
-//            getChildrenUnmodifiable().forEach(node -> {
-//                if (node instanceof PadView) {
-//                    PadView pv = (PadView) node; 
-//                    Point2D p = this.getParent().localToParent(this.localToParent(pv.localToParent(pv.getPos()))); //.getCenterX(), pad.getCenterY());
-//                    System.err.println("PART POS: " + this.getPos());
-//                    Object x = this.getParent();
-//                    pv.moveTraces2(this.getPos().getX(), this.getPos().getY()); // p.getX(), p.getY());                    
-//                }
-//            });
-
-//            Point2D p = this.localToParent(pad.getCenterX(), pad.getCenterY());
-//            pad.moveTraces2(p.getX(), p.getY());
         });
     }
 
@@ -185,6 +160,10 @@ public class PartView extends Group implements Interactable {
 	public Point2D getPos() {
 		return new Point2D(getLayoutX(), getLayoutY());
 	}
+
+    public String getName() {
+        return part.getName();
+    }
 
     @Override
     public String getRepr() {

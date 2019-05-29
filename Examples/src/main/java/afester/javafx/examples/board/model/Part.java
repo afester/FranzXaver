@@ -10,24 +10,29 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import afester.javafx.examples.board.model.Board.IntVal;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
 
 public class Part {
 
-    // Model
-    private String partName;
-    private String partValue;
-    private String packageRef;      // TODO: This should refer to a "package / footprint template"
-    private double rotation;
+    private final String partName;
+    private final String partValue;
+    private final String packageRef;      // TODO: This should refer to a "package / footprint template"
 
     // Position of the part
-    private Point2D position;
-    public void setPosition(Point2D pos) { position = pos; }
-    public Point2D getPosition() { return position; }
+    private ObjectProperty<Point2D> position = new SimpleObjectProperty<>(new Point2D(0, 0));
+    public ObjectProperty<Point2D> positionProperty() { return position; }
+    public void setPosition(Point2D pos) { position.setValue(pos); }
+    public Point2D getPosition() { return position.getValue(); }
 
     // direction of the part
-    public void setRotation(double angle) { rotation = angle; } // rot.setAngle(angle); }
-    public double getRotation() { return rotation; } // rot.getAngle(); }
+    private DoubleProperty rotation = new SimpleDoubleProperty(0.0);
+    public DoubleProperty rotationProperty() { return rotation; } 
+    public void setRotation(double angle) { rotation.setValue(angle); }
+    public double getRotation() { return rotation.getValue(); }
 
 
     /**
@@ -94,8 +99,8 @@ public class Part {
         partNode.setAttribute("name", partName);
         partNode.setAttribute("value", partValue);
         partNode.setAttribute("package", packageRef);
-        partNode.setAttribute("x", Double.toString(position.getX()));
-        partNode.setAttribute("y", Double.toString(position.getY()));
+        partNode.setAttribute("x", Double.toString(getPosition().getX()));
+        partNode.setAttribute("y", Double.toString(getPosition().getY()));
         partNode.setAttribute("rotation", Double.toString(getRotation()));
 
         for (PartShape ps : getShapes()) {
@@ -120,5 +125,18 @@ public class Part {
     @Override
     public String toString() {
         return String.format("Part[partName=%s]", partName);
+    }
+
+    public void rotate() {
+        // set the new rotation of the device
+        //setRotate(rotation);    // this rotates around the center of the Part Group! (BoundsInLocal rect)
+        // To be able to set the origin (0, 0) we need to use a rotate transform:
+
+        double rot = getRotation();
+        rot += 90;
+        if (rot >= 360) {
+            rot = 0;
+        }
+        setRotation(rot);
     }
 }

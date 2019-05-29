@@ -42,6 +42,7 @@ public class BreadBoardEditor extends Application {
     private Stage stage;
     private BoardView bv;
     private Tab mirrorTab;
+    private BoardView bottomView;
 
     @Override
     public void start(Stage stage){
@@ -51,8 +52,6 @@ public class BreadBoardEditor extends Application {
         //Board board = ni.importFile(new File("schem.xml"));
 
         bv = new BoardView();
-
-        bv.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, new CornerRadii(0), new Insets(0))));
 
         Board board = new Board();
 //        board.load(new File("small.brd"));
@@ -67,9 +66,9 @@ public class BreadBoardEditor extends Application {
 
         TabPane tabPane = new TabPane();
         tabPane.getSelectionModel().selectedIndexProperty().addListener((obj, oldIdx, newIdx) -> switchTab(newIdx.intValue()));
-        Tab editTab = new Tab("Edit Layout");
+        Tab editTab = new Tab("Top view");
         editTab.setContent(drawingView);
-        mirrorTab = new Tab("Show mirrored");
+        mirrorTab = new Tab("Bottom view");
         // mirrorTab.setOnSelectionChanged(e -> System.err.println(e.getTarget()));
         tabPane.getTabs().addAll(editTab, mirrorTab);
 
@@ -128,16 +127,16 @@ public class BreadBoardEditor extends Application {
         deleteSegmentButton.setOnAction(e -> deleteSegment());
 
         
-        final Interactor selectInteractor = new SelectInteractor(bv);
+        final Interactor editInteractor = new EditInteractor(bv);
         final Interactor traceInteractor = new TraceInteractor(bv);
-        final Interactor editTraceInteractor = new EditTraceInteractor(bv);
+        // final Interactor editTraceInteractor = new EditTraceInteractor(bv);
         final Interactor splitTraceInteractor = new SplitTraceInteractor(bv);
         
         ToggleGroup toggleGroup = new ToggleGroup();
         ToolbarToggleButton selectToolButton = new ToolbarToggleButton("Select", "afester/javafx/examples/board/mode-select.png");
         selectToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                bv.setInteractor(selectInteractor);
+                bv.setInteractor(editInteractor);
             }
         });
         ToolbarToggleButton traceToolButton = new ToolbarToggleButton("Trace", "afester/javafx/examples/board/mode-trace.png");
@@ -146,12 +145,12 @@ public class BreadBoardEditor extends Application {
                 bv.setInteractor(traceInteractor);   
             }
         });
-        ToolbarToggleButton editTraceToolButton = new ToolbarToggleButton("Edit Trace", "afester/javafx/examples/board/mode-edittrace.png");
-        editTraceToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
-            if (newValue) {
-                bv.setInteractor(editTraceInteractor);   
-            }
-        });
+//        ToolbarToggleButton editTraceToolButton = new ToolbarToggleButton("Edit Trace", "afester/javafx/examples/board/mode-edittrace.png");
+//        editTraceToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
+//            if (newValue) {
+//                bv.setInteractor(editTraceInteractor);   
+//            }
+//        });
         ToolbarToggleButton splitTraceToolButton = new ToolbarToggleButton("Split Trace", "afester/javafx/examples/board/mode-splittrace.png");
         splitTraceToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
@@ -161,7 +160,7 @@ public class BreadBoardEditor extends Application {
 
         selectToolButton.setToggleGroup(toggleGroup);
         traceToolButton.setToggleGroup(toggleGroup);
-        editTraceToolButton.setToggleGroup(toggleGroup);
+        // editTraceToolButton.setToggleGroup(toggleGroup);
         splitTraceToolButton.setToggleGroup(toggleGroup);
 
         selectToolButton.setSelected(true);
@@ -174,7 +173,7 @@ public class BreadBoardEditor extends Application {
                 new Separator(),
                 selectToolButton,
                 traceToolButton,
-                editTraceToolButton,
+                // editTraceToolButton,
                 splitTraceToolButton,
                 new Separator(),
                 shortestPathButton,
@@ -235,15 +234,18 @@ public class BreadBoardEditor extends Application {
             System.err.println("Switch to EDIT tab");
         } else if (newIdx == 1) {
             System.err.println("Switch to MIRROR tab");
-            Board b = bv.getBoard();
-            BoardView mirror = new BoardView();
-            mirror.setBoard(b);
-            mirror.setReadOnly(true);
-            
-            mirror.getTransforms().add(Transform.scale(-1, 1));
-            DrawingView mirrorView = new DrawingView(mirror);
-            mirrorTab.setContent(mirrorView);
-//            mirrorView.centerContent();
+
+            if (bottomView == null) {
+                Board b = bv.getBoard();
+                bottomView = new BoardView(b);
+                bottomView.setReadOnly(true);
+
+                bottomView.getTransforms().add(Transform.scale(-1, 1));
+    
+                DrawingView mirrorView = new DrawingView(bottomView);
+                mirrorTab.setContent(mirrorView);
+                mirrorView.centerContent();
+            }
         }
     }
 

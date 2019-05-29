@@ -17,12 +17,6 @@ public class AirWire extends AbstractWire {
      */
     public AirWire(AbstractNode from, AbstractNode to) {
         super(from, to);
-
-        // TODO: We need a thicker selectionShape (a thicker transparent line) with the
-        // same coordinates
-        // so that selecting the line is easier
-//        setStrokeWidth(0.3); // 0.2);
-//        setStroke(Color.ORANGE);
     }
 
     @Override
@@ -33,10 +27,6 @@ public class AirWire extends AbstractWire {
 
         return traceNode;
     }
-
-    
-    
-    
     
 //    private void convertToTrace(MouseEvent e) {
 //		Net net = getNet();
@@ -204,40 +194,6 @@ public class AirWire extends AbstractWire {
 //            net.addTrace(t);
 //        }
     }
-//
-//
-//    protected void setSegmentSelected(boolean isSelected) {
-//        BoardView bv = getNet().getBoardView();
-//        bv.getHandleGroup().getChildren().clear();
-//        if (isSelected) {
-//            // Both ends of an Airwire can ALLWAYS be moved to a different node  
-//
-////            if (from instanceof Junction) {
-////                from.setSelected(true);
-////            } else {
-//                System.err.println("Adding handle for FROM: " + from.getPos());
-//                Handle handle = new FromHandle(getNet(), this);
-//                bv.getHandleGroup().getChildren().add(handle);
-////            }
-////            if (to instanceof Junction) {
-////                to.setSelected(true);
-////            } else {
-//                System.err.println("Adding handle for TO: " + to.getPos());
-//                handle = new ToHandle(getNet(), this);
-//                bv.getHandleGroup().getChildren().add(handle);
-////            }
-//
-//            setStroke(Color.RED);
-//        } else {
-////            if (from instanceof Junction) {
-////                from.setSelected(false);
-////            }
-////            if (to instanceof Junction) {
-////                to.setSelected(false);
-////            }
-//            setStroke(Color.ORANGE);
-//        }
-//    }
 
     @Override
     public String toString() {

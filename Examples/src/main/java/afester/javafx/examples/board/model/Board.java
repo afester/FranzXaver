@@ -69,11 +69,12 @@ public class Board {
     }
     
 
-    public void saveAs(File file) {
+    public void save() {
+        saveAs(boardFile);
     }
 
-    public void save() {
-        System.err.println("Saving " + boardFile.getAbsolutePath());
+    public void saveAs(File destFile) {
+        System.err.println("Saving " + destFile.getAbsolutePath());
 
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder;
@@ -123,7 +124,7 @@ public class Board {
             tf.setOutputProperty(OutputKeys.INDENT, "yes");
             tf.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 
-            FileOutputStream fos = new FileOutputStream(boardFile);
+            FileOutputStream fos = new FileOutputStream(destFile);
             Writer out = new OutputStreamWriter(fos, "UTF-8");
             tf.transform(new DOMSource(doc), new StreamResult(out));
             out.close();
@@ -139,7 +140,7 @@ public class Board {
             e.printStackTrace();
         }
 
-        System.err.println("Saved " + boardFile.getAbsolutePath());
+        System.err.println("Saved " + destFile.getAbsolutePath());
     }
 
     public void load(File file) {
@@ -321,7 +322,6 @@ public class Board {
 
                 addNet(net);
             }
-
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         } catch (SAXException e) {
@@ -555,5 +555,9 @@ public class Board {
                 100.0, 81.0,
                 100.0, 132.0,
                 0.0, 132.0};
+    }
+
+    public Part getPart(String ref) {
+        return parts.get(ref);
     }
 }

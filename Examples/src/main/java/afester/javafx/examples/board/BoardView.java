@@ -7,9 +7,13 @@ import afester.javafx.examples.board.model.Board;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -38,7 +42,9 @@ public class BoardView extends Pane {
     private final Point2D padOffset = new Point2D(2.5, 2.0);
 
     private Group partsGroup;
-    private Group wireGroup;
+    private Group airWireGroup;
+    private Group traceGroup;
+    private Group bridgeGroup;
     private Group dimensionGroup;
     private Group handleGroup;
 
@@ -53,6 +59,12 @@ public class BoardView extends Pane {
     
 
     public BoardView() {
+        setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, new CornerRadii(0), new Insets(0))));
+    }
+
+    public BoardView(Board board) {
+        this();
+        setBoard(board);
     }
 
     public static <T> void pointIterator(Iterable<T> iterable, BiConsumer<T, T> consumer) {
@@ -150,11 +162,16 @@ public class BoardView extends Pane {
 
         padsGroup.setClip(clipShape);
         partsGroup = new Group();
-        wireGroup = new Group();
+        partsGroup.setId("partsGroup");
+        airWireGroup = new Group();
+        traceGroup = new Group();
+        bridgeGroup = new Group();
         dimensionGroup = new Group();
         handleGroup = new Group();
 
-        getChildren().addAll(padsGroup, partsGroup, wireGroup, dimensionGroup, handleGroup);
+        getChildren().addAll(padsGroup, partsGroup,
+                             traceGroup, bridgeGroup, airWireGroup,
+                             dimensionGroup, handleGroup);
 
         // add the board dimensions
         System.err.println("Adding Board dimensions ...");
@@ -164,8 +181,18 @@ public class BoardView extends Pane {
         board.getNets().forEach((netName, net) -> {
             System.err.println("  " + net);
             NetView netView = new NetView(net);
-            wireGroup.getChildren().add(netView);
-            net.setBoardView(this);
+            netView.getTraceViews().forEach(trace -> {
+                switch(trace.getType()) {
+                    case AIRWIRE: airWireGroup.getChildren().add(trace);
+                                  break;
+
+                    case BRIDGE : bridgeGroup.getChildren().add(trace);
+                                  break;
+
+                    case TRACE  : traceGroup.getChildren().add(trace);
+                                  break;
+                }
+            });
 
             // HACK!!!!
 //            net.getPads().forEach(pad -> {

@@ -10,7 +10,7 @@ import javafx.geometry.Point2D;
 /**
  * An AbstractWire is the basic edge in a net graph. It connects exactly two junctions.
  */
-public abstract class AbstractWire /*extends Line implements Interactable */ {
+public abstract class AbstractWire {
     protected AbstractNode from;
     protected AbstractNode to;
 
@@ -18,18 +18,11 @@ public abstract class AbstractWire /*extends Line implements Interactable */ {
         this.from = from;
         this.to = to;
 
-//        setStart(from.getPos());
-//        setEnd(to.getPos());
-//
-//        // TODO: We need a thicker selectionShape (a thicker transparent line) with the same coordinates
-//        // so that selecting the line is easier
-//        setStrokeWidth(1.0); // 0.2);
-//        setStroke(Color.SILVER);
-//        setStrokeLineCap(StrokeLineCap.ROUND);
         from.addStart(this);
         to.addEnd(this);
-//        
-//        createContextMenu();
+        
+        setStart(from.getPos());
+        setEnd(to.getPos());
     }
 
 
@@ -61,7 +54,7 @@ public abstract class AbstractWire /*extends Line implements Interactable */ {
     public AbstractNode getTo() {
         return to;
     }
-//
+
 //    public void setFrom(AbstractNode newJunction) {
 //        from = newJunction;
 //        setStart(from.getPos());
@@ -74,56 +67,6 @@ public abstract class AbstractWire /*extends Line implements Interactable */ {
 
     public abstract Node getXML(Document doc);
 
-//    // TODO: currently each trace has its own context menu instance!
-//    private ContextMenu contextMenu;
-//    private void createContextMenu() {
-//        contextMenu = new ContextMenu();
-//    	MenuItem item1 = new MenuItem("Delete");
-//    	item1.setOnAction(e -> {
-//    	        System.out.println("Delete " + AbstractWire.this);
-//    	});
-//    	contextMenu.getItems().addAll(item1);
-//    }
-//
-//
-//    @Override
-//    public void setSelected(boolean isSelected) {
-////    	if (isSelected) {
-//            Net net = getNet();
-//            net.getTraces().forEach(e -> e.setSegmentSelected(isSelected));
-//
-//            //from.setSelected(true);
-//            //to.setSelected(true);
-//    		//setStroke(Color.DARKGRAY);
-//  //  	} else {
-//            //from.setSelected(false);
-//            //to.setSelected(false);
-//    		//setStroke(Color.SILVER);
-//    //	}
-//    }
-//
-//    protected void setSegmentSelected(boolean isSelected) {
-//      if (isSelected) {
-//        from.setSelected(true);
-//        to.setSelected(true);
-//        setStroke(Color.RED);
-//      } else {
-//        from.setSelected(false);
-//        to.setSelected(false);
-//        setStroke(Color.ORANGE);
-//      }
-//    }
-//
-//	@Override
-//	public Point2D getPos() {
-//		return new Point2D(getLayoutX(), getLayoutY());
-//	}
-//
-//    @Override
-//    public String getRepr() {
-//        return "Net: " + getNet().getName(); 
-//    }
-//    
     public AbstractNode getOtherNode(AbstractNode node) {
         if (from == node) {
             return to;

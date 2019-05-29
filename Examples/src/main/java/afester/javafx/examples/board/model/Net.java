@@ -7,37 +7,19 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-import afester.javafx.examples.board.BoardView;
-
 /**
  * A net is a collection of (Pads and) Junctions which are connected through Traces.
  * (The pads are currenty not required - they are implicitly defined through the traces!)   
  */
 public class Net {
 
-    // Model
     private String netName;
     private List<Junction> junctionList = new ArrayList<>();    // A list of junctions - not associated to a part. Junctions can be added and removed.
     private List<AbstractWire> traceList = new ArrayList<>();
-    private BoardView bv = null;   // the BoardView which shows this net
-
-//    // View (TODO: separate in own class)
-//    private Group junctions = new Group();
-//    Group traces = new Group();
 
     public Net(String netName) {
         this.netName = netName;
     }
-
-
-    public void setBoardView(BoardView bv) {
-        this.bv = bv;
-    }
-    
-    public BoardView getBoardView() {
-        return this.bv;
-    }
-
 
     /**
      * @return The name of the net.
@@ -51,13 +33,10 @@ public class Net {
 
     public void addJunction(Junction newJunction) {
         junctionList.add(newJunction);
-//        junctions.getChildren().add(newJunction);
     }
 
     public void removeJunction(AbstractNode junction) {
         junctionList.remove(junction);
-
-//        junctions.getChildren().remove(junction);
     }
     
     public List<Junction> getJunctions() {
@@ -81,8 +60,6 @@ public class Net {
 
     public void addTrace(AbstractWire trace) {
         traceList.add(trace);
-
-//        traces.getChildren().add(trace);
     }
 
     /**

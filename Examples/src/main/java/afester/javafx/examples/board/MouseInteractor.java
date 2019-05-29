@@ -55,6 +55,7 @@ public abstract class MouseInteractor implements Interactor {
     public final void mousePressed(MouseEvent e) {
 	    pos = new Point2D(e.getX(), e.getY());
         Interactable clickedObject = getClickedObject(e);
+
         if (clickedObject != null) {
 
             offset = clickedObject.getPos().subtract(e.getX(), e.getY());

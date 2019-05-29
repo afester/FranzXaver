@@ -1,21 +1,11 @@
 package afester.javafx.examples.board;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import afester.javafx.examples.board.model.AbstractNode;
-import afester.javafx.examples.board.model.AbstractWire;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 
 
-public abstract class AbstractNodeView extends Group implements Interactable { // */ implements PartShape /*, Interactable*/ {
-//    private Point2D pos;
-//    protected Net net;
-    public List<AbstractWire> traceStarts = new ArrayList<>();
-    public List<AbstractWire> traceEnds = new ArrayList<>();
-
-//     protected int id;	// currently only required for serialization and deserialization
+public abstract class AbstractNodeView extends Group implements Interactable {
 
     private AbstractNode node;
 
@@ -25,23 +15,12 @@ public abstract class AbstractNodeView extends Group implements Interactable { /
         this.node = node;
     }
 
-//    public void setId(int i) {
-//       id = i;
-//    }
-
 //    // @Override
 	public Point2D getPos() {
 	    return node.getPos();
         // return new Point2D(node.getPgetCenterX(), getCenterY());
     }
 
-    public void addStart(AbstractWire wire) {
-        traceStarts.add(wire);
-    }
-
-    public void addEnd(AbstractWire wire) {
-        traceEnds.add(wire);
-    }
 
     public void moveTraces2(double x, double y) {
         // TODO: This requires a reference to a real "Trace" object.

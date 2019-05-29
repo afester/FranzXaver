@@ -58,13 +58,13 @@ public class Pad extends AbstractNode {
 //    }
 
 // This is a hack to track the global connect position for the Pad.
-    private Point2D connectPos = new Point2D(0, 0);
-    public Point2D getConnectPosition() {
-        return connectPos;
-    }
-    public void setConnectPosition(Point2D pos) {
-        connectPos = pos;
-    }
+//    private Point2D connectPos = new Point2D(0, 0);
+//    public Point2D getConnectPosition() {
+//        return connectPos;
+//    }
+//    public void setConnectPosition(Point2D pos) {
+//        connectPos = pos;
+//    }
 
 
 //

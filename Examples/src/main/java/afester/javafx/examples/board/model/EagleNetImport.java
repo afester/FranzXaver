@@ -33,6 +33,8 @@ public class EagleNetImport extends NetImport {
     @Override
 	public Board importFile(File file) {
         Board board = new Board();
+        
+        double minY = 0;
 
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder;
@@ -64,9 +66,9 @@ public class EagleNetImport extends NetImport {
                     
                     String gate = partInstance.getAttribute("gate");
                     partPos = new Point2D(Double.parseDouble(partInstance.getAttribute("x")),
-                                                  -Double.parseDouble(partInstance.getAttribute("y")));
-
-                    System.err.printf("PI: %s %s\n", gate, partPos);
+                                          -Double.parseDouble(partInstance.getAttribute("y")));
+                    minY = Math.min(partPos.getY(), minY);
+                    // System.err.printf("PI: %s %s\n", gate, partPos);
                 }
 
                 System.err.printf("Part: %s - library: \"%s\", deviceset: \"%s\", device: \"%s\"\n", partName, partLibrary, partDeviceSet, partDevice);
@@ -137,6 +139,12 @@ public class EagleNetImport extends NetImport {
         } catch (XPathExpressionException e) {
             e.printStackTrace();
         }
+
+        // move all parts to "positive" Y coordinates
+        final Point2D delta = new Point2D(0, -minY);
+        board.getParts().values().forEach(part -> {
+            part.setPosition(part.getPosition().add(delta));
+        });
 
         return board;
     }

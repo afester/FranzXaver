@@ -16,32 +16,6 @@ public class Trace extends AbstractWire {
         super(from, to);
     }
 
-//    
-//    @Override
-//    protected void setSegmentSelected(boolean isSelected) {
-//      if (isSelected) {
-//        from.setSelected(true);
-//        to.setSelected(true);
-//
-//        setStroke(Color.RED);
-//      } else {
-//        from.setSelected(false);
-//        to.setSelected(false);
-//
-//        if (isBridge) {
-//            setStroke(Color.GREEN);
-//        } else {
-//            setStroke(Color.SILVER);
-//        }
-//      }
-//    }
-
-
-    @Override
-    public String toString() {
-        return String.format("Trace[%s - %s]", this.getFrom(), this.getTo());
-    }
-
 
     @Override
     public Node getXML(Document doc)  {
@@ -56,8 +30,16 @@ public class Trace extends AbstractWire {
 
     public void setAsBridge() {
         isBridge = true;
+    }
 
-//        setStroke(Color.GREEN);
-//        setStrokeWidth(0.5);
+    
+    public boolean isBridge() {
+        return isBridge;
+    }
+
+    
+    @Override
+    public String toString() {
+        return String.format("Trace[%s - %s]", this.getFrom(), this.getTo());
     }
 }

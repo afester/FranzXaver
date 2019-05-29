@@ -9,15 +9,16 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.StrokeLineCap;
 
 /**
- * An AbstractWire is the basic edge in a net graph. It connects exactly two junctions.
+ * A JavaFX shape to visualize the edge of a graph.
  */
 public abstract class AbstractWireView extends Line implements Interactable  {
-//    protected AbstractNodeView from;
-//    protected AbstractNodeView to;
 
-    public AbstractWireView(AbstractWire wire) { // AbstractNodeView from, AbstractNodeView to) {
-//        this.from = from;
-//        this.to = to;
+    /**
+     * Creates a new AbstractWireView for a given AbstractWire.
+     *
+     * @param wire The model object for the graph edge.
+     */
+    public AbstractWireView(AbstractWire wire) {
 
         // Remember: the change listener is REALLY only called when the value CHANGES (i.e. is not equals() to the old value)
         wire.startPointProperty().addListener((obj, oldValue, newValue) -> {
@@ -29,72 +30,53 @@ public abstract class AbstractWireView extends Line implements Interactable  {
             setEnd(newValue);
         });
 
-//        Point2D startPos = wire.getTo().getPos();
-//        Point2D endPos = wire.getFrom().getPos();
-
-        
-//        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        setStart(wire.getTo().getConnectPosition());
-        setEnd(wire.getFrom().getConnectPosition());
+        // Set initial wire positions - pad connections will be corrected later!
+        setStart(wire.getStart()); //  .getFrom().getPos());
+        setEnd(wire.getEnd()); // .getTo().getPos());
 
         // TODO: We need a thicker selectionShape (a thicker transparent line) with the same coordinates
         // so that selecting the line is easier
-        setStrokeWidth(1.0); // 0.2);
-        setStroke(Color.SILVER);
+        setStrokeWidth(0.5); // 0.2);
+        setStroke(Color.BLACK);
         setStrokeLineCap(StrokeLineCap.ROUND);
 
-//        from.addStart(this);
-//        to.addEnd(this);
-        
         createContextMenu();
     }
 
-
-//    /**
-//     * @return The Net this AbstractWire is part of.
-//     */
-//    public Net getNet() {
-//        // Net net = (Net) getParent().getParent();
-//        return from.getNet();   // from and to are part of the same net! 
-//    }
-
+    /**
+     * @return The start point of this edge as a Point2D object.
+     */
     public Point2D getStart() {
         return new Point2D(getStartX(), getStartY());
     }
 
+    /**
+     * Sets the start point of this edge from a Point2D object.
+     *
+     * @param p The new start point.
+     */
     public void setStart(Point2D p) {
         setStartX(p.getX());
         setStartY(p.getY());
     }
 
+    /**
+     * @return The end point of this edge as a Point2D object.
+     */
     public Point2D getEnd() {
         return new Point2D(getEndX(), getEndY());
     }
 
+    /**
+     * Sets the end point of this edge from a Point2D object.
+     *
+     * @param p The new end point.
+     */
     public void setEnd(Point2D p) {
         setEndX(p.getX());
         setEndY(p.getY());
     }
 
-//    public AbstractNode getFrom() {
-//        return from;
-//    }
-//
-//    public AbstractNode getTo() {
-//        return to;
-//    }
-
-//    public void setFrom(AbstractNode newJunction) {
-//        from = newJunction;
-//        setStart(from.getPos());
-//    }
-//
-//    public void setTo(AbstractNode newJunction) {
-//        to = newJunction;
-//        setEnd(to.getPos());
-//    }
-
-//    public abstract Node getXML(Document doc);
 
     // TODO: currently each trace has its own context menu instance!
     private ContextMenu contextMenu;
