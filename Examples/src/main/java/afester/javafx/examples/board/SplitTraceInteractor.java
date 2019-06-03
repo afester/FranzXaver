@@ -24,7 +24,7 @@ public class SplitTraceInteractor extends MouseInteractor {
             net.addJunction(newJunction);
 //            trace.reconnect(trace.getTo(), newJunction);    
             
-            Trace newTrace = new Trace(newJunction, oldDest);
+            Trace newTrace = new Trace(newJunction, oldDest, net);
             net.addTrace(newTrace);
         }
     }

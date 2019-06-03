@@ -12,8 +12,8 @@ public class Trace extends AbstractWire {
 
     private boolean isBridge = false;
 
-    public Trace(AbstractNode from, AbstractNode to) {
-        super(from, to);
+    public Trace(AbstractNode from, AbstractNode to, Net net) {
+        super(from, to, net);
     }
 
 
@@ -41,5 +41,14 @@ public class Trace extends AbstractWire {
     @Override
     public String toString() {
         return String.format("Trace[%s - %s]", this.getFrom(), this.getTo());
+    }
+
+
+    @Override
+    public TraceType getType() {
+        if (isBridge) {
+            return TraceType.BRIDGE;
+        }
+        return TraceType.TRACE;
     }
 }

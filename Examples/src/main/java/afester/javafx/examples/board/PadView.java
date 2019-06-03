@@ -23,9 +23,6 @@ public class PadView extends AbstractNodeView {
         super(pad1);
         this.pad = pad1;
 
-        // Group result = new Group();
-        //view = new Group();
-
         Shape pad = new Circle(getPos().getX(), getPos().getY(), 0.7); // drill*2);
         pad.setFill(Color.WHITE);
         pad.setStroke(Color.BLACK);

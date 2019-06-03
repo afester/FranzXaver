@@ -1,50 +1,34 @@
-//package afester.javafx.examples.board;
-//
-//import java.util.List;
-//import java.util.stream.Collectors;
-//
-//import afester.javafx.examples.board.model.AirWire;
-//import afester.javafx.examples.board.model.Junction;
-//import javafx.geometry.Point2D;
-//
-//public class JunctionView extends AbstractNodeView {
-//
-//
-//    public JunctionView(Junction junction, int x) {
-//        super(junction);
-//        setFill(null);
-//    }
-//    
-//
-//
-////    @Override
-////    public org.w3c.dom.Node getXML(Document doc) {
-////        Element result = doc.createElement("junction");
-////        result.setAttribute("x", Double.toString(getCenterX()));
-////        result.setAttribute("y", Double.toString(getCenterY()));
-////        result.setAttribute("id", Integer.toString(id));
-////
-////        return result;
-////    }
-//
-//
-////    @Override
-////    public Node createNode() {
-////        throw new RuntimeException("NYI!");
-////    }
-//
-//
-//    @Override
-//    public String getRepr() {
-//        return "Junction";
-//    }
-//
+package afester.javafx.examples.board;
+
+import afester.javafx.examples.board.model.Junction;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Shape;
+
+public class JunctionView extends AbstractNodeView {
+
+    public JunctionView(Junction junction) {
+        super(junction);
+        
+        Shape shape = new Circle(getPos().getX(), getPos().getY(), 0.5); // drill*2);
+        shape.setFill(null);
+        shape.setStroke(null);
+
+        getChildren().addAll(shape);
+
+        junction.colorProperty().addListener((obj, oldColor, newColor) -> shape.setFill(newColor)); 
+    }
+
+
+    @Override
+    public String getRepr() {
+        return "Junction";
+    }
+
 //    @Override
 //    public String toString() {
 //        return String.format("Junction[pos=%s/%s]", getCenterX(), getCenterY());  
 //    }
-//
-//
+
 //
 //    public List<AirWire> getAirwires() {
 //        List<AirWire> result = traceStarts.stream()
@@ -80,4 +64,10 @@
 //        // TODO Auto-generated method stub
 //        return new Point2D(0, 0);
 //    }
-//}
+
+    @Override
+    public void setSelected(boolean isSelected) {
+        // TODO Auto-generated method stub
+        
+    }
+}

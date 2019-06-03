@@ -15,8 +15,8 @@ public class AirWire extends AbstractWire {
      * @param from The start junction for the AirWire.
      * @param from The end junction for the AirWire.
      */
-    public AirWire(AbstractNode from, AbstractNode to) {
-        super(from, to);
+    public AirWire(AbstractNode from, AbstractNode to, Net net) {
+        super(from, to, net);
     }
 
     @Override
@@ -198,5 +198,10 @@ public class AirWire extends AbstractWire {
     @Override
     public String toString() {
         return String.format("AirWire[%s - %s]", getFrom(), getTo());
+    }
+
+    @Override
+    public TraceType getType() {
+        return TraceType.AIRWIRE;
     }
 }

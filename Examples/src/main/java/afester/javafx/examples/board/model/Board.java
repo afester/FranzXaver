@@ -294,7 +294,7 @@ public class Board {
                     if (to == null) to = pads.get(toId);        // TODO: This is a bad hack!!!!
                     System.err.printf("  AW: %s -> %s\n", from, to);
 
-                    AirWire aw = new AirWire(from, to);
+                    AirWire aw = new AirWire(from, to, net);
                     net.addTrace(aw);
                 }
 
@@ -311,7 +311,7 @@ public class Board {
                     if (to == null) to = pads.get(toId);          // TODO: This is a bad hack!!!!
                     System.err.printf("  T : %s -> %s\n", from, to);
 
-                    Trace t = new Trace(from, to);
+                    Trace t = new Trace(from, to, net);
                     if (isBridge) {
                         t.setAsBridge();
                     }
@@ -476,7 +476,7 @@ public class Board {
             Pad p1 = null;
             for (Pad p2 : padList) {
                 if (p1 != null) {
-                    net.addTrace(new AirWire(p1, p2));
+                    net.addTrace(new AirWire(p1, p2, net));
                 }
                 p1 = p2;
             }
@@ -508,7 +508,7 @@ public class Board {
             Pad p1 = null;
             for (Pad p2 : padList) {
                 if (p1 != null) {
-                    net.addTrace(new AirWire(p1, p2));
+                    net.addTrace(new AirWire(p1, p2, net));
                 }
                 p1 = p2;
             }

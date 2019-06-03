@@ -3,7 +3,10 @@ package afester.javafx.examples.board.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
+import javafx.scene.paint.Color;
 
 
 public abstract class AbstractNode {
@@ -15,9 +18,13 @@ public abstract class AbstractNode {
 
     protected int id;	// currently only required for serialization and deserialization
 
+    private ObjectProperty<Color> color = new SimpleObjectProperty<Color>(Color.LIGHTGRAY);
+    public ObjectProperty<Color> colorProperty() { return color; }
+    public void setColor(Color col) { color.setValue(col); }
+    public Color getColor() { return color.get(); }
+
+
     public AbstractNode(Net net, Point2D pos) {
-        //super(pos.getX(), pos.getY(), 0.5);
-        //setFill(null);
         this.pos = pos;
         this.net = net;
     }
@@ -26,22 +33,13 @@ public abstract class AbstractNode {
        id = i;
     }
 
-    // @Override
 	public Point2D getPos() {
-        return pos; // return new Point2D(getCenterX(), getCenterY());
+        return pos;
     }
 	
-//	public Point2D getConnectPosition() {
-//	    return pos;
-//	}
-
     public void setPos(Point2D pos) {
         this.pos = pos;
-//      setCenterX(snapPos.getX());
-//      setCenterY(snapPos.getY());
-//      moveTraces2(snapPos.getX(), snapPos.getY());
     }
-
 
     public void addStart(AbstractWire wire) {
         traceStarts.add(wire);

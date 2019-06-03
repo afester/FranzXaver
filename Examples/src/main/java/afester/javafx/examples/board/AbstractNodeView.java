@@ -2,16 +2,17 @@ package afester.javafx.examples.board;
 
 import afester.javafx.examples.board.model.AbstractNode;
 import javafx.geometry.Point2D;
-import javafx.scene.Group;
+import javafx.scene.layout.Pane;
 
 
-public abstract class AbstractNodeView extends Group implements Interactable {
+public abstract class AbstractNodeView extends Pane implements Interactable {
 
     private AbstractNode node;
 
     public AbstractNodeView(AbstractNode node) {
         //super(pos.getX(), pos.getY(), 0.5);
         //setFill(null);
+        setMouseTransparent(false);
         this.node = node;
     }
 

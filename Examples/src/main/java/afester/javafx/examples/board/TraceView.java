@@ -1,8 +1,9 @@
 package afester.javafx.examples.board;
 
 import afester.javafx.examples.board.model.AbstractWire;
-import afester.javafx.examples.board.model.AirWire;
+import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.model.Trace;
+import afester.javafx.examples.board.model.TraceType;
 import javafx.scene.paint.Color;
 
 
@@ -12,37 +13,34 @@ import javafx.scene.paint.Color;
  */
 public class TraceView extends AbstractWireView {
 
-    private AbstractWire trace;
+    private AbstractWire wire;
 
     public TraceView(AbstractWire trace) {
         super(trace);
-        this.trace = trace;
+        this.wire = trace;
 
         showUnselected();
+
+        trace.colorProperty().addListener((obj, oldColor, newColor) -> {
+            setStroke(newColor);
+        });
+    }
+
+    public AbstractWire getTrace() {
+        return wire;
     }
 
 
-    public TraceType getType() {
-        if (trace instanceof AirWire) {
-            return TraceType.AIRWIRE;
-        }
-        Trace t = (Trace) trace;
-        if (t.isBridge()) {
-            return TraceType.BRIDGE;
-        }
-        return TraceType.TRACE;
-    }
+//    public void setSelected(boolean isSelected) {
+//        trace.setSelected(isSelected);
+////        if (isSelected) {
+////            showSelected();
+////        } else {
+////            showUnselected();
+////        }
+//    }
 
-    public void setSelected(boolean isSelected) {
-        if (isSelected) {
-            showSelected();
-        } else {
-            showUnselected();
-        }
-    }
 
-    
-    
     private void showUnselected() {
         switch(getType()) {
         case AIRWIRE:
@@ -69,32 +67,32 @@ public class TraceView extends AbstractWireView {
     }
 
 
-    private void showSelected() {
-        switch(getType()) {
-        case AIRWIRE:
-            // TODO: We need a thicker selectionShape (a thicker transparent line) with the
-            // same coordinates
-            // so that selecting the line is easier
-            setStrokeWidth(0.3); // 0.2);
-            setStroke(Color.RED);
-            break;
-
-        case BRIDGE:
-            setStrokeWidth(0.5);
-            setStroke(Color.RED);
-            break;
-
-        case TRACE:
-            setStrokeWidth(1.0); // 0.2);
-            setStroke(Color.RED);
-//            from.setSelected(true);
-//            to.setSelected(true);
-            break;
-
-        default:
-            break;
-        }
-    }
+//    private void showSelected() {
+//        switch(getType()) {
+//        case AIRWIRE:
+//            // TODO: We need a thicker selectionShape (a thicker transparent line) with the
+//            // same coordinates
+//            // so that selecting the line is easier
+//            setStrokeWidth(0.3); // 0.2);
+//            setStroke(Color.RED);
+//            break;
+//
+//        case BRIDGE:
+//            setStrokeWidth(0.5);
+//            setStroke(Color.RED);
+//            break;
+//
+//        case TRACE:
+//            setStrokeWidth(1.0); // 0.2);
+//            setStroke(Color.RED);
+////            from.setSelected(true);
+////            to.setSelected(true);
+//            break;
+//
+//        default:
+//            break;
+//        }
+//    }
 
 
 
@@ -123,6 +121,17 @@ public class TraceView extends AbstractWireView {
         return String.format("TraceView[p1=(%s %s), p2=(%s %s), type=%s]", 
                              this.getStart().getX(), this.getStart().getY(), 
                              this.getEnd().getX(), this.getEnd().getY(),
-                             this.getType());
+                             wire.getType());
+    }
+
+    @Override
+    public void setSelected(boolean isSelected) {
+        Trace trace = (Trace) wire;
+        Net net = trace.getNet();
+        net.setSelected(isSelected, trace);
+    }
+
+    public TraceType getType() {
+        return wire.getType();
     }
 }

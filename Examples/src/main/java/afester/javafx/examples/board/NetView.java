@@ -13,15 +13,19 @@ import afester.javafx.examples.board.model.Net;
 public class NetView {
 
     private List<TraceView> traces = new ArrayList<>();
+    private List<JunctionView> junctions = new ArrayList<>();
     
     public NetView(Net net) {
         
-        net.getTraces().forEach(trace -> {
-            traces.add(new TraceView(trace));
-        });
+        net.getTraces().forEach(trace -> traces.add(new TraceView(trace)));
+        net.getJunctions().forEach(junction -> junctions.add(new JunctionView(junction)));
     }
     
     public List<TraceView> getTraceViews() {
         return traces;
+    }
+
+    public  List<JunctionView> getJunctionViews() {
+        return junctions;
     }
 }

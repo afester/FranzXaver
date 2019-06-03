@@ -123,7 +123,7 @@ public class EagleNetImport extends NetImport {
                 Pad p1 = null;
                 for (Pad p2 : padList) {
                     if (p1 != null) {
-                        net.addTrace(new AirWire(p1, p2));
+                        net.addTrace(new AirWire(p1, p2, net));
                     }
                     p1 = p2;
                 }

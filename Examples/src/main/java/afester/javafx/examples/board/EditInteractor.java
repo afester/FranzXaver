@@ -18,13 +18,21 @@ public class EditInteractor  extends MouseInteractor {
 
     @Override
     protected void clickObjectLeft(Interactable obj) {
+        System.err.println("CLICK ON: " + obj);
         if (obj instanceof PartView) {
             clickedPartView(obj);
         } else if (obj instanceof TraceView) {
             clickedTraceView(obj);
         } else if (obj instanceof Handle) {
             clickedHandle(obj);
+        } else if (obj instanceof JunctionView) {
+            clickedJunction(obj);
         }
+    }
+
+
+    private void clickedJunction(Interactable obj) {
+        System.err.println("Clicked junction: " + obj);
     }
 
 
@@ -48,9 +56,8 @@ public class EditInteractor  extends MouseInteractor {
             }
         }
 
-
-        obj.setSelected(true);
         bv.setSelectedObject(obj);
+        obj.setSelected(true);
 
 //        // obj can be Junction, Wire (Trace or AirWire) or something else
 //        //            Junction can be part of the currently selected Trace or something else

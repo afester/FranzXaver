@@ -20,6 +20,7 @@ public abstract class MouseInteractor implements Interactor {
     protected Interactable getClickedObject(MouseEvent e) {
         Interactable result = null;
         EventTarget target = e.getTarget();
+        System.err.println("Target:" + target);
         if (target instanceof Interactable) {
             result = (Interactable) target;
         } else if (target instanceof SelectionShape) {
@@ -55,7 +56,7 @@ public abstract class MouseInteractor implements Interactor {
     public final void mousePressed(MouseEvent e) {
 	    pos = new Point2D(e.getX(), e.getY());
         Interactable clickedObject = getClickedObject(e);
-
+        System.err.println("Clicked object:" + clickedObject);
         if (clickedObject != null) {
 
             offset = clickedObject.getPos().subtract(e.getX(), e.getY());

@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
+import javafx.scene.paint.Color;
+
 /**
  * A net is a collection of (Pads and) Junctions which are connected through Traces.
  * (The pads are currenty not required - they are implicitly defined through the traces!)   
@@ -200,7 +202,7 @@ public class Net {
         sortedPads.stream()
                   .reduce((p1, p2) -> {
             System.err.println("ADDING:" + p1 + "=>" + p2);
-            addTrace(new AirWire(p1, p2));
+            addTrace(new AirWire(p1, p2, this));
             return p2;
         });
 
@@ -340,5 +342,29 @@ public class Net {
         getAllJunctions().forEach(e -> { buffer.append(e); buffer.append(", "); } );
         buffer.append("]");
         return String.format("Net[netName=%s, %s]", netName, buffer);
+    }
+
+    
+    
+    private static Color NET_HIGHLIGHT_COLOR = new Color(Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getBlue(), 0.5);
+
+    /**
+     * Selects the whole net, and marks the given trace as the interactable object to work on
+     *
+     * @param trace
+     */
+    public void setSelected(boolean isSelected, Trace trace) {
+        if (isSelected) {
+            getTraces().forEach(segment -> segment.setColor(NET_HIGHLIGHT_COLOR));
+            trace.setColor(Color.RED);
+            trace.getFrom().setColor(Color.DARKVIOLET);
+            trace.getTo().setColor(Color.DARKVIOLET);
+        } else {
+            getTraces().forEach(segment -> {
+                segment.setColor(Color.LIGHTGRAY); 
+            });
+            trace.getFrom().setColor(null);
+            trace.getTo().setColor(null);
+        }
     }
 }

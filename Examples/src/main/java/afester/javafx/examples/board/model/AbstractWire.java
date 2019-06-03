@@ -6,6 +6,7 @@ import org.w3c.dom.Node;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
+import javafx.scene.paint.Color;
 
 /**
  * An AbstractWire is the basic edge in a net graph. It connects exactly two junctions.
@@ -13,10 +14,12 @@ import javafx.geometry.Point2D;
 public abstract class AbstractWire {
     protected AbstractNode from;
     protected AbstractNode to;
+    protected Net net;
 
-    public AbstractWire(AbstractNode from, AbstractNode to) {
+    public AbstractWire(AbstractNode from, AbstractNode to, Net net) {
         this.from = from;
         this.to = to;
+        this.net = net;
 
         from.addStart(this);
         to.addEnd(this);
@@ -26,12 +29,13 @@ public abstract class AbstractWire {
     }
 
 
+    abstract public TraceType getType();
+
     /**
      * @return The Net this AbstractWire is part of.
      */
     public Net getNet() {
-        // Net net = (Net) getParent().getParent();
-        return from.getNet();   // from and to are part of the same net! 
+        return net; 
     }
 
 
@@ -45,6 +49,11 @@ public abstract class AbstractWire {
     public ObjectProperty<Point2D> endPointProperty() { return endPoint; }
     public void setEnd(Point2D pos) { endPoint.setValue(pos); }
     public Point2D getEnd() { return endPoint.get(); }
+
+    private ObjectProperty<Color> color = new SimpleObjectProperty<Color>(Color.LIGHTGRAY);
+    public ObjectProperty<Color> colorProperty() { return color; }
+    public void setColor(Color col) { color.setValue(col); }
+    public Color getColor() { return color.get(); }
 
 
     public AbstractNode getFrom() {
@@ -77,6 +86,11 @@ public abstract class AbstractWire {
 
         throw new RuntimeException("Unexpected: Edge does neither go FROM nor TO the given node!");
     }
+
+
+    public void setSelected(boolean b) {
+    }
+
 
 
 //

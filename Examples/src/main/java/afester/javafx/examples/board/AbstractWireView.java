@@ -90,21 +90,26 @@ public abstract class AbstractWireView extends Line implements Interactable  {
     }
 
 
-    @Override
-    public void setSelected(boolean isSelected) {
-            //    	if (isSelected) {
-//                        Net net = getNet();
-//                        net.getTraces().forEach(e -> e.setSegmentSelected(isSelected));
-            
-                        //from.setSelected(true);
-                        //to.setSelected(true);
-                		//setStroke(Color.DARKGRAY);
-              //  	} else {
-                        //from.setSelected(false);
-                        //to.setSelected(false);
-                		//setStroke(Color.SILVER);
-                //	}
-    }
+//    @Override
+//    public void setSelected(boolean isSelected) {
+//        TraceView t = (TraceView) obj;
+//        Trace trace = (Trace) t.getTrace();
+//        Net net = trace.getNet();
+//        net.setSelected(trace);
+//
+//            //    	if (isSelected) {
+////                        Net net = getNet();
+////                        net.getTraces().forEach(e -> e.setSegmentSelected(isSelected));
+//            
+//                        //from.setSelected(true);
+//                        //to.setSelected(true);
+//                		//setStroke(Color.DARKGRAY);
+//              //  	} else {
+//                        //from.setSelected(false);
+//                        //to.setSelected(false);
+//                		//setStroke(Color.SILVER);
+//                //	}
+//    }
 
     protected void setSegmentSelected(boolean isSelected) {
 //      if (isSelected) {

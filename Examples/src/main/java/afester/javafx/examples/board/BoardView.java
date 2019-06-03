@@ -46,12 +46,13 @@ public class BoardView extends Pane {
     private Group traceGroup;
     private Group bridgeGroup;
     private Group dimensionGroup;
+    private Group junctionGroup;
     private Group handleGroup;
 
     private Interactor interactor = null;
     private boolean isReadOnly = false;
 
-    // The interactable object which is currently selected
+    // The interactable object which is currently selected; TODO: Can this be moved to the Interactor?
     private final ObjectProperty<Interactable> selectedObject = new SimpleObjectProperty<>();
     public ObjectProperty<Interactable> selectedObjectProperty() { return selectedObject; }
     public Interactable getSelectedObject() { return selectedObject.get(); }
@@ -167,11 +168,12 @@ public class BoardView extends Pane {
         traceGroup = new Group();
         bridgeGroup = new Group();
         dimensionGroup = new Group();
+        junctionGroup = new Group();
         handleGroup = new Group();
 
         getChildren().addAll(padsGroup, partsGroup,
                              traceGroup, bridgeGroup, airWireGroup,
-                             dimensionGroup, handleGroup);
+                             dimensionGroup, junctionGroup, handleGroup);
 
         // add the board dimensions
         System.err.println("Adding Board dimensions ...");
@@ -192,6 +194,20 @@ public class BoardView extends Pane {
                     case TRACE  : traceGroup.getChildren().add(trace);
                                   break;
                 }
+            });
+
+            netView.getJunctionViews().forEach(junction -> {
+                junctionGroup.getChildren().add(junction);
+//                switch(trace.getType()) {
+//                    case AIRWIRE: airWireGroup.getChildren().add(trace);
+//                                  break;
+//
+//                    case BRIDGE : bridgeGroup.getChildren().add(trace);
+//                                  break;
+//
+//                    case TRACE  : traceGroup.getChildren().add(trace);
+//                                  break;
+//                }
             });
 
             // HACK!!!!
