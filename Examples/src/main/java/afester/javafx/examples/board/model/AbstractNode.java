@@ -18,6 +18,15 @@ public abstract class AbstractNode {
 
     protected int id;	// currently only required for serialization and deserialization
 
+    private ObjectProperty<Point2D> position = new SimpleObjectProperty<Point2D>(Point2D.ZERO);
+    public ObjectProperty<Point2D> positionProperty() { return position; }
+    public void setPosition(Point2D pos) { 
+        position.setValue(pos);
+        traceStarts.forEach(trace -> trace.setStart(pos));
+        traceEnds.forEach(trace -> trace.setEnd(pos));
+    }
+    public Point2D getPosition() { return position.get(); }
+
     private ObjectProperty<Color> color = new SimpleObjectProperty<Color>(Color.LIGHTGRAY);
     public ObjectProperty<Color> colorProperty() { return color; }
     public void setColor(Color col) { color.setValue(col); }
@@ -37,9 +46,6 @@ public abstract class AbstractNode {
         return pos;
     }
 	
-    public void setPos(Point2D pos) {
-        this.pos = pos;
-    }
 
     public void addStart(AbstractWire wire) {
         traceStarts.add(wire);

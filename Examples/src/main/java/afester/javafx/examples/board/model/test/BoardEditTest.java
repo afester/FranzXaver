@@ -45,7 +45,7 @@ public class BoardEditTest {
 
         // move the part to a new position
         final Point2D newLocation = new Point2D(142, 66);
-        r2PartView.move(newLocation);
+        r2PartView.getPart().setPosition(newLocation);
 
         // check that model and view are in sync
         final Point2D viewPos = new Point2D(r2PartView.getLayoutX(), r2PartView.getLayoutY());

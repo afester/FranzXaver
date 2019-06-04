@@ -1,8 +1,6 @@
 package afester.javafx.examples.board;
 
 import afester.javafx.examples.board.model.AbstractWire;
-import afester.javafx.examples.board.model.Net;
-import afester.javafx.examples.board.model.Trace;
 import afester.javafx.examples.board.model.TraceType;
 import javafx.scene.paint.Color;
 
@@ -11,13 +9,11 @@ import javafx.scene.paint.Color;
  * A Trace is a part of a Net which has already been routed.
  * It can either be rendered as trace or as bridge. 
  */
-public class TraceView extends AbstractWireView {
+public class TraceView extends AbstractEdgeView {
 
-    private AbstractWire wire;
 
     public TraceView(AbstractWire trace) {
         super(trace);
-        this.wire = trace;
 
         showUnselected();
 
@@ -26,9 +22,9 @@ public class TraceView extends AbstractWireView {
         });
     }
 
-    public AbstractWire getTrace() {
-        return wire;
-    }
+//    public AbstractWire getTrace() {
+//        return wire;
+//    }
 
 
 //    public void setSelected(boolean isSelected) {
@@ -121,17 +117,10 @@ public class TraceView extends AbstractWireView {
         return String.format("TraceView[p1=(%s %s), p2=(%s %s), type=%s]", 
                              this.getStart().getX(), this.getStart().getY(), 
                              this.getEnd().getX(), this.getEnd().getY(),
-                             wire.getType());
-    }
-
-    @Override
-    public void setSelected(boolean isSelected) {
-        Trace trace = (Trace) wire;
-        Net net = trace.getNet();
-        net.setSelected(isSelected, trace);
+                             edge.getType());
     }
 
     public TraceType getType() {
-        return wire.getType();
+        return edge.getType();
     }
 }

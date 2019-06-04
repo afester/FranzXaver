@@ -2,14 +2,17 @@ package afester.javafx.examples.board;
 
 import java.util.Random;
 
+import afester.javafx.examples.board.model.Junction;
+import afester.javafx.examples.board.model.Part;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 
 public class EditInteractor  extends MouseInteractor {
 
-//    private JunctionView junctionToMove;
+    private Junction junctionToMove;
+    private Part partToMove;
+
     private AirWireHandle handleToMove;
-    private PartView partToMove;
 
     public EditInteractor(BoardView boardView) {
         super(boardView);
@@ -18,7 +21,7 @@ public class EditInteractor  extends MouseInteractor {
 
     @Override
     protected void clickObjectLeft(Interactable obj) {
-        System.err.println("CLICK ON: " + obj);
+        System.err.println("Left click on: " + obj);
         if (obj instanceof PartView) {
             clickedPartView(obj);
         } else if (obj instanceof TraceView) {
@@ -33,6 +36,9 @@ public class EditInteractor  extends MouseInteractor {
 
     private void clickedJunction(Interactable obj) {
         System.err.println("Clicked junction: " + obj);
+        junctionToMove = ((JunctionView) obj).getJunction();
+        partToMove = null;
+        handleToMove = null;
     }
 
 
@@ -58,6 +64,10 @@ public class EditInteractor  extends MouseInteractor {
 
         bv.setSelectedObject(obj);
         obj.setSelected(true);
+
+        partToMove = null;
+        handleToMove = null;
+        junctionToMove = null;
 
 //        // obj can be Junction, Wire (Trace or AirWire) or something else
 //        //            Junction can be part of the currently selected Trace or something else
@@ -119,9 +129,9 @@ public class EditInteractor  extends MouseInteractor {
             bv.setSelectedObject(obj);
 
             // TODO: Should all be accessedthrough the Interactable interface!
-            partToMove = (PartView) obj;
-            //junctionToMove = null;
+            partToMove = ((PartView) obj).getPart();
             handleToMove = null;
+            junctionToMove = null;
         }
     }
 
@@ -137,16 +147,13 @@ public class EditInteractor  extends MouseInteractor {
     protected void dragObject(Interactable obj) {
 
         if (partToMove != null) {
-            movePart();
-        }
+            Point2D snapPos = snapToGrid(getClickPos(), getBoardView(), getOffset());
+            partToMove.setPosition(snapPos);
+        } else if (junctionToMove != null) {
+            // move the junction to the new position
+            Point2D snapPos = snapToGrid(getClickPos(), getBoardView(), getOffset());
+            junctionToMove.setPosition(snapPos);
 
-
-//        // System.err.println("MOVE: " + junctionToMove);
-//        if (junctionToMove != null) {
-//            // move the junction to the new position
-//            Point2D snapPos = snapToGrid(getClickPos(), getBoardView(), getOffset());
-////            junctionToMove.setPos(snapPos);
-//
 //            List<AirWire> airWires = junctionToMove.getAirwires();
 //            airWires.forEach(aw -> {
 //                AbstractNode otherNode = null; // aw.getOtherNode(junctionToMove);
@@ -203,7 +210,7 @@ public class EditInteractor  extends MouseInteractor {
 //
 //            // Reconnect the edge from the old node to the new nearest node
 ////            aw.reconnect(node, nearestNode);
-//        }
+        }
     }
 
     @Override
@@ -212,16 +219,5 @@ public class EditInteractor  extends MouseInteractor {
             PartView part = (PartView) obj;
             part.rotatePart();
         }
-    }
-
-
-    private void movePart() {
-      // PartView partView = (PartView) obj;
-      // System.err.println("MOVE: " + obj);
-    
-      // Snap to center of part
-      // (this is also what the Eagle board editor does)
-      Point2D snapPos = snapToGrid(getClickPos(), getBoardView(), getOffset());
-      partToMove.move(snapPos);
     }
 }

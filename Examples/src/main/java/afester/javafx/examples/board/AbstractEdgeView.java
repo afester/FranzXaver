@@ -2,6 +2,7 @@ package afester.javafx.examples.board;
 
 import afester.javafx.examples.board.model.AbstractNode;
 import afester.javafx.examples.board.model.AbstractWire;
+import afester.javafx.examples.board.model.Net;
 import javafx.geometry.Point2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.paint.Color;
@@ -11,14 +12,17 @@ import javafx.scene.shape.StrokeLineCap;
 /**
  * A JavaFX shape to visualize the edge of a graph.
  */
-public abstract class AbstractWireView extends Line implements Interactable  {
+public abstract class AbstractEdgeView extends Line implements Interactable  {
+
+    protected AbstractWire edge;
 
     /**
      * Creates a new AbstractWireView for a given AbstractWire.
      *
      * @param wire The model object for the graph edge.
      */
-    public AbstractWireView(AbstractWire wire) {
+    public AbstractEdgeView(AbstractWire wire) {
+        this.edge = wire;
 
         // Remember: the change listener is REALLY only called when the value CHANGES (i.e. is not equals() to the old value)
         wire.startPointProperty().addListener((obj, oldValue, newValue) -> {
@@ -31,8 +35,10 @@ public abstract class AbstractWireView extends Line implements Interactable  {
         });
 
         // Set initial wire positions - pad connections will be corrected later!
-        setStart(wire.getStart()); //  .getFrom().getPos());
-        setEnd(wire.getEnd()); // .getTo().getPos());
+        setStart(wire.getStart());
+        setEnd(wire.getEnd());
+        wire.startPointProperty().addListener((obj, oldPos, newPos) -> setStart(newPos));
+        wire.endPointProperty().addListener((obj, oldPos, newPos) -> setEnd(newPos));
 
         // TODO: We need a thicker selectionShape (a thicker transparent line) with the same coordinates
         // so that selecting the line is easier
@@ -169,4 +175,12 @@ public abstract class AbstractWireView extends Line implements Interactable  {
 //            throw new RuntimeException("Unexpected: Edge does neither go FROM nor TO the given node!");
 //        }
     }
+    
+
+    @Override
+    public void setSelected(boolean isSelected) {
+        Net net = edge.getNet();
+        net.setSelected(isSelected, edge);
+    }
+
 }

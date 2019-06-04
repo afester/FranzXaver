@@ -50,16 +50,6 @@ public class PartView extends Group implements Interactable {
         createNode();
     }
 
-    /**
-     * Moves the part to a new location on the board.
-     *
-     * @param x The new x coordinate of the device origin.
-     * @param y The new y coordinate of the device origin.
-     */
-    public void move(Point2D pos) {
-        part.setPosition(pos);
-    }
-
     
     /**
      * Rotates the part clockwise at 90 degrees.
@@ -68,7 +58,7 @@ public class PartView extends Group implements Interactable {
         part.rotate();
     }
 
-    public Object getPart() {
+    public Part getPart() {
         return part;
     }
 
@@ -125,7 +115,7 @@ public class PartView extends Group implements Interactable {
         }
 
         for (Pad ps : part.getPads()) {
-            Node s = new PadView(ps); // ps.createNode();
+            Node s = new PadView(ps);
             padViews.getChildren().add(s);
         }
 
@@ -133,6 +123,7 @@ public class PartView extends Group implements Interactable {
         getChildren().add(shapeViews);
 
         // Create a marker for the mid point
+
         //Circle c = new Circle(0, 0, 0.5);
         //c.setFill(null);
 

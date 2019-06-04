@@ -17,22 +17,30 @@ public abstract class MouseInteractor implements Interactor {
 	}
 
     // TODO: This is a mess.
+    // E.g. it it still unclear how to select a Group or a Pane - even with setMouseTransparent(false)
+    // the child objects like Circle or Line are retrieved as the target, not the Group or Pane!
     protected Interactable getClickedObject(MouseEvent e) {
         Interactable result = null;
         EventTarget target = e.getTarget();
-        System.err.println("Target:" + target);
+        System.err.println("\nTarget:" + target);
+
         if (target instanceof Interactable) {
             result = (Interactable) target;
         } else if (target instanceof SelectionShape) {
-            SelectionShape s = (SelectionShape) target;
-            Node parent = s.getParent();
+            Node parent = ((Node) target).getParent();
             if (parent instanceof Interactable) {
                 result = (Interactable) parent;
             }
         } else if (target instanceof Handle) {
             result = (Interactable) target;
+        } else {
+            Node parent = ((Node) target).getParent();
+            if (parent instanceof Interactable) {
+                result = (Interactable) parent;
+            }
         }
 
+        System.err.println("Clicked Object:" + result);
         return result;
     }
 
@@ -56,7 +64,6 @@ public abstract class MouseInteractor implements Interactor {
     public final void mousePressed(MouseEvent e) {
 	    pos = new Point2D(e.getX(), e.getY());
         Interactable clickedObject = getClickedObject(e);
-        System.err.println("Clicked object:" + clickedObject);
         if (clickedObject != null) {
 
             offset = clickedObject.getPos().subtract(e.getX(), e.getY());

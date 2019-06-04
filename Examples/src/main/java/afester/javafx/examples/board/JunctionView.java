@@ -8,14 +8,21 @@ public class JunctionView extends AbstractNodeView {
 
     public JunctionView(Junction junction) {
         super(junction);
-        
-        Shape shape = new Circle(getPos().getX(), getPos().getY(), 0.5); // drill*2);
+
+        Shape shape = new Circle(0, 0, 0.5); // drill*2);
         shape.setFill(null);
         shape.setStroke(null);
 
         getChildren().addAll(shape);
 
-        junction.colorProperty().addListener((obj, oldColor, newColor) -> shape.setFill(newColor)); 
+        junction.colorProperty().addListener((obj, oldColor, newColor) -> shape.setFill(newColor));
+
+        this.setLayoutX(getPos().getX());
+        this.setLayoutY(getPos().getY());
+        junction.positionProperty().addListener((obj, oldPos, newPos) -> {
+            this.setLayoutX(newPos.getX());
+            this.setLayoutY(newPos.getY());
+        });
     }
 
 
@@ -24,10 +31,10 @@ public class JunctionView extends AbstractNodeView {
         return "Junction";
     }
 
-//    @Override
-//    public String toString() {
-//        return String.format("Junction[pos=%s/%s]", getCenterX(), getCenterY());  
-//    }
+    @Override
+    public String toString() {
+        return String.format("JunctionView[pos=%s]", node.getPos());  
+    }
 
 //
 //    public List<AirWire> getAirwires() {
@@ -69,5 +76,10 @@ public class JunctionView extends AbstractNodeView {
     public void setSelected(boolean isSelected) {
         // TODO Auto-generated method stub
         
+    }
+
+
+    public Junction getJunction() {
+        return (Junction) node;
     }
 }

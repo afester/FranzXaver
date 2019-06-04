@@ -353,7 +353,7 @@ public class Net {
      *
      * @param trace
      */
-    public void setSelected(boolean isSelected, Trace trace) {
+    public void setSelected(boolean isSelected, AbstractWire trace) {
         if (isSelected) {
             getTraces().forEach(segment -> segment.setColor(NET_HIGHLIGHT_COLOR));
             trace.setColor(Color.RED);
