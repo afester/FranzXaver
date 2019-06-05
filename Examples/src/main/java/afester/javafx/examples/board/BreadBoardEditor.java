@@ -6,7 +6,6 @@ import afester.javafx.components.StatusBar;
 import afester.javafx.components.ToolbarButton;
 import afester.javafx.components.ToolbarToggleButton;
 import afester.javafx.examples.board.model.AbstractNode;
-import afester.javafx.examples.board.model.AbstractWire;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.EagleNetImport;
 import afester.javafx.examples.board.model.Net;
@@ -290,18 +289,17 @@ public class BreadBoardEditor extends Application {
 
     private void resetNet() {
         Interactable selectedObject = bv.getSelectedObject();
-        if (selectedObject instanceof AbstractWire) {
+        if (selectedObject instanceof TraceView) {
             bv.clearSelection();
-
-            AbstractWire wire = (AbstractWire) selectedObject;
-            Net net = wire.getNet();
+            TraceView wire = (TraceView) selectedObject;
+            Net net = wire.getTrace().getNet();
             System.err.printf("NET: %s\n", net.getName());
 
             // calculate the shortest path of the net
             net.resetNet();
 
             // re-render board
-            bv.setBoard(bv.getBoard());
+            //bv.setBoard(bv.getBoard());
         }
     }
 

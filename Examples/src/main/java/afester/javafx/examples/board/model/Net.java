@@ -7,17 +7,19 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
 
 /**
  * A net is a collection of (Pads and) Junctions which are connected through Traces.
- * (The pads are currenty not required - they are implicitly defined through the traces!)   
+ * (The pads are currently not required - they are implicitly defined through the traces!)   
  */
 public class Net {
 
     private String netName;
-    private List<Junction> junctionList = new ArrayList<>();    // A list of junctions - not associated to a part. Junctions can be added and removed.
-    private List<AbstractWire> traceList = new ArrayList<>();
+    private ObservableList<Junction> junctionList = FXCollections.observableArrayList();    // A list of junctions - not associated to a part. Junctions can be added and removed.
+    private ObservableList<AbstractWire> traceList = FXCollections.observableArrayList();
 
     public Net(String netName) {
         this.netName = netName;
@@ -30,7 +32,7 @@ public class Net {
         return netName;
     }
 
-    // The Junctions need to be trackes separately because they are not associated to a part
+    // The Junctions need to be tracked separately because they are not associated to a part
     // (on the other hand they ARE accessible through the Traces ...)
 
     public void addJunction(Junction newJunction) {
@@ -40,8 +42,8 @@ public class Net {
     public void removeJunction(AbstractNode junction) {
         junctionList.remove(junction);
     }
-    
-    public List<Junction> getJunctions() {
+
+    public ObservableList<Junction> getJunctions() {
         return junctionList;
     }
 
@@ -56,7 +58,7 @@ public class Net {
         return result;
     }
 
-    public List<AbstractWire> getTraces() {
+    public ObservableList<AbstractWire> getTraces() {
         return traceList;
     }
 
@@ -121,6 +123,10 @@ public class Net {
     }
 
 
+    /**
+     * Removes all junctions and all traces from this net.
+     * Afterwards, the net is effectively empty.
+     */
     public void clear() {
         getPads().forEach(pad -> {
             pad.traceEnds.clear();
@@ -128,10 +134,6 @@ public class Net {
         });
         junctionList.clear();
         traceList.clear();
-
-        // View (TODO: separate into own class)
-//        junctions.getChildren().clear();
-//        traces.getChildren().clear();
     }
 
 

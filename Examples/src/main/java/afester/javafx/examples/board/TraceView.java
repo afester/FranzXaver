@@ -22,9 +22,9 @@ public class TraceView extends AbstractEdgeView {
         });
     }
 
-//    public AbstractWire getTrace() {
-//        return wire;
-//    }
+    public AbstractWire getTrace() {
+        return edge;
+    }
 
 
 //    public void setSelected(boolean isSelected) {

@@ -21,20 +21,20 @@ public abstract class AbstractNodeView extends Group implements Interactable {
     }
 
 
-    public void moveTraces2(double x, double y) {
-        // TODO: This requires a reference to a real "Trace" object.
-        // Depending on the Trace type, it might also require to move the other coordinates ....
-//        for (Line l : traceStarts) {
-//            l.setStartX(x);
-//            l.setStartY(y);
-//        }
-//
-//        for (Line l : traceEnds) {
-//            l.setEndX(x);
-//            l.setEndY(y);
-//        }
-        
-    }
+//    public void moveTraces2(double x, double y) {
+//        // TODO: This requires a reference to a real "Trace" object.
+//        // Depending on the Trace type, it might also require to move the other coordinates ....
+////        for (Line l : traceStarts) {
+////            l.setStartX(x);
+////            l.setStartY(y);
+////        }
+////
+////        for (Line l : traceEnds) {
+////            l.setEndX(x);
+////            l.setEndY(y);
+////        }
+//        
+//    }
 
 //	@Override
 //	public void setSelected(boolean isSelected) {
