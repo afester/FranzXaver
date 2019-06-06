@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
+import afester.javafx.examples.board.model.AbstractWire.AbstractWireState;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
@@ -348,7 +349,6 @@ public class Net {
 
     
     
-    private static Color NET_HIGHLIGHT_COLOR = new Color(Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getBlue(), 0.5);
 
     /**
      * Selects the whole net, and marks the given trace as the interactable object to work on
@@ -357,14 +357,14 @@ public class Net {
      */
     public void setSelected(boolean isSelected, AbstractWire trace) {
         if (isSelected) {
-            getTraces().forEach(segment -> segment.setColor(NET_HIGHLIGHT_COLOR));
-            trace.setColor(Color.RED);
+            getTraces().forEach(segment -> segment.setState(AbstractWireState.HIGHLIGHTED));
+            trace.setState(AbstractWireState.SELECTED);
+
             trace.getFrom().setColor(Color.DARKVIOLET);
             trace.getTo().setColor(Color.DARKVIOLET);
         } else {
-            getTraces().forEach(segment -> {
-                segment.setColor(Color.LIGHTGRAY); 
-            });
+            getTraces().forEach(segment -> segment.setState(AbstractWireState.NORMAL) );
+
             trace.getFrom().setColor(null);
             trace.getTo().setColor(null);
         }

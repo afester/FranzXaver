@@ -10,8 +10,29 @@ import org.w3c.dom.Node;
  */
 public class Trace extends AbstractWire {
 
+
     private boolean isBridge = false;
 
+    public void setAsBridge() {
+        isBridge = true;
+    }
+
+    
+    public boolean isBridge() {
+        return isBridge;
+    }
+
+
+    @Override
+    public TraceType getType() {
+        if (isBridge) {
+            return TraceType.BRIDGE;
+        }
+        return TraceType.TRACE;
+    }
+
+    
+    
     public Trace(AbstractNode from, AbstractNode to, Net net) {
         super(from, to, net);
     }
@@ -28,27 +49,9 @@ public class Trace extends AbstractWire {
     }
 
 
-    public void setAsBridge() {
-        isBridge = true;
-    }
-
-    
-    public boolean isBridge() {
-        return isBridge;
-    }
-
     
     @Override
     public String toString() {
         return String.format("Trace[%s - %s]", this.getFrom(), this.getTo());
-    }
-
-
-    @Override
-    public TraceType getType() {
-        if (isBridge) {
-            return TraceType.BRIDGE;
-        }
-        return TraceType.TRACE;
     }
 }

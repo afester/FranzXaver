@@ -13,8 +13,10 @@ import afester.javafx.examples.board.model.NetImport;
 import afester.javafx.examples.board.model.Trace;
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -27,6 +29,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -40,8 +43,10 @@ public class BreadBoardEditor extends Application {
 
     private Stage stage;
     private BoardView bv;
-    private Tab mirrorTab;
+    private Tab bottomViewTab;
+    private Tab printTab;
     private BoardView bottomView;
+    private final GridPane printView = new GridPane();
 
     @Override
     public void start(Stage stage){
@@ -63,13 +68,19 @@ public class BreadBoardEditor extends Application {
         // and the view can be panned and zoomed.
         DrawingView drawingView = new DrawingView(bv);
 
+        Tab editTab = new Tab("Top view");
+        editTab.setClosable(false);
+        editTab.setContent(drawingView);
+
+        bottomViewTab = new Tab("Bottom view");
+        bottomViewTab.setClosable(false);
+        
+        printTab = new Tab("Print preview");
+        printTab.setClosable(false);
+
         TabPane tabPane = new TabPane();
         tabPane.getSelectionModel().selectedIndexProperty().addListener((obj, oldIdx, newIdx) -> switchTab(newIdx.intValue()));
-        Tab editTab = new Tab("Top view");
-        editTab.setContent(drawingView);
-        mirrorTab = new Tab("Bottom view");
-        // mirrorTab.setOnSelectionChanged(e -> System.err.println(e.getTarget()));
-        tabPane.getTabs().addAll(editTab, mirrorTab);
+        tabPane.getTabs().addAll(editTab, bottomViewTab, printTab);
 
         // Create the menu bar
 
@@ -144,12 +155,6 @@ public class BreadBoardEditor extends Application {
                 bv.setInteractor(traceInteractor);   
             }
         });
-//        ToolbarToggleButton editTraceToolButton = new ToolbarToggleButton("Edit Trace", "afester/javafx/examples/board/mode-edittrace.png");
-//        editTraceToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
-//            if (newValue) {
-//                bv.setInteractor(editTraceInteractor);   
-//            }
-//        });
         ToolbarToggleButton splitTraceToolButton = new ToolbarToggleButton("Split Trace", "afester/javafx/examples/board/mode-splittrace.png");
         splitTraceToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
@@ -230,9 +235,9 @@ public class BreadBoardEditor extends Application {
 
     private void switchTab(int newIdx) {
         if (newIdx == 0) {
-            System.err.println("Switch to EDIT tab");
+            System.err.println("Switch to TOP tab");
         } else if (newIdx == 1) {
-            System.err.println("Switch to MIRROR tab");
+            System.err.println("Switch to BOTTOM tab");
 
             if (bottomView == null) {
                 Board b = bv.getBoard();
@@ -242,9 +247,35 @@ public class BreadBoardEditor extends Application {
                 bottomView.getTransforms().add(Transform.scale(-1, 1));
     
                 DrawingView mirrorView = new DrawingView(bottomView);
-                mirrorTab.setContent(mirrorView);
+                bottomViewTab.setContent(mirrorView);
                 mirrorView.centerContent();
             }
+        } else if (newIdx == 2) {
+            System.err.println("Switch to PRINT tab");
+
+            printView.getChildren().clear();
+            Board b = bv.getBoard();
+
+            BoardView topView = new BoardView(b);
+            topView.setReadOnly(true);
+            System.err.println("topView.getWidth():" + topView.getWidth());
+
+            BoardView bottomView = new BoardView(b);
+            bottomView.setReadOnly(true);
+            bottomView.getTransforms().add(Transform.scale(-1, 1));
+
+            Label topLabel = new Label("Top view");
+            GridPane.setConstraints(topLabel, 0, 0);
+            Label bottomLabel = new Label("Bottom view");
+            GridPane.setConstraints(bottomLabel, 1, 0);
+            Group topGroup = new Group(topView);
+            GridPane.setConstraints(topGroup, 0, 1);
+            Group bottomGroup = new Group(bottomView);
+            GridPane.setConstraints(bottomGroup, 1, 1);;
+            printView.getChildren().addAll(topLabel, bottomLabel, topView, bottomView);
+            
+            DrawingView printPreview = new DrawingView(printView);
+            printTab.setContent(printPreview);
         }
     }
 
@@ -287,19 +318,19 @@ public class BreadBoardEditor extends Application {
     }
 
 
+    /**
+     * Removes all junctions and all wires from the net and recreates the net by
+     * connecting all pads of the net with the shortest path algorithm. 
+     */
     private void resetNet() {
         Interactable selectedObject = bv.getSelectedObject();
         if (selectedObject instanceof TraceView) {
             bv.clearSelection();
             TraceView wire = (TraceView) selectedObject;
             Net net = wire.getTrace().getNet();
-            System.err.printf("NET: %s\n", net.getName());
 
             // calculate the shortest path of the net
             net.resetNet();
-
-            // re-render board
-            //bv.setBoard(bv.getBoard());
         }
     }
 
@@ -309,9 +340,13 @@ public class BreadBoardEditor extends Application {
      */
     private void traceToBridge() {
         Interactable obj = bv.getSelectedObject();
-        if (obj != null && obj instanceof Trace) {
-            Trace t = (Trace) obj;
-            t.setAsBridge();
+        if (obj != null && obj instanceof TraceView) {
+            TraceView traceView = (TraceView) obj;
+
+            if (traceView.getTrace() instanceof Trace) {
+                ((Trace) traceView.getTrace()).setAsBridge();    
+            }
+            
         }
     }
 

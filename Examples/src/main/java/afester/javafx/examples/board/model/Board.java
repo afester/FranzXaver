@@ -405,7 +405,7 @@ public class Board {
 
         addedParts.forEach(partName -> {
             Part newPart = updatedBoard.getParts().get(partName);
-            newPart.pads.values().forEach(pad -> {
+            newPart.getPads().forEach(pad -> {
                 pad.traceStarts.clear();    // remove references to "new" board
                 pad.traceEnds.clear();      // remove references to "new" board
             });

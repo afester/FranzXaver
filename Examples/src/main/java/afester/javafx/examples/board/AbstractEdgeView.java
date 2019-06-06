@@ -1,6 +1,5 @@
 package afester.javafx.examples.board;
 
-import afester.javafx.examples.board.model.AbstractNode;
 import afester.javafx.examples.board.model.AbstractWire;
 import afester.javafx.examples.board.model.Net;
 import javafx.geometry.Point2D;
@@ -152,30 +151,6 @@ public abstract class AbstractEdgeView extends Line implements Interactable  {
 //    }
 //
 
-    /**
-     * Reconnects this edge from one node to another node.
-     *
-     * @param currentNode The current node to which the edge is connected.
-     * @param newNode The new node to which the edge shall be connected.
-     */
-    public void reconnect(AbstractNode currentNode, AbstractNode newNode) {
-//        if (from == currentNode) {
-//            currentNode.traceStarts.remove(this);
-//            newNode.traceStarts.add(this);
-//            from = newNode;
-//            
-//            setStart(newNode.getPos());
-//        } else if (to == currentNode) {
-//            currentNode.traceEnds.remove(this);
-//            newNode.traceEnds.add(this);
-//            to = newNode;
-//
-//            setEnd(newNode.getPos());
-//        } else {
-//            throw new RuntimeException("Unexpected: Edge does neither go FROM nor TO the given node!");
-//        }
-    }
-    
 
     @Override
     public void setSelected(boolean isSelected) {

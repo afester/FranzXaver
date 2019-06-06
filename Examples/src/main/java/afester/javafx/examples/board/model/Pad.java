@@ -12,18 +12,26 @@ public class Pad extends AbstractNode {
 
     private final Part part;
     private final String pinNumber;
+    private Point2D localPos;
 
     /**
      * Creates a new Pad.
      *
      * @param part	    The part to which this pad is attached
      * @param pinNumber The (physical) pin number of this pad
-     * @param padPos    The position of the pad
+     * @param padPos    The position of the pad (in Part coordinates!!!!)
      */
     public Pad(Part part, String pinNumber, Point2D padPos) {
-        super(null, padPos);
+        super(null, part.globalPadPos(padPos));
+
+        this.localPos = padPos;
+        
         this.part = part;
         this.pinNumber = pinNumber;
+    }
+
+    public Point2D getLocalPos() {
+        return localPos;
     }
 
     public Part getPart() {
@@ -142,4 +150,5 @@ public class Pad extends AbstractNode {
 //    public Node createNode() {
 //        throw new RuntimeException("NYI");
 //    }
+
 }

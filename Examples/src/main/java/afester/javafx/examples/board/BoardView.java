@@ -226,8 +226,8 @@ public class BoardView extends Pane {
 
 
 // !!! Essentially, this is working, but te coordinates of the AirWire are not correct!                
-                
-               Intentionally left non-compilable
+
+//               Intentionally left non-compilable
 
                 change.getAddedSubList().forEach(trace -> {
                     TraceView traceView = new TraceView(trace);
@@ -273,7 +273,6 @@ public class BoardView extends Pane {
             PartView partView = new PartView(g);
             System.err.println("  " + g);
             partsGroup.getChildren().add(partView);
-            partView.reconnectTraces();
         });
 
         setOnMousePressed(e -> { 

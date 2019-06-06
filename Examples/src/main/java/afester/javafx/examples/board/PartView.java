@@ -36,7 +36,6 @@ public class PartView extends Group implements Interactable {
         getTransforms().add(rot);
         part.rotationProperty().addListener((obj, oldValue, newValue) -> {
             rot.setAngle(newValue.doubleValue());
-            reconnectTraces();
         });
 
         setLayoutX(part.getPosition().getX());
@@ -44,7 +43,6 @@ public class PartView extends Group implements Interactable {
         part.positionProperty().addListener((obj, oldValue, newValue) -> {
             setLayoutX(newValue.getX());
             setLayoutY(newValue.getY());
-            reconnectTraces();
         });
 
         createNode();
@@ -55,26 +53,11 @@ public class PartView extends Group implements Interactable {
      * Rotates the part clockwise at 90 degrees.
      */
     public void rotatePart() {
-        part.rotate();
+        part.rotateClockwise();
     }
 
     public Part getPart() {
         return part;
-    }
-
-    void reconnectTraces() {
-        part.getPads().forEach(pad -> {
-            pad.traceStarts.forEach(wire -> {
-                Point2D pos = this.localToParent(pad.getPos());
-                System.err.printf("START: %s -> %s\n", wire, pos);
-                wire.setStart(pos);
-            });
-            pad.traceEnds.forEach(wire -> {
-                Point2D pos = this.localToParent(pad.getPos());
-                System.err.printf("END: %s -> %s\n", wire, pos);    
-                wire.setEnd(pos);
-            });
-        });
     }
 
     @Override

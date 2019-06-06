@@ -23,12 +23,12 @@ public class PadView extends AbstractNodeView {
         super(pad1);
         this.pad = pad1;
 
-        Shape pad = new Circle(getPos().getX(), getPos().getY(), 0.7); // drill*2);
+        Shape pad = new Circle(pad1.getLocalPos().getX(), pad1.getLocalPos().getY(), 0.7); // drill*2);
         pad.setFill(Color.WHITE);
         pad.setStroke(Color.BLACK);
         pad.setStrokeWidth(0.6);
 
-        Text padName = new Text(getPos().getX(), getPos().getY(), this.pad.getPinNumber());
+        Text padName = new Text(pad1.getLocalPos().getX(), pad1.getLocalPos().getY(), this.pad.getPinNumber());
 
         // TODO: The rendered text is messed up if the size is too small!
         // A possible solution seems to be to keep the text size larger and 
@@ -44,21 +44,7 @@ public class PadView extends AbstractNodeView {
         getChildren().addAll(pad, padName);
     }
 
-///*****************************/
-//    
-//
-//    Node partNode = null;
-//    @Override
-//    public Point2D getPos() {
-//        if (partNode != null) {
-//            return partNode.localToParent(getCenterX(), getCenterY());
-//        }
-//        return new Point2D(0, 0); 
-//    }
-///*****************************/
-
-
-
+    
 //    @Override   // DEBUG ONLY
     public void setSelected(boolean isSelected, Color col) {
 //        Shape pad = (Shape) view.getChildrenUnmodifiable().get(0);  // HACK

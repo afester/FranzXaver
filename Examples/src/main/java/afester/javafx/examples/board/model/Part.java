@@ -21,18 +21,27 @@ public class Part {
     private final String partName;
     private final String partValue;
     private final String packageRef;      // TODO: This should refer to a "package / footprint template"
+    private Map<String, Pad> pads = new HashMap<>();
+    private List<PartShape> shapes = new ArrayList<>();
 
     // Position of the part
     private ObjectProperty<Point2D> position = new SimpleObjectProperty<>(new Point2D(0, 0));
     public ObjectProperty<Point2D> positionProperty() { return position; }
-    public void setPosition(Point2D pos) { position.setValue(pos); }
+    public void setPosition(Point2D pos) { 
+        position.setValue(pos);
+        getPads().forEach(pad -> pad.setPosition(this.globalPadPos(pad.getLocalPos())));
+    }
     public Point2D getPosition() { return position.getValue(); }
 
     // direction of the part
     private DoubleProperty rotation = new SimpleDoubleProperty(0.0);
     public DoubleProperty rotationProperty() { return rotation; } 
-    public void setRotation(double angle) { rotation.setValue(angle); }
+    public void setRotation(double angle) { 
+        rotation.setValue(angle); 
+        getPads().forEach(pad -> pad.setPosition(this.globalPadPos(pad.getLocalPos())));
+    }
     public double getRotation() { return rotation.getValue(); }
+
 
 
     /**
@@ -48,10 +57,6 @@ public class Part {
         this.packageRef = packageRef;
     }
 
-
-    // View
-    Map<String, Pad> pads = new HashMap<>();
-    private List<PartShape> shapes = new ArrayList<>();
 
     public void addPad(Pad pin, String pinId) {
         pads.put(pinId, pin);
@@ -73,7 +78,6 @@ public class Part {
         return pads.values();
     }
 
-
     /**
      * @return The name / reference of this part (like R1, U3, C2)
      */
@@ -88,6 +92,9 @@ public class Part {
         return partValue;
     }
 
+    /**
+     * @return The package name of this part (like 205/07)
+     */
     public String getPackageRef() {
         return packageRef;
     }
@@ -122,21 +129,38 @@ public class Part {
         return !packageRef.equals(p2.packageRef);
     }
 
-    @Override
-    public String toString() {
-        return String.format("Part[partName=%s]", partName);
-    }
 
-    public void rotate() {
-        // set the new rotation of the device
-        //setRotate(rotation);    // this rotates around the center of the Part Group! (BoundsInLocal rect)
-        // To be able to set the origin (0, 0) we need to use a rotate transform:
-
+    /**
+     * Rotates the part 90° clockwise. 
+     */
+    public void rotateClockwise() {
         double rot = getRotation();
         rot += 90;
         if (rot >= 360) {
             rot = 0;
         }
         setRotation(rot);
+    }
+    
+
+    /**
+     * Calculates the global position from a position which is relative to this part.
+     * This is required to properly set the global Pad positions to be able to 
+     * connect the traces in a simple way.
+     *
+     * @param localPos The coordinates, local to the Part
+     * @return The global coordinates
+     */
+    public Point2D globalPadPos(Point2D localPos) {
+        double angle = getRotation() * (Math.PI/180); // Convert to radians
+        double rotatedX = Math.cos(angle) * localPos.getX() - Math.sin(angle) * localPos.getY();
+        double rotatedY = Math.sin(angle) * localPos.getX() + Math.cos(angle) * localPos.getY();
+        Point2D rot = new Point2D(rotatedX, rotatedY);
+        return rot.add(getPosition());
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Part[partName=%s]", partName);
     }
 }
