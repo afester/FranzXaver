@@ -11,13 +11,9 @@ import afester.javafx.examples.board.model.Junction;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
 import javafx.scene.Group;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -44,7 +40,8 @@ public class BoardView extends Pane {
                                 Color.rgb(0xb8, 0x73, 0x33, 1.0);   // COPPER
 
     private final Point2D padOffset = new Point2D(2.5, 2.0);
-
+    private Polygon boardShape;
+    
     private Group partsGroup;
     private Group airWireGroup;
     private Group traceGroup;
@@ -64,7 +61,7 @@ public class BoardView extends Pane {
 
 
     public BoardView() {
-        setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, new CornerRadii(0), new Insets(0))));
+        // setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, new CornerRadii(0), new Insets(0))));
     }
 
     public BoardView(Board board) {
@@ -108,32 +105,23 @@ public class BoardView extends Pane {
     }
 
 
-    public void setBoard(Board board) {
+    private void setBoard(Board board) {
         getChildren().clear();
 
         this.board = board;
 
         System.err.println("\nCreating board background ...");
         Double[] boardDims = board.getBoardShape();
-        Polygon boardShape = new Polygon();
+        boardShape = new Polygon();
         boardShape.setFill(boardColor);
-        boardShape.setStroke(Color.BLACK);
-        boardShape.setStrokeWidth(0.5);
+        boardShape.setStroke(Color.GRAY);
+        boardShape.setStrokeWidth(0.3);
         boardShape.getPoints().addAll(boardDims);
 
 //        Rectangle background = new Rectangle(board.getWidth(), board.getHeight(), boardColor);
 //        background.setStroke(Color.BLACK);
         getChildren().add(boardShape);
 
-        pointIterator(boardShape.getPoints(), (xpos, ypos) -> {
-            System.err.printf("%s/%s\n", xpos, ypos); 
-
-            Circle c = new Circle(xpos, ypos, 0.5);
-            c.setFill(null);
-            c.setStroke(Color.RED);
-            c.setStrokeWidth(0.3);
-            getChildren().add(c);
-        });
 
 
         Bounds b = boardShape.getBoundsInParent();
@@ -178,10 +166,6 @@ public class BoardView extends Pane {
         getChildren().addAll(padsGroup, partsGroup,
                              traceGroup, bridgeGroup, airWireGroup,
                              dimensionGroup, junctionGroup, handleGroup);
-
-        // add the board dimensions
-        System.err.println("Adding Board dimensions ...");
-        updateBoardDimensions(boardShape);
 
         System.err.println("Adding Nets ...");
         board.getNets().forEach((netName, net) -> {
@@ -288,8 +272,34 @@ public class BoardView extends Pane {
          });
     }
 
+    
+    /**
+     * Enable or disable showing the board dimensions.
+     *
+     * @param doShow Defines whether to show or hide the board dimensions.
+     */
+    public void showBoardDimensions(boolean doShow) {
+        dimensionGroup.getChildren().clear();
+        if (doShow) {
+            createBoardDimensions();
+        }
+    }
 
-    private void updateBoardDimensions(Polygon boardShape) {
+
+    private void createBoardDimensions() {
+        // add the board dimensions
+        System.err.println("Adding Board dimensions ...");
+
+        pointIterator(boardShape.getPoints(), (xpos, ypos) -> {
+            System.err.printf("%s/%s\n", xpos, ypos); 
+
+            Circle c = new Circle(xpos, ypos, 0.5);
+            c.setFill(null);
+            c.setStroke(Color.RED);
+            c.setStrokeWidth(0.3);
+            getChildren().add(c);
+        });
+
         // add the board dimensions
         Font dimFont = Font.font("Courier", 2.0);
         final Point2D unitVec = new Point2D(1.0, 0.0);
@@ -327,6 +337,7 @@ public class BoardView extends Pane {
             value.setTextOrigin(VPos.BASELINE);
             value.setRotate(angle);
             value.setFont(dimFont);
+
             dimensionGroup.getChildren().add(value);
         });
     }

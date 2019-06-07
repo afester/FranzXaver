@@ -560,4 +560,16 @@ public class Board {
     public Part getPart(String ref) {
         return parts.get(ref);
     }
+
+    public double getWidth() {
+        Double[] coords = getBoardShape();
+        double result = 0.0;
+        for (int idx = 0;  idx < coords.length;  idx += 2) {
+            if (coords[idx] > result) {
+                result = coords[idx];
+            }
+        }
+
+        return result;
+    }
 }

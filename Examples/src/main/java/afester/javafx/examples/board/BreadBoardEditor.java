@@ -11,12 +11,12 @@ import afester.javafx.examples.board.model.EagleNetImport;
 import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.model.NetImport;
 import afester.javafx.examples.board.model.Trace;
+import afester.javafx.shapes.Line;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -29,8 +29,8 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -46,23 +46,20 @@ public class BreadBoardEditor extends Application {
     private Tab bottomViewTab;
     private Tab printTab;
     private BoardView bottomView;
-    private final GridPane printView = new GridPane();
 
     @Override
     public void start(Stage stage){
 
-
         //NetImport ni = new EagleNetImport();
         //Board board = ni.importFile(new File("schem.xml"));
-
-        bv = new BoardView();
 
         Board board = new Board();
 //        board.load(new File("small.brd"));
         board.load(new File("large.brd"));
 //        board.load(new File("first.brd"));
-        bv.setBoard(board);
-        
+
+        bv = new BoardView(board);
+        bv.showBoardDimensions(true);
 
         // The pane is exactly the size of the center component. Its children (which is the BoardView) are clipped
         // and the view can be panned and zoomed.
@@ -233,6 +230,9 @@ public class BreadBoardEditor extends Application {
     }
 
 
+    //private final GridPane printView = new GridPane();
+    private final Pane printView = new Pane();
+
     private void switchTab(int newIdx) {
         if (newIdx == 0) {
             System.err.println("Switch to TOP tab");
@@ -242,6 +242,7 @@ public class BreadBoardEditor extends Application {
             if (bottomView == null) {
                 Board b = bv.getBoard();
                 bottomView = new BoardView(b);
+                bottomView.showBoardDimensions(true);
                 bottomView.setReadOnly(true);
 
                 bottomView.getTransforms().add(Transform.scale(-1, 1));
@@ -252,28 +253,70 @@ public class BreadBoardEditor extends Application {
             }
         } else if (newIdx == 2) {
             System.err.println("Switch to PRINT tab");
-
             printView.getChildren().clear();
+
             Board b = bv.getBoard();
+            BoardView bottomView = new BoardView(b);
+
+            final double paperWidth = 297.0;                   // DIN A4 width in landscape format  
+            final double paperHeight = 210.0;                   // DIN A4 width in landscape format
+            final double paperMidpoint = paperWidth / 2;
+            final double boardWidth = b.getWidth();
+            System.err.printf("Paper width: %s\n", paperWidth);
+            System.err.printf("Paper midpoint: %s\n", paperMidpoint);
+            System.err.printf("Board width: %s\n", boardWidth);
 
             BoardView topView = new BoardView(b);
             topView.setReadOnly(true);
-            System.err.println("topView.getWidth():" + topView.getWidth());
 
-            BoardView bottomView = new BoardView(b);
             bottomView.setReadOnly(true);
             bottomView.getTransforms().add(Transform.scale(-1, 1));
-
-            Label topLabel = new Label("Top view");
-            GridPane.setConstraints(topLabel, 0, 0);
-            Label bottomLabel = new Label("Bottom view");
-            GridPane.setConstraints(bottomLabel, 1, 0);
-            Group topGroup = new Group(topView);
-            GridPane.setConstraints(topGroup, 0, 1);
-            Group bottomGroup = new Group(bottomView);
-            GridPane.setConstraints(bottomGroup, 1, 1);;
-            printView.getChildren().addAll(topLabel, bottomLabel, topView, bottomView);
             
+            Text topLabel = new Text(paperMidpoint - 10 - boardWidth, 20, "Top view");
+            topLabel.setScaleX(0.6);
+            topLabel.setScaleY(0.6);
+            Text bottomLabel = new Text(paperMidpoint + 10, 20, "Bottom view");
+            bottomLabel.setScaleX(0.6);
+            bottomLabel.setScaleY(0.6);
+
+            // Create paper margin markers
+            Line topMargin =    new Line(0, 10, paperWidth, 10);
+            topMargin.getStrokeDashArray().addAll(2.0, 2.0);
+            topMargin.setStrokeWidth(0.2);
+            Line bottomMargin = new Line(0, paperHeight - 10, paperWidth, paperHeight - 10);
+            bottomMargin.getStrokeDashArray().addAll(2.0, 2.0);
+            bottomMargin.setStrokeWidth(0.2);
+            Line leftMargin =   new Line(10, 0, 10, paperHeight);
+            leftMargin.getStrokeDashArray().addAll(2.0, 2.0);
+            leftMargin.setStrokeWidth(0.2);
+            Line rightMargin =  new Line(paperWidth - 10, 0, paperWidth - 10, paperHeight);
+            rightMargin.getStrokeDashArray().addAll(2.0, 2.0);
+            rightMargin.setStrokeWidth(0.2);
+
+            Group topGroup = new Group(topView);
+            topGroup.setLayoutX(paperMidpoint - 10 - boardWidth);
+            topGroup.setLayoutY(25);
+
+            Group bottomGroup = new Group(bottomView);
+            bottomGroup.setLayoutX(paperMidpoint + 10 + boardWidth);
+            bottomGroup.setLayoutY(25);
+
+//            Rectangle r = new Rectangle();
+//            r.setX(topView.getLayoutX());
+//            r.setY(topView.getLayoutY());
+//            r.setWidth(10);
+//            r.setHeight(10);
+//            r.setStroke(Color.RED);
+//            r.setFill(null);
+
+            // The printView is the "Paper" on which we draw.
+            printView.getChildren().addAll(topLabel, bottomLabel, topGroup, bottomGroup,
+                                           topMargin, bottomMargin, leftMargin, rightMargin);
+            printView.setMinSize(paperWidth, paperHeight);
+            printView.setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(0), new Insets(0))));
+            //printView.setGridLinesVisible(true);
+            // printView.getChildren().add(r);
+
             DrawingView printPreview = new DrawingView(printView);
             printTab.setContent(printPreview);
         }
@@ -313,7 +356,7 @@ public class BreadBoardEditor extends Application {
             net.removeTraceAndFrom(trace);
 
             // re-render board
-            bv.setBoard(bv.getBoard());
+            //bv.setBoard(bv.getBoard());
         }
     }
 
@@ -366,7 +409,7 @@ public class BreadBoardEditor extends Application {
             net.calculateShortestPath();
 
             // re-render board
-            bv.setBoard(bv.getBoard());
+           // bv.setBoard(bv.getBoard());
         }
     }
 
@@ -381,7 +424,7 @@ public class BreadBoardEditor extends Application {
         bv.getBoard().getNets().values().forEach(net -> net.calculateShortestPath());
 
         // re-render board
-        bv.setBoard(bv.getBoard());
+        // bv.setBoard(bv.getBoard());
     }
 
 
@@ -393,13 +436,13 @@ public class BreadBoardEditor extends Application {
         Board currentBoard = bv.getBoard();
         currentBoard.update(updatedBoard);
 
-        bv.setBoard(currentBoard);  // re-render board
+       //  bv.setBoard(currentBoard);  // re-render board
     }
 
 
     private void newBoard() {
         Board board = new Board();
-        bv.setBoard(board);
+        //bv.setBoard(board);
     }
 
 
@@ -410,7 +453,7 @@ public class BreadBoardEditor extends Application {
         if (result != null) {
             Board board = new Board();
             board.load(result);
-            bv.setBoard(board);
+            // bv.setBoard(board);
         }
     }
 
@@ -437,7 +480,7 @@ public class BreadBoardEditor extends Application {
             System.err.println("Importing " + result.getAbsolutePath());
             NetImport ni = new EagleNetImport();
             Board board = ni.importFile(result);
-            bv.setBoard(board);
+           // bv.setBoard(board);
         }
     }
 
