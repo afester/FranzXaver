@@ -2,6 +2,7 @@ package afester.javafx.examples.board;
 
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 
@@ -11,9 +12,9 @@ public class DrawingView extends Pane {
     private double my = 0;
     private double scaleFactor = 3.7;
     private static final double SCALE_STEP = Math.sqrt(1.3);
-    private Pane content;
+    private Parent content;
 
-    public DrawingView(Pane pContent) {
+    public DrawingView(Parent pContent) {
         this.content = pContent;
 
         content.setScaleX(scaleFactor);

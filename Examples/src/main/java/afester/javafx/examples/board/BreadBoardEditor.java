@@ -11,7 +11,6 @@ import afester.javafx.examples.board.model.EagleNetImport;
 import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.model.NetImport;
 import afester.javafx.examples.board.model.Trace;
-import afester.javafx.shapes.Line;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
@@ -30,7 +29,6 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -42,10 +40,18 @@ import javafx.util.StringConverter;
 public class BreadBoardEditor extends Application {
 
     private Stage stage;
-    private BoardView bv;
+    
+    private BoardView topView;
+    private BoardView bottomView;
+    
+    private Tab editTab;
     private Tab bottomViewTab;
     private Tab printTab;
-    private BoardView bottomView;
+
+    private DrawingView currentDrawingView;
+    private DrawingView topDrawingView;
+    private DrawingView bottomDrawingView;
+    private PrintPanel printPanel;
 
     @Override
     public void start(Stage stage){
@@ -58,16 +64,16 @@ public class BreadBoardEditor extends Application {
         board.load(new File("large.brd"));
 //        board.load(new File("first.brd"));
 
-        bv = new BoardView(board);
-        bv.showBoardDimensions(true);
+        topView = new BoardView(board);
+        topView.showBoardDimensions(true);
 
         // The pane is exactly the size of the center component. Its children (which is the BoardView) are clipped
         // and the view can be panned and zoomed.
-        DrawingView drawingView = new DrawingView(bv);
+        topDrawingView = new DrawingView(topView);
 
-        Tab editTab = new Tab("Top view");
+        editTab = new Tab("Top view");
         editTab.setClosable(false);
-        editTab.setContent(drawingView);
+        editTab.setContent(topDrawingView);
 
         bottomViewTab = new Tab("Bottom view");
         bottomViewTab.setClosable(false);
@@ -101,9 +107,9 @@ public class BreadBoardEditor extends Application {
 
         Menu viewMenu = new Menu("View");
         MenuItem viewItem1 = new MenuItem("Center");
-        viewItem1.setOnAction(e -> drawingView.centerContent());
+        viewItem1.setOnAction(e -> currentDrawingView.centerContent());
         MenuItem viewItem2 = new MenuItem("Fit to Window");
-        viewItem2.setOnAction(e -> drawingView.fitContentToWindow());
+        viewItem2.setOnAction(e -> currentDrawingView.fitContentToWindow());
         viewMenu.getItems().addAll(viewItem1, viewItem2);
 
         Menu editMenu = new Menu("Edit");
@@ -133,29 +139,31 @@ public class BreadBoardEditor extends Application {
         final Button deleteSegmentButton = new ToolbarButton("Delete segment", "afester/javafx/examples/board/net-delsegment.png");
         deleteSegmentButton.setOnAction(e -> deleteSegment());
 
-        
-        final Interactor editInteractor = new EditInteractor(bv);
-        final Interactor traceInteractor = new TraceInteractor(bv);
+//        final Button printButton = new ToolbarButton("Print", "afester/javafx/examples/board/print.png");
+//        printButton.setOnAction(e -> printLayout());
+
+        final Interactor editInteractor = new EditInteractor(topView);
+        final Interactor traceInteractor = new TraceInteractor(topView);
         // final Interactor editTraceInteractor = new EditTraceInteractor(bv);
-        final Interactor splitTraceInteractor = new SplitTraceInteractor(bv);
+        final Interactor splitTraceInteractor = new SplitTraceInteractor(topView);
         
         ToggleGroup toggleGroup = new ToggleGroup();
         ToolbarToggleButton selectToolButton = new ToolbarToggleButton("Select", "afester/javafx/examples/board/mode-select.png");
         selectToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                bv.setInteractor(editInteractor);
+                topView.setInteractor(editInteractor);
             }
         });
         ToolbarToggleButton traceToolButton = new ToolbarToggleButton("Trace", "afester/javafx/examples/board/mode-trace.png");
         traceToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                bv.setInteractor(traceInteractor);   
+                topView.setInteractor(traceInteractor);   
             }
         });
         ToolbarToggleButton splitTraceToolButton = new ToolbarToggleButton("Split Trace", "afester/javafx/examples/board/mode-splittrace.png");
         splitTraceToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                bv.setInteractor(splitTraceInteractor);   
+                topView.setInteractor(splitTraceInteractor);   
             }
         });
 
@@ -189,7 +197,7 @@ public class BreadBoardEditor extends Application {
         topBar.getChildren().addAll(menuBar, toolBar);
         
         StatusBar sb = new StatusBar();
-        sb.textProperty().bindBidirectional(bv.selectedObjectProperty(), new StringConverter<Interactable>() {
+        sb.textProperty().bindBidirectional(topView.selectedObjectProperty(), new StringConverter<Interactable>() {
 
             @Override
             public Interactable fromString(String string) {
@@ -226,107 +234,50 @@ public class BreadBoardEditor extends Application {
         this.stage = stage;
 
         stage.show();
-        drawingView.fitContentToWindow();
+        topDrawingView.fitContentToWindow();
     }
 
-
-    //private final GridPane printView = new GridPane();
-    private final Pane printView = new Pane();
 
     private void switchTab(int newIdx) {
         if (newIdx == 0) {
             System.err.println("Switch to TOP tab");
+            currentDrawingView = topDrawingView;
         } else if (newIdx == 1) {
             System.err.println("Switch to BOTTOM tab");
 
             if (bottomView == null) {
-                Board b = bv.getBoard();
+                Board b = topView.getBoard();
                 bottomView = new BoardView(b);
                 bottomView.showBoardDimensions(true);
                 bottomView.setReadOnly(true);
 
                 bottomView.getTransforms().add(Transform.scale(-1, 1));
     
-                DrawingView mirrorView = new DrawingView(bottomView);
-                bottomViewTab.setContent(mirrorView);
-                mirrorView.centerContent();
+                final Group g = new Group(bottomView);
+                
+                bottomDrawingView = new DrawingView(g);
+                bottomViewTab.setContent(bottomDrawingView);
+
+                // bottomDrawingView.fitContentToWindow();
             }
+            
+            currentDrawingView = bottomDrawingView;
         } else if (newIdx == 2) {
             System.err.println("Switch to PRINT tab");
-            printView.getChildren().clear();
 
-            Board b = bv.getBoard();
-            BoardView bottomView = new BoardView(b);
-
-            final double paperWidth = 297.0;                   // DIN A4 width in landscape format  
-            final double paperHeight = 210.0;                   // DIN A4 width in landscape format
-            final double paperMidpoint = paperWidth / 2;
-            final double boardWidth = b.getWidth();
-            System.err.printf("Paper width: %s\n", paperWidth);
-            System.err.printf("Paper midpoint: %s\n", paperMidpoint);
-            System.err.printf("Board width: %s\n", boardWidth);
-
-            BoardView topView = new BoardView(b);
-            topView.setReadOnly(true);
-
-            bottomView.setReadOnly(true);
-            bottomView.getTransforms().add(Transform.scale(-1, 1));
-            
-            Text topLabel = new Text(paperMidpoint - 10 - boardWidth, 20, "Top view");
-            topLabel.setScaleX(0.6);
-            topLabel.setScaleY(0.6);
-            Text bottomLabel = new Text(paperMidpoint + 10, 20, "Bottom view");
-            bottomLabel.setScaleX(0.6);
-            bottomLabel.setScaleY(0.6);
-
-            // Create paper margin markers
-            Line topMargin =    new Line(0, 10, paperWidth, 10);
-            topMargin.getStrokeDashArray().addAll(2.0, 2.0);
-            topMargin.setStrokeWidth(0.2);
-            Line bottomMargin = new Line(0, paperHeight - 10, paperWidth, paperHeight - 10);
-            bottomMargin.getStrokeDashArray().addAll(2.0, 2.0);
-            bottomMargin.setStrokeWidth(0.2);
-            Line leftMargin =   new Line(10, 0, 10, paperHeight);
-            leftMargin.getStrokeDashArray().addAll(2.0, 2.0);
-            leftMargin.setStrokeWidth(0.2);
-            Line rightMargin =  new Line(paperWidth - 10, 0, paperWidth - 10, paperHeight);
-            rightMargin.getStrokeDashArray().addAll(2.0, 2.0);
-            rightMargin.setStrokeWidth(0.2);
-
-            Group topGroup = new Group(topView);
-            topGroup.setLayoutX(paperMidpoint - 10 - boardWidth);
-            topGroup.setLayoutY(25);
-
-            Group bottomGroup = new Group(bottomView);
-            bottomGroup.setLayoutX(paperMidpoint + 10 + boardWidth);
-            bottomGroup.setLayoutY(25);
-
-//            Rectangle r = new Rectangle();
-//            r.setX(topView.getLayoutX());
-//            r.setY(topView.getLayoutY());
-//            r.setWidth(10);
-//            r.setHeight(10);
-//            r.setStroke(Color.RED);
-//            r.setFill(null);
-
-            // The printView is the "Paper" on which we draw.
-            printView.getChildren().addAll(topLabel, bottomLabel, topGroup, bottomGroup,
-                                           topMargin, bottomMargin, leftMargin, rightMargin);
-            printView.setMinSize(paperWidth, paperHeight);
-            printView.setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(0), new Insets(0))));
-            //printView.setGridLinesVisible(true);
-            // printView.getChildren().add(r);
-
-            DrawingView printPreview = new DrawingView(printView);
-            printTab.setContent(printPreview);
+            if (printPanel == null) {
+                printPanel = new PrintPanel(topView.getBoard());
+                printTab.setContent(printPanel);
+            }
+            currentDrawingView = printPanel.getDrawingView();
         }
     }
 
 
     private void cleanupNet() {
-        Interactable selectedObject = bv.getSelectedObject();
+        Interactable selectedObject = topView.getSelectedObject();
         if (selectedObject instanceof Trace) {
-            bv.clearSelection();
+            topView.clearSelection();
             Trace trace = (Trace) selectedObject;
             Net net = trace.getNet();
             System.err.println("Cleaning up " + net);
@@ -337,9 +288,9 @@ public class BreadBoardEditor extends Application {
 
 
     private void deleteSegment() {
-        Interactable selectedObject = bv.getSelectedObject();
+        Interactable selectedObject = topView.getSelectedObject();
         if (selectedObject instanceof Trace) {
-            bv.clearSelection();
+            topView.clearSelection();
             
             Trace trace = (Trace) selectedObject;
 
@@ -366,9 +317,9 @@ public class BreadBoardEditor extends Application {
      * connecting all pads of the net with the shortest path algorithm. 
      */
     private void resetNet() {
-        Interactable selectedObject = bv.getSelectedObject();
+        Interactable selectedObject = topView.getSelectedObject();
         if (selectedObject instanceof TraceView) {
-            bv.clearSelection();
+            topView.clearSelection();
             TraceView wire = (TraceView) selectedObject;
             Net net = wire.getTrace().getNet();
 
@@ -382,7 +333,7 @@ public class BreadBoardEditor extends Application {
      * Converts the currently selected trace into a bridge wire.
      */
     private void traceToBridge() {
-        Interactable obj = bv.getSelectedObject();
+        Interactable obj = topView.getSelectedObject();
         if (obj != null && obj instanceof TraceView) {
             TraceView traceView = (TraceView) obj;
 
@@ -397,9 +348,9 @@ public class BreadBoardEditor extends Application {
      * Calculates the shortest path for the currently selected net. 
      */
     private void calculateShortestPath() {
-        Interactable selectedObject = bv.getSelectedObject();
+        Interactable selectedObject = topView.getSelectedObject();
         if (selectedObject instanceof Trace) {
-            bv.clearSelection();
+            topView.clearSelection();
 
             Trace trace = (Trace) selectedObject;
             Net net = (Net) trace.getNet();
@@ -418,10 +369,10 @@ public class BreadBoardEditor extends Application {
      * Calculates the shortest path for all nets.
      */
     private void calculateShortestPathAll() {
-        bv.clearSelection();
+        topView.clearSelection();
 
         // calculate the shortest path for all nets
-        bv.getBoard().getNets().values().forEach(net -> net.calculateShortestPath());
+        topView.getBoard().getNets().values().forEach(net -> net.calculateShortestPath());
 
         // re-render board
         // bv.setBoard(bv.getBoard());
@@ -429,11 +380,11 @@ public class BreadBoardEditor extends Application {
 
 
     private void synchronizeSchematic() {
-        String schematicFile = bv.getBoard().getSchematicFile();
+        String schematicFile = topView.getBoard().getSchematicFile();
         System.err.println("Synchronizing " + schematicFile);
         NetImport ni = new EagleNetImport();
         Board updatedBoard = ni.importFile(new File(schematicFile));
-        Board currentBoard = bv.getBoard();
+        Board currentBoard = topView.getBoard();
         currentBoard.update(updatedBoard);
 
        //  bv.setBoard(currentBoard);  // re-render board
@@ -458,7 +409,7 @@ public class BreadBoardEditor extends Application {
     }
 
     private void saveBoard() {
-        Board board = bv.getBoard();
+        Board board = topView.getBoard();
         board.save();
     }
 
@@ -467,7 +418,7 @@ public class BreadBoardEditor extends Application {
         fileChooser.setTitle("Save Board as ...");
         File result = fileChooser.showSaveDialog(stage);
         if (result != null) {
-            Board board = bv.getBoard();
+            Board board = topView.getBoard();
             board.saveAs(result);
         }
     }
