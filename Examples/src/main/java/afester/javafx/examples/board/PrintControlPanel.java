@@ -10,6 +10,9 @@ import javafx.fxml.Initializable;
 import javafx.print.Paper;
 import javafx.print.Printer;
 import javafx.scene.Group;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleGroup;
 
 
 public class PrintControlPanel extends Group implements Initializable {
@@ -19,9 +22,26 @@ public class PrintControlPanel extends Group implements Initializable {
 
     @FXML
     private ComboBoxFormatable<Paper> paperSizes;
+    
+    @FXML
+    private ToggleGroup orientation;
+
+    @FXML
+    private RadioButton landscape;
+
+    @FXML
+    private RadioButton portrait;
 
     public ReadOnlyObjectProperty<Printer> selectedPrinterProperty() {
         return printerList.getSelectionModel().selectedItemProperty();
+    }
+
+    public ReadOnlyObjectProperty<Paper> selectedPaperProperty() {
+        return paperSizes.getSelectionModel().selectedItemProperty();
+    }
+
+    public ReadOnlyObjectProperty<Toggle> orientationProperty() {
+        return orientation.selectedToggleProperty();
     }
 
     @Override
@@ -40,12 +60,15 @@ public class PrintControlPanel extends Group implements Initializable {
             System.err.println("Update printer specific properties");
 
             // populate the available paper sizes
+            paperSizes.getItems().clear();
             printer.getPrinterAttributes().getSupportedPapers().forEach(paper -> paperSizes.getItems().add(paper));
+            paperSizes.getSelectionModel().select(0);
         });
 
+        orientation.selectToggle(landscape);
         // printerList.getSelectionModel().select(0);
         // paperSizes.getSelectionModel().select(0);
-        printerList.getSelectionModel().select(2); // DEBUG
+        printerList.getSelectionModel().select(3); // DEBUG
         paperSizes.getSelectionModel().select(1); // DEBUG
     }
 

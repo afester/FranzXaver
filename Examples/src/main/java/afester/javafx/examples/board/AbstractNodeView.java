@@ -14,7 +14,7 @@ public abstract class AbstractNodeView extends Group implements Interactable {
         this.node = node;
     }
 
-//    // @Override
+    @Override
 	public Point2D getPos() {
 	    return node.getPos();
         // return new Point2D(node.getPgetCenterX(), getCenterY());

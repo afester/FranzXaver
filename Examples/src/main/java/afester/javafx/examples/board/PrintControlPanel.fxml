@@ -13,7 +13,7 @@
 
 	<GridPane hgap="10" vgap="10">
 	 	<fx:define>
-    		<ToggleGroup  fx:id="orientation" />
+    		<ToggleGroup fx:id="orientation" />
     	</fx:define>
     
 	        <Label text="Printer:"
@@ -31,15 +31,15 @@
 	        <Label text="Paper Orientation:"
 	            GridPane.columnIndex="0" GridPane.rowIndex="2"/>
 
-		    <RadioButton text="Portrait" toggleGroup="$orientation" fx:id="f1"
+		    <RadioButton text="Portrait" toggleGroup="$orientation" fx:id="portrait"
 		    	GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
-    		<RadioButton text="Landscape" toggleGroup="$orientation" fx:id="f2"
+    		<RadioButton text="Landscape" toggleGroup="$orientation" fx:id="landscape"
 		    	GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
 	</GridPane>
 
-    <Button fx:id="printButton" text="Print ..." onAction="#handlePrintAction"/>
+    <Button text="Print ..." onAction="#handlePrintAction"/>
 
 	<stylesheets>
     	<URL value="@PrintControlPanel.css" />

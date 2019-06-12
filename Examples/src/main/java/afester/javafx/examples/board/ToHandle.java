@@ -10,6 +10,7 @@ public class ToHandle extends AirWireHandle {
         super(net, airWire, airWire.getTo().getPos());
     }
 
+    @Override
     public AbstractNode getNode() {
         return getAirWire().getTo();
     }
