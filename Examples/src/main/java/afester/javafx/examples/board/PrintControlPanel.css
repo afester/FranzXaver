@@ -1,0 +1,17 @@
+/* not considered ...*/
+root { 
+}
+
+/* specified by styleClass in PrintControlPanel.fxml */
+.root {
+	-fx-background-color: darkgray;
+	-fx-padding: 10px;
+	-fx-spacing: 10px;
+}
+
+#printButton {
+/*   -fx-font-size: 32px;
+   -fx-font-family: "Arial Black";
+   -fx-fill: #818181;
+   -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );*/
+}

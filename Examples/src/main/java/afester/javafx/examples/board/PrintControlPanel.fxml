@@ -1,9 +1,48 @@
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.layout.VBox?>
+<?import java.net.URL?>
+<?import java.lang.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.textfield.*?>
+<?import afester.javafx.examples.board.ComboBoxFormatable?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="afester.javafx.examples.board.PrintControlPanel">
-	<ComboBox/>
-    <Button text="Print ..." onAction="handlePrintAction(event);"/>
+<VBox xmlns:fx="http://javafx.com/fxml" 
+	  fx:controller="afester.javafx.examples.board.PrintControlPanel"
+	  styleClass="root">
+
+	<GridPane hgap="10" vgap="10">
+	 	<fx:define>
+    		<ToggleGroup  fx:id="orientation" />
+    	</fx:define>
+    
+	        <Label text="Printer:"
+	            GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+
+			<ComboBoxFormatable fx:id="printerList"
+				GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+	        <Label text="Paper Size:"
+	            GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+
+			<ComboBoxFormatable fx:id="paperSizes"
+				GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+	        <Label text="Paper Orientation:"
+	            GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+
+		    <RadioButton text="Portrait" toggleGroup="$orientation" fx:id="f1"
+		    	GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+    		<RadioButton text="Landscape" toggleGroup="$orientation" fx:id="f2"
+		    	GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+	</GridPane>
+
+    <Button fx:id="printButton" text="Print ..." onAction="#handlePrintAction"/>
+
+	<stylesheets>
+    	<URL value="@PrintControlPanel.css" />
+  	</stylesheets>
+
 </VBox>
