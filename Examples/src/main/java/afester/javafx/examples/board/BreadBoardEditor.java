@@ -234,6 +234,7 @@ public class BreadBoardEditor extends Application {
         this.stage = stage;
 
         stage.show();
+        //stage.sizeToScene();
         topDrawingView.fitContentToWindow();
     }
 
@@ -258,7 +259,8 @@ public class BreadBoardEditor extends Application {
                 bottomDrawingView = new DrawingView(g);
                 bottomViewTab.setContent(bottomDrawingView);
 
-                // bottomDrawingView.fitContentToWindow();
+                stage.sizeToScene();    // required to properly fit the content to the window
+                bottomDrawingView.fitContentToWindow();
             }
             
             currentDrawingView = bottomDrawingView;
@@ -266,9 +268,13 @@ public class BreadBoardEditor extends Application {
             System.err.println("Switch to PRINT tab");
 
             if (printPanel == null) {
-                printPanel = new PrintPanel(topView.getBoard());
+                printPanel = new PrintPanel(topView.getBoard(), stage);
                 printTab.setContent(printPanel);
+
+                stage.sizeToScene();    // required to properly fit the content to the window
+                printPanel.getDrawingView().fitContentToWindow();
             }
+
             currentDrawingView = printPanel.getDrawingView();
         }
     }

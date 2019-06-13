@@ -1,4 +1,4 @@
-package afester.javafx.examples.board;
+package afester.javafx.examples.board.tools;
 
 import java.util.function.Function;
 

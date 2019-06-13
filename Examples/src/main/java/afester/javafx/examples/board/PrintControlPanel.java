@@ -3,15 +3,18 @@ package afester.javafx.examples.board;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import afester.javafx.examples.board.tools.ComboBoxFormatable;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.print.PageOrientation;
 import javafx.print.Paper;
 import javafx.print.Printer;
 import javafx.scene.Group;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 
 
@@ -24,7 +27,7 @@ public class PrintControlPanel extends Group implements Initializable {
     private ComboBoxFormatable<Paper> paperSizes;
     
     @FXML
-    private ToggleGroup orientation;
+    private ToggleGroup orientationGroup;
 
     @FXML
     private RadioButton landscape;
@@ -40,9 +43,12 @@ public class PrintControlPanel extends Group implements Initializable {
         return paperSizes.getSelectionModel().selectedItemProperty();
     }
 
-    public ReadOnlyObjectProperty<Toggle> orientationProperty() {
-        return orientation.selectedToggleProperty();
+    private ObjectProperty<PageOrientation> orientation = new SimpleObjectProperty<>(PageOrientation.LANDSCAPE);
+    public PageOrientation getOrientation() { return orientation.get(); }
+    public ObjectProperty<PageOrientation> orientationProperty() {
+        return orientation;
     }
+
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
@@ -65,10 +71,18 @@ public class PrintControlPanel extends Group implements Initializable {
             paperSizes.getSelectionModel().select(0);
         });
 
-        orientation.selectToggle(landscape);
+        orientationGroup.selectToggle(landscape);
+        orientationGroup.selectedToggleProperty().addListener((obj, oldValue, newValue) -> {
+            if (newValue == landscape) {
+                orientation.set(PageOrientation.LANDSCAPE);
+            } else {
+                orientation.set(PageOrientation.PORTRAIT);
+            }
+        });
+
         // printerList.getSelectionModel().select(0);
         // paperSizes.getSelectionModel().select(0);
-        printerList.getSelectionModel().select(3); // DEBUG
+        printerList.getSelectionModel().select(2); // DEBUG
         paperSizes.getSelectionModel().select(1); // DEBUG
     }
 

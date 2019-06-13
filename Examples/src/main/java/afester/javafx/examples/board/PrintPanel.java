@@ -6,25 +6,27 @@ import afester.javafx.examples.board.model.Board;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.print.PageLayout;
+import javafx.print.PageOrientation;
 import javafx.print.Paper;
 import javafx.print.Printer;
+import javafx.print.Printer.MarginType;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.Toggle;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 public class PrintPanel extends BorderPane {
 
     // Using an intermediate Group for panning and scaling of the print preview
     // By sending the *Pane* to the printer the panning and scaling of the preview
     // is ignored!
+
+    private final Stage stage;
 
     // The whole page
     private final Pane pageView = new Pane();
@@ -33,7 +35,8 @@ public class PrintPanel extends BorderPane {
 
     private PrintControlPanel controller;
 
-    public PrintPanel(Board b) {
+    public PrintPanel(Board b, Stage stage) {
+        this.stage = stage;
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("PrintControlPanel.fxml"));
@@ -41,18 +44,17 @@ public class PrintPanel extends BorderPane {
             setRight(root);
 
             controller = loader.getController();
-            controller.selectedPrinterProperty().addListener((obj, oldValue, newValue) -> {
-                System.err.println(newValue);
-                setupPage(newValue);
-            });
+            controller.selectedPrinterProperty().addListener(
+                    (obj, oldValue, newValue) -> 
+                        setupPage(newValue, controller.selectedPaperProperty().get(), controller.getOrientation())); 
 
-            controller.selectedPaperProperty().addListener((obj, oldValue, newValue) -> {
-                System.err.println("Page size changed: " + newValue);
-            });
+            controller.selectedPaperProperty().addListener(
+                    (obj, oldValue, newValue) ->
+                        setupPage(controller.selectedPrinterProperty().get(), newValue, controller.getOrientation()));
 
-            controller.orientationProperty().addListener((obj, oldValue, newValue) -> {
-                final String id = ((Node) newValue).getId();
-                System.err.println("Orientation changed: " + id);
+            controller.orientationProperty().addListener(
+                    (obj, oldValue, newValue) -> {
+                        setupPage(controller.selectedPrinterProperty().get(), controller.selectedPaperProperty().get(), newValue);  
             });
 
         } catch (IOException e) {
@@ -130,7 +132,7 @@ public class PrintPanel extends BorderPane {
         printDrawingView = new DrawingView(panZoomView);
         setCenter(printDrawingView);
 
-        setupPage(controller.selectedPrinterProperty().get());
+        setupPage(controller.selectedPrinterProperty().get(), controller.selectedPaperProperty().get(), controller.getOrientation()); 
 
         // printTab.setContent(printDrawingView);
         // }
@@ -157,23 +159,42 @@ public class PrintPanel extends BorderPane {
         // printView.setScaleY(1.0);
     }
 
-    private void setupPage(Printer printer) {
+    private void setupPage(Printer printer, Paper paper, PageOrientation orientation) {
         System.err.println("Printer: " + printer);
+        System.err.println("Paper  : " + paper);
+        System.err.println("Orienta: " + orientation);
 
-        Paper paper = printer.getPrinterAttributes().getDefaultPaper();
+        if (orientation == PageOrientation.PORTRAIT) {
+            pageView.setMinSize(paper.getWidth(), paper.getHeight());
+        } else {
+            pageView.setMinSize(paper.getHeight(), paper.getWidth());
+        }
 
-        System.err.println(printer.getPrinterAttributes().getDefaultPaper().getHeight());
+        PageLayout layout = printer.createPageLayout(paper, orientation, MarginType.DEFAULT); // MarginType.HARDWARE_MINIMUM);
+        System.err.println("Layout : " + layout);
+        final double leftMargin = pt2mm(layout.getLeftMargin());
+        final double topMargin = pt2mm(layout.getTopMargin());
+        final double rightMargin = pt2mm(layout.getRightMargin());
+        final double bottomMargin = pt2mm(layout.getBottomMargin());
+        final double printableWidth = pt2mm(layout.getPrintableWidth());
+        final double printableHeight = pt2mm(layout.getPrintableHeight());
+        System.err.printf("Margin: %s %s %s %s (%s x %s)", leftMargin, topMargin, rightMargin, bottomMargin, 
+                printableWidth, printableHeight);
 
-        pageView.setMinSize(paper.getWidth(), paper.getHeight());
+        stage.sizeToScene();    // required to properly fit the content to the window
+        // getDrawingView().fitContentToWindow();
+        printDrawingView.centerContent();
+    }
 
-        PageLayout pageLayout = printer.getDefaultPageLayout();
+    
+    private final static double PT2MM = 1.0/72 * 25.4;
 
-        System.err.println(pageLayout.getPrintableHeight());
-        System.err.println(pageLayout.getPrintableWidth());
+    private double pt2mm(double points) {
+        return points * PT2MM;
     }
 
     public DrawingView getDrawingView() {
-        return null;
+        return printDrawingView;
     }
 
 }

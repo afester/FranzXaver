@@ -7,42 +7,41 @@
 <?import javafx.scene.textfield.*?>
 <?import afester.javafx.examples.board.ComboBoxFormatable?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" 
-	  fx:controller="afester.javafx.examples.board.PrintControlPanel"
-	  styleClass="root">
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="afester.javafx.examples.board.PrintControlPanel"
+	styleClass="root">
 
 	<GridPane hgap="10" vgap="10">
-	 	<fx:define>
-    		<ToggleGroup fx:id="orientation" />
-    	</fx:define>
-    
-	        <Label text="Printer:"
-	            GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+		<fx:define>
+			<ToggleGroup fx:id="orientationGroup" />
+		</fx:define>
 
-			<ComboBoxFormatable fx:id="printerList"
-				GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+		<Label text="Printer:" GridPane.columnIndex="0"
+			GridPane.rowIndex="0" />
 
-	        <Label text="Paper Size:"
-	            GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+		<ComboBoxFormatable fx:id="printerList"
+			GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-			<ComboBoxFormatable fx:id="paperSizes"
-				GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+		<Label text="Paper Size:" GridPane.columnIndex="0"
+			GridPane.rowIndex="1" />
 
-	        <Label text="Paper Orientation:"
-	            GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+		<ComboBoxFormatable fx:id="paperSizes"
+			GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-		    <RadioButton text="Portrait" toggleGroup="$orientation" fx:id="portrait"
-		    	GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+		<Label text="Paper Orientation:" GridPane.columnIndex="0"
+			GridPane.rowIndex="2" />
 
-    		<RadioButton text="Landscape" toggleGroup="$orientation" fx:id="landscape"
-		    	GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+		<RadioButton text="Portrait" toggleGroup="$orientationGroup"
+			fx:id="portrait" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+		<RadioButton text="Landscape" toggleGroup="$orientationGroup"
+			fx:id="landscape" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
 	</GridPane>
 
-    <Button text="Print ..." onAction="#handlePrintAction"/>
+	<Button text="Print ..." onAction="#handlePrintAction" />
 
 	<stylesheets>
-    	<URL value="@PrintControlPanel.css" />
-  	</stylesheets>
+		<URL value="@PrintControlPanel.css" />
+	</stylesheets>
 
 </VBox>
