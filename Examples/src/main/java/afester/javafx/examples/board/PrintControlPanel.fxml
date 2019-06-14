@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.textfield.*?>
-<?import afester.javafx.examples.board.ComboBoxFormatable?>
+<?import afester.javafx.examples.board.tools.ComboBoxFormatable?>
 
 <VBox xmlns:fx="http://javafx.com/fxml" fx:controller="afester.javafx.examples.board.PrintControlPanel"
 	styleClass="root">

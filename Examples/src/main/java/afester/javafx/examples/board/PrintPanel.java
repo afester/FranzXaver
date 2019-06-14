@@ -3,6 +3,8 @@ package afester.javafx.examples.board;
 import java.io.IOException;
 
 import afester.javafx.examples.board.model.Board;
+import afester.javafx.examples.board.tools.HatchFill;
+import afester.javafx.shapes.Line;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.print.PageLayout;
@@ -12,12 +14,15 @@ import javafx.print.Printer;
 import javafx.print.Printer.MarginType;
 import javafx.scene.Group;
 import javafx.scene.Parent;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
 
 public class PrintPanel extends BorderPane {
@@ -34,6 +39,11 @@ public class PrintPanel extends BorderPane {
     private DrawingView printDrawingView;
 
     private PrintControlPanel controller;
+
+    private BoardView topView;
+    private BoardView bottomView;
+    private Text topLabel;
+    private Text bottomLabel;
 
     public PrintPanel(Board b, Stage stage) {
         this.stage = stage;
@@ -61,102 +71,26 @@ public class PrintPanel extends BorderPane {
             e.printStackTrace();
         }
 
-        // printView.getChildren().clear();
+        topView = new BoardView(b);
+        topView.setReadOnly(true);
 
-        // BoardView bottomView = new BoardView(b);
-        //
-        // final double paperWidth = 297.0; // DIN A4 width in landscape format
-        // final double paperHeight = 210.0; // DIN A4 width in landscape format
-        // final double paperMidpoint = paperWidth / 2;
-        // final double boardWidth = b.getWidth();
-        // System.err.printf("Paper width: %s\n", paperWidth);
-        // System.err.printf("Paper midpoint: %s\n", paperMidpoint);
-        // System.err.printf("Board width: %s\n", boardWidth);
-        //
-        // BoardView topView = new BoardView(b);
-        // topView.setReadOnly(true);
-        //
-        // bottomView.setReadOnly(true);
-        // bottomView.getTransforms().add(Transform.scale(-1, 1));
-        //
-        // Text topLabel = new Text(paperMidpoint - 10 - boardWidth, 20, "Top view");
-        // topLabel.setScaleX(0.6);
-        // topLabel.setScaleY(0.6);
-        // Text bottomLabel = new Text(paperMidpoint + 10, 20, "Bottom view");
-        // bottomLabel.setScaleX(0.6);
-        // bottomLabel.setScaleY(0.6);
-        //
-        // // Create paper margin markers
-        // Line topMargin = new Line(0, 10, paperWidth, 10);
-        // topMargin.getStrokeDashArray().addAll(2.0, 2.0);
-        // topMargin.setStrokeWidth(0.2);
-        // Line bottomMargin = new Line(0, paperHeight - 10, paperWidth, paperHeight -
-        // 10);
-        // bottomMargin.getStrokeDashArray().addAll(2.0, 2.0);
-        // bottomMargin.setStrokeWidth(0.2);
-        // Line leftMargin = new Line(10, 0, 10, paperHeight);
-        // leftMargin.getStrokeDashArray().addAll(2.0, 2.0);
-        // leftMargin.setStrokeWidth(0.2);
-        // Line rightMargin = new Line(paperWidth - 10, 0, paperWidth - 10,
-        // paperHeight);
-        // rightMargin.getStrokeDashArray().addAll(2.0, 2.0);
-        // rightMargin.setStrokeWidth(0.2);
-        //
-        // Group topGroup = new Group(topView);
-        // topGroup.setLayoutX(paperMidpoint - 10 - boardWidth);
-        // topGroup.setLayoutY(25);
-        //
-        // Group bottomGroup = new Group(bottomView);
-        // bottomGroup.setLayoutX(paperMidpoint + 10 + boardWidth);
-        // bottomGroup.setLayoutY(25);
-        //
-        //// Rectangle r = new Rectangle();
-        //// r.setX(topView.getLayoutX());
-        //// r.setY(topView.getLayoutY());
-        //// r.setWidth(10);
-        //// r.setHeight(10);
-        //// r.setStroke(Color.RED);
-        //// r.setFill(null);
-        //
-        // // The printView is the "Paper" on which we draw.
-        // printView.getChildren().addAll(topLabel, bottomLabel, topGroup, bottomGroup,
-        // topMargin, bottomMargin, leftMargin, rightMargin);
-        // printView.setMinSize(paperWidth, paperHeight);
-        // printView.setBackground(new Background(new BackgroundFill(Color.WHITE, new
-        // CornerRadii(0), new Insets(0))));
-        // //printView.setGridLinesVisible(true);
-        // // printView.getChildren().add(r);
-        //
+        bottomView = new BoardView(b);
+        bottomView.setReadOnly(true);
+        bottomView.getTransforms().add(Transform.scale(-1, 1));
+
+        topLabel = new Text("Top view");
+        topLabel.setScaleX(0.6);
+        topLabel.setScaleY(0.6);
+        bottomLabel = new Text("Bottom view");
+        bottomLabel.setScaleX(0.6);
+        bottomLabel.setScaleY(0.6);
         Group panZoomView = new Group(pageView);
         pageView.setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(0), new Insets(0))));
         printDrawingView = new DrawingView(panZoomView);
+        printDrawingView.setEffect(new DropShadow(2d, 10, 10, Color.GRAY));
         setCenter(printDrawingView);
 
         setupPage(controller.selectedPrinterProperty().get(), controller.selectedPaperProperty().get(), controller.getOrientation()); 
-
-        // printTab.setContent(printDrawingView);
-        // }
-        //
-        // private void printLayout() {
-        // PrinterJob job = PrinterJob.createPrinterJob();
-        // job.showPrintDialog(this.stage);
-        //
-        // // print the board. No scaling and panning of the corresponding DrawingView
-        // is considered!
-        // // Hence the result is much smaller than expected so we need to scale (and
-        // translate) it a bit to
-        // // get to the proper actual size.
-        // printView.setScaleX(2.5);
-        // printView.setScaleY(2.5);
-        // printView.setTranslateX(220);
-        // printView.setTranslateY(150);
-        //
-        // boolean success = job.printPage(printView);
-        // if (success) {
-        // job.endJob();
-        // }
-        // printView.setScaleX(1.0);
-        // printView.setScaleY(1.0);
     }
 
     private void setupPage(Printer printer, Paper paper, PageOrientation orientation) {
@@ -164,11 +98,20 @@ public class PrintPanel extends BorderPane {
         System.err.println("Paper  : " + paper);
         System.err.println("Orienta: " + orientation);
 
+        double paperWidth = 0.0;
+        double paperHeight = 0.0;
         if (orientation == PageOrientation.PORTRAIT) {
-            pageView.setMinSize(paper.getWidth(), paper.getHeight());
+            paperWidth = paper.getWidth();
+            paperHeight = paper.getHeight();
         } else {
-            pageView.setMinSize(paper.getHeight(), paper.getWidth());
+            paperWidth = paper.getHeight();
+            paperHeight = paper.getWidth();
         }
+        paperWidth = pt2mm(paperWidth);
+        paperHeight = pt2mm(paperHeight);
+        pageView.setMinSize(paperWidth, paperHeight);
+        pageView.getChildren().clear();
+        HatchFill.createDiagonalHatch(pageView, paperWidth, paperHeight, 2, Color.DARKGRAY, 0.3);
 
         PageLayout layout = printer.createPageLayout(paper, orientation, MarginType.DEFAULT); // MarginType.HARDWARE_MINIMUM);
         System.err.println("Layout : " + layout);
@@ -180,6 +123,36 @@ public class PrintPanel extends BorderPane {
         final double printableHeight = pt2mm(layout.getPrintableHeight());
         System.err.printf("Margin: %s %s %s %s (%s x %s)", leftMargin, topMargin, rightMargin, bottomMargin, 
                 printableWidth, printableHeight);
+
+        Pane printContents = new Pane();
+        printContents.setMinSize(printableWidth, printableHeight);
+        printContents.setMaxSize(printableWidth, printableHeight);
+        printContents.setLayoutX(leftMargin);
+        printContents.setLayoutY(topMargin);
+        printContents.setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(0), new Insets(0))));
+
+        final double contentMidpoint = printableWidth / 2;
+        final double boardWidth = topView.getBoard().getWidth();
+        Group topGroup = new Group(topView);
+        topGroup.setLayoutX(contentMidpoint - 10 - boardWidth);
+        topGroup.setLayoutY(20);
+
+        Group bottomGroup = new Group(bottomView);
+        bottomGroup.setLayoutX(contentMidpoint + boardWidth + 10);
+        bottomGroup.setLayoutY(20);
+
+        topLabel.setX(contentMidpoint - 10 - boardWidth);
+        topLabel.setY(10.0);
+        bottomLabel.setX(contentMidpoint + 10);
+        bottomLabel.setY(10.0);
+        
+        Line separator = new Line(contentMidpoint, 0, contentMidpoint, printableHeight);
+        separator.getStrokeDashArray().addAll(2.0, 2.0);
+        separator.setStroke(Color.BLUE);
+        separator.setStrokeWidth(0.3);
+
+        printContents.getChildren().addAll(separator, topLabel, bottomLabel, topGroup, bottomGroup);
+        pageView.getChildren().add(printContents);
 
         stage.sizeToScene();    // required to properly fit the content to the window
         // getDrawingView().fitContentToWindow();

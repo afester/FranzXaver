@@ -8,8 +8,13 @@ import javax.imageio.ImageIO;
 
 import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -29,39 +34,46 @@ public class HatchFill extends Application {
 //        gc.setFill(hatch);
 //        gc.fillRect(0, 0, 600, 600);
 
-        final double width = 600;
-        final double height = 400;
+        final double width = 400;
+        final double height = 600;
 
         Pane pane = new Pane();
         pane.setMinSize(width,  height);
         pane.setMaxSize(width,  height);
         pane.setPrefSize(width,  height);
-
-        // createDiagonalHatch(pane, width, height, Color.GREEN);
         
-        Rectangle r1 = new Rectangle(0, 0, 100, 400);
-        r1.setFill(Color.LIGHTGREY);
-        Rectangle r2 = new Rectangle(100, 0, 100, 400);
-        r2.setFill(Color.DARKGRAY);
-        Rectangle r3 = new Rectangle(200, 0, 100, 400);
-        r3.setFill(Color.GREY);
-        pane.getChildren().addAll(r1, r2, r3);
-
+        createDiagonalHatch(pane, width, height, 5, Color.LIGHTGRAY, 1.0);
         
+//        Rectangle r1 = new Rectangle(0, 0, 100, 400);
+//        r1.setFill(Color.LIGHTGREY);
+//        Rectangle r2 = new Rectangle(100, 0, 100, 400);
+//        r2.setFill(Color.DARKGRAY);
+//        Rectangle r3 = new Rectangle(200, 0, 100, 400);
+//        r3.setFill(Color.GREY);
+//        pane.getChildren().addAll(r1, r2, r3);
         
         //Rectangle content = new Rectangle(0, 0, 600, 600);
         //content.setFill(hatch);
         // pane.setBackground(new Background(new BackgroundFill(Color.YELLOWGREEN, new CornerRadii(0), new Insets(0))));
+
+        pane.setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(0), new Insets(0))));
+        pane.setEffect(new DropShadow(2d, 10, 10, Color.GRAY));
         
+        Rectangle area = new Rectangle(20, 20, 360, 560);
+        area.setFill(Color.WHITE);
+        pane.getChildren().add(area);
+
         primaryStage.setScene(new Scene(new StackPane(pane)));
         primaryStage.show();
     }
 
-    private void createDiagonalHatch(Pane pane, final double width, final double height, Color color) {
+    // NOTE: Currently only works properly if the width/height is a multiple of dist!
+    public static void createDiagonalHatch(Pane pane, final double width, final double height, int dist, Color color,
+                                           double strokeWidth) {
         int y = 0;
         int x2 = 0;
         if (height > width) {
-            for (int x = 10;  x < width+height;  x += 10) {
+            for (int x = dist;  x < width+height;  x += dist) {
     
                 Line line = null;
                 if (x < width) {
@@ -70,18 +82,19 @@ public class HatchFill extends Application {
                 } else if (x < height){
                     line = new Line(0, x, width, y);
                     line.setStroke(color);
-                    y += 10;
+                    y += dist;
                 } else {
                     line = new Line(x2, height, width, y);
                     line.setStroke(color);
-                    y += 10;
-                    x2 += 10;
+                    y += dist;
+                    x2 += dist;
                 }
     
+                line.setStrokeWidth(strokeWidth);
                 pane.getChildren().add(line);
             }
         } else {
-            for (int x = 10;  x < width+height;  x += 10) {
+            for (int x = dist;  x < width+height;  x += dist) {
     
                 Line line = null;
                 if (x < height) {
@@ -90,14 +103,15 @@ public class HatchFill extends Application {
                 } else if (x < width){
                     line = new Line(y, height, x, 0);
                     line.setStroke(color);
-                    y += 10;
+                    y += dist;
                 } else {
                     line = new Line(y, height, width, x2);
                     line.setStroke(color);
-                    y += 10;
-                    x2 += 10;
+                    y += dist;
+                    x2 += dist;
                 }
 
+                line.setStrokeWidth(strokeWidth);
                 pane.getChildren().add(line);
             }
         }
