@@ -7,13 +7,13 @@ import afester.javafx.examples.board.tools.ComboBoxFormatable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.print.PageOrientation;
 import javafx.print.Paper;
 import javafx.print.Printer;
 import javafx.scene.Group;
+import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 
@@ -34,6 +34,9 @@ public class PrintControlPanel extends Group implements Initializable {
 
     @FXML
     private RadioButton portrait;
+
+    @FXML
+    public Button printButton;
 
     public ReadOnlyObjectProperty<Printer> selectedPrinterProperty() {
         return printerList.getSelectionModel().selectedItemProperty();
@@ -84,11 +87,6 @@ public class PrintControlPanel extends Group implements Initializable {
         // paperSizes.getSelectionModel().select(0);
         printerList.getSelectionModel().select(2); // DEBUG
         paperSizes.getSelectionModel().select(1); // DEBUG
-    }
-
-    @FXML
-    private void handlePrintAction(ActionEvent event) {
-        System.out.println("Printing ..." + printerList);
     }
 
 }

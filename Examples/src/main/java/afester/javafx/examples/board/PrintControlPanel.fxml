@@ -38,7 +38,7 @@
 
 	</GridPane>
 
-	<Button text="Print ..." onAction="#handlePrintAction" />
+	<Button fx:id="printButton" text="Print ..."/>
 
 	<stylesheets>
 		<URL value="@PrintControlPanel.css" />
