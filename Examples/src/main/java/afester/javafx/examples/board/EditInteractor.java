@@ -35,8 +35,10 @@ public class EditInteractor  extends MouseInteractor {
 
 
     private void clickedJunction(Interactable obj) {
-        System.err.println("Clicked junction: " + obj);
+        System.err.println("Clicked junction view: " + obj);
         junctionToMove = ((JunctionView) obj).getJunction();
+        System.err.println("Clicked junction: " + junctionToMove);
+
         partToMove = null;
         handleToMove = null;
     }

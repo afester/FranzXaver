@@ -82,16 +82,15 @@ public class Net {
 
         to.traceEnds.addAll(from.traceEnds);
         from.traceEnds.forEach(xtrace -> {
-//            xtrace.setEndX(to.getCenterX());
-//            xtrace.setEndY(to.getCenterY());
             xtrace.to = to;
+            xtrace.setEnd(to.getPos());
         });
+
+        // remove the "from" junction
         removeJunction(from);
 
+        // remove the trace itself
         traceList.remove(trace);
-
-        // update view
-//        traces.getChildren().remove(trace);
     }
 
 

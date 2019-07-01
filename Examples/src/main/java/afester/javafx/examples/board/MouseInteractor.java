@@ -63,9 +63,10 @@ public abstract class MouseInteractor implements Interactor {
 	@Override
     public final void mousePressed(MouseEvent e) {
 	    pos = new Point2D(e.getX(), e.getY());
+	    System.err.println("SOURCE:" + e.getSource());
         Interactable clickedObject = getClickedObject(e);
         if (clickedObject != null) {
-
+            System.err.printf("CLICKED OBJECT: %s (%s)\n", clickedObject.getPos(), pos);
             offset = clickedObject.getPos().subtract(e.getX(), e.getY());
 
             if (e.getButton() == MouseButton.PRIMARY) {

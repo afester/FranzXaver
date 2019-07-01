@@ -6,6 +6,7 @@ import afester.javafx.components.StatusBar;
 import afester.javafx.components.ToolbarButton;
 import afester.javafx.components.ToolbarToggleButton;
 import afester.javafx.examples.board.model.AbstractNode;
+import afester.javafx.examples.board.model.AbstractWire;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.EagleNetImport;
 import afester.javafx.examples.board.model.Net;
@@ -34,6 +35,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
@@ -100,8 +102,10 @@ public class BreadBoardEditor extends Application {
         menuItem4.setOnAction(e -> importSchematic());
         MenuItem menuItem5 = new MenuItem("Synchronize schematic ...");
         menuItem5.setOnAction(e -> synchronizeSchematic());
-        MenuItem menuItem6 = new MenuItem("Quit");
-        menuItem6.setOnAction(e -> stage.close());
+        MenuItem menuItem6 = new MenuItem("About ...");
+        menuItem6.setOnAction(e -> showAbout());
+        MenuItem menuItem7 = new MenuItem("Quit");
+        menuItem7.setOnAction(e -> stage.close());
 
         fileMenu.getItems().addAll(menuItem0, menuItem1, menuItem2, menuItem3, menuItem4, menuItem5, menuItem6);
 
@@ -239,6 +243,16 @@ public class BreadBoardEditor extends Application {
     }
 
 
+    private void showAbout() {
+        AboutDialog dlg = new AboutDialog();
+        Scene scene = new Scene(dlg);
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(scene);
+        stage.showAndWait();
+    }
+
+
     private void switchTab(int newIdx) {
         if (newIdx == 0) {
             System.err.println("Switch to TOP tab");
@@ -295,11 +309,10 @@ public class BreadBoardEditor extends Application {
 
     private void deleteSegment() {
         Interactable selectedObject = topView.getSelectedObject();
-        if (selectedObject instanceof Trace) {
+        if (selectedObject instanceof TraceView) {
             topView.clearSelection();
-            
-            Trace trace = (Trace) selectedObject;
 
+            AbstractWire trace = ((TraceView) selectedObject).getTrace();
             Net net  = trace.getNet();
             AbstractNode from = trace.getFrom();
             AbstractNode to = trace.getTo();
@@ -311,9 +324,6 @@ public class BreadBoardEditor extends Application {
 
             System.err.println("Removing segment ...");
             net.removeTraceAndFrom(trace);
-
-            // re-render board
-            //bv.setBoard(bv.getBoard());
         }
     }
 
