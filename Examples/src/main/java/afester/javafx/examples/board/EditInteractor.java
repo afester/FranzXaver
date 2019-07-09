@@ -4,6 +4,7 @@ import java.util.Random;
 
 import afester.javafx.examples.board.model.Junction;
 import afester.javafx.examples.board.model.Part;
+import afester.javafx.examples.board.model.TraceType;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 
@@ -21,13 +22,12 @@ public class EditInteractor  extends MouseInteractor {
 
     @Override
     protected void clickObjectLeft(Interactable obj) {
-        System.err.println("Left click on: " + obj);
         if (obj instanceof PartView) {
             clickedPartView(obj);
         } else if (obj instanceof TraceView) {
-            clickedTraceView(obj);
-        } else if (obj instanceof Handle) {
-            clickedHandle(obj);
+            clickedTraceView((TraceView) obj);
+        } else if (obj instanceof AirWireHandle) {
+            clickedHandle((AirWireHandle) obj);
         } else if (obj instanceof JunctionView) {
             clickedJunction(obj);
         }
@@ -44,12 +44,16 @@ public class EditInteractor  extends MouseInteractor {
     }
 
 
-    private void clickedHandle(Interactable obj) {
-        // TODO Auto-generated method stub
+    private void clickedHandle(AirWireHandle obj) {
+        System.err.println("Clicked Handle: " + obj);
+
+        junctionToMove = null;
+        partToMove = null;
+        handleToMove = obj;
     }
 
 
-    private void clickedTraceView(Interactable obj) {
+    private void clickedTraceView(TraceView obj) {
         final BoardView bv = getBoardView();
         Interactable currentSelection = bv.getSelectedObject();
     
@@ -70,6 +74,14 @@ public class EditInteractor  extends MouseInteractor {
         partToMove = null;
         handleToMove = null;
         junctionToMove = null;
+
+        if (obj.getType() == TraceType.AIRWIRE) {
+            System.err.println("AIRWIRE!!");
+            FromHandle h1 = new FromHandle(obj);
+            ToHandle h2 = new ToHandle(obj);
+            bv.getHandleGroup().getChildren().add(h1);
+            bv.getHandleGroup().getChildren().add(h2);
+        }
 
 //        // obj can be Junction, Wire (Trace or AirWire) or something else
 //        //            Junction can be part of the currently selected Trace or something else
@@ -155,7 +167,8 @@ public class EditInteractor  extends MouseInteractor {
             // move the junction to the new position
             Point2D snapPos = snapToGrid(getClickPos(), getBoardView(), getOffset());
             junctionToMove.setPosition(snapPos);
-
+        } else if (handleToMove != null) {
+            System.err.println("MOVE HANDLE: " + handleToMove);
 //            List<AirWire> airWires = junctionToMove.getAirwires();
 //            airWires.forEach(aw -> {
 //                AbstractNode otherNode = null; // aw.getOtherNode(junctionToMove);

@@ -1,23 +1,21 @@
 package afester.javafx.examples.board;
 
 import afester.javafx.examples.board.model.AbstractNode;
-import afester.javafx.examples.board.model.AirWire;
-import afester.javafx.examples.board.model.Net;
 import javafx.geometry.Point2D;
 
 public abstract class AirWireHandle extends Handle {
 
-    private AirWire aw;
+    private TraceView aw;
 
-    public AirWireHandle(Net net, AirWire airWire, Point2D pos) {
-        super(net, pos, 0.5);
+    public AirWireHandle(TraceView airWire, Point2D pos) {
+        super(pos, 0.5);
         this.aw = airWire;
     }
     
 
     public abstract AbstractNode getNode();
     
-    public AirWire getAirWire() {
+    public TraceView getAirWire() {
         return aw;
     }
 }

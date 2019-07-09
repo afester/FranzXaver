@@ -1,17 +1,20 @@
 package afester.javafx.examples.board;
 
 import afester.javafx.examples.board.model.AbstractNode;
-import afester.javafx.examples.board.model.AirWire;
-import afester.javafx.examples.board.model.Net;
 
 public class ToHandle extends AirWireHandle {
 
-    public ToHandle(Net net, AirWire airWire) {
-        super(net, airWire, airWire.getTo().getPosition());
+    public ToHandle(TraceView airWire) {
+        super(airWire, airWire.getEnd());
     }
 
     @Override
     public AbstractNode getNode() {
-        return getAirWire().getTo();
+        return getAirWire().edge.getTo();
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("ToHandle[pos=%s/%s]", getCenterX(), getCenterY());  
     }
 }
