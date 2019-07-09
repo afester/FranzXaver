@@ -26,8 +26,8 @@ public abstract class AbstractWire {
         from.addStart(this);
         to.addEnd(this);
         
-        setStart(from.getPos());
-        setEnd(to.getPos());
+        setStart(from.getPosition());
+        setEnd(to.getPosition());
     }
 
 

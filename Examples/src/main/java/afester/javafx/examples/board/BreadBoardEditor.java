@@ -107,7 +107,7 @@ public class BreadBoardEditor extends Application {
         MenuItem menuItem7 = new MenuItem("Quit");
         menuItem7.setOnAction(e -> stage.close());
 
-        fileMenu.getItems().addAll(menuItem0, menuItem1, menuItem2, menuItem3, menuItem4, menuItem5, menuItem6);
+        fileMenu.getItems().addAll(menuItem0, menuItem1, menuItem2, menuItem3, menuItem4, menuItem5, menuItem6, menuItem7);
 
         Menu viewMenu = new Menu("View");
         MenuItem viewItem1 = new MenuItem("Center");

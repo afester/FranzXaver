@@ -16,25 +16,9 @@ public abstract class AbstractNodeView extends Group implements Interactable {
 
     @Override
 	public Point2D getPos() {
-	    return node.getPos();
-        // return new Point2D(node.getPgetCenterX(), getCenterY());
+	    return node.getPosition();
     }
 
-
-//    public void moveTraces2(double x, double y) {
-//        // TODO: This requires a reference to a real "Trace" object.
-//        // Depending on the Trace type, it might also require to move the other coordinates ....
-////        for (Line l : traceStarts) {
-////            l.setStartX(x);
-////            l.setStartY(y);
-////        }
-////
-////        for (Line l : traceEnds) {
-////            l.setEndX(x);
-////            l.setEndY(y);
-////        }
-//        
-//    }
 
 //	@Override
 //	public void setSelected(boolean isSelected) {
@@ -59,8 +43,7 @@ public abstract class AbstractNodeView extends Group implements Interactable {
 //        setCenterY(snapPos.getY());
 //        moveTraces2(snapPos.getX(), snapPos.getY());
 //    }
-//
-//
+
 //    /**
 //     * @return A list of all edges which are connected to this node.
 //     */

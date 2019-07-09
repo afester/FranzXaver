@@ -83,7 +83,7 @@ public class Net {
         to.traceEnds.addAll(from.traceEnds);
         from.traceEnds.forEach(xtrace -> {
             xtrace.to = to;
-            xtrace.setEnd(to.getPos());
+            xtrace.setEnd(to.getPosition());
         });
 
         // remove the "from" junction
@@ -154,7 +154,7 @@ public class Net {
             Pad nearest = null;
             for (int idx = idx2+1;  idx < result.size();  idx++) {
                 Pad p = result.get(idx);
-                double dist = P0.getPos().distance(p.getPos());
+                double dist = P0.getPosition().distance(p.getPosition());
                 if (dist < minDist) {
                     nearestIdx = idx;
                     minDist = dist;

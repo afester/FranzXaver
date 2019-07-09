@@ -7,7 +7,7 @@ import afester.javafx.examples.board.model.Net;
 public class FromHandle extends AirWireHandle {
 
     public FromHandle(Net net, AirWire airWire) {
-        super(net, airWire, airWire.getFrom().getPos());
+        super(net, airWire, airWire.getFrom().getPosition());
     }
     
     @Override

@@ -157,11 +157,17 @@ public class BoardView extends Pane {
         partsGroup = new Group();
         partsGroup.setId("partsGroup");
         airWireGroup = new Group();
+        airWireGroup.setId("airWireGroup");
         traceGroup = new Group();
+        traceGroup.setId("traceGroup");
         bridgeGroup = new Group();
+        bridgeGroup.setId("bridgeGroup");
         dimensionGroup = new Group();
+        dimensionGroup.setId("dimensionGroup");
         junctionGroup = new Group();
+        junctionGroup.setId("junctionGroup");
         handleGroup = new Group();
+        handleGroup.setId("handleGroup");
 
         getChildren().addAll(padsGroup, partsGroup,
                              traceGroup, bridgeGroup, airWireGroup,

@@ -19,8 +19,8 @@ public class Junction extends AbstractNode {
 //    @Override
     public org.w3c.dom.Node getXML(Document doc) {
         Element result = doc.createElement("junction");
-        result.setAttribute("x", Double.toString(getPos().getX()));
-        result.setAttribute("y", Double.toString(getPos().getY()));
+        result.setAttribute("x", Double.toString(getPosition().getX()));
+        result.setAttribute("y", Double.toString(getPosition().getY()));
         result.setAttribute("id", Integer.toString(id));
 
         return result;
@@ -28,7 +28,7 @@ public class Junction extends AbstractNode {
 
     @Override
     public String toString() {
-        return String.format("Junction[pos=%s]", getPos());  
+        return String.format("Junction[pos=%s]", getPosition());  
     }
 
 
@@ -54,7 +54,7 @@ public class Junction extends AbstractNode {
      *         another one, <code>false</code> otherwise.
      */
     public boolean samePositionAs(Junction j2) {
-        if (getPos().distance(j2.getPos()) < MIN_DIST) {
+        if (getPosition().distance(j2.getPosition()) < MIN_DIST) {
             return true;
         }
         return false;

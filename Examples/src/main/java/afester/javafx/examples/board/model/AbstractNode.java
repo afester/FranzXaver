@@ -10,23 +10,23 @@ import javafx.scene.paint.Color;
 
 
 public abstract class AbstractNode {
-    private Point2D pos;
-
     protected Net net;
     public List<AbstractWire> traceStarts = new ArrayList<>();
     public List<AbstractWire> traceEnds = new ArrayList<>();
 
     protected int id;	// currently only required for serialization and deserialization
 
+    // The position of the node
     private ObjectProperty<Point2D> position = new SimpleObjectProperty<Point2D>(Point2D.ZERO);
     public ObjectProperty<Point2D> positionProperty() { return position; }
-    public void setPosition(Point2D pos) { 
+    public void setPosition(Point2D pos) {
         position.setValue(pos);
         traceStarts.forEach(trace -> trace.setStart(pos));
         traceEnds.forEach(trace -> trace.setEnd(pos));
     }
     public Point2D getPosition() { return position.get(); }
 
+    // The color of this node
     private ObjectProperty<Color> color = new SimpleObjectProperty<Color>(Color.LIGHTGRAY);
     public ObjectProperty<Color> colorProperty() { return color; }
     public void setColor(Color col) { color.setValue(col); }
@@ -34,18 +34,13 @@ public abstract class AbstractNode {
 
 
     public AbstractNode(Net net, Point2D pos) {
-        this.pos = pos;
         this.net = net;
+        setPosition(pos);
     }
 
     public void setId(int i) {
        id = i;
     }
-
-	public Point2D getPos() {
-        return pos;
-    }
-	
 
     public void addStart(AbstractWire wire) {
         traceStarts.add(wire);
@@ -55,21 +50,6 @@ public abstract class AbstractNode {
         traceEnds.add(wire);
     }
 
-//    public void moveTraces2(double x, double y) {
-//        // TODO: This requires a reference to a real "Trace" object.
-//        // Depending on the Trace type, it might also require to move the other coordinates ....
-//        for (Line l : traceStarts) {
-//            l.setStartX(x);
-//            l.setStartY(y);
-//        }
-//
-//        for (Line l : traceEnds) {
-//            l.setEndX(x);
-//            l.setEndY(y);
-//        }
-//        
-//    }
-//
 //	@Override
 //	public void setSelected(boolean isSelected) {
 //		if (isSelected) {
@@ -78,7 +58,7 @@ public abstract class AbstractNode {
 //			setFill(null);
 //		}
 //	}
-//
+
 //    public void setSelected(boolean isSelected, Color col) {
 //        if (isSelected) {
 //            setFill(Color.BLUE); // col);
@@ -86,8 +66,6 @@ public abstract class AbstractNode {
 //            setFill(null);
 //        }
 //    }
-//
-//
 
     /**
      * @return A list of all edges which are connected to this node.
@@ -112,7 +90,7 @@ public abstract class AbstractNode {
         double minDist = Double.MAX_VALUE;
         AbstractNode result = null;
         for (AbstractNode node: nodeList) {
-            double dist = node.getPos().distance(getPos());
+            double dist = node.getPosition().distance(getPosition());
             if (dist < minDist) {
                 result = node;
                 minDist = dist;

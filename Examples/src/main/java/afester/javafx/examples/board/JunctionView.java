@@ -33,7 +33,7 @@ public class JunctionView extends AbstractNodeView {
 
     @Override
     public String toString() {
-        return String.format("JunctionView[pos=%s]", node.getPos());  
+        return String.format("JunctionView[pos=%s]", node.getPosition());  
     }
 
 //

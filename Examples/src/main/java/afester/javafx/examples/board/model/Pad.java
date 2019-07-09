@@ -90,8 +90,8 @@ public class Pad extends AbstractNode {
 //    @Override
     public org.w3c.dom.Node getXML(Document doc) {
         Element result = doc.createElement("pad");
-        result.setAttribute("x", Double.toString(getPos().getX()));
-        result.setAttribute("y", Double.toString(getPos().getY()));
+        result.setAttribute("x", Double.toString(getPosition().getX()));
+        result.setAttribute("y", Double.toString(getPosition().getY()));
         result.setAttribute("pinNumber", pinNumber);
         result.setAttribute("id", Integer.toString(id));
 
@@ -143,7 +143,7 @@ public class Pad extends AbstractNode {
     @Override
     public String toString() {
         return String.format("Pad[part=\"%s\", padName=%s, pos=%s]", 
-                             part.getName(), pinNumber, /*pin + "@" + gate,*/ getPos());  
+                             part.getName(), pinNumber, /*pin + "@" + gate,*/ getPosition());  
     }
 //
 //    @Override
