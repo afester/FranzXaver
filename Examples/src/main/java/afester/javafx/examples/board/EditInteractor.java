@@ -149,14 +149,6 @@ public class EditInteractor  extends MouseInteractor {
         }
     }
 
-    private Random r = new Random(System.currentTimeMillis());
-    private final Color getRandomColor() {
-        final double red = r.nextDouble();
-        final double green = r.nextDouble();
-        final double blue = r.nextDouble();
-        return new Color(red, green, blue, 1.0);
-    }
-
     @Override
     protected void dragObject(Interactable obj) {
 
@@ -168,63 +160,7 @@ public class EditInteractor  extends MouseInteractor {
             Point2D snapPos = snapToGrid(getClickPos(), getBoardView(), getOffset());
             junctionToMove.setPosition(snapPos);
         } else if (handleToMove != null) {
-            System.err.println("MOVE HANDLE: " + handleToMove);
-//            List<AirWire> airWires = junctionToMove.getAirwires();
-//            airWires.forEach(aw -> {
-//                AbstractNode otherNode = null; // aw.getOtherNode(junctionToMove);
-//                if (otherNode.getEdges().size() > 1) {
-//                    Net net = aw.getNet();
-//    
-//                    // net.dumpNet();
-//
-//                    // get all nodes which are reachable in the net from otherNode IF the given airwire would not exist
-//                    List<AbstractNode> possibleNodes = net.getNodesWithout(otherNode, aw);
-//
-//                 // Filter out any nodes which are not allowed
-//                    //AbstractWire t = (AbstractWire) obj;                  // TODO .... hack ...
-//                    //possibleNodes.remove(t.getFrom());
-//                    //possibleNodes.remove(t.getTo());
-//                    possibleNodes.remove(junctionToMove);
-//
-//                    System.err.println("Possible nodes: " + possibleNodes);
-////                    possibleNodes.forEach(node -> node.setSelected(true,  c));
-//    
-//                    // These are the nodes where we could POTENTIALLY move the airwire without breaking the net
-//                    // from the candidate nodes, get the nearest one
-//                    AbstractNode nearestNode = junctionToMove.getNearestNode(possibleNodes);
-//    
-//    //              System.err.println("This node            : " + junctionToMove);
-//    //              System.err.println("Other node on AirWire: " + otherNode);
-//    //              System.err.println("Nearest node         : " + nearestNode);
-//    //                nearestNode.setSelected(true, c);
-//    
-//                    // Reconnect the edge from the old node to the new nearest node
-////                    aw.reconnect(otherNode, nearestNode);
-//                }
-//            });
-//        } else if (handleToMove != null) {
-//            System.err.println("MOVING HANDLE: " + handleToMove);
-//
-//            // move the handle to the new position
-//            Point2D snapPos = snapToGrid(getClickPos(), getBoardView(), getOffset());
-////            handleToMove.setPos(snapPos);
-//
-//            AirWire aw = handleToMove.getAirWire();
-//            Net net = aw.getNet();
-//            AbstractNode node = handleToMove.getNode();
-//
-//            // get all nodes which are reachable in the net from the otherNode IF the given airwire would not exist
-//            List<AbstractNode> possibleNodes = net.getNodesWithout(node, aw);
-//
-//            System.err.println("Possible nodes: " + possibleNodes);
-////            possibleNodes.forEach(n -> n.setSelected(true,  c));
-////            AbstractNode nearestNode = handleToMove.getNearestNode(possibleNodes);
-//
-//            System.err.println("Current node: " + node);
-////            System.err.println("Nearest node: " + nearestNode);
-//
-//            // Reconnect the edge from the old node to the new nearest node
-////            aw.reconnect(node, nearestNode);
+            handleToMove.setPosition(getClickPos());
         }
     }
 

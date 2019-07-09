@@ -18,4 +18,7 @@ public abstract class AirWireHandle extends Handle {
     public TraceView getAirWire() {
         return aw;
     }
+
+
+    protected abstract void setPosition(Point2D clickPos);
 }

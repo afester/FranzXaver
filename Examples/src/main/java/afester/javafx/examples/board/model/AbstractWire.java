@@ -107,29 +107,33 @@ public abstract class AbstractWire {
     }
 
 
+    public abstract void reconnectToNearestJunction(Point2D clickPos);
 
-//
-//    /**
-//     * Reconnects this edge from one node to another node.
-//     *
-//     * @param currentNode The current node to which the edge is connected.
-//     * @param newNode The new node to which the edge shall be connected.
-//     */
-//    public void reconnect(AbstractNode currentNode, AbstractNode newNode) {
-//        if (from == currentNode) {
-//            currentNode.traceStarts.remove(this);
-//            newNode.traceStarts.add(this);
-//            from = newNode;
-//            
-//            setStart(newNode.getPos());
-//        } else if (to == currentNode) {
-//            currentNode.traceEnds.remove(this);
-//            newNode.traceEnds.add(this);
-//            to = newNode;
-//
-//            setEnd(newNode.getPos());
-//        } else {
-//            throw new RuntimeException("Unexpected: Edge does neither go FROM nor TO the given node!");
-//        }
-//    }
+
+    public abstract void reconnectFromNearestJunction(Point2D clickPos);
+
+
+    /**
+     * Reconnects this edge from one node to another node.
+     *
+     * @param currentNode The current node to which the edge is connected.
+     * @param newNode The new node to which the edge shall be connected.
+     */
+    public void reconnect(AbstractNode currentNode, AbstractNode newNode) {
+        if (from == currentNode) {
+            currentNode.traceStarts.remove(this);
+            newNode.traceStarts.add(this);
+            from = newNode;
+            
+            setStart(newNode.getPosition());
+        } else if (to == currentNode) {
+            currentNode.traceEnds.remove(this);
+            newNode.traceEnds.add(this);
+            to = newNode;
+
+            setEnd(newNode.getPosition());
+        } else {
+            throw new RuntimeException("Unexpected: Edge does neither go FROM nor TO the given node!");
+        }
+    }
 }

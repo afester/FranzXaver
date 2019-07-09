@@ -87,17 +87,7 @@ public abstract class AbstractNode {
      * @return The node which is the nearest to this one.
      */
     public AbstractNode getNearestNode(List<AbstractNode> nodeList) {
-        double minDist = Double.MAX_VALUE;
-        AbstractNode result = null;
-        for (AbstractNode node: nodeList) {
-            double dist = node.getPosition().distance(getPosition());
-            if (dist < minDist) {
-                result = node;
-                minDist = dist;
-            }
-        }
-
-        return result;
+        return net.getNearestNode(getPosition(), nodeList);
     }
 
     public Net getNet() {

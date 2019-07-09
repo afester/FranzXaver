@@ -1,8 +1,14 @@
 package afester.javafx.examples.board.model;
 
+import java.util.List;
+import java.util.Random;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
+import javafx.geometry.Point2D;
+import javafx.scene.paint.Color;
 
 /**
  * An AirWire is a line between two Junctions which has not been routed yet.
@@ -196,12 +202,41 @@ public class AirWire extends AbstractWire {
     }
 
     @Override
-    public String toString() {
-        return String.format("AirWire[%s - %s]", getFrom(), getTo());
+    public TraceType getType() {
+        return TraceType.AIRWIRE;
+    }
+
+    private Random r = new Random(System.currentTimeMillis());
+    private final Color getRandomColor() {
+        final double red = r.nextDouble();
+        final double green = r.nextDouble();
+        final double blue = r.nextDouble();
+        return new Color(red, green, blue, 1.0);
     }
 
     @Override
-    public TraceType getType() {
-        return TraceType.AIRWIRE;
+    public void reconnectToNearestJunction(Point2D clickPos) {
+        System.err.println("reconnectToNearestJunction");
+        
+        // get all nodes which are reachable in the net from the otherNode IF the given airwire would not exist
+        List<AbstractNode> possibleNodes = net.getNodesWithout(getTo(), this);
+        AbstractNode nearestNode = net.getNearestNode(clickPos, possibleNodes);
+    }
+
+    @Override
+    public void reconnectFromNearestJunction(Point2D clickPos) {
+        System.err.println("reconnectFromNearestJunction");
+
+        // get all nodes which are reachable in the net from the otherNode IF the given airwire would not exist
+        List<AbstractNode> possibleNodes = net.getNodesWithout(this.getFrom(), this);
+        AbstractNode nearestNode = net.getNearestNode(clickPos, possibleNodes);
+
+        // Reconnect the edge from the old node to the new nearest node
+        reconnect(this.getFrom(), nearestNode);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("AirWire[%s - %s]", getFrom(), getTo());
     }
 }

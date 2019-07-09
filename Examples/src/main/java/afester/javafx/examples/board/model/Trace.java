@@ -4,6 +4,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import javafx.geometry.Point2D;
+
 /**
  * A Trace is a part of a Net which has already been routed.
  * It can either be rendered as trace or as bridge. 
@@ -53,5 +55,17 @@ public class Trace extends AbstractWire {
     @Override
     public String toString() {
         return String.format("Trace[%s - %s]", this.getFrom(), this.getTo());
+    }
+
+
+    @Override
+    public void reconnectToNearestJunction(Point2D clickPos) {
+        throw new RuntimeException("NYI");
+    }
+
+
+    @Override
+    public void reconnectFromNearestJunction(Point2D clickPos) {
+        throw new RuntimeException("NYI");
     }
 }

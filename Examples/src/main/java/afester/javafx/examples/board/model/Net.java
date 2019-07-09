@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import afester.javafx.examples.board.model.AbstractWire.AbstractWireState;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 
 /**
@@ -244,7 +245,6 @@ public class Net {
             }
         }
 
-        System.err.println("RESULT: " + result);
         return result.stream().collect(Collectors.toList());
     }
 
@@ -367,5 +367,26 @@ public class Net {
             trace.getFrom().setColor(null);
             trace.getTo().setColor(null);
         }
+    }
+
+    /**
+     * From a collection of nodes, get the one which is nearest to a given position.
+     *
+     * @param refPos The position for which to find the closes node.
+     * @param nodeList The list of nodes from which to get the nearest one.
+     * @return The node which is the nearest to this one.
+     */
+    public AbstractNode getNearestNode(Point2D refPos, List<AbstractNode> nodeList) {
+        double minDist = Double.MAX_VALUE;
+        AbstractNode result = null;
+        for (AbstractNode node: nodeList) {
+            double dist = node.getPosition().distance(refPos);
+            if (dist < minDist) {
+                result = node;
+                minDist = dist;
+            }
+        }
+
+        return result;
     }
 }
