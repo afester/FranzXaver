@@ -3,7 +3,7 @@ package afester.javafx.examples.board;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import afester.javafx.examples.board.tools.ComboBoxFormatable;
+import afester.javafx.components.ComboBoxFormatable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;

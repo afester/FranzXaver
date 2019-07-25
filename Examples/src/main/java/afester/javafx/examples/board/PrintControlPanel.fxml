@@ -1,44 +1,53 @@
-<?import java.net.URL?>
-<?import java.lang.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.scene.textfield.*?>
-<?import afester.javafx.examples.board.tools.ComboBoxFormatable?>
+<?xml version="1.0" encoding="UTF-8"?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="afester.javafx.examples.board.PrintControlPanel"
-	styleClass="root">
+<?import afester.javafx.components.ComboBoxFormatable?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox styleClass="root" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/11.0.2" fx:controller="afester.javafx.examples.board.PrintControlPanel">
 
 	<GridPane hgap="10" vgap="10">
-		<fx:define>
+<!--		<fx:define>
 			<ToggleGroup fx:id="orientationGroup" />
 		</fx:define>
+-->
+		<Label text="Printer:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
 
-		<Label text="Printer:" GridPane.columnIndex="0"
-			GridPane.rowIndex="0" />
+		<ComboBoxFormatable fx:id="printerList" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-		<ComboBoxFormatable fx:id="printerList"
-			GridPane.columnIndex="1" GridPane.rowIndex="0" />
+		<Label text="Paper Size:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
 
-		<Label text="Paper Size:" GridPane.columnIndex="0"
-			GridPane.rowIndex="1" />
+		<ComboBoxFormatable fx:id="paperSizes" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-		<ComboBoxFormatable fx:id="paperSizes"
-			GridPane.columnIndex="1" GridPane.rowIndex="1" />
+		<Label text="Paper Orientation:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
 
-		<Label text="Paper Orientation:" GridPane.columnIndex="0"
-			GridPane.rowIndex="2" />
+		<RadioButton fx:id="portrait" text="Portrait" GridPane.columnIndex="1" GridPane.rowIndex="2">
+         <toggleGroup>
+            <ToggleGroup fx:id="orientationGroup" />
+         </toggleGroup></RadioButton>
 
-		<RadioButton text="Portrait" toggleGroup="$orientationGroup"
-			fx:id="portrait" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-
-		<RadioButton text="Landscape" toggleGroup="$orientationGroup"
-			fx:id="landscape" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+		<RadioButton fx:id="landscape" text="Landscape" toggleGroup="$orientationGroup" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <columnConstraints>
+         <ColumnConstraints />
+         <ColumnConstraints />
+      </columnConstraints>
+      <rowConstraints>
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+      </rowConstraints>
 
 	</GridPane>
 
-	<Button fx:id="printButton" text="Print ..."/>
+	<Button fx:id="printButton" text="Print ..." />
 
 	<stylesheets>
 		<URL value="@PrintControlPanel.css" />
