@@ -1,26 +1,32 @@
 package afester.javafx.examples.board;
 
+import java.io.IOException;
+
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 
-public class AboutDialog extends Pane {
+public class AboutDialog extends Dialog<Void> {
 
     public AboutDialog() {
-        GridPane gp = new GridPane();
-        
-        Label l11 = new Label("Application version:");
-        GridPane.setConstraints(l11, 0, 0);
-        Label l12 = new Label("Development:");
-        GridPane.setConstraints(l12, 1, 0);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("About.fxml"));
 
-        Label l21 = new Label("Java version:");
-        GridPane.setConstraints(l21, 0, 1);
-        Label l22 = new Label(System.getProperty("java.version"));
-        GridPane.setConstraints(l22, 1, 1);
+        try {
+            DialogPane aboutPanel = loader.load();
+            Label appVersionLabel = (Label) aboutPanel.lookup("#appVersion");
+            appVersionLabel.setText("Development Version");
+            Label javaVersionLabel = (Label) aboutPanel.lookup("#javaVersion");
+            javaVersionLabel.setText(String.format("%s %s", System.getProperty("java.vm.name"), System.getProperty("java.runtime.version")));
+            Label javaFxVersionLabel = (Label) aboutPanel.lookup("#javaFxVersion");
+            javaFxVersionLabel.setText(System.getProperty("javafx.runtime.version"));
 
-        gp.getChildren().addAll(l11, l12, l21, l22);
-
-        getChildren().add(gp);
+            setDialogPane(aboutPanel);
+            setTitle("About BreadBoardEditor");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

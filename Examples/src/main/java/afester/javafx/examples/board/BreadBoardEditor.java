@@ -1,6 +1,7 @@
 package afester.javafx.examples.board;
 
 import java.io.File;
+import java.io.IOException;
 
 import afester.javafx.components.StatusBar;
 import afester.javafx.components.ToolbarButton;
@@ -13,10 +14,15 @@ import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.model.NetImport;
 import afester.javafx.examples.board.model.Trace;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -25,6 +31,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
@@ -102,12 +109,10 @@ public class BreadBoardEditor extends Application {
         menuItem4.setOnAction(e -> importSchematic());
         MenuItem menuItem5 = new MenuItem("Synchronize schematic ...");
         menuItem5.setOnAction(e -> synchronizeSchematic());
-        MenuItem menuItem6 = new MenuItem("About ...");
-        menuItem6.setOnAction(e -> showAbout());
         MenuItem menuItem7 = new MenuItem("Quit");
         menuItem7.setOnAction(e -> stage.close());
 
-        fileMenu.getItems().addAll(menuItem0, menuItem1, menuItem2, menuItem3, menuItem4, menuItem5, menuItem6, menuItem7);
+        fileMenu.getItems().addAll(menuItem0, menuItem1, menuItem2, menuItem3, menuItem4, menuItem5, menuItem7);
 
         Menu viewMenu = new Menu("View");
         MenuItem viewItem1 = new MenuItem("Center");
@@ -121,8 +126,14 @@ public class BreadBoardEditor extends Application {
         MenuItem editItem2 = new MenuItem("Trace");
         editMenu.getItems().addAll(editItem1, editItem2);
 
+        Menu helpMenu = new Menu("_Help");
+        helpMenu.setAccelerator(KeyCombination.keyCombination("Alt+H"));
+        MenuItem menuItemAbout = new MenuItem("_About ...");
+        menuItemAbout.setOnAction(e -> showAbout());
+        helpMenu.getItems().addAll(menuItemAbout);
+
         MenuBar menuBar = new MenuBar();
-        menuBar.getMenus().addAll(fileMenu, viewMenu, editMenu);
+        menuBar.getMenus().addAll(fileMenu, viewMenu, editMenu, helpMenu);
 
         // Create the toolbar
         final Button shortestPathButton = new ToolbarButton("Shortest", "afester/javafx/examples/board/net-shortest.png");
@@ -244,12 +255,8 @@ public class BreadBoardEditor extends Application {
 
 
     private void showAbout() {
-        AboutDialog dlg = new AboutDialog();
-        Scene scene = new Scene(dlg);
-        Stage stage = new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setScene(scene);
-        stage.showAndWait();
+        Dialog<Void> dialog = new AboutDialog();
+        dialog.showAndWait();
     }
 
 
@@ -409,7 +416,7 @@ public class BreadBoardEditor extends Application {
 
     private void newBoard() {
         Board board = new Board();
-        //bv.setBoard(board);
+        //topViewbv.setBoard(board);
     }
 
 
