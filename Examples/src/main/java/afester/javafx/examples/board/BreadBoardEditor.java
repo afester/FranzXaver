@@ -416,7 +416,9 @@ public class BreadBoardEditor extends Application {
 
     private void newBoard() {
         Board board = new Board();
-        //topViewbv.setBoard(board);
+        topView.setBoard(board);
+        topView.showBoardDimensions(true);
+        bottomView = null;
     }
 
 

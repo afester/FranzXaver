@@ -39,10 +39,26 @@ import javafx.scene.paint.Color;
 
 public class Board {
 
+    private List<Point2D> boardShapePoints = new ArrayList<>();
     private Map<String, Part> parts = new HashMap<>();
     private Map<String, Net> nets = new HashMap<>();
     private String schematicFile;
     private File boardFile;
+
+    
+    /**
+     * Creates a new empty board with a default dimension of 100mm X 160mm
+     */
+    public Board() {
+        boardShapePoints = new ArrayList<>();
+        boardShapePoints.add(new Point2D(  0,   0));
+        boardShapePoints.add(new Point2D(100,   0));
+        boardShapePoints.add(new Point2D(100, 160));
+        boardShapePoints.add(new Point2D(  0, 160));
+
+        parts = new HashMap<>();
+        nets = new HashMap<>();
+    }
 
     public void addDevice(Part pkg) {
         parts.put(pkg.getName(), pkg);
@@ -92,6 +108,15 @@ public class Board {
 //            rootNode.setAttribute("width",  Double.toString(getWidth()));
 //            rootNode.setAttribute("height", Double.toString(getHeight()));
             doc.appendChild(rootNode);
+
+            Element boardShape = doc.createElement("boardShape");
+            for (Point2D coords : getBoardShape()) {
+                Element point = doc.createElement("point");
+                point.setAttribute("x", Double.toString(coords.getX()));
+                point.setAttribute("y", Double.toString(coords.getY()));
+                boardShape.appendChild(point);
+            }
+            rootNode.appendChild(boardShape);
 
             IntVal junctionId = new IntVal();
             parts.forEach( (k, v) -> {
@@ -164,6 +189,18 @@ public class Board {
 
             //width = Double.parseDouble(widthAttr);
             //height = Double.parseDouble(heightAttr);
+
+            boardShapePoints = new ArrayList<>();
+            Element boardShapeNode = (Element) xPath.evaluate("boardShape", breadboardNode, XPathConstants.NODE);
+            System.err.println("NODE:" + boardShapeNode);
+
+            NodeList boardShapePointNodes = (NodeList) xPath.evaluate("./point", boardShapeNode, XPathConstants.NODESET);
+            for (int i = 0; i < boardShapePointNodes.getLength(); ++i) {
+                Element boardShapePointNode = (Element) boardShapePointNodes.item(i);
+                String xPos = boardShapePointNode.getAttribute("x");
+                String yPos = boardShapePointNode.getAttribute("y");
+                boardShapePoints.add(new Point2D(Double.parseDouble(xPos), Double.parseDouble(yPos)));
+            }
 
             Map<String, Junction> junctions = new HashMap<>();
             Map<String, Pad> pads = new HashMap<>();
@@ -545,16 +582,8 @@ public class Board {
         }
     }
 
-    public Double[] getBoardShape() {
-        return new Double[]{
-                0.0, 0.0,
-                55.0, 0.0,
-                55.0, 31.0,
-                90.0, 31.0,
-                90.0, 68.0,
-                100.0, 81.0,
-                100.0, 132.0,
-                0.0, 132.0};
+    public List<Point2D> getBoardShape() {
+        return boardShapePoints;
     }
 
     public Part getPart(String ref) {
@@ -562,14 +591,7 @@ public class Board {
     }
 
     public double getWidth() {
-        Double[] coords = getBoardShape();
-        double result = 0.0;
-        for (int idx = 0;  idx < coords.length;  idx += 2) {
-            if (coords[idx] > result) {
-                result = coords[idx];
-            }
-        }
-
-        return result;
+        return getBoardShape().stream()
+                              .max((a, b) -> Double.compare(a.getX(), b.getX())).get().getX();
     }
 }

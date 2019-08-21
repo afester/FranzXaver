@@ -2,6 +2,7 @@ package afester.javafx.examples.board;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
@@ -105,24 +106,31 @@ public class BoardView extends Pane {
     }
 
 
-    private void setBoard(Board board) {
+    public void setBoard(Board board) {
         getChildren().clear();
 
         this.board = board;
 
         System.err.println("\nCreating board background ...");
-        Double[] boardDims = board.getBoardShape();
         boardShape = new Polygon();
         boardShape.setFill(boardColor);
         boardShape.setStroke(Color.GRAY);
         boardShape.setStrokeWidth(0.3);
-        boardShape.getPoints().addAll(boardDims);
+
+        // convert the board shape into an Double[] array as required by the JavaFX polygon API 
+        final List<Point2D> boardDims = board.getBoardShape();
+        final Double[] polygonCoords = new Double [boardDims.size() * 2];
+        int idx = 0;
+        for (Point2D coord : boardDims) {
+            polygonCoords[idx] = coord.getX();
+            polygonCoords[idx+1] = coord.getY();
+            idx += 2;
+        }
+        boardShape.getPoints().addAll(polygonCoords);
 
 //        Rectangle background = new Rectangle(board.getWidth(), board.getHeight(), boardColor);
 //        background.setStroke(Color.BLACK);
         getChildren().add(boardShape);
-
-
 
         Bounds b = boardShape.getBoundsInParent();
 //        System.err.println(b);
@@ -151,7 +159,7 @@ public class BoardView extends Pane {
         }
 
         Polygon clipShape = new Polygon();
-        clipShape.getPoints().addAll(boardDims);
+        clipShape.getPoints().addAll(polygonCoords);
 
         padsGroup.setClip(clipShape);
         partsGroup = new Group();

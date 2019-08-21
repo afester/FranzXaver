@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?><breadboard schematic="..\..\CNC\schematic\Labornetzteil3.sch">
+  <boardShape>
+    <point x="0.0" y="0.0"/>
+    <point x="55.0" y="0.0"/>
+    <point x="55.0" y="31.0"/>
+    <point x="90.0" y="31.0"/>
+    <point x="90.0" y="68.0"/>
+    <point x="100.0" y="81.0"/>
+    <point x="100.0" y="132.0"/>
+    <point x="0.0" y="132.0"/>
+  </boardShape>
   <part name="Q1" package="SOT93" rotation="270.0" value="" x="17.740000000000002" y="153.13">
     <line width="0.1524" x1="-7.62" x2="7.62" y1="6.35" y2="6.35"/>
     <line width="0.1524" x1="7.62" x2="7.62" y1="-6.223" y2="6.35"/>
