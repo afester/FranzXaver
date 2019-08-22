@@ -27,6 +27,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.ToggleGroup;
@@ -69,8 +70,8 @@ public class BreadBoardEditor extends Application {
         //Board board = ni.importFile(new File("schem.xml"));
 
         Board board = new Board();
-//        board.load(new File("small.brd"));
-        board.load(new File("large.brd"));
+        board.load(new File("small.brd"));
+//        board.load(new File("large.brd"));
 //        board.load(new File("first.brd"));
 
         topView = new BoardView(board);
@@ -99,8 +100,8 @@ public class BreadBoardEditor extends Application {
         Menu fileMenu = new Menu("File");
         MenuItem menuItem0 = new MenuItem("New board ...");
         menuItem0.setOnAction(e -> newBoard());
-        MenuItem menuItem1 = new MenuItem("Open board ...");
-        menuItem1.setOnAction(e -> openBoard());
+        MenuItem menuItem1 = new MenuItem("Load board ...");
+        menuItem1.setOnAction(e -> loadBoard());
         MenuItem menuItem2 = new MenuItem("Save board");
         menuItem2.setOnAction(e -> saveBoard());
         MenuItem menuItem3 = new MenuItem("Save board as ...");
@@ -112,7 +113,10 @@ public class BreadBoardEditor extends Application {
         MenuItem menuItem7 = new MenuItem("Quit");
         menuItem7.setOnAction(e -> stage.close());
 
-        fileMenu.getItems().addAll(menuItem0, menuItem1, menuItem2, menuItem3, menuItem4, menuItem5, menuItem7);
+        fileMenu.getItems().addAll(menuItem0, menuItem1, new SeparatorMenuItem(),
+                                   menuItem2, menuItem3, new SeparatorMenuItem(),
+                                   menuItem4, menuItem5, new SeparatorMenuItem(),
+                                   menuItem7);
 
         Menu viewMenu = new Menu("View");
         MenuItem viewItem1 = new MenuItem("Center");
@@ -405,10 +409,11 @@ public class BreadBoardEditor extends Application {
     private void synchronizeSchematic() {
         String schematicFile = topView.getBoard().getSchematicFile();
         System.err.println("Synchronizing " + schematicFile);
-        NetImport ni = new EagleNetImport();
-        Board updatedBoard = ni.importFile(new File(schematicFile));
-        Board currentBoard = topView.getBoard();
-        currentBoard.update(updatedBoard);
+
+//        NetImport ni = new EagleNetImport();
+//        Board updatedBoard = ni.importFile(new File(schematicFile));
+//        Board currentBoard = topView.getBoard();
+//        currentBoard.update(updatedBoard);
 
        //  bv.setBoard(currentBoard);  // re-render board
     }
@@ -422,14 +427,15 @@ public class BreadBoardEditor extends Application {
     }
 
 
-    private void openBoard() {
+    private void loadBoard() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Board ...");
         File result = fileChooser.showOpenDialog(stage);
         if (result != null) {
             Board board = new Board();
             board.load(result);
-            // bv.setBoard(board);
+            topView.setBoard(board);
+            bottomView = null;
         }
     }
 
@@ -454,8 +460,11 @@ public class BreadBoardEditor extends Application {
         File result = fileChooser.showOpenDialog(stage);
         if (result != null) {
             System.err.println("Importing " + result.getAbsolutePath());
-            NetImport ni = new EagleNetImport();
-            Board board = ni.importFile(result);
+
+            NetImport ni = new EagleNetImport(result);
+            Board board = topView.getBoard();
+            board.importSchematic(ni);
+            topView.setBoard(board);
            // bv.setBoard(board);
         }
     }

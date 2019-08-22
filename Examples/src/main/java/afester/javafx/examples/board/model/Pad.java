@@ -46,52 +46,10 @@ public class Pad extends AbstractNode {
         this.net = net;
     }
 
-/*****************************/
-//    
-//
-//    Node partNode = null;
-//    @Override
-//    public Point2D getPos() {
-//        if (partNode != null) {
-//            return partNode.localToParent(getCenterX(), getCenterY());
-//        }
-//        return new Point2D(0, 0); 
-//    }
-/*****************************/
-
-
-    // NOTE: This shall return the global position of the pad, however this also depends on the rotation!!! 
-//    public Point2D getPos() {
-//        Point2D result = part.getPosition().add(super.getPos()); // pad. pos; // return new Point2D(getCenterX(), getCenterY());
-//    }
-
-// This is a hack to track the global connect position for the Pad.
-//    private Point2D connectPos = new Point2D(0, 0);
-//    public Point2D getConnectPosition() {
-//        return connectPos;
-//    }
-//    public void setConnectPosition(Point2D pos) {
-//        connectPos = pos;
-//    }
-
-
-//
-//
-//    @Override   // DEBUG ONLY
-//    public void setSelected(boolean isSelected, Color col) {
-//        Shape pad = (Shape) view.getChildrenUnmodifiable().get(0);  // HACK
-//        if (isSelected) {
-//            pad.setFill(col);
-//        } else {
-//            pad.setFill(null);
-//        }
-//    }
-
-//    @Override
     public org.w3c.dom.Node getXML(Document doc) {
         Element result = doc.createElement("pad");
-        result.setAttribute("x", Double.toString(getPosition().getX()));
-        result.setAttribute("y", Double.toString(getPosition().getY()));
+        result.setAttribute("x", Double.toString(getLocalPos().getX()));
+        result.setAttribute("y", Double.toString(getLocalPos().getY()));
         result.setAttribute("pinNumber", pinNumber);
         result.setAttribute("id", Integer.toString(id));
 

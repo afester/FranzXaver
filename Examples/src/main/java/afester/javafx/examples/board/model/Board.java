@@ -594,4 +594,8 @@ public class Board {
         return getBoardShape().stream()
                               .max((a, b) -> Double.compare(a.getX(), b.getX())).get().getX();
     }
+
+    public void importSchematic(NetImport ni) {
+        ni.importFile(this);
+    }
 }

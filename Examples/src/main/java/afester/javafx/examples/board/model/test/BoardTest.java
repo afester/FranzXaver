@@ -28,8 +28,9 @@ public class BoardTest {
     @Test
     public void importTest() {
         File schematicFile = new File("small.sch");
-        NetImport ni = new EagleNetImport();
-        Board board = ni.importFile(schematicFile);
+        NetImport ni = new EagleNetImport(schematicFile);
+        Board board = new Board();
+        ni.importFile(board);
 
         assertEquals(7, board.getParts().size());
         assertEquals(4, board.getNets().size());
@@ -45,8 +46,9 @@ public class BoardTest {
     @Test
     public void saveTest() {
         File schematicFile = new File("small.sch");
-        NetImport ni = new EagleNetImport();
-        Board board = ni.importFile(schematicFile);
+        NetImport ni = new EagleNetImport(schematicFile);
+        Board board = new Board();
+        ni.importFile(board);
 
         assertEquals(7, board.getParts().size());
         assertEquals(4, board.getNets().size());

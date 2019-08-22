@@ -28,12 +28,15 @@ public class EagleNetImport extends NetImport {
 
     private XPath xPath = XPathFactory.newInstance().newXPath();
     private Document doc = null;
+    private File schematicFile = null;
     // private Map<String, Part> packages = new HashMap<>();
 
+    public EagleNetImport(File file) {
+        schematicFile = file;
+    }
+
     @Override
-	public Board importFile(File file) {
-        Board board = new Board();
-        
+	public void importFile(Board board) {
         double minY = 0;
 
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -44,7 +47,7 @@ public class EagleNetImport extends NetImport {
             dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 
             dBuilder = dbFactory.newDocumentBuilder();
-            doc = dBuilder.parse(file);
+            doc = dBuilder.parse(schematicFile);
 
             // load all parts
             NodeList partNodes = (NodeList) xPath.evaluate("/eagle/drawing/schematic/parts/part", doc, XPathConstants.NODESET);
@@ -145,8 +148,6 @@ public class EagleNetImport extends NetImport {
         board.getParts().values().forEach(part -> {
             part.setPosition(part.getPosition().add(delta));
         });
-
-        return board;
     }
 
 

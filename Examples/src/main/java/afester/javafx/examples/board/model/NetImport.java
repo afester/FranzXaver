@@ -4,5 +4,5 @@ import java.io.File;
 
 public abstract class NetImport {
 
-    public abstract Board importFile(File file);
+    public abstract void importFile(Board board);
 }
