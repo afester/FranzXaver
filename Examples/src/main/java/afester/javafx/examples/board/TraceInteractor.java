@@ -10,9 +10,10 @@ public class TraceInteractor extends MouseInteractor {
 
     @Override
     protected void clickObjectLeft(Interactable obj) {
-        if (obj instanceof AirWire) {
-            AirWire aw = (AirWire) obj;       // TODO: How to remove this cast and the instanceof
-            aw.convertToStraightTrace();
+        System.err.println("CLICKED LEFT!");
+        if (obj instanceof TraceView) {
+            TraceView tw = (TraceView) obj;       // TODO: How to remove this cast and the instanceof
+            tw.getTrace().convertToStraightTrace();
         }
     }
 }
