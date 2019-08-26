@@ -34,13 +34,16 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 
 public class Board {
 
     private List<Point2D> boardShapePoints = new ArrayList<>();
-    private Map<String, Part> parts = new HashMap<>();
+    private ObservableMap<String, Part> parts = FXCollections.observableHashMap();
     private Map<String, Net> nets = new HashMap<>();
     private String schematicFile;
     private File boardFile;
@@ -55,16 +58,15 @@ public class Board {
         boardShapePoints.add(new Point2D(100,   0));
         boardShapePoints.add(new Point2D(100, 160));
         boardShapePoints.add(new Point2D(  0, 160));
-
-        parts = new HashMap<>();
-        nets = new HashMap<>();
+//        parts = new HashMap<>();
+//        nets = new HashMap<>();
     }
 
     public void addDevice(Part pkg) {
         parts.put(pkg.getName(), pkg);
     }
 
-    public Map<String, Part> getParts() {
+    public  ObservableMap<String, Part> getParts() {
         return parts;
     }
 
@@ -405,7 +407,6 @@ public class Board {
         potentiallyModified.removeAll(removedParts);
         potentiallyModified.removeAll(addedParts);
 
-
         Set<String> modifiedParts = new HashSet<>();
 
         // System.err.printf("Potentially replaced: %s parts\n", potentiallyModified.size());
@@ -609,11 +610,9 @@ public class Board {
     public void synchronizeSchematic() {
         System.err.println("Synchronizing " + schematicFile);
 
-//        NetImport ni = new EagleNetImport();
-//        Board updatedBoard = ni.importFile(new File(schematicFile));
-//        Board currentBoard = topView.getBoard();
-//        currentBoard.update(updatedBoard);
-
-       //  bv.setBoard(currentBoard);  // re-render board
+        Board updatedBoard = new Board();
+        NetImport ni = new EagleNetImport(new File(schematicFile));
+        ni.importFile(updatedBoard);
+        update(updatedBoard);
     }
 }

@@ -70,7 +70,8 @@ public class BreadBoardEditor extends Application {
         //Board board = ni.importFile(new File("schem.xml"));
 
         Board board = new Board();
-        board.load(new File("small.brd"));
+        board.load(new File("supply.brd"));
+//        board.load(new File("small.brd"));
 //        board.load(new File("large.brd"));
 //        board.load(new File("first.brd"));
 
