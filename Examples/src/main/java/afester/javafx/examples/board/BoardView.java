@@ -258,8 +258,13 @@ public class BoardView extends Pane {
             net.getJunctions().addListener((javafx.collections.ListChangeListener.Change<? extends Junction> change) -> {
                 change.next();
                 change.getRemoved().forEach(junction -> {
-                    JunctionView jView = jMap.get(junction);
+                    JunctionView jView = jMap.remove(junction);
                     junctionGroup.getChildren().remove(jView);
+                });
+                change.getAddedSubList().forEach(junction -> {
+                    JunctionView jView = new JunctionView(junction);
+                    jMap.put(junction,  jView);
+                    junctionGroup.getChildren().add(jView);
                 });
             });
         });

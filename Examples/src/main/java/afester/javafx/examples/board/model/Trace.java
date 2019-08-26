@@ -12,8 +12,11 @@ import javafx.geometry.Point2D;
  */
 public class Trace extends AbstractWire {
 
-
     private boolean isBridge = false;
+   
+    public Trace(AbstractNode from, AbstractNode to, Net net) {
+        super(from, to, net);
+    }
 
     public void setAsBridge() {
         isBridge = true;
@@ -32,13 +35,7 @@ public class Trace extends AbstractWire {
         }
         return TraceType.TRACE;
     }
-
     
-    
-    public Trace(AbstractNode from, AbstractNode to, Net net) {
-        super(from, to, net);
-    }
-
 
     @Override
     public Node getXML(Document doc)  {
@@ -51,13 +48,6 @@ public class Trace extends AbstractWire {
     }
 
 
-    
-    @Override
-    public String toString() {
-        return String.format("Trace[%s - %s]", this.getFrom(), this.getTo());
-    }
-
-
     @Override
     public void reconnectToNearestJunction(Point2D clickPos) {
         throw new RuntimeException("NYI");
@@ -67,5 +57,11 @@ public class Trace extends AbstractWire {
     @Override
     public void reconnectFromNearestJunction(Point2D clickPos) {
         throw new RuntimeException("NYI");
+    }
+
+    
+    @Override
+    public String toString() {
+        return String.format("Trace[%s - %s]", this.getFrom(), this.getTo());
     }
 }

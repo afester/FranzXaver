@@ -1,5 +1,6 @@
 package afester.javafx.examples.board;
 
+import afester.javafx.examples.board.model.AbstractWire;
 import afester.javafx.examples.board.model.AirWire;
 
 public class TraceInteractor extends MouseInteractor {
@@ -13,7 +14,8 @@ public class TraceInteractor extends MouseInteractor {
         System.err.println("CLICKED LEFT!");
         if (obj instanceof TraceView) {
             TraceView tw = (TraceView) obj;       // TODO: How to remove this cast and the instanceof
-            tw.getTrace().convertToStraightTrace();
+            final AbstractWire wire = tw.getTrace();
+            wire.convertToStraightTrace();
         }
     }
 }

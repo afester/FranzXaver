@@ -33,7 +33,7 @@ public class AirWire extends AbstractWire {
 
         return traceNode;
     }
-    
+
 //    private void convertToTrace(MouseEvent e) {
 //		Net net = getNet();
 //		System.err.println("Clicked AirWire of " + net);
@@ -131,16 +131,17 @@ public class AirWire extends AbstractWire {
      * TODO: There might already exist a junction at one or both of the locations!
      * In that case, the new trace can be directly connected to the existing junction.
      */
+    @Override
     public void convertToStraightTrace() {
-//        Net net = getNet();
-//
-//        AbstractNode pFrom = this.getFrom();
-//        AbstractNode pTo = this.getTo();
-//
-//        // TODO: remove the instanceof's
-//        if (pFrom instanceof Junction && pTo instanceof Junction) {
-//            System.err.println("JUNCTION/JUNCTION");
-//
+        Net net = getNet();
+
+        AbstractNode pFrom = this.getFrom();
+        AbstractNode pTo = this.getTo();
+
+        // TODO: remove the instanceof's
+        if (pFrom instanceof Junction && pTo instanceof Junction) {
+            System.err.println("JUNCTION/JUNCTION");
+
 //            pFrom.traceStarts.remove(this);
 //            pTo.traceEnds.remove(this);
 //            net.getTraces().remove(this);
@@ -149,56 +150,55 @@ public class AirWire extends AbstractWire {
 //
 //            Trace t = new Trace(pFrom, pTo);
 //            net.addTrace(t);
-//
-//        } else if (pFrom instanceof Pad && pTo instanceof Pad) { 
-//            System.err.println("PAD/PAD");
-//
-//            Junction j1 = new Junction(getNet(), pFrom.getPos());
-//            net.addJunction(j1);
-//            Junction j2 = new Junction(getNet(), pTo.getPos());
-//            net.addJunction(j2);
-//    
-//            pTo.traceEnds.remove(this);
-//            this.setTo(j1);
-//            j1.traceEnds.add(this);
-//    
-//            Trace t = new Trace(j1, j2);
-//            net.addTrace(t);
-//    
-//            AirWire aw2 = new AirWire(j2, pTo);
-//            net.addTrace(aw2);
-//        } else if (pFrom instanceof Junction && pTo instanceof Pad) {
-//            System.err.println("JUNCTION/PAD");
-//            //    Junction -                       AirWire - Pad 
-//            //    Junction - (Trace - Junction2) - AirWire - Pad
-//            //    pFrom       new     new          this      pTo
-//
-//            Junction j2 = new Junction(getNet(), pTo.getPos());
-//            net.addJunction(j2);
-//
-//            pFrom.traceStarts.remove(this);
-//            this.setFrom(j2);
-//            j2.traceStarts.add(this);
-//
-//            Trace t = new Trace(pFrom, j2);
-//            net.addTrace(t);
-//        } else if (pFrom instanceof Pad && pTo instanceof Junction) {
-//            System.err.println("PAD/JUNCTION");
-//
-//            //    Pad - AirWire - Junction 
-//            //    Pad - AirWire - (Junction2 - Trace) - Junction
-//            //    pFrom this       new         new      pTo
-//
-//            Junction j2 = new Junction(getNet(), pFrom.getPos());
-//            net.addJunction(j2);
-//
-//            pTo.traceEnds.remove(this);
-//            this.setTo(j2);
-//            j2.traceEnds.add(this);
-//
-//            Trace t = new Trace(j2, pTo);
-//            net.addTrace(t);
-//        }
+
+        } else if (pFrom instanceof Pad && pTo instanceof Pad) { 
+            System.err.println("PAD/PAD");
+            //     Pad - AirWire - Pad 
+            // ==> Pad - AirWire - (Junction1 - Trace - Junction2 - AirWire2) - Pad
+            //
+
+            Junction j1 = new Junction(getNet(), pFrom.getPosition());
+            net.addJunction(j1);
+    
+            reconnect(pTo, j1);
+
+            Junction j2 = new Junction(getNet(), pTo.getPosition());
+            net.addJunction(j2);
+
+            Trace t = new Trace(j1, j2, getNet());
+            net.addTrace(t);
+    
+            AirWire aw2 = new AirWire(j2, pTo, getNet());
+            net.addTrace(aw2);
+        } else if (pFrom instanceof Junction && pTo instanceof Pad) {
+            System.err.println("JUNCTION/PAD");
+
+            //    Junction -                       AirWire - Pad 
+            //    Junction - (Trace - Junction2) - AirWire - Pad
+            //    pFrom       new     new          this      pTo
+
+            Junction j2 = new Junction(getNet(), pTo.getPosition());
+            net.addJunction(j2);
+
+            reconnect(pFrom, j2);
+
+            Trace t = new Trace(pFrom, j2, getNet());
+            net.addTrace(t);
+        } else if (pFrom instanceof Pad && pTo instanceof Junction) {
+            System.err.println("PAD/JUNCTION");
+
+            //    Pad - AirWire - Junction 
+            //    Pad - AirWire - (Junction2 - Trace) - Junction
+            //    pFrom this       new         new      pTo
+
+            Junction j2 = new Junction(getNet(), pFrom.getPosition());
+            net.addJunction(j2);
+
+            reconnect(pTo, j2);
+
+            Trace t = new Trace(j2, pTo, getNet());
+            net.addTrace(t);
+        }
     }
 
     @Override

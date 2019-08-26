@@ -12,7 +12,6 @@ import javafx.scene.paint.Color;
  */
 public class TraceView extends AbstractEdgeView {
 
-    
     private static Color AIRWIRE_NORMAL_COLOR = Color.ORANGE;
     private static Color AIRWIRE_HIGHLIGHT_COLOR = new Color(Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getBlue(), 0.5);
     private static Color AIRWIRE_SELECTED_COLOR = Color.RED;
@@ -121,92 +120,6 @@ public class TraceView extends AbstractEdgeView {
     public AbstractWire getTrace() {
         return edge;
     }
-
-
-//    public void setSelected(boolean isSelected) {
-//        trace.setSelected(isSelected);
-////        if (isSelected) {
-////            showSelected();
-////        } else {
-////            showUnselected();
-////        }
-//    }
-
-//
-//    private void showUnselected() {
-//        switch(getType()) {
-//        case AIRWIRE:
-//            // TODO: We need a thicker selectionShape (a thicker transparent line) with the
-//            // same coordinates
-//            // so that selecting the line is easier
-//            setStrokeWidth(0.3); // 0.2);
-//            setStroke(Color.ORANGE);
-//            break;
-//
-//        case BRIDGE:
-//            setStrokeWidth(0.5);
-//            setStroke(Color.GREEN);
-//            break;
-//
-//        case TRACE:
-//            setStrokeWidth(1.0); // 0.2);
-//            setStroke(Color.SILVER);
-//            break;
-//
-//        default:
-//            break;
-//        }
-//    }
-//
-//
-////    private void showSelected() {
-////        switch(getType()) {
-////        case AIRWIRE:
-////            // TODO: We need a thicker selectionShape (a thicker transparent line) with the
-////            // same coordinates
-////            // so that selecting the line is easier
-////            setStrokeWidth(0.3); // 0.2);
-////            setStroke(Color.RED);
-////            break;
-////
-////        case BRIDGE:
-////            setStrokeWidth(0.5);
-////            setStroke(Color.RED);
-////            break;
-////
-////        case TRACE:
-////            setStrokeWidth(1.0); // 0.2);
-////            setStroke(Color.RED);
-//////            from.setSelected(true);
-//////            to.setSelected(true);
-////            break;
-////
-////        default:
-////            break;
-////        }
-////    }
-//
-//
-//
-//    @Override
-//    protected void setSegmentSelected(boolean isSelected) {
-////      if (isSelected) {
-////        from.setSelected(true);
-////        to.setSelected(true);
-////
-////        setStroke(Color.RED);
-////      } else {
-////        from.setSelected(false);
-////        to.setSelected(false);
-////
-////        if (isBridge) {
-////            setStroke(Color.GREEN);
-////        } else {
-////            setStroke(Color.SILVER);
-////        }
-////      }
-//    }
-
 
     @Override
     public String toString() {

@@ -136,4 +136,8 @@ public abstract class AbstractWire {
             throw new RuntimeException("Unexpected: Edge does neither go FROM nor TO the given node!");
         }
     }
+
+
+    public void convertToStraightTrace() {
+    }
 }
