@@ -370,9 +370,16 @@ public class Board {
         }
     }
 
+
     public String getSchematicFile() {
         return schematicFile;
     }
+
+
+    public void setSchematicFile(String name) {
+        this.schematicFile = name;
+    }
+
 
     /**
      * Updates this board from the board passed as parameter.
@@ -597,5 +604,16 @@ public class Board {
 
     public void importSchematic(NetImport ni) {
         ni.importFile(this);
+    }
+
+    public void synchronizeSchematic() {
+        System.err.println("Synchronizing " + schematicFile);
+
+//        NetImport ni = new EagleNetImport();
+//        Board updatedBoard = ni.importFile(new File(schematicFile));
+//        Board currentBoard = topView.getBoard();
+//        currentBoard.update(updatedBoard);
+
+       //  bv.setBoard(currentBoard);  // re-render board
     }
 }

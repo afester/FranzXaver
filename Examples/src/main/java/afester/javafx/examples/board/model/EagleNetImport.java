@@ -39,6 +39,7 @@ public class EagleNetImport extends NetImport {
 	public void importFile(Board board) {
         double minY = 0;
 
+        board.setSchematicFile(schematicFile.getName());
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder;
         try {

@@ -407,15 +407,8 @@ public class BreadBoardEditor extends Application {
 
 
     private void synchronizeSchematic() {
-        String schematicFile = topView.getBoard().getSchematicFile();
-        System.err.println("Synchronizing " + schematicFile);
-
-//        NetImport ni = new EagleNetImport();
-//        Board updatedBoard = ni.importFile(new File(schematicFile));
-//        Board currentBoard = topView.getBoard();
-//        currentBoard.update(updatedBoard);
-
-       //  bv.setBoard(currentBoard);  // re-render board
+        Board board = topView.getBoard();
+        board.synchronizeSchematic();
     }
 
 
@@ -465,7 +458,7 @@ public class BreadBoardEditor extends Application {
             Board board = topView.getBoard();
             board.importSchematic(ni);
             topView.setBoard(board);
-           // bv.setBoard(board);
+            bottomView = null;
         }
     }
 
