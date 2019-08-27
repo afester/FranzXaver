@@ -50,22 +50,6 @@ public abstract class AbstractNode {
         traceEnds.add(wire);
     }
 
-//	@Override
-//	public void setSelected(boolean isSelected) {
-//		if (isSelected) {
-//			setFill(Color.DARKRED);
-//		} else {
-//			setFill(null);
-//		}
-//	}
-
-//    public void setSelected(boolean isSelected, Color col) {
-//        if (isSelected) {
-//            setFill(Color.BLUE); // col);
-//        } else {
-//            setFill(null);
-//        }
-//    }
 
     /**
      * @return A list of all edges which are connected to this node.

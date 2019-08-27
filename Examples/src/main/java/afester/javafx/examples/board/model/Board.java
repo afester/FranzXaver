@@ -35,7 +35,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
@@ -58,8 +57,6 @@ public class Board {
         boardShapePoints.add(new Point2D(100,   0));
         boardShapePoints.add(new Point2D(100, 160));
         boardShapePoints.add(new Point2D(  0, 160));
-//        parts = new HashMap<>();
-//        nets = new HashMap<>();
     }
 
     public void addDevice(Part pkg) {
@@ -107,10 +104,9 @@ public class Board {
             // The root node represents the complete board
             Element rootNode = doc.createElement("breadboard");
             rootNode.setAttribute("schematic", schematicFile);
-//            rootNode.setAttribute("width",  Double.toString(getWidth()));
-//            rootNode.setAttribute("height", Double.toString(getHeight()));
             doc.appendChild(rootNode);
 
+            // the board shape
             Element boardShape = doc.createElement("boardShape");
             for (Point2D coords : getBoardShape()) {
                 Element point = doc.createElement("point");
@@ -120,12 +116,14 @@ public class Board {
             }
             rootNode.appendChild(boardShape);
 
+            // The parts
             IntVal junctionId = new IntVal();
             parts.forEach( (k, v) -> {
                 Element partNode = v.getXml(doc, junctionId);
                 rootNode.appendChild(partNode);
             });
 
+            // The nets
             nets.forEach((netName, net) -> {
                 Element netNode = doc.createElement("net");
                 netNode.setAttribute("name", net.getName());
