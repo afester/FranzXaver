@@ -279,26 +279,25 @@ public class BoardView extends Pane {
             PartView partView = new PartView(g);
             System.err.println("  " + g);
             partsGroup.getChildren().add(partView);
-            
+
             pMap.put(g, partView);
         });
         board.getParts().addListener((javafx.collections.MapChangeListener.Change<? extends String, ? extends Part> change) -> {
-            System.err.println(change);
-
-            Part partView = pMap.get(change.getKey());
-            if (partView != null) {
-                partsGroup.getChildren().remove(partView);
+            if (change.wasRemoved()) {
+                Part removed = change.getValueRemoved();
+                PartView partView = pMap.remove(removed);
+                if (partView != null) {
+                    partsGroup.getChildren().remove(partView);
+                }
             }
 
-//            change.getRemoved().forEach(junction -> {
-//                JunctionView jView = jMap.remove(junction);
-//                junctionGroup.getChildren().remove(jView);
-//            });
-//            change.getAddedSubList().forEach(junction -> {
-//                JunctionView jView = new JunctionView(junction);
-//                jMap.put(junction,  jView);
-//                junctionGroup.getChildren().add(jView);
-//            });
+            if (change.wasAdded()) {
+                Part added = change.getValueAdded();
+                PartView partView = new PartView(added);
+                partsGroup.getChildren().add(partView);
+
+                pMap.put(added, partView);
+            }
         });
 
         setOnMousePressed(e -> { 
