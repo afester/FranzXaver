@@ -42,10 +42,6 @@ public class Pad extends AbstractNode {
         return pinNumber;
     }
 
-    public void seNet(Net net) {
-        this.net = net;
-    }
-
     public org.w3c.dom.Node getXML(Document doc) {
         Element result = doc.createElement("pad");
         result.setAttribute("x", Double.toString(getLocalPos().getX()));

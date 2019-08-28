@@ -10,7 +10,7 @@ import javafx.scene.paint.Color;
 
 
 public abstract class AbstractNode {
-    protected Net net;
+    private Net net;
     public List<AbstractWire> traceStarts = new ArrayList<>();
     public List<AbstractWire> traceEnds = new ArrayList<>();
 

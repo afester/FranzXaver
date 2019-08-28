@@ -389,6 +389,9 @@ public class Board {
      * @param updatedBoard The new board
      */
     public void update(Board updatedBoard) {
+        getNets().forEach( (k, n) -> n.dumpNet());
+        System.err.println("==================================");
+
         //System.err.printf("New    : %s parts and %s nets ...\n", updatedBoard.getParts().size(), updatedBoard.getNets().size());
         //System.err.printf("Current: %s parts and %s nets ...\n", getParts().size(), getNets().size());
 
@@ -429,10 +432,10 @@ public class Board {
                 Pad oldPad = p1.getPad(pinNr);
 
                 p.traceStarts = oldPad.traceStarts;
-//                p.traceStarts.forEach(wire -> wire.setFrom(p));
-            
+                p.traceStarts.forEach(wire -> wire.from = p);
+
                 p.traceEnds = oldPad.traceEnds;
-//                p.traceEnds.forEach(wire -> wire.setTo(p));
+                p.traceEnds.forEach(wire -> wire.to = p);
             }
 
             parts.remove(partName);
@@ -558,6 +561,8 @@ public class Board {
 
             addNet(net);
         });
+
+        getNets().forEach( (k, n) -> n.dumpNet());
     }
 
     /**
