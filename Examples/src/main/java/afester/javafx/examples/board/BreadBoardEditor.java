@@ -1,7 +1,6 @@
 package afester.javafx.examples.board;
 
 import java.io.File;
-import java.io.IOException;
 
 import afester.javafx.components.StatusBar;
 import afester.javafx.components.ToolbarButton;
@@ -14,15 +13,11 @@ import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.model.NetImport;
 import afester.javafx.examples.board.model.Trace;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.DialogPane;
-import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -43,7 +38,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
@@ -65,9 +59,6 @@ public class BreadBoardEditor extends Application {
 
     @Override
     public void start(Stage stage){
-
-        //NetImport ni = new EagleNetImport();
-        //Board board = ni.importFile(new File("schem.xml"));
 
         Board board = new Board();
         board.load(new File("supply.brd"));
