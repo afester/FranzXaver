@@ -111,7 +111,7 @@ public class EagleNetImport extends NetImport {
                     // if there was no package earlier, there is now also no part ...
                     Part p = board.getDevice(partName);
                     if (p != null) {
-                        Pad pad = p.getPad(pin + "@" + gate);
+                        Pad pad = p.getPad(pin); // pin + "@" + gate);
                         if (pad == null) {
                             System.err.printf("WARNING: Pad %s not found in part %s!\n", pin+"@"+gate, partName);
                         } else {
@@ -198,7 +198,7 @@ public class EagleNetImport extends NetImport {
                 System.err.printf("   Pad %s <=> Pin %s@%s\n", pinNumber, gate, pin);
     
                 // Model
-                part.addPad(new Pad(part, pinNumber, padPos), pin + "@" + gate);
+                part.addPad(new Pad(part, pinNumber, padPos), pinNumber); // pin + "@" + gate);
             }
         }
 
@@ -222,7 +222,7 @@ public class EagleNetImport extends NetImport {
             System.err.printf("   SMD %s <=> Pin %s@%s\n", pinNumber, gate, pin);
 
             // Model
-            part.addPad(new Pad(part, pinNumber, padPos), pin + "@" + gate);
+            part.addPad(new Pad(part, pinNumber, padPos), pinNumber); // pin + "@" + gate);
         }
 
         NodeList wireNodes = (NodeList) xPath.evaluate("./wire", packageNode, XPathConstants.NODESET);

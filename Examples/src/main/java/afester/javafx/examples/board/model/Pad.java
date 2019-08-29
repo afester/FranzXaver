@@ -88,21 +88,10 @@ public class Pad extends AbstractNode {
         return true;
     }
 
-//    @Override
-//    public String getRepr() {
-//        return "Pad: " + getPadId();
-//    }
-
 
     @Override
     public String toString() {
-        return String.format("Pad[part=\"%s\", padName=%s, pos=%s]", 
+        return String.format("Pad[part=\"%s\", padName=\"%s\", pos=%s]", 
                              part.getName(), pinNumber, /*pin + "@" + gate,*/ getPosition());  
     }
-//
-//    @Override
-//    public Node createNode() {
-//        throw new RuntimeException("NYI");
-//    }
-
 }

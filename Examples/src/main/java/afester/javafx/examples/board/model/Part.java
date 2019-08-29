@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -161,6 +162,9 @@ public class Part {
 
     @Override
     public String toString() {
-        return String.format("Part[partName=%s]", partName);
+        String padList = getPads().stream()
+                                  .map( p -> p.getPadId() + "/" + p.getPinNumber())
+                                  .collect( Collectors.joining( "," ) ); 
+        return String.format("Part[partName=%s, pads=[%s]]", partName, padList);
     }
 }

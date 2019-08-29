@@ -10,6 +10,8 @@ import afester.javafx.examples.board.model.AbstractWire;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.Junction;
 import afester.javafx.examples.board.model.Part;
+import afester.javafx.examples.board.model.Net;
+
 import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -183,11 +185,11 @@ public class BoardView extends Pane {
                              traceGroup, bridgeGroup, airWireGroup,
                              dimensionGroup, junctionGroup, handleGroup);
 
+// Handling nets
         System.err.println("Adding Nets ...");
         board.getNets().forEach((netName, net) -> {
             System.err.println("  " + net);
-            
-            
+
 // Handling traces
             Map<AbstractWire, TraceView> tMap = new HashMap<>();
             net.getTraces().forEach(trace -> {
@@ -225,7 +227,7 @@ public class BoardView extends Pane {
                 });
 
 
-// !!! Essentially, this is working, but te coordinates of the AirWire are not correct!                
+// !!! Essentially, this is working, but the coordinates of the AirWire are not correct!                
 
 //               Intentionally left non-compilable
 
@@ -269,6 +271,9 @@ public class BoardView extends Pane {
                     junctionGroup.getChildren().add(jView);
                 });
             });
+        });
+        board.getNets().addListener((javafx.collections.MapChangeListener.Change<? extends String, ? extends Net> change) -> {
+            System.err.println("NET CHANGE:" + change);
         });
 
 // Handling parts

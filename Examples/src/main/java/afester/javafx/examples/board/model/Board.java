@@ -43,7 +43,7 @@ public class Board {
 
     private List<Point2D> boardShapePoints = new ArrayList<>();
     private ObservableMap<String, Part> parts = FXCollections.observableHashMap();
-    private Map<String, Net> nets = new HashMap<>();
+    private ObservableMap<String, Net> nets = FXCollections.observableHashMap();
     private String schematicFile;
     private File boardFile;
 
@@ -67,7 +67,7 @@ public class Board {
         return parts;
     }
 
-    public Map<String, Net> getNets() {
+    public ObservableMap<String, Net> getNets() {
         return nets;
     }
 
@@ -389,8 +389,8 @@ public class Board {
      * @param updatedBoard The new board
      */
     public void update(Board updatedBoard) {
-        getNets().forEach( (k, n) -> n.dumpNet());
-        System.err.println("==================================");
+        //getNets().forEach( (k, n) -> n.dumpNet());
+        //System.err.println("==================================");
 
         //System.err.printf("New    : %s parts and %s nets ...\n", updatedBoard.getParts().size(), updatedBoard.getNets().size());
         //System.err.printf("Current: %s parts and %s nets ...\n", getParts().size(), getNets().size());
@@ -423,26 +423,28 @@ public class Board {
         System.err.printf("Added    parts: %s\n", addedParts);
         System.err.printf("Modified parts: %s\n", modifiedParts);
         modifiedParts.forEach(partName -> {
-            Part p1 = getParts().get(partName);
-            Part p2 = updatedBoard.getParts().get(partName);
+            Part partOld = getParts().get(partName);
+            Part partNew = updatedBoard.getParts().get(partName);
 
-            System.err.printf("  %s => %s\n", p1, p2);
-            for (Pad p : p2.getPads()) {
+            System.err.printf("  %s => %s\n", partOld, partNew);
+            for (Pad p : partNew.getPads()) {
+                // try to reconnect pins with the same name
                 String pinNr = p.getPinNumber();
-                Pad oldPad = p1.getPad(pinNr);
-
-                p.traceStarts = oldPad.traceStarts;
-                p.traceStarts.forEach(wire -> wire.from = p);
-
-                p.traceEnds = oldPad.traceEnds;
-                p.traceEnds.forEach(wire -> wire.to = p);
+                Pad oldPad = partOld.getPad(pinNr);
+                if (oldPad != null) {
+                    p.traceStarts = oldPad.traceStarts;
+                    p.traceStarts.forEach(wire -> wire.from = p);
+    
+                    p.traceEnds = oldPad.traceEnds;
+                    p.traceEnds.forEach(wire -> wire.to = p);
+                }
             }
 
             parts.remove(partName);
-            parts.put(partName, p2);
+            parts.put(partName, partNew);
 
-            p2.setRotation(p1.getRotation());
-            p2.setPosition(p1.getPosition());
+            partNew.setRotation(partOld.getRotation());
+            partNew.setPosition(partOld.getPosition());
         });
         
         removedParts.forEach(partName -> {
@@ -497,7 +499,7 @@ public class Board {
             Net oldnet = getNets().get(netName);
             oldnet.clear();
             getNets().remove(netName);
-            
+
             // TODO: The following code is the same as in addedNets below! 
             List<Pad> padList = new ArrayList<>();
             Net newNet = updatedBoard.getNets().get(netName);
@@ -506,7 +508,10 @@ public class Board {
                 Part part = getParts().get(partName);
                 if (part != null) {
                     String pinNumber = pad.getPinNumber();
+                    System.err.printf("%s, %s\n", part, pinNumber);
+                    
                     Pad p = part.getPad(pinNumber);
+
                     if (p != null) {
                         padList.add(p);
                     } else {
@@ -562,7 +567,7 @@ public class Board {
             addNet(net);
         });
 
-        getNets().forEach( (k, n) -> n.dumpNet());
+        // getNets().forEach( (k, n) -> n.dumpNet());
     }
 
     /**
