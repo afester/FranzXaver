@@ -110,6 +110,90 @@ public class BoardView extends Pane {
     }
 
 
+    private void netUpdater(Net net) {
+     // Handling traces
+        Map<AbstractWire, TraceView> tMap = new HashMap<>();
+        net.getTraces().forEach(trace -> {
+            TraceView traceView = new TraceView(trace);
+            tMap.put(trace, traceView);
+
+            switch(trace.getType()) {
+            case AIRWIRE: airWireGroup.getChildren().add(traceView);
+                break;
+
+            case BRIDGE:  bridgeGroup.getChildren().add(traceView);
+                break;
+
+            case TRACE: traceGroup.getChildren().add(traceView);
+                break;
+
+            default:
+                break;
+            }
+        });
+        net.getTraces().addListener((javafx.collections.ListChangeListener.Change<? extends AbstractWire> change) -> {
+            change.next();
+            change.getRemoved().forEach(trace -> {
+                TraceView traceView = tMap.get(trace);
+                switch(trace.getType()) {
+                case AIRWIRE: airWireGroup.getChildren().remove(traceView);
+                    break;
+                case BRIDGE:  bridgeGroup.getChildren().remove(traceView);
+                    break;
+                case TRACE: traceGroup.getChildren().remove(traceView);
+                    break;
+                default:
+                    break;
+                }
+            });
+
+
+//!!! Essentially, this is working, but the coordinates of the AirWire are not correct!                
+
+//           Intentionally left non-compilable
+
+            change.getAddedSubList().forEach(trace -> {
+                TraceView traceView = new TraceView(trace);
+                tMap.put(trace, traceView);
+                System.err.println("ADDING TRACE VIEW: " + traceView);
+
+                switch(trace.getType()) {
+                case AIRWIRE: airWireGroup.getChildren().add(traceView);
+                    break;
+
+                case BRIDGE:  bridgeGroup.getChildren().add(traceView);
+                    break;
+
+                case TRACE: traceGroup.getChildren().add(traceView);
+                    break;
+
+                default:
+                    break;
+                }  
+            });
+        });
+
+//Handling junctions
+        Map<Junction, JunctionView> jMap = new HashMap<>();
+        net.getJunctions().forEach(junction -> {
+            JunctionView junctionView = new JunctionView(junction);
+            jMap.put(junction,  junctionView);
+            junctionGroup.getChildren().add(junctionView);
+        });
+        net.getJunctions().addListener((javafx.collections.ListChangeListener.Change<? extends Junction> change) -> {
+            change.next();
+            change.getRemoved().forEach(junction -> {
+                JunctionView jView = jMap.remove(junction);
+                junctionGroup.getChildren().remove(jView);
+            });
+            change.getAddedSubList().forEach(junction -> {
+                JunctionView jView = new JunctionView(junction);
+                jMap.put(junction,  jView);
+                junctionGroup.getChildren().add(jView);
+            });
+        });
+    }
+
     public void setBoard(Board board) {
         getChildren().clear();
 
@@ -189,91 +273,18 @@ public class BoardView extends Pane {
         System.err.println("Adding Nets ...");
         board.getNets().forEach((netName, net) -> {
             System.err.println("  " + net);
-
-// Handling traces
-            Map<AbstractWire, TraceView> tMap = new HashMap<>();
-            net.getTraces().forEach(trace -> {
-                TraceView traceView = new TraceView(trace);
-                tMap.put(trace, traceView);
-
-                switch(trace.getType()) {
-                case AIRWIRE: airWireGroup.getChildren().add(traceView);
-                    break;
-
-                case BRIDGE:  bridgeGroup.getChildren().add(traceView);
-                    break;
-
-                case TRACE: traceGroup.getChildren().add(traceView);
-                    break;
-
-                default:
-                    break;
-                }
-            });
-            net.getTraces().addListener((javafx.collections.ListChangeListener.Change<? extends AbstractWire> change) -> {
-                change.next();
-                change.getRemoved().forEach(trace -> {
-                    TraceView traceView = tMap.get(trace);
-                    switch(trace.getType()) {
-                    case AIRWIRE: airWireGroup.getChildren().remove(traceView);
-                        break;
-                    case BRIDGE:  bridgeGroup.getChildren().remove(traceView);
-                        break;
-                    case TRACE: traceGroup.getChildren().remove(traceView);
-                        break;
-                    default:
-                        break;
-                    }
-                });
-
-
-// !!! Essentially, this is working, but the coordinates of the AirWire are not correct!                
-
-//               Intentionally left non-compilable
-
-                change.getAddedSubList().forEach(trace -> {
-                    TraceView traceView = new TraceView(trace);
-                    tMap.put(trace, traceView);
-                    System.err.println("ADDING TRACE VIEW: " + traceView);
-
-                    switch(trace.getType()) {
-                    case AIRWIRE: airWireGroup.getChildren().add(traceView);
-                        break;
-
-                    case BRIDGE:  bridgeGroup.getChildren().add(traceView);
-                        break;
-
-                    case TRACE: traceGroup.getChildren().add(traceView);
-                        break;
-
-                    default:
-                        break;
-                    }  
-                });
-            });
-
-// Handling junctions
-            Map<Junction, JunctionView> jMap = new HashMap<>();
-            net.getJunctions().forEach(junction -> {
-                JunctionView junctionView = new JunctionView(junction);
-                jMap.put(junction,  junctionView);
-                junctionGroup.getChildren().add(junctionView);
-            });
-            net.getJunctions().addListener((javafx.collections.ListChangeListener.Change<? extends Junction> change) -> {
-                change.next();
-                change.getRemoved().forEach(junction -> {
-                    JunctionView jView = jMap.remove(junction);
-                    junctionGroup.getChildren().remove(jView);
-                });
-                change.getAddedSubList().forEach(junction -> {
-                    JunctionView jView = new JunctionView(junction);
-                    jMap.put(junction,  jView);
-                    junctionGroup.getChildren().add(jView);
-                });
-            });
+            netUpdater(net);
         });
         board.getNets().addListener((javafx.collections.MapChangeListener.Change<? extends String, ? extends Net> change) -> {
-            System.err.println("NET CHANGE:" + change);
+            if (change.wasRemoved()) {
+                // not yet implemented - but the complete net can be removed from the model!
+            }
+
+            if (change.wasAdded()) {
+                System.err.println("NET CHANGE:" + change);
+                Net net = change.getValueAdded();
+                netUpdater(net);
+            }
         });
 
 // Handling parts
