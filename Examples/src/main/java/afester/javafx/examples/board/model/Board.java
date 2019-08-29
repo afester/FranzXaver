@@ -226,9 +226,9 @@ public class Board {
                     final Point2D padPos = new Point2D(Double.parseDouble(padNode.getAttribute("x")),
                                                        Double.parseDouble(padNode.getAttribute("y")));
 
-                    Pad junction = new Pad(part, pinNumber, padPos);
-                    pads.put(padId, junction);
-                    part.addPad(junction, pinNumber);
+                    Pad pad = new Pad(part, pinNumber, padPos);
+                    pads.put(padId, pad);
+                    part.addPad(pad); // , pinNumber);
                 }
 
                 NodeList lineNodes = (NodeList) xPath.evaluate("./line", partNode, XPathConstants.NODESET);
@@ -476,11 +476,11 @@ public class Board {
 
         Set<String> modifiedNets = new HashSet<>();
         potentiallyModifiedNets.forEach(netName -> {
-            Net n1 = getNets().get(netName);
-            Net n2 = updatedBoard.getNets().get(netName);
-            System.err.println("    " + n1);
-            System.err.println(" <=>" + n2);
-            if (!n1.sameAs(n2)) {
+            Net oldNet = getNets().get(netName);
+            Net newNet = updatedBoard.getNets().get(netName);
+            System.err.println("    " + oldNet);
+            System.err.println(" <=>" + newNet);
+            if (!oldNet.sameAs(newNet)) {
                 modifiedNets.add(netName);
             }
         });

@@ -59,8 +59,11 @@ public class Part {
     }
 
 
-    public void addPad(Pad pin, String pinId) {
-        pads.put(pinId, pin);
+    public void addPad(Pad pin) { /// , String pinId) {
+        System.err.println("ADDING:" + pin);
+        final String key = pin.getPinNumber();
+        // pin + "@" + gate
+        pads.put(key, pin);
     }
 
     public Pad getPad(String pinId) {
