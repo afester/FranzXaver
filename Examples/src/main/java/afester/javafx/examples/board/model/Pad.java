@@ -11,23 +11,24 @@ import javafx.geometry.Point2D;
 public class Pad extends AbstractNode {
 
     private final Part part;
-    private final String pinNumber;
+    private final String padName; // the physical pad name (unique within a Part)
+
     private Point2D localPos;
 
     /**
      * Creates a new Pad.
      *
      * @param part	    The part to which this pad is attached
-     * @param pinNumber The (physical) pin number of this pad
+     * @param padName   The (physical) pad number of this pad
      * @param padPos    The position of the pad (in Part coordinates!!!!)
      */
-    public Pad(Part part, String pinNumber, Point2D padPos) {
+    public Pad(Part part, String padName, Point2D padPos) {
         super(null, part.globalPadPos(padPos));
 
         this.localPos = padPos;
         
         this.part = part;
-        this.pinNumber = pinNumber;
+        this.padName = padName;
     }
 
     public Point2D getLocalPos() {
@@ -38,15 +39,15 @@ public class Pad extends AbstractNode {
         return part;
     }
 
-    public String getPinNumber() {
-        return pinNumber;
+    public String getPadName() {
+        return padName;
     }
 
     public org.w3c.dom.Node getXML(Document doc) {
         Element result = doc.createElement("pad");
         result.setAttribute("x", Double.toString(getLocalPos().getX()));
         result.setAttribute("y", Double.toString(getLocalPos().getY()));
-        result.setAttribute("pinNumber", pinNumber);
+        result.setAttribute("pinNumber", padName);
         result.setAttribute("id", Integer.toString(id));
 
         return result;
@@ -58,7 +59,7 @@ public class Pad extends AbstractNode {
      * @return A board-unique pad id in the form "partName$pinNumber"
      */
     public String getPadId() {
-        return part.getName() + "$" + pinNumber;
+        return part.getName() + "$" + padName;
     }
 
     @Override
@@ -92,6 +93,6 @@ public class Pad extends AbstractNode {
     @Override
     public String toString() {
         return String.format("Pad[part=\"%s\", padName=\"%s\", pos=%s]", 
-                             part.getName(), pinNumber, /*pin + "@" + gate,*/ getPosition());  
+                             part.getName(), padName, /*pin + "@" + gate,*/ getPosition());  
     }
 }

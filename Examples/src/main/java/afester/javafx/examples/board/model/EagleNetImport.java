@@ -3,7 +3,9 @@ package afester.javafx.examples.board.model;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -30,6 +32,7 @@ public class EagleNetImport extends NetImport {
     private Document doc = null;
     private File schematicFile = null;
     // private Map<String, Part> packages = new HashMap<>();
+    private Map<String, Pad> pin2pad = new HashMap<>();     // Mapping from pin@gate to the Pad (required for the Nets)
 
     public EagleNetImport(File file) {
         schematicFile = file;
@@ -37,6 +40,9 @@ public class EagleNetImport extends NetImport {
 
     @Override
 	public void importFile(Board board) {
+        
+        System.err.println(">>>>>>>>>>>>>> IMPORT");
+        
         double minY = 0;
 
         board.setSchematicFile(schematicFile.getName());
@@ -111,7 +117,8 @@ public class EagleNetImport extends NetImport {
                     // if there was no package earlier, there is now also no part ...
                     Part p = board.getDevice(partName);
                     if (p != null) {
-                        Pad pad = p.getPad(pin); // /*pin*/ pin + "@" + gate);
+                        // Pad pad = p.getPad(pin); // /*pin*/ pin + "@" + gate);
+                        Pad pad = pin2pad.get(pin + "@" + gate);
                         if (pad == null) {
                             System.err.printf("WARNING: Pad %s not found in part %s!\n", pin, partName); // +"@"+gate, partName);
                         } else {
@@ -154,7 +161,7 @@ public class EagleNetImport extends NetImport {
 
     int arcCount = 0;
     /**
-     * Returns a device package as a JafaFX node.
+     * Returns a Part.
      * 
      * @param partLibrary
      * @param packageRef
@@ -181,48 +188,60 @@ public class EagleNetImport extends NetImport {
         NodeList padNodes = (NodeList) xPath.evaluate("./pad", packageNode, XPathConstants.NODESET);
         for (int j = 0; j < padNodes.getLength(); ++j) {
             final Element padNode = (Element) padNodes.item(j);
-            final String pinNumber = padNode.getAttribute("name");
+
+            final String padName = padNode.getAttribute("name");
             final Point2D padPos = new Point2D(Double.parseDouble(padNode.getAttribute("x")),
                                                -Double.parseDouble(padNode.getAttribute("y")));
-            // Double drill = Double.parseDouble(padNode.getAttribute("drill"));
+            // padNode.getAttribute("drill");
             // padNode.getAttribute("shape");
+            // padNode.getAttribute("diameter");
 
-            final String xpathQuery = "./connects/connect[@pad='" + pinNumber + "']";
+            final String xpathQuery = "./connects/connect[@pad='" + padName + "']";
             Element connect = (Element) xPath.evaluate(xpathQuery, connects, XPathConstants.NODE);
             // A Pad connection might not exist at all!
             if (connect != null) {
-    
-                // logical pin names - referenced by the nets
+
+//                <connect gate="A" pin="+IN" pad="3"/>
+//                <connect gate="A" pin="-IN" pad="2"/>
+//                <connect gate="A" pin="OUT" pad="1"/>
+//                <connect gate="B" pin="+IN" pad="5"/>
+//                <connect gate="B" pin="-IN" pad="6"/>
+//                <connect gate="B" pin="OUT" pad="7"/>
+
+                // logical pin names - referenced by the nets!!! (pin@gate@part would be a global unique id)
                 String gate = connect.getAttribute("gate");
                 String pin = connect.getAttribute("pin");
-                System.err.printf("   Pad %s <=> Pin %s@%s\n", pinNumber, gate, pin);
-    
+                System.err.printf("   Pad %s <=> Pin %s@%s\n", padName, gate, pin);
+
                 // Model
-                part.addPad(new Pad(part, pin, padPos)); // , /*pinNumber*/ pin + "@" + gate);
+                final Pad pad = new Pad(part, padName, padPos); 
+                part.addPad(pad);
+                pin2pad.put(pin + "@" + gate, pad);
             }
         }
 
-        
         // load SMD pads
         NodeList smdPadNodes = (NodeList) xPath.evaluate("./smd", packageNode, XPathConstants.NODESET);
         for (int j = 0; j < smdPadNodes.getLength(); ++j) {
             final Element smdPadNode = (Element) smdPadNodes.item(j);
-            final String pinNumber = smdPadNode.getAttribute("name");
+            final String padName = smdPadNode.getAttribute("name");
             final Point2D padPos = new Point2D(Double.parseDouble(smdPadNode.getAttribute("x")),
                                                -Double.parseDouble(smdPadNode.getAttribute("y")));
             //Double padDx = Double.parseDouble(smdPadNode.getAttribute("dx"));
             //Double padDy = -Double.parseDouble(smdPadNode.getAttribute("dy"));
 
-            final String xpathQuery = "./connects/connect[@pad='" + pinNumber + "']";
+            final String xpathQuery = "./connects/connect[@pad='" + padName + "']";
             Element connect = (Element) xPath.evaluate(xpathQuery, connects, XPathConstants.NODE);
 
             // logical pin names - referenced by the nets
             String gate = connect.getAttribute("gate");
             String pin = connect.getAttribute("pin");
-            System.err.printf("   SMD %s <=> Pin %s@%s\n", pinNumber, gate, pin);
+            System.err.printf("   SMD %s <=> Pin %s@%s\n", padName, gate, pin);
 
             // Model
-            part.addPad(new Pad(part, pinNumber, padPos)); // , /*pinNumber*/ pin + "@" + gate);
+            final Pad pad = new Pad(part, padName, padPos); 
+            part.addPad(pad);
+            pin2pad.put(pin + "@" + gate, pad);
         }
 
         NodeList wireNodes = (NodeList) xPath.evaluate("./wire", packageNode, XPathConstants.NODESET);

@@ -221,14 +221,14 @@ public class Board {
                 NodeList padNodes = (NodeList) xPath.evaluate("./pad", partNode, XPathConstants.NODESET);
                 for (int j = 0; j < padNodes.getLength(); ++j) {
                     final Element padNode = (Element) padNodes.item(j);
-                    final String pinNumber = padNode.getAttribute("pinNumber");
+                    final String padNumber = padNode.getAttribute("pinNumber"); // this should really be called "padName"
                     final String padId = padNode.getAttribute("id");
                     final Point2D padPos = new Point2D(Double.parseDouble(padNode.getAttribute("x")),
                                                        Double.parseDouble(padNode.getAttribute("y")));
 
-                    Pad pad = new Pad(part, pinNumber, padPos);
+                    Pad pad = new Pad(part, padNumber, padPos);
                     pads.put(padId, pad);
-                    part.addPad(pad); // , pinNumber);
+                    part.addPad(pad);
                 }
 
                 NodeList lineNodes = (NodeList) xPath.evaluate("./line", partNode, XPathConstants.NODESET);
@@ -429,7 +429,7 @@ public class Board {
             System.err.printf("  %s => %s\n", partOld, partNew);
             for (Pad p : partNew.getPads()) {
                 // try to reconnect pins with the same name
-                String pinNr = p.getPinNumber();
+                String pinNr = p.getPadName();
                 Pad oldPad = partOld.getPad(pinNr);
                 if (oldPad != null) {
                     p.traceStarts = oldPad.traceStarts;
@@ -496,6 +496,8 @@ public class Board {
         });
 
         modifiedNets.forEach(netName -> {
+            System.err.printf("Recreating Net %s\n", netName);
+
             Net oldnet = getNets().get(netName);
             oldnet.clear();
             getNets().remove(netName);
@@ -506,16 +508,17 @@ public class Board {
             newNet.getPads().forEach(pad -> {
                 String partName = pad.getPart().getName();
                 Part part = getParts().get(partName);
+
                 if (part != null) {
-                    String pinNumber = pad.getPinNumber();
-                    System.err.printf("%s, %s\n", part, pinNumber);
-                    
-                    Pad p = part.getPad(pinNumber);
+                    final String padName = pad.getPadName();
+                    System.err.printf("   %s, %s\n", part, padName);
+
+                    final Pad p = part.getPad(padName);
 
                     if (p != null) {
                         padList.add(p);
                     } else {
-                        System.err.printf("WARNING: Pin %s not found in Part %s\n", pinNumber, partName);
+                        System.err.printf("WARNING: Pin %s not found in Part %s\n", padName, partName);
                     }
                 } else {
                     System.err.printf("WARNING: Part %s not found in board\n", partName);
@@ -542,12 +545,12 @@ public class Board {
                 String partName = pad.getPart().getName();
                 Part part = getParts().get(partName);
                 if (part != null) {
-                    String pinNumber = pad.getPinNumber();
-                    Pad p = part.getPad(pinNumber);
+                    final String padName = pad.getPadName();
+                    final Pad p = part.getPad(padName);
                     if (p != null) {
                         padList.add(p);
                     } else {
-                        System.err.printf("WARNING: Pin %s not found in Part %s\n", pinNumber, partName);
+                        System.err.printf("WARNING: Pin %s not found in Part %s\n", padName, partName);
                     }
                 } else {
                     System.err.printf("WARNING: Part %s not found in board\n", partName);

@@ -59,11 +59,10 @@ public class Part {
     }
 
 
-    public void addPad(Pad pin) { /// , String pinId) {
-        System.err.println("ADDING:" + pin);
-        final String key = pin.getPinNumber();
-        // pin + "@" + gate
-        pads.put(key, pin);
+    public void addPad(Pad pad) { /// , String pinId) {
+        System.err.println("ADDING:" + pad);
+        final String key = pad.getPadName();
+        pads.put(key, pad);
     }
 
     public Pad getPad(String pinId) {
@@ -166,7 +165,7 @@ public class Part {
     @Override
     public String toString() {
         String padList = getPads().stream()
-                                  .map( p -> p.getPadId() + "/" + p.getPinNumber())
+                                  .map( p -> p.getPadName())
                                   .collect( Collectors.joining( "," ) ); 
         return String.format("Part[partName=%s, pads=[%s]]", partName, padList);
     }

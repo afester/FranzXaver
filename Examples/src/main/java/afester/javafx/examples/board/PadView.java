@@ -28,7 +28,7 @@ public class PadView extends AbstractNodeView {
         pad.setStroke(Color.BLACK);
         pad.setStrokeWidth(0.6);
 
-        Text padName = new Text(pad1.getLocalPos().getX(), pad1.getLocalPos().getY(), this.pad.getPinNumber());
+        Text padName = new Text(pad1.getLocalPos().getX(), pad1.getLocalPos().getY(), this.pad.getPadName());
 
         // TODO: The rendered text is messed up if the size is too small!
         // A possible solution seems to be to keep the text size larger and 
