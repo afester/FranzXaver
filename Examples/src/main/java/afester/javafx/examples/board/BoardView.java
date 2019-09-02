@@ -113,7 +113,9 @@ public class BoardView extends Pane {
     private void netUpdater(Net net) {
      // Handling traces
         Map<AbstractWire, TraceView> tMap = new HashMap<>();
+        System.err.println("VIEW: creating Net " + net.getName());
         net.getTraces().forEach(trace -> {
+            System.err.printf("  VIEW: creating Trace %s\n", trace);
             TraceView traceView = new TraceView(trace);
             tMap.put(trace, traceView);
 
@@ -281,7 +283,7 @@ public class BoardView extends Pane {
             }
 
             if (change.wasAdded()) {
-                System.err.println("NET CHANGE:" + change);
+                System.err.println("View: NET CHANGE:" + change);
                 Net net = change.getValueAdded();
                 netUpdater(net);
             }

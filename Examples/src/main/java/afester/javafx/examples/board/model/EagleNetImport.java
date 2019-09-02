@@ -32,7 +32,7 @@ public class EagleNetImport extends NetImport {
     private Document doc = null;
     private File schematicFile = null;
     // private Map<String, Part> packages = new HashMap<>();
-    private Map<String, Pad> pin2pad = new HashMap<>();     // Mapping from pin@gate to the Pad (required for the Nets)
+    private Map<String, Pad> pin2pad = new HashMap<>();     // Mapping from pin@gate@part to the Pad (required for the Nets)
 
     public EagleNetImport(File file) {
         schematicFile = file;
@@ -118,7 +118,7 @@ public class EagleNetImport extends NetImport {
                     Part p = board.getDevice(partName);
                     if (p != null) {
                         // Pad pad = p.getPad(pin); // /*pin*/ pin + "@" + gate);
-                        Pad pad = pin2pad.get(pin + "@" + gate);
+                        Pad pad = pin2pad.get(pin + "@" + gate + "@" + partName);
                         if (pad == null) {
                             System.err.printf("WARNING: Pad %s not found in part %s!\n", pin, partName); // +"@"+gate, partName);
                         } else {
@@ -216,7 +216,7 @@ public class EagleNetImport extends NetImport {
                 // Model
                 final Pad pad = new Pad(part, padName, padPos); 
                 part.addPad(pad);
-                pin2pad.put(pin + "@" + gate, pad);
+                pin2pad.put(pin + "@" + gate + "@" + partName, pad);
             }
         }
 
@@ -241,7 +241,7 @@ public class EagleNetImport extends NetImport {
             // Model
             final Pad pad = new Pad(part, padName, padPos); 
             part.addPad(pad);
-            pin2pad.put(pin + "@" + gate, pad);
+            pin2pad.put(pin + "@" + gate + "@" + partName, pad);
         }
 
         NodeList wireNodes = (NodeList) xPath.evaluate("./wire", packageNode, XPathConstants.NODESET);

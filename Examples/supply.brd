@@ -79,7 +79,7 @@
     <pad id="12" pinNumber="1" x="-5.08" y="-0.0"/>
     <pad id="13" pinNumber="2" x="5.08" y="-0.0"/>
   </part>
-  <part name="C4" package="E55-30" rotation="90.0" value="10000µF/63V/105°" x="82.51" y="46.45">
+  <part name="C4" package="E55-30" rotation="90.0" value="10000µF/63V/105°" x="83.78" y="45.18">
     <line width="0.1524" x1="-25.4" x2="-24.892" y1="-14.732" y2="-15.24"/>
     <line width="0.1524" x1="-24.892" x2="-23.368" y1="-15.24" y2="-15.24"/>
     <line width="0.1524" x1="-23.368" x2="-22.86" y1="-15.24" y2="-14.732"/>
@@ -324,7 +324,7 @@
     <pad id="31" pinNumber="1" x="-2.54" y="-0.0"/>
     <pad id="32" pinNumber="2" x="2.54" y="-0.0"/>
   </part>
-  <part name="J1" package="691103110003" rotation="90.0" value="" x="118.07000000000001" y="-75.47">
+  <part name="J1" package="691103110003" rotation="270.0" value="" x="85.05" y="-83.09">
     <line width="0.127" x1="-5.75" x2="-5.25" y1="3.6" y2="3.6"/>
     <line width="0.127" x1="-5.25" x2="5.25" y1="3.6" y2="3.6"/>
     <line width="0.127" x1="5.25" x2="5.75" y1="3.6" y2="3.6"/>
@@ -418,21 +418,22 @@
     <text size="0.127" x="-3.8608" y="5.08"/>
     <pad id="39" pinNumber="1" x="0.0" y="-0.0"/>
   </part>
-  <part name="J12" package="691133710007" rotation="0.0" value="" x="55.84" y="80.74">
-    <line width="0.127" x1="-17.5" x2="17.5" y1="4.0" y2="4.0"/>
-    <line width="0.127" x1="-17.5" x2="17.5" y1="-5.0" y2="-5.0"/>
-    <line width="0.127" x1="-17.5" x2="-17.5" y1="4.0" y2="-5.0"/>
-    <line width="0.127" x1="17.5" x2="17.5" y1="4.0" y2="-5.0"/>
-    <text size="0.127" x="-2.83" y="-5.85">J12</text>
-    <text size="0.127" x="-3.35" y="6.1"/>
-    <text size="0.127" x="-15.5" y="3.0">1</text>
-    <pad id="40" pinNumber="1" x="-15.0" y="-0.0"/>
-    <pad id="41" pinNumber="2" x="-10.0" y="-0.0"/>
-    <pad id="42" pinNumber="3" x="-5.0" y="-0.0"/>
-    <pad id="43" pinNumber="4" x="0.0" y="-0.0"/>
-    <pad id="44" pinNumber="5" x="5.0" y="-0.0"/>
-    <pad id="45" pinNumber="6" x="10.0" y="-0.0"/>
-    <pad id="46" pinNumber="7" x="15.0" y="-0.0"/>
+  <part name="J12" package="691131710008" rotation="0.0" value="" x="55.84" y="80.74">
+    <line width="0.127" x1="-20.0" x2="-20.0" y1="4.25" y2="-4.25"/>
+    <line width="0.127" x1="-20.0" x2="20.0" y1="-4.25" y2="-4.25"/>
+    <line width="0.127" x1="20.0" x2="20.0" y1="-4.25" y2="4.25"/>
+    <line width="0.127" x1="20.0" x2="-20.0" y1="4.25" y2="4.25"/>
+    <text size="0.127" x="-3.75" y="6.528"/>
+    <text size="0.127" x="-2.75" y="-5.258">J12</text>
+    <text size="0.127" x="-18.05" y="2.6">1</text>
+    <pad id="40" pinNumber="1" x="-17.5" y="-0.0"/>
+    <pad id="41" pinNumber="2" x="-12.5" y="-0.0"/>
+    <pad id="42" pinNumber="3" x="-7.5" y="-0.0"/>
+    <pad id="43" pinNumber="4" x="-2.5" y="-0.0"/>
+    <pad id="44" pinNumber="5" x="2.5" y="-0.0"/>
+    <pad id="45" pinNumber="6" x="7.5" y="-0.0"/>
+    <pad id="46" pinNumber="7" x="12.5" y="-0.0"/>
+    <pad id="47" pinNumber="8" x="17.5" y="-0.0"/>
   </part>
   <part name="F1" package="SH22,5" rotation="90.0" value="" x="59.65" y="-103.41">
     <line width="0.1524" x1="-12.573" x2="12.573" y1="3.937" y2="3.937"/>
@@ -502,8 +503,8 @@
     <rectangle x1="5.715" x2="10.541" y1="2.54" y2="2.032"/>
     <text size="1.778" x="-12.7" y="6.096">F1</text>
     <text size="1.778" x="1.143" y="6.096"/>
-    <pad id="47" pinNumber="1" x="-11.2522" y="-0.0"/>
-    <pad id="48" pinNumber="2" x="11.2522" y="-0.0"/>
+    <pad id="48" pinNumber="1" x="-11.2522" y="-0.0"/>
+    <pad id="49" pinNumber="2" x="11.2522" y="-0.0"/>
   </part>
   <part name="J5" package="62221" rotation="0.0" value="" x="44.410000000000004" y="-6.890000000000001">
     <line width="0.0" x1="2.54" x2="2.54" y1="-1.4605" y2="1.4605"/>
@@ -522,9 +523,9 @@
     <rectangle x1="-2.032" x2="2.032" y1="3.4544" y2="3.048"/>
     <text size="0.127" x="-3.8608" y="-3.6576">J5</text>
     <text size="0.127" x="-3.8608" y="5.08"/>
-    <pad id="49" pinNumber="1" x="0.0" y="-0.0"/>
+    <pad id="50" pinNumber="1" x="0.0" y="-0.0"/>
   </part>
-  <part name="J11" package="62221" rotation="0.0" value="" x="-15.280000000000001" y="4.54">
+  <part name="J11" package="62221" rotation="0.0" value="" x="-17.82" y="5.8100000000000005">
     <line width="0.0" x1="2.54" x2="2.54" y1="-1.4605" y2="1.4605"/>
     <line width="0.0" x1="2.54" x2="-2.54" y1="1.4605" y2="1.4605"/>
     <line width="0.0" x1="-2.54" x2="-2.54" y1="1.4605" y2="-1.4605"/>
@@ -541,7 +542,7 @@
     <rectangle x1="-2.032" x2="2.032" y1="3.4544" y2="3.048"/>
     <text size="0.127" x="-3.8608" y="-3.6576">J11</text>
     <text size="0.127" x="-3.8608" y="5.08"/>
-    <pad id="50" pinNumber="1" x="0.0" y="-0.0"/>
+    <pad id="51" pinNumber="1" x="0.0" y="-0.0"/>
   </part>
   <part name="F2" package="SH22,5" rotation="90.0" value="MTS77" x="50.76" y="-103.41">
     <line width="0.1524" x1="-12.573" x2="12.573" y1="3.937" y2="3.937"/>
@@ -611,8 +612,8 @@
     <rectangle x1="5.715" x2="10.541" y1="2.54" y2="2.032"/>
     <text size="1.778" x="-12.7" y="6.096">F2</text>
     <text size="1.778" x="1.143" y="6.096">MTS77</text>
-    <pad id="51" pinNumber="1" x="-11.2522" y="-0.0"/>
-    <pad id="52" pinNumber="2" x="11.2522" y="-0.0"/>
+    <pad id="52" pinNumber="1" x="-11.2522" y="-0.0"/>
+    <pad id="53" pinNumber="2" x="11.2522" y="-0.0"/>
   </part>
   <part name="J6" package="691121710004" rotation="0.0" value="" x="53.3" y="7.08">
     <line width="0.127" x1="10.8" x2="-10.8" y1="-3.7" y2="-3.7"/>
@@ -622,10 +623,10 @@
     <text size="0.127" x="-2.642" y="-4.7769">J6</text>
     <text size="0.127" x="-3.142" y="6.555"/>
     <text size="0.127" x="-8.05" y="2.8">1</text>
-    <pad id="53" pinNumber="1" x="-7.5" y="-0.0"/>
-    <pad id="54" pinNumber="2" x="-2.5" y="-0.0"/>
-    <pad id="55" pinNumber="3" x="2.5" y="-0.0"/>
-    <pad id="56" pinNumber="4" x="7.5" y="-0.0"/>
+    <pad id="54" pinNumber="1" x="-7.5" y="-0.0"/>
+    <pad id="55" pinNumber="2" x="-2.5" y="-0.0"/>
+    <pad id="56" pinNumber="3" x="2.5" y="-0.0"/>
+    <pad id="57" pinNumber="4" x="7.5" y="-0.0"/>
   </part>
   <part name="J14" package="62221" rotation="0.0" value="" x="121.88" y="88.36">
     <line width="0.0" x1="2.54" x2="2.54" y1="-1.4605" y2="1.4605"/>
@@ -644,7 +645,7 @@
     <rectangle x1="-2.032" x2="2.032" y1="3.4544" y2="3.048"/>
     <text size="0.127" x="-3.8608" y="-3.6576">J14</text>
     <text size="0.127" x="-3.8608" y="5.08"/>
-    <pad id="57" pinNumber="1" x="0.0" y="-0.0"/>
+    <pad id="58" pinNumber="1" x="0.0" y="-0.0"/>
   </part>
   <part name="J7" package="691103110003" rotation="90.0" value="" x="107.91" y="82.01">
     <line width="0.127" x1="-5.75" x2="-5.25" y1="3.6" y2="3.6"/>
@@ -660,9 +661,9 @@
     <text size="0.127" x="-2.5548" y="-4.4245">J7</text>
     <text size="0.127" x="-3.0548" y="5.4526"/>
     <text size="0.127" x="-4.15" y="2.5">1</text>
-    <pad id="58" pinNumber="1" x="-3.5" y="-0.0"/>
-    <pad id="59" pinNumber="2" x="0.0" y="-0.0"/>
-    <pad id="60" pinNumber="3" x="3.5" y="-0.0"/>
+    <pad id="59" pinNumber="1" x="-3.5" y="-0.0"/>
+    <pad id="60" pinNumber="2" x="0.0" y="-0.0"/>
+    <pad id="61" pinNumber="3" x="3.5" y="-0.0"/>
   </part>
   <part name="D1" package="DO41-10" rotation="0.0" value="" x="45.68" y="17.240000000000002">
     <line width="0.1524" x1="2.032" x2="-2.032" y1="1.27" y2="1.27"/>
@@ -683,8 +684,8 @@
     <rectangle x1="-3.937" x2="-2.032" y1="0.381" y2="-0.381"/>
     <text size="1.27" x="-2.032" y="-1.651">D1</text>
     <text size="1.27" x="-2.032" y="2.794"/>
-    <pad id="61" pinNumber="A" x="5.08" y="-0.0"/>
-    <pad id="62" pinNumber="C" x="-5.08" y="-0.0"/>
+    <pad id="62" pinNumber="A" x="5.08" y="-0.0"/>
+    <pad id="63" pinNumber="C" x="-5.08" y="-0.0"/>
   </part>
   <part name="D2" package="DO41-10" rotation="180.0" value="" x="91.4" y="4.54">
     <line width="0.1524" x1="2.032" x2="-2.032" y1="1.27" y2="1.27"/>
@@ -705,8 +706,8 @@
     <rectangle x1="-3.937" x2="-2.032" y1="0.381" y2="-0.381"/>
     <text size="1.27" x="-2.032" y="-1.651">D2</text>
     <text size="1.27" x="-2.032" y="2.794"/>
-    <pad id="63" pinNumber="A" x="5.08" y="-0.0"/>
-    <pad id="64" pinNumber="C" x="-5.08" y="-0.0"/>
+    <pad id="64" pinNumber="A" x="5.08" y="-0.0"/>
+    <pad id="65" pinNumber="C" x="-5.08" y="-0.0"/>
   </part>
   <part name="J8" package="62221" rotation="0.0" value="" x="-33.06" y="5.8100000000000005">
     <line width="0.0" x1="2.54" x2="2.54" y1="-1.4605" y2="1.4605"/>
@@ -725,7 +726,7 @@
     <rectangle x1="-2.032" x2="2.032" y1="3.4544" y2="3.048"/>
     <text size="0.127" x="-3.8608" y="-3.6576">J8</text>
     <text size="0.127" x="-3.8608" y="5.08"/>
-    <pad id="65" pinNumber="1" x="0.0" y="-0.0"/>
+    <pad id="66" pinNumber="1" x="0.0" y="-0.0"/>
   </part>
   <part name="J16" package="62221" rotation="0.0" value="" x="121.88" y="75.66">
     <line width="0.0" x1="2.54" x2="2.54" y1="-1.4605" y2="1.4605"/>
@@ -744,7 +745,7 @@
     <rectangle x1="-2.032" x2="2.032" y1="3.4544" y2="3.048"/>
     <text size="0.127" x="-3.8608" y="-3.6576">J16</text>
     <text size="0.127" x="-3.8608" y="5.08"/>
-    <pad id="66" pinNumber="1" x="0.0" y="-0.0"/>
+    <pad id="67" pinNumber="1" x="0.0" y="-0.0"/>
   </part>
   <part name="D3" package="DO41-10" rotation="180.0" value="" x="91.4" y="9.620000000000001">
     <line width="0.1524" x1="2.032" x2="-2.032" y1="1.27" y2="1.27"/>
@@ -765,8 +766,8 @@
     <rectangle x1="-3.937" x2="-2.032" y1="0.381" y2="-0.381"/>
     <text size="1.27" x="-2.032" y="-1.651">D3</text>
     <text size="1.27" x="-2.032" y="2.794"/>
-    <pad id="67" pinNumber="A" x="5.08" y="-0.0"/>
-    <pad id="68" pinNumber="C" x="-5.08" y="-0.0"/>
+    <pad id="68" pinNumber="A" x="5.08" y="-0.0"/>
+    <pad id="69" pinNumber="C" x="-5.08" y="-0.0"/>
   </part>
   <part name="J15" package="62221" rotation="0.0" value="" x="121.88" y="82.01">
     <line width="0.0" x1="2.54" x2="2.54" y1="-1.4605" y2="1.4605"/>
@@ -785,7 +786,7 @@
     <rectangle x1="-2.032" x2="2.032" y1="3.4544" y2="3.048"/>
     <text size="0.127" x="-3.8608" y="-3.6576">J15</text>
     <text size="0.127" x="-3.8608" y="5.08"/>
-    <pad id="69" pinNumber="1" x="0.0" y="-0.0"/>
+    <pad id="70" pinNumber="1" x="0.0" y="-0.0"/>
   </part>
   <part name="J9" package="691103110003" rotation="0.0" value="" x="24.09" y="82.01">
     <line width="0.127" x1="-5.75" x2="-5.25" y1="3.6" y2="3.6"/>
@@ -801,9 +802,9 @@
     <text size="0.127" x="-2.5548" y="-4.4245">J9</text>
     <text size="0.127" x="-3.0548" y="5.4526"/>
     <text size="0.127" x="-4.15" y="2.5">1</text>
-    <pad id="70" pinNumber="1" x="-3.5" y="-0.0"/>
-    <pad id="71" pinNumber="2" x="0.0" y="-0.0"/>
-    <pad id="72" pinNumber="3" x="3.5" y="-0.0"/>
+    <pad id="71" pinNumber="1" x="-3.5" y="-0.0"/>
+    <pad id="72" pinNumber="2" x="0.0" y="-0.0"/>
+    <pad id="73" pinNumber="3" x="3.5" y="-0.0"/>
   </part>
   <part name="D4" package="DO41-10" rotation="180.0" value="" x="73.62" y="4.54">
     <line width="0.1524" x1="2.032" x2="-2.032" y1="1.27" y2="1.27"/>
@@ -824,8 +825,8 @@
     <rectangle x1="-3.937" x2="-2.032" y1="0.381" y2="-0.381"/>
     <text size="1.27" x="-2.032" y="-1.651">D4</text>
     <text size="1.27" x="-2.032" y="2.794"/>
-    <pad id="73" pinNumber="A" x="5.08" y="-0.0"/>
-    <pad id="74" pinNumber="C" x="-5.08" y="-0.0"/>
+    <pad id="74" pinNumber="A" x="5.08" y="-0.0"/>
+    <pad id="75" pinNumber="C" x="-5.08" y="-0.0"/>
   </part>
   <part name="D5" package="DO41-10" rotation="180.0" value="" x="73.62" y="9.620000000000001">
     <line width="0.1524" x1="2.032" x2="-2.032" y1="1.27" y2="1.27"/>
@@ -846,8 +847,8 @@
     <rectangle x1="-3.937" x2="-2.032" y1="0.381" y2="-0.381"/>
     <text size="1.27" x="-2.032" y="-1.651">D5</text>
     <text size="1.27" x="-2.032" y="2.794"/>
-    <pad id="75" pinNumber="A" x="5.08" y="-0.0"/>
-    <pad id="76" pinNumber="C" x="-5.08" y="-0.0"/>
+    <pad id="76" pinNumber="A" x="5.08" y="-0.0"/>
+    <pad id="77" pinNumber="C" x="-5.08" y="-0.0"/>
   </part>
   <part name="J17" package="691101710003" rotation="270.0" value="" x="93.94" y="80.74">
     <line width="0.127" x1="-8.1" x2="-8.1" y1="-5.0" y2="4.0"/>
@@ -863,9 +864,9 @@
     <text size="0.127" x="-2.892" y="-5.7769">J17</text>
     <text size="0.127" x="-3.392" y="5.805"/>
     <text size="0.127" x="-6.75" y="2.5">1</text>
-    <pad id="77" pinNumber="1" x="-5.0" y="-0.0"/>
-    <pad id="78" pinNumber="2" x="0.0" y="-0.0"/>
-    <pad id="79" pinNumber="3" x="5.0" y="-0.0"/>
+    <pad id="78" pinNumber="1" x="-5.0" y="-0.0"/>
+    <pad id="79" pinNumber="2" x="0.0" y="-0.0"/>
+    <pad id="80" pinNumber="3" x="5.0" y="-0.0"/>
   </part>
   <part name="TR1" package="EI66-2" rotation="90.0" value="" x="55.84" y="-42.45">
     <line width="0.254" x1="-3.175" x2="-3.175" y1="-10.16" y2="10.16"/>
@@ -965,12 +966,12 @@
     <text size="1.778" x="7.62" y="7.62">S1</text>
     <text size="1.778" x="7.62" y="-3.81">S2</text>
     <text size="2.54" x="-7.62" y="-29.845">EI66-2</text>
-    <pad id="80" pinNumber="1" x="-17.5006" y="-17.5006"/>
-    <pad id="81" pinNumber="15" x="17.5006" y="-12.4968"/>
-    <pad id="82" pinNumber="16" x="17.5006" y="-17.5006"/>
-    <pad id="83" pinNumber="8" x="-17.5006" y="17.5006"/>
-    <pad id="84" pinNumber="9" x="17.5006" y="17.5006"/>
-    <pad id="85" pinNumber="10" x="17.5006" y="12.4968"/>
+    <pad id="81" pinNumber="1" x="-17.5006" y="-17.5006"/>
+    <pad id="82" pinNumber="15" x="17.5006" y="-12.4968"/>
+    <pad id="83" pinNumber="16" x="17.5006" y="-17.5006"/>
+    <pad id="84" pinNumber="8" x="-17.5006" y="17.5006"/>
+    <pad id="85" pinNumber="9" x="17.5006" y="17.5006"/>
+    <pad id="86" pinNumber="10" x="17.5006" y="12.4968"/>
   </part>
   <part name="D6" package="DO41-10" rotation="90.0" value="" x="38.06" y="29.94">
     <line width="0.1524" x1="2.032" x2="-2.032" y1="1.27" y2="1.27"/>
@@ -991,8 +992,8 @@
     <rectangle x1="-3.937" x2="-2.032" y1="0.381" y2="-0.381"/>
     <text size="1.27" x="-2.032" y="-1.651">D6</text>
     <text size="1.27" x="-2.032" y="2.794"/>
-    <pad id="86" pinNumber="A" x="5.08" y="-0.0"/>
-    <pad id="87" pinNumber="C" x="-5.08" y="-0.0"/>
+    <pad id="87" pinNumber="A" x="5.08" y="-0.0"/>
+    <pad id="88" pinNumber="C" x="-5.08" y="-0.0"/>
   </part>
   <part name="D7" package="DO41-10" rotation="270.0" value="" x="66.0" y="29.94">
     <line width="0.1524" x1="2.032" x2="-2.032" y1="1.27" y2="1.27"/>
@@ -1013,8 +1014,8 @@
     <rectangle x1="-3.937" x2="-2.032" y1="0.381" y2="-0.381"/>
     <text size="1.27" x="-2.032" y="-1.651">D7</text>
     <text size="1.27" x="-2.032" y="2.794"/>
-    <pad id="88" pinNumber="A" x="5.08" y="-0.0"/>
-    <pad id="89" pinNumber="C" x="-5.08" y="-0.0"/>
+    <pad id="89" pinNumber="A" x="5.08" y="-0.0"/>
+    <pad id="90" pinNumber="C" x="-5.08" y="-0.0"/>
   </part>
   <part name="D8" package="DO41Z10" rotation="270.0" value="ZPY39" x="60.92" y="65.5">
     <line width="0.1524" x1="2.032" x2="-2.032" y1="1.27" y2="1.27"/>
@@ -1036,8 +1037,8 @@
     <rectangle x1="-3.937" x2="-2.032" y1="0.381" y2="-0.381"/>
     <text size="1.27" x="-1.905" y="-1.651">D8</text>
     <text size="1.27" x="-1.905" y="2.794">ZPY39</text>
-    <pad id="90" pinNumber="A" x="5.08" y="-0.0"/>
-    <pad id="91" pinNumber="C" x="-5.08" y="-0.0"/>
+    <pad id="91" pinNumber="A" x="5.08" y="-0.0"/>
+    <pad id="92" pinNumber="C" x="-5.08" y="-0.0"/>
   </part>
   <part name="U1" package="DC-DC_CONVERTER_78XX" rotation="90.0" value="R-78E5.0-0.5" x="30.44" y="55.34">
     <line width="0.127" x1="5.849440625" x2="-5.750559375" y1="-6.49848125" y2="-6.49848125"/>
@@ -1049,9 +1050,9 @@
     <rectangle x1="2.189440625" x2="2.889440625" y1="0.12651875" y2="-0.12348125"/>
     <text size="0.127" x="-4.750559375" y="-7.09548125">U1</text>
     <text size="0.127" x="-4.734559375" y="3.93851875">R-78E5.0-0.5</text>
-    <pad id="92" pinNumber="VOUT" x="2.54" y="-0.0"/>
-    <pad id="93" pinNumber="VIN" x="-2.54" y="-0.0"/>
-    <pad id="94" pinNumber="GND" x="0.0" y="-0.0"/>
+    <pad id="93" pinNumber="VOUT" x="2.54" y="-0.0"/>
+    <pad id="94" pinNumber="VIN" x="-2.54" y="-0.0"/>
+    <pad id="95" pinNumber="GND" x="0.0" y="-0.0"/>
   </part>
   <part name="S1" package="PVA1F" rotation="180.0" value="" x="55.84" y="-80.55">
     <line width="0.1524" x1="5.08" x2="5.08" y1="-4.445" y2="4.445"/>
@@ -1109,137 +1110,187 @@
     <line width="0.1524" x1="1.905" x2="1.905" y1="1.905" y2="-2.54"/>
     <text size="1.27" x="6.985" y="0.635">S1</text>
     <text size="1.27" x="6.985" y="2.54"/>
-    <pad id="95" pinNumber="1" x="-2.9972" y="-2.4892"/>
-    <pad id="96" pinNumber="2" x="-2.9972" y="2.4892"/>
-    <pad id="97" pinNumber="3" x="2.9972" y="-2.4892"/>
-    <pad id="98" pinNumber="4" x="2.9972" y="2.4892"/>
+    <pad id="96" pinNumber="1" x="-2.9972" y="-2.4892"/>
+    <pad id="97" pinNumber="2" x="-2.9972" y="2.4892"/>
+    <pad id="98" pinNumber="3" x="2.9972" y="-2.4892"/>
+    <pad id="99" pinNumber="4" x="2.9972" y="2.4892"/>
   </part>
   <net name="N$10">
-    <airwire from="88" to="0"/>
+    <airwire from="89" to="0"/>
     <airwire from="0" to="5"/>
-    <airwire from="5" to="56"/>
+    <airwire from="89" to="57"/>
   </net>
   <net name="N$11">
-    <airwire from="48" to="96"/>
+    <airwire from="49" to="97"/>
   </net>
   <net name="N$12">
-    <airwire from="1" to="86"/>
-    <airwire from="86" to="42"/>
+    <airwire from="1" to="87"/>
+    <airwire from="87" to="43"/>
   </net>
   <net name="N$17">
-    <airwire from="61" to="54"/>
-    <airwire from="54" to="55"/>
-    <airwire from="55" to="7"/>
+    <junction id="100" x="50.8" y="7.08"/>
+    <junction id="101" x="55.8" y="7.08"/>
+    <junction id="102" x="50.76" y="17.240000000000002"/>
+    <junction id="103" x="50.8" y="7.08"/>
+    <airwire from="62" to="102"/>
+    <airwire from="55" to="100"/>
+    <airwire from="62" to="7"/>
     <airwire from="7" to="6"/>
+    <trace from="100" isBridge="false" to="101"/>
+    <airwire from="101" to="56"/>
+    <trace from="102" isBridge="false" to="103"/>
+    <airwire from="103" to="55"/>
   </net>
   <net name="N$18">
-    <airwire from="24" to="65"/>
+    <airwire from="24" to="66"/>
   </net>
   <net name="N$1">
-    <airwire from="33" to="95"/>
-    <airwire from="95" to="80"/>
+    <airwire from="33" to="81"/>
+    <airwire from="81" to="96"/>
   </net>
   <net name="N$19">
-    <airwire from="26" to="50"/>
+    <airwire from="26" to="51"/>
   </net>
   <net name="N$3"/>
   <net name="N$13">
-    <airwire from="82" to="36"/>
+    <airwire from="83" to="36"/>
   </net>
   <net name="N$2">
-    <airwire from="83" to="97"/>
-    <airwire from="97" to="34"/>
+    <airwire from="84" to="98"/>
+    <airwire from="98" to="34"/>
   </net>
   <net name="N$14">
-    <airwire from="81" to="38"/>
+    <airwire from="82" to="38"/>
   </net>
   <net name="N$5">
-    <airwire from="74" to="63"/>
-    <airwire from="63" to="53"/>
+    <junction id="104" x="78.7" y="2.0"/>
+    <junction id="105" x="45.68" y="2.0"/>
+    <junction id="106" x="78.7" y="4.539999999999999"/>
+    <junction id="107" x="78.7" y="4.539999999999999"/>
+    <junction id="108" x="86.32000000000001" y="4.540000000000001"/>
+    <junction id="109" x="45.8" y="7.08"/>
+    <airwire from="75" to="107"/>
+    <airwire from="75" to="106"/>
+    <airwire from="109" to="54"/>
+    <airwire from="108" to="64"/>
+    <trace from="104" isBridge="false" to="105"/>
+    <trace from="106" isBridge="false" to="104"/>
+    <trace from="107" isBridge="false" to="108"/>
+    <trace from="105" isBridge="false" to="109"/>
   </net>
   <net name="+12V">
-    <airwire from="57" to="60"/>
+    <airwire from="58" to="61"/>
   </net>
   <net name="N$15">
-    <airwire from="39" to="85"/>
+    <airwire from="39" to="86"/>
   </net>
   <net name="N$4"/>
   <net name="N$16">
-    <airwire from="84" to="49"/>
+    <airwire from="85" to="50"/>
   </net>
   <net name="N$7">
-    <airwire from="76" to="67"/>
-    <airwire from="67" to="2"/>
+    <junction id="110" x="78.7" y="9.620000000000001"/>
+    <junction id="111" x="86.32000000000001" y="9.620000000000001"/>
+    <junction id="112" x="78.7" y="32.480000000000004"/>
+    <junction id="113" x="71.08" y="32.480000000000004"/>
+    <junction id="114" x="78.7" y="9.620000000000001"/>
+    <airwire from="77" to="110"/>
+    <airwire from="77" to="114"/>
     <airwire from="2" to="3"/>
+    <trace from="110" isBridge="false" to="111"/>
+    <airwire from="111" to="68"/>
+    <trace from="112" isBridge="false" to="113"/>
+    <airwire from="113" to="2"/>
+    <trace from="114" isBridge="false" to="112"/>
   </net>
   <net name="N$6">
-    <airwire from="18" to="41"/>
-    <airwire from="41" to="43"/>
-    <airwire from="43" to="14"/>
-    <airwire from="14" to="68"/>
-    <airwire from="68" to="64"/>
+    <junction id="115" x="96.48" y="17.240000000000002"/>
+    <junction id="116" x="96.48" y="4.539999999999999"/>
+    <junction id="117" x="83.78" y="17.24"/>
+    <junction id="118" x="96.48" y="17.240000000000002"/>
+    <airwire from="18" to="44"/>
+    <airwire from="44" to="14"/>
+    <airwire from="14" to="117"/>
+    <airwire from="69" to="115"/>
+    <trace from="115" isBridge="false" to="116"/>
+    <airwire from="116" to="65"/>
+    <trace from="117" isBridge="false" to="118"/>
+    <airwire from="118" to="69"/>
   </net>
   <net name="N$9">
     <airwire from="25" to="37"/>
   </net>
-  <net name="N$8">
-    <airwire from="75" to="73"/>
-    <airwire from="73" to="19"/>
-    <airwire from="19" to="15"/>
-  </net>
   <net name="+5V">
-    <airwire from="69" to="59"/>
+    <airwire from="70" to="60"/>
   </net>
   <net name="N$20">
     <airwire from="32" to="22"/>
-    <airwire from="22" to="62"/>
-    <airwire from="62" to="8"/>
-    <airwire from="8" to="70"/>
+    <airwire from="22" to="63"/>
+    <airwire from="63" to="8"/>
+    <airwire from="8" to="71"/>
   </net>
   <net name="N$21">
     <airwire from="12" to="40"/>
-    <airwire from="40" to="10"/>
-    <airwire from="10" to="72"/>
-    <airwire from="72" to="87"/>
-    <airwire from="87" to="4"/>
+    <airwire from="40" to="73"/>
+    <airwire from="73" to="10"/>
+    <airwire from="10" to="88"/>
+    <airwire from="88" to="4"/>
   </net>
   <net name="N$22">
-    <airwire from="93" to="16"/>
+    <airwire from="94" to="16"/>
     <airwire from="16" to="31"/>
   </net>
   <net name="N$23">
-    <airwire from="52" to="98"/>
+    <airwire from="53" to="99"/>
   </net>
   <net name="N$28">
-    <airwire from="30" to="91"/>
+    <airwire from="45" to="92"/>
+    <airwire from="92" to="30"/>
   </net>
   <net name="N$29">
-    <airwire from="66" to="58"/>
+    <airwire from="67" to="59"/>
   </net>
   <net name="N$24">
-    <airwire from="78" to="45"/>
+    <airwire from="79" to="47"/>
   </net>
   <net name="GND">
-    <airwire from="28" to="90"/>
-    <airwire from="90" to="11"/>
+    <junction id="119" x="68.54" y="29.94"/>
+    <junction id="120" x="68.54" y="4.540000000000001"/>
+    <junction id="121" x="68.54" y="17.240000000000002"/>
+    <junction id="122" x="76.16" y="17.240000000000002"/>
+    <junction id="123" x="32.980000000000004" y="32.480000000000004"/>
+    <junction id="124" x="68.54" y="29.94"/>
+    <airwire from="28" to="91"/>
+    <airwire from="91" to="19"/>
+    <airwire from="19" to="42"/>
+    <airwire from="42" to="13"/>
+    <airwire from="13" to="11"/>
     <airwire from="11" to="21"/>
-    <airwire from="21" to="13"/>
-    <airwire from="13" to="71"/>
-    <airwire from="71" to="9"/>
-    <airwire from="9" to="94"/>
-    <airwire from="94" to="17"/>
+    <airwire from="21" to="95"/>
+    <airwire from="95" to="17"/>
     <airwire from="17" to="23"/>
-    <airwire from="23" to="77"/>
+    <airwire from="23" to="123"/>
+    <airwire from="76" to="119"/>
+    <airwire from="76" to="121"/>
+    <airwire from="15" to="78"/>
+    <airwire from="78" to="72"/>
+    <airwire from="72" to="9"/>
+    <trace from="119" isBridge="false" to="120"/>
+    <airwire from="120" to="74"/>
+    <trace from="121" isBridge="false" to="122"/>
+    <airwire from="122" to="15"/>
+    <trace from="123" isBridge="false" to="124"/>
+    <airwire from="124" to="76"/>
   </net>
   <net name="N$25">
-    <airwire from="44" to="79"/>
+    <airwire from="46" to="80"/>
   </net>
   <net name="N$26">
-    <airwire from="46" to="92"/>
-    <airwire from="92" to="20"/>
+    <airwire from="41" to="20"/>
+    <airwire from="20" to="93"/>
   </net>
   <net name="N$27">
-    <airwire from="27" to="89"/>
-    <airwire from="89" to="29"/>
+    <airwire from="27" to="90"/>
+    <airwire from="90" to="29"/>
   </net>
 </breadboard>

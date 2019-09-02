@@ -47,14 +47,14 @@ public class Pad extends AbstractNode {
         Element result = doc.createElement("pad");
         result.setAttribute("x", Double.toString(getLocalPos().getX()));
         result.setAttribute("y", Double.toString(getLocalPos().getY()));
-        result.setAttribute("pinNumber", padName);
+        result.setAttribute("pinNumber", padName);      // TODO: This should be renamed to "padName"
         result.setAttribute("id", Integer.toString(id));
 
         return result;
     }
 
     /**
-     * Returns a unique pad id, consisting of the part number and the pin number
+     * Returns a unique pad id, consisting of the part number and the pad name
      *
      * @return A board-unique pad id in the form "partName$pinNumber"
      */
