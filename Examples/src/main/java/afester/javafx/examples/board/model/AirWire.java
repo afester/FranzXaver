@@ -221,6 +221,9 @@ public class AirWire extends AbstractWire {
         // get all nodes which are reachable in the net from the otherNode IF the given airwire would not exist
         List<AbstractNode> possibleNodes = net.getNodesWithout(getTo(), this);
         AbstractNode nearestNode = net.getNearestNode(clickPos, possibleNodes);
+        System.err.println("NEAREST NODE:" + nearestNode);
+        // Reconnect the edge from the old node to the new nearest node
+        reconnect(this.getTo(), nearestNode);
     }
 
     @Override
@@ -228,9 +231,9 @@ public class AirWire extends AbstractWire {
         System.err.println("reconnectFromNearestJunction");
 
         // get all nodes which are reachable in the net from the otherNode IF the given airwire would not exist
-        List<AbstractNode> possibleNodes = net.getNodesWithout(this.getFrom(), this);
+        List<AbstractNode> possibleNodes = net.getNodesWithout(getFrom(), this);
         AbstractNode nearestNode = net.getNearestNode(clickPos, possibleNodes);
-
+        System.err.println("NEAREST NODE:" + nearestNode);
         // Reconnect the edge from the old node to the new nearest node
         reconnect(this.getFrom(), nearestNode);
     }
