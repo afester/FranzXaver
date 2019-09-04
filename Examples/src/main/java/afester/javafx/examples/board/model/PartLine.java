@@ -26,9 +26,6 @@ public class PartLine implements PartShape {
     public Shape createNode() {
         Shape line = new Line(p1.getX(), p1.getY(), p2.getX(), p2.getY());
         line.setStrokeWidth(width);
-        line.setStroke(Color.GRAY);
-        line.setStrokeLineCap(StrokeLineCap.ROUND);
-
         return line;
     }
 

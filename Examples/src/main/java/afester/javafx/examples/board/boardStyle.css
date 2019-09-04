@@ -1,0 +1,72 @@
+
+BoardShape {
+   -fx-fill: #ffec80;			/* Board color */
+   -fx-stroke: gray;			/* Board border color */
+   -fx-stroke-width: 0.3px;		/* Board border width */
+}
+
+
+TraceView.TraceNormal{
+	-fx-stroke: silver;
+	-fx-stroke-width: 1.0px;
+	-fx-stroke-line-cap: round;
+}
+
+TraceView.TraceHighlight{
+	-fx-stroke: red;
+	-fx-stroke-width: 1.0px;
+	-fx-opacity: 0.5;
+	-fx-stroke-line-cap: round;
+}
+
+TraceView.TraceSelect {
+	-fx-stroke: red;
+	-fx-stroke-width: 1.0px;
+	-fx-stroke-line-cap: round;
+}
+
+
+TraceView.AirwireNormal{
+	-fx-stroke: orange;
+	-fx-stroke-width: 0.3px;
+	-fx-stroke-line-cap: round;
+}
+
+TraceView.AirwireHighlight{
+	-fx-stroke: red;
+	-fx-opacity: 0.5;
+	-fx-stroke-width: 0.3px;
+	-fx-stroke-line-cap: round;
+}
+
+TraceView.AirwireSelect {
+	-fx-stroke: red;
+	-fx-stroke-width: 0.3px;
+	-fx-stroke-line-cap: round;
+}
+
+
+TraceView.BridgeNormal{
+	-fx-stroke: green;
+	-fx-stroke-width: 0.5px;
+	-fx-stroke-line-cap: round;
+}
+
+TraceView.BridgeHighlight{
+	-fx-stroke: red;
+	-fx-opacity: 0.5;
+	-fx-stroke-width: 0.5px;
+	-fx-stroke-line-cap: round;
+}
+
+TraceView.BridgeSelect {
+	-fx-stroke: red;
+	-fx-stroke-width: 0.5px;
+	-fx-stroke-line-cap: round;
+}
+
+
+PartView Line {
+	-fx-stroke: gray;
+	-fx-stroke-line-cap: round;
+}

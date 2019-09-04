@@ -32,13 +32,9 @@ class DoubleVal {
 }
 
 
-
 public class BoardView extends Pane {
 
     private Board board;
-    private Color boardColor = // Color.rgb(0x92, 0x92, 0x49);
-                                // Color.rgb(0xcc,  0x82,  0x11, 1.0);
-                                Color.rgb(0xff, 0xec, 0x80, 1.0);
     private Color padColor   = // Color.rgb(0xB2, 0x99, 0x70);
                                 // Color.rgb(0xf8, 0xe7, 0xbe, 1.0);
                                 //Color.rgb(0xfe, 0xcc, 0x00, 1.0);
@@ -65,16 +61,18 @@ public class BoardView extends Pane {
     public void setSelectedObject(Interactable obj) { selectedObject.set(obj); }
 
 
-    public BoardView() {
-        // setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, new CornerRadii(0), new Insets(0))));
-    }
-
+    /**
+     * Creates a new BoardView for an existing Board.
+     *
+     * @param board The board for which to create the new view.
+     */
     public BoardView(Board board) {
-        this();
+        String css = BoardView.class.getResource("boardStyle.css").toExternalForm();
+        getStylesheets().add(css);
         setBoard(board);
     }
 
-    public static <T> void pointIterator(Iterable<T> iterable, BiConsumer<T, T> consumer) {
+    private static <T> void pointIterator(Iterable<T> iterable, BiConsumer<T, T> consumer) {
         Iterator<T> it = iterable.iterator();
         while(it.hasNext()) {
             T first = it.next();
@@ -85,7 +83,7 @@ public class BoardView extends Pane {
     }
 
 
-    public static void lineIterator(Iterable<Double> iterable, BiConsumer<Point2D, Point2D> consumer) {
+    private static void lineIterator(Iterable<Double> iterable, BiConsumer<Point2D, Point2D> consumer) {
         Iterator<Double> it = iterable.iterator();
 
         if(!it.hasNext()) return;
@@ -202,10 +200,7 @@ public class BoardView extends Pane {
         this.board = board;
 
         System.err.println("\nCreating board background ...");
-        boardShape = new Polygon();
-        boardShape.setFill(boardColor);
-        boardShape.setStroke(Color.GRAY);
-        boardShape.setStrokeWidth(0.3);
+        boardShape = new BoardShape();
 
         // convert the board shape into an Double[] array as required by the JavaFX polygon API 
         final List<Point2D> boardDims = board.getBoardShape();
@@ -218,8 +213,6 @@ public class BoardView extends Pane {
         }
         boardShape.getPoints().addAll(polygonCoords);
 
-//        Rectangle background = new Rectangle(board.getWidth(), board.getHeight(), boardColor);
-//        background.setStroke(Color.BLACK);
         getChildren().add(boardShape);
 
         Bounds b = boardShape.getBoundsInParent();

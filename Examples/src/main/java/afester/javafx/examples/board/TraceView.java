@@ -7,23 +7,9 @@ import javafx.scene.paint.Color;
 
 
 /**
- * A Trace is a part of a Net which has already been routed.
- * It can either be rendered as trace or as bridge. 
+ * A Trace can either be rendered as an Airwire, Trace or Bridge. 
  */
 public class TraceView extends AbstractEdgeView {
-
-    private static Color AIRWIRE_NORMAL_COLOR = Color.ORANGE;
-    private static Color AIRWIRE_HIGHLIGHT_COLOR = new Color(Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getBlue(), 0.5);
-    private static Color AIRWIRE_SELECTED_COLOR = Color.RED;
-
-    private static Color TRACE_NORMAL_COLOR = Color.SILVER;
-    private static Color TRACE_HIGHLIGHT_COLOR = new Color(Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getBlue(), 0.5);
-    private static Color TRACE_SELECTED_COLOR = Color.RED;
-
-    private static Color BRIDGE_NORMAL_COLOR = Color.GREEN;
-    private static Color BRIDGE_HIGHLIGHT_COLOR = new Color(Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getBlue(), 0.5);
-    private static Color BRIDGE_SELECTED_COLOR = Color.RED;
-
 
     public TraceView(AbstractWire trace) {
         super(trace);
@@ -39,6 +25,7 @@ public class TraceView extends AbstractEdgeView {
     }
 
     private void update(AbstractWireState newState) {
+        getStyleClass().clear();
         switch(getTrace().getType()) {
             case AIRWIRE: setAirwireVisual(newState);
                           break;
@@ -55,19 +42,17 @@ public class TraceView extends AbstractEdgeView {
     }
 
     private void setTraceVisual(AbstractWireState newState) {
-        setStrokeWidth(1.0);
-
         switch(newState) {
             case NORMAL:
-                setStroke(TRACE_NORMAL_COLOR);
+                getStyleClass().add("TraceNormal");
                 break;
     
             case HIGHLIGHTED:
-                setStroke(TRACE_HIGHLIGHT_COLOR);
+                getStyleClass().add("TraceHighlight");
                 break;
     
             case SELECTED:
-                setStroke(TRACE_SELECTED_COLOR);
+                getStyleClass().add("TraceSelect");
                 break;
     
             default:
@@ -76,19 +61,17 @@ public class TraceView extends AbstractEdgeView {
     }
 
     private void setBridgeVisual(AbstractWireState newState) {
-        setStrokeWidth(0.5);
-
         switch(newState) {
             case NORMAL:
-                setStroke(BRIDGE_NORMAL_COLOR);
+                getStyleClass().add("BridgeNormal");
                 break;
     
             case HIGHLIGHTED:
-                setStroke(BRIDGE_HIGHLIGHT_COLOR);
+                getStyleClass().add("BridgeHighlight");
                 break;
     
             case SELECTED:
-                setStroke(BRIDGE_SELECTED_COLOR);
+                getStyleClass().add("BridgeSelect");
                 break;
     
             default:
@@ -97,19 +80,17 @@ public class TraceView extends AbstractEdgeView {
     }
 
     private void setAirwireVisual(AbstractWireState newState) {
-        setStrokeWidth(0.3);
-
         switch(newState) {
             case NORMAL:
-                setStroke(AIRWIRE_NORMAL_COLOR);
+                getStyleClass().add("AirwireNormal");
                 break;
 
             case HIGHLIGHTED:
-                setStroke(AIRWIRE_HIGHLIGHT_COLOR);
+                getStyleClass().add("AirwireHighlight");
                 break;
 
             case SELECTED:
-                setStroke(AIRWIRE_SELECTED_COLOR);
+                getStyleClass().add("AirwireStroke");
                 break;
 
             default:

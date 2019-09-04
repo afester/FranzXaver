@@ -41,9 +41,6 @@ public abstract class AbstractEdgeView extends Line implements Interactable  {
 
         // TODO: We need a thicker selectionShape (a thicker transparent line) with the same coordinates
         // so that selecting the line is easier
-        setStrokeWidth(0.5); // 0.2);
-        setStroke(Color.BLACK);
-        setStrokeLineCap(StrokeLineCap.ROUND);
 
         createContextMenu();
     }
