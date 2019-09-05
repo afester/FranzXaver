@@ -1,5 +1,6 @@
 package afester.javafx.examples.board;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -345,12 +346,24 @@ public class BoardView extends Pane {
         // add the board dimensions
         System.err.println("Adding Board dimensions ...");
 
+        final List<BoardCorner> corners = new ArrayList<>();
+        
         IntVal idx = new IntVal();
         pointIterator(boardShape.getPoints(), (xpos, ypos) -> {
             System.err.printf("%s/%s\n", xpos, ypos); 
             BoardCorner c = new BoardCorner(xpos, ypos, getBoard(), idx.val);
             idx.val++;
             getChildren().add(c);
+            corners.add(c);
+        });
+        board.getBoardShape().addListener((javafx.collections.ListChangeListener.Change<? extends Point2D> change) -> {
+            change.next();
+            Point2D newPos = change.getAddedSubList().get(0);
+            int posIdx = change.getFrom();
+            BoardCorner bc = corners.get(posIdx);
+            System.err.printf("%s %s %s\n", bc, newPos, posIdx);
+            bc.setCenterX(newPos.getX());
+            bc.setCenterY(newPos.getY());
         });
 
         // add the board dimensions

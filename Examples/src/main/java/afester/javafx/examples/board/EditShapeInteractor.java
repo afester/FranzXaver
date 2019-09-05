@@ -22,6 +22,7 @@ public class EditShapeInteractor extends MouseInteractor {
     protected void dragObject(Interactable obj) {
         Board b = this.getBoardView().getBoard();
         System.err.printf("Moving %s in %s\n", cornerToMove, b);
+        b.setCornerPos(cornerToMove, this.getClickPos());
     }
     
 }

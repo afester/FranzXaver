@@ -606,7 +606,7 @@ public class Board {
         }
     }
 
-    public List<Point2D> getBoardShape() {
+    public ObservableList<Point2D> getBoardShape() {
         return boardShapePoints;
     }
 

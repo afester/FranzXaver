@@ -93,7 +93,7 @@ public abstract class MouseInteractor implements Interactor {
     public final void mouseDragged(MouseEvent e) {
 	    pos = new Point2D(e.getX(), e.getY());
         Interactable currentObject = bv.getSelectedObject();
-        if (!e.isControlDown() && e.isPrimaryButtonDown() && currentObject != null) {
+        if (!e.isControlDown() && e.isPrimaryButtonDown()) { // && currentObject != null) {
             dragObject(currentObject);
         }
     }
