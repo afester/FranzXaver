@@ -35,15 +35,16 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 
 public class Board {
 
-    private List<Point2D> boardShapePoints = new ArrayList<>();
-    private ObservableMap<String, Part> parts = FXCollections.observableHashMap();
-    private ObservableMap<String, Net> nets = FXCollections.observableHashMap();
+    private final ObservableList<Point2D> boardShapePoints = FXCollections.observableArrayList(); // new ArrayList<>();
+    private final ObservableMap<String, Part> parts = FXCollections.observableHashMap();
+    private final ObservableMap<String, Net> nets = FXCollections.observableHashMap();
     private String schematicFile;
     private File boardFile;
 
@@ -52,13 +53,17 @@ public class Board {
      * Creates a new empty board with a default dimension of 100mm X 160mm
      */
     public Board() {
-        boardShapePoints = new ArrayList<>();
+        // boardShapePoints = new ArrayList<>();
         boardShapePoints.add(new Point2D(  0,   0));
         boardShapePoints.add(new Point2D(100,   0));
         boardShapePoints.add(new Point2D(100, 160));
         boardShapePoints.add(new Point2D(  0, 160));
     }
 
+    public void setCornerPos(int cornerIdx, Point2D newPos) {
+        boardShapePoints.set(cornerIdx, newPos);
+    }
+    
     public void addDevice(Part pkg) {
         parts.put(pkg.getName(), pkg);
     }
@@ -190,7 +195,7 @@ public class Board {
             //width = Double.parseDouble(widthAttr);
             //height = Double.parseDouble(heightAttr);
 
-            boardShapePoints = new ArrayList<>();
+            boardShapePoints.clear();
             Element boardShapeNode = (Element) xPath.evaluate("boardShape", breadboardNode, XPathConstants.NODE);
             System.err.println("NODE:" + boardShapeNode);
 
@@ -626,4 +631,5 @@ public class Board {
         ni.importFile(updatedBoard);
         update(updatedBoard);
     }
+
 }

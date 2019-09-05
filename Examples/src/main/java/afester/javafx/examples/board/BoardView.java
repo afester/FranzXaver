@@ -12,7 +12,6 @@ import afester.javafx.examples.board.model.Junction;
 import afester.javafx.examples.board.model.Part;
 import afester.javafx.examples.board.model.Net;
 
-import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Bounds;
@@ -338,17 +337,19 @@ public class BoardView extends Pane {
     }
 
 
+    class IntVal {
+        int val;
+    }
+    
     private void createBoardDimensions() {
         // add the board dimensions
         System.err.println("Adding Board dimensions ...");
 
+        IntVal idx = new IntVal();
         pointIterator(boardShape.getPoints(), (xpos, ypos) -> {
             System.err.printf("%s/%s\n", xpos, ypos); 
-
-            Circle c = new Circle(xpos, ypos, 0.5);
-            c.setFill(null);
-            c.setStroke(Color.RED);
-            c.setStrokeWidth(0.3);
+            BoardCorner c = new BoardCorner(xpos, ypos, getBoard(), idx.val);
+            idx.val++;
             getChildren().add(c);
         });
 
@@ -412,7 +413,7 @@ public class BoardView extends Pane {
 
     public void setInteractor(Interactor newInteractor) {
         if (!isReadOnly) {
-            System.err.println("Setting SELECT mode");
+            System.err.println("Setting " + newInteractor);
             interactor = newInteractor;
         } else {
             interactor = null;

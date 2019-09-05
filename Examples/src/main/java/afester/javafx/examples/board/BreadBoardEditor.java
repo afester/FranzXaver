@@ -157,6 +157,7 @@ public class BreadBoardEditor extends Application {
         final Interactor traceInteractor = new TraceInteractor(topView);
         // final Interactor editTraceInteractor = new EditTraceInteractor(bv);
         final Interactor splitTraceInteractor = new SplitTraceInteractor(topView);
+        final Interactor editShapeInteractor = new EditShapeInteractor(topView);
         
         ToggleGroup toggleGroup = new ToggleGroup();
         ToolbarToggleButton selectToolButton = new ToolbarToggleButton("Select", "afester/javafx/examples/board/mode-select.png");
@@ -177,11 +178,19 @@ public class BreadBoardEditor extends Application {
                 topView.setInteractor(splitTraceInteractor);   
             }
         });
+        ToolbarToggleButton editShapeToolButton = new ToolbarToggleButton("Edit shape", "afester/javafx/examples/board/mode-editshape.png");
+        editShapeToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
+            if (newValue) {
+                System.err.println("SETTING SHAPE EDITOR");
+                topView.setInteractor(editShapeInteractor);
+            }
+        });
 
         selectToolButton.setToggleGroup(toggleGroup);
         traceToolButton.setToggleGroup(toggleGroup);
         // editTraceToolButton.setToggleGroup(toggleGroup);
         splitTraceToolButton.setToggleGroup(toggleGroup);
+        editShapeToolButton.setToggleGroup(toggleGroup);
 
         selectToolButton.setSelected(true);
 
@@ -191,11 +200,14 @@ public class BreadBoardEditor extends Application {
                 new ToolbarButton("Save board", "afester/javafx/examples/board/file-save.png"),
                 new ToolbarButton("Save board as", "afester/javafx/examples/board/file-saveas.png"),
                 new Separator(),
+
                 selectToolButton,
                 traceToolButton,
                 // editTraceToolButton,
                 splitTraceToolButton,
+                editShapeToolButton,
                 new Separator(),
+
                 shortestPathButton,
                 shortestAllButton,
                 traceToBridge,

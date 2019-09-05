@@ -142,7 +142,7 @@ public class EditInteractor  extends MouseInteractor {
             obj.setSelected(true);
             bv.setSelectedObject(obj);
 
-            // TODO: Should all be accessedthrough the Interactable interface!
+            // TODO: Should all be accessed through the Interactable interface!
             partToMove = ((PartView) obj).getPart();
             handleToMove = null;
             junctionToMove = null;
