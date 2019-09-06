@@ -288,6 +288,12 @@ public class BoardView extends Pane {
                 interactor.mouseDragged(e);
             }
          });
+        
+        setOnMouseReleased(e -> {
+            if (interactor != null) {
+                interactor.mouseReleased(e);
+            }
+        });
     }
     
 

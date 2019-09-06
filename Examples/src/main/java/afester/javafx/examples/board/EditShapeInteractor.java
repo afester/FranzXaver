@@ -1,10 +1,12 @@
 package afester.javafx.examples.board;
 
 import afester.javafx.examples.board.model.Board;
+import javafx.geometry.Point2D;
+import javafx.scene.input.MouseEvent;
 
 public class EditShapeInteractor extends MouseInteractor {
 
-    private int cornerToMove = 0;
+    private int cornerToMove = -1;
 
     public EditShapeInteractor(BoardView boardView) {
         super(boardView);
@@ -19,10 +21,19 @@ public class EditShapeInteractor extends MouseInteractor {
     }
 
     @Override
+    public void mouseReleased(MouseEvent e) {
+        cornerToMove = -1;
+    }
+
+    
+    @Override
     protected void dragObject(Interactable obj) {
-        Board b = this.getBoardView().getBoard();
-        System.err.printf("Moving %s in %s\n", cornerToMove, b);
-        b.setCornerPos(cornerToMove, this.getClickPos());
+        if (cornerToMove != -1) {
+            Board b = this.getBoardView().getBoard();
+            System.err.printf("Moving %s in %s\n", cornerToMove, b);
+            Point2D newPos = this.getClickPos().add(this.getOffset());
+            b.setCornerPos(cornerToMove, newPos);
+        }
     }
     
 }

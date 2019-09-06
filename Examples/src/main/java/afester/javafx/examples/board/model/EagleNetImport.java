@@ -95,7 +95,7 @@ public class EagleNetImport extends NetImport {
                 Part part = createPart(partName, partValue, partLibrary, packageRef, deviceNode);
                 if (part != null) {
                     part.setPosition(partPos);
-                    board.addDevice(part);
+                    board.addPart(part);
                 }
             }
 
@@ -115,7 +115,7 @@ public class EagleNetImport extends NetImport {
                     String pin = pinref.getAttribute("pin");
 
                     // if there was no package earlier, there is now also no part ...
-                    Part p = board.getDevice(partName);
+                    Part p = board.getPart(partName);
                     if (p != null) {
                         // Pad pad = p.getPad(pin); // /*pin*/ pin + "@" + gate);
                         Pad pad = pin2pad.get(pin + "@" + gate + "@" + partName);

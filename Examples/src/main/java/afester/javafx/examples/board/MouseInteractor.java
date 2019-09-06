@@ -97,13 +97,14 @@ public abstract class MouseInteractor implements Interactor {
             dragObject(currentObject);
         }
     }
-
+	
 	
 	// private final static double GRID = 2.54;
 	private final static double GRID = 1.27;   // for now, we also allow positions between pads - this is        
                                                // required to properly position the Eagle parts ...
 
-	@Deprecated
+
+    @Deprecated
     protected Point2D snapToGrid(Point2D pos, BoardView bv, Point2D offset) {                                                      
         System.err.println("OFFSET:" + offset);
         System.err.println("POS   :" + pos);
@@ -149,6 +150,9 @@ public abstract class MouseInteractor implements Interactor {
         }
     }
 
+    @Override
+    public void mouseReleased(MouseEvent e) {
+    }
     
 	protected void dragObject(Interactable obj) {
 	}

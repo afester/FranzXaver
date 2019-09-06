@@ -8,4 +8,5 @@ public interface Interactor {
 
     void mouseDragged(MouseEvent e);
 
+    void mouseReleased(MouseEvent e);
 }

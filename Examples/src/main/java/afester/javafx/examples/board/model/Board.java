@@ -42,7 +42,7 @@ import javafx.scene.paint.Color;
 
 public class Board {
 
-    private final ObservableList<Point2D> boardShapePoints = FXCollections.observableArrayList(); // new ArrayList<>();
+    private final ObservableList<Point2D> boardShapePoints = FXCollections.observableArrayList();
     private final ObservableMap<String, Part> parts = FXCollections.observableHashMap();
     private final ObservableMap<String, Net> nets = FXCollections.observableHashMap();
     private String schematicFile;
@@ -53,19 +53,26 @@ public class Board {
      * Creates a new empty board with a default dimension of 100mm X 160mm
      */
     public Board() {
-        // boardShapePoints = new ArrayList<>();
         boardShapePoints.add(new Point2D(  0,   0));
         boardShapePoints.add(new Point2D(100,   0));
         boardShapePoints.add(new Point2D(100, 160));
         boardShapePoints.add(new Point2D(  0, 160));
     }
 
+    private final static double GRID = 1.0;        
+
     public void setCornerPos(int cornerIdx, Point2D newPos) {
-        boardShapePoints.set(cornerIdx, newPos);
+        Point2D snappedPos = new Point2D(((int) ( newPos.getX() / GRID)) * GRID,
+                                         ((int) ( newPos.getY() / GRID)) * GRID);
+        boardShapePoints.set(cornerIdx, snappedPos);
     }
     
-    public void addDevice(Part pkg) {
+    public void addPart(Part pkg) {
         parts.put(pkg.getName(), pkg);
+    }
+
+    public Part getPart(String ref) {
+        return parts.get(ref);
     }
 
     public  ObservableMap<String, Part> getParts() {
@@ -74,10 +81,6 @@ public class Board {
 
     public ObservableMap<String, Net> getNets() {
         return nets;
-    }
-
-    public Part getDevice(String partName) {
-        return parts.get(partName);
     }
 
     public void addNet(Net net) {
@@ -301,7 +304,7 @@ public class Board {
                 }
 
                 System.err.printf("Part: %s\n", part);
-                addDevice(part);
+                addPart(part);
             }
 
             NodeList netNodes = (NodeList) xPath.evaluate("net", breadboardNode, XPathConstants.NODESET);
@@ -462,7 +465,7 @@ public class Board {
                 pad.traceStarts.clear();    // remove references to "new" board
                 pad.traceEnds.clear();      // remove references to "new" board
             });
-            addDevice(newPart);
+            addPart(newPart);
         });
 
         // ********************* Nets *********************************
@@ -608,10 +611,6 @@ public class Board {
 
     public ObservableList<Point2D> getBoardCorners() {
         return boardShapePoints;
-    }
-
-    public Part getPart(String ref) {
-        return parts.get(ref);
     }
 
     public double getWidth() {

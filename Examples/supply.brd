@@ -2,8 +2,8 @@
   <boardShape>
     <point x="0.0" y="0.0"/>
     <point x="100.0" y="0.0"/>
-    <point x="100.0" y="160.0"/>
-    <point x="0.0" y="160.0"/>
+    <point x="100.0" y="90.0"/>
+    <point x="0.0" y="90.0"/>
   </boardShape>
   <part name="K1" package="HR91C-12H" rotation="0.0" value="" x="58.38" y="28.67">
     <line width="0.1524" x1="-11.684" x2="4.064" y1="5.08" y2="5.08"/>
