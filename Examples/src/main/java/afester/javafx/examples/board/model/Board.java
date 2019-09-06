@@ -113,7 +113,7 @@ public class Board {
 
             // the board shape
             Element boardShape = doc.createElement("boardShape");
-            for (Point2D coords : getBoardShape()) {
+            for (Point2D coords : getBoardCorners()) {
                 Element point = doc.createElement("point");
                 point.setAttribute("x", Double.toString(coords.getX()));
                 point.setAttribute("y", Double.toString(coords.getY()));
@@ -606,7 +606,7 @@ public class Board {
         }
     }
 
-    public ObservableList<Point2D> getBoardShape() {
+    public ObservableList<Point2D> getBoardCorners() {
         return boardShapePoints;
     }
 
@@ -615,7 +615,7 @@ public class Board {
     }
 
     public double getWidth() {
-        return getBoardShape().stream()
+        return getBoardCorners().stream()
                               .max((a, b) -> Double.compare(a.getX(), b.getX())).get().getX();
     }
 

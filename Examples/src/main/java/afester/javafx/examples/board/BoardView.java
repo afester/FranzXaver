@@ -11,10 +11,13 @@ import afester.javafx.examples.board.model.AbstractWire;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.Junction;
 import afester.javafx.examples.board.model.Part;
+import afester.javafx.examples.board.BoardShape;
+import afester.javafx.examples.board.tools.Polygon2D;
 import afester.javafx.examples.board.model.Net;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
@@ -23,9 +26,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Polygon;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+
 
 class DoubleVal {
     public double val;
@@ -41,15 +44,16 @@ public class BoardView extends Pane {
                                 Color.rgb(0xb8, 0x73, 0x33, 1.0);   // COPPER
 
     private final Point2D padOffset = new Point2D(2.5, 2.0);
-    private Polygon boardShape;
-    
-    private Group partsGroup;
-    private Group airWireGroup;
-    private Group traceGroup;
-    private Group bridgeGroup;
-    private Group dimensionGroup;
-    private Group junctionGroup;
-    private Group handleGroup;
+    private BoardShape boardShape;
+
+    private Group boardGroup;       // The board itself, including dimensions
+    private Group dimensionGroup;   // The board dimensions - a children of boardGroup
+    private Group partsGroup;       // all parts (and their pads) on the board
+    private Group airWireGroup;     // all AirWires,
+    private Group traceGroup;       //     Traces,
+    private Group bridgeGroup;      // and Bridges on the board
+    private Group junctionGroup;    // all junctions
+    private Group handleGroup;      // all dynamic handles (topmost layer)
 
     private Interactor interactor = null;
     private boolean isReadOnly = false;
@@ -195,56 +199,10 @@ public class BoardView extends Pane {
     }
 
     public void setBoard(Board board) {
-        getChildren().clear();
-
         this.board = board;
 
-        System.err.println("\nCreating board background ...");
-        boardShape = new BoardShape();
-
-        // convert the board shape into an Double[] array as required by the JavaFX polygon API 
-        final List<Point2D> boardDims = board.getBoardShape();
-        final Double[] polygonCoords = new Double [boardDims.size() * 2];
-        int idx = 0;
-        for (Point2D coord : boardDims) {
-            polygonCoords[idx] = coord.getX();
-            polygonCoords[idx+1] = coord.getY();
-            idx += 2;
-        }
-        boardShape.getPoints().addAll(polygonCoords);
-
-        getChildren().add(boardShape);
-
-        Bounds b = boardShape.getBoundsInParent();
-//        System.err.println(b);
-//        Rectangle r = new Rectangle(b.getMinX(), b.getMinY(), b.getWidth(), b.getHeight());
-//        r.setStroke(Color.GREEN);
-//        r.setFill(null);
-//        getChildren().add(r);
-
-        Group padsGroup = new Group();
-        for (double ypos = padOffset.getY();  ypos < b.getHeight();  ypos += 2.54 ) {
-            for (double xpos = padOffset.getX();  xpos < b.getWidth();  xpos += 2.54) {
-
-                // pad (backside of board)
-//                Circle c = new Circle(xpos, ypos, 0.7);
-//                c.setFill(Color.WHITE);
-//                c.setStroke(padColor);
-//                c.setStrokeWidth(0.6);
-//                getChildren().add(c);
-
-                // hole (frontside of board)
-                Circle c = new Circle(xpos, ypos, 0.4);
-                c.setFill(Color.WHITE);
-                c.setStroke(null);
-                padsGroup.getChildren().add(c);
-            }
-        }
-
-        Polygon clipShape = new Polygon();
-        clipShape.getPoints().addAll(polygonCoords);
-
-        padsGroup.setClip(clipShape);
+        boardGroup = new Group();
+        boardGroup.setId("boardGroup");
         partsGroup = new Group();
         partsGroup.setId("partsGroup");
         airWireGroup = new Group();
@@ -260,9 +218,17 @@ public class BoardView extends Pane {
         handleGroup = new Group();
         handleGroup.setId("handleGroup");
 
-        getChildren().addAll(padsGroup, partsGroup,
+        getChildren().addAll(boardGroup, partsGroup,
                              traceGroup, bridgeGroup, airWireGroup,
-                             dimensionGroup, junctionGroup, handleGroup);
+                             junctionGroup, handleGroup);
+
+        createPlainBoard();
+        board.getBoardCorners().addListener((javafx.collections.ListChangeListener.Change<? extends Point2D> change) -> {
+            // When the board shape changes, we simply recreate the whole board
+            // This might be too heavy, but it at least works and ensures that the whole board shape is consistent
+            createPlainBoard();
+            createBoardDimensions();
+        });
 
 // Handling nets
         System.err.println("Adding Nets ...");
@@ -323,6 +289,46 @@ public class BoardView extends Pane {
             }
          });
     }
+    
+
+    private void createPlainBoard() {
+        boardGroup.getChildren().clear();
+
+        System.err.println("\nCreating board background ...");
+
+// Board shape
+        boardShape = new BoardShape();
+        final ObservableList<Point2D> boardDims = board.getBoardCorners();
+        boardShape.setPoints(boardDims);
+
+// Holes / Pads (this is a rectangle!)
+        Bounds b = boardShape.getBoundsInParent();
+        Group padsGroup = new Group();
+        for (double ypos = padOffset.getY();  ypos < b.getHeight();  ypos += 2.54 ) {
+            for (double xpos = padOffset.getX();  xpos < b.getWidth();  xpos += 2.54) {
+
+                // pad (backside of board)
+//                Circle c = new Circle(xpos, ypos, 0.7);
+//                c.setFill(Color.WHITE);
+//                c.setStroke(padColor);
+//                c.setStrokeWidth(0.6);
+//                getChildren().add(c);
+
+                // hole (frontside of board)
+                Circle c = new Circle(xpos, ypos, 0.4);
+                c.setFill(Color.WHITE);
+                c.setStroke(null);
+                padsGroup.getChildren().add(c);
+            }
+        }
+
+// Real shape of the board to clip the Holes/Pads 
+        Polygon2D clipShape = new Polygon2D();
+        clipShape.setPoints(boardDims);
+        padsGroup.setClip(clipShape);
+
+        boardGroup.getChildren().addAll(boardShape, padsGroup, dimensionGroup);
+    }
 
     
     /**
@@ -341,32 +347,23 @@ public class BoardView extends Pane {
     class IntVal {
         int val;
     }
-    
+
     private void createBoardDimensions() {
         // add the board dimensions
         System.err.println("Adding Board dimensions ...");
+        dimensionGroup.getChildren().clear();
 
+// Handles for each corner of the board        
         final List<BoardCorner> corners = new ArrayList<>();
-        
         IntVal idx = new IntVal();
         pointIterator(boardShape.getPoints(), (xpos, ypos) -> {
-            System.err.printf("%s/%s\n", xpos, ypos); 
             BoardCorner c = new BoardCorner(xpos, ypos, getBoard(), idx.val);
             idx.val++;
-            getChildren().add(c);
+            dimensionGroup.getChildren().add(c);
             corners.add(c);
         });
-        board.getBoardShape().addListener((javafx.collections.ListChangeListener.Change<? extends Point2D> change) -> {
-            change.next();
-            Point2D newPos = change.getAddedSubList().get(0);
-            int posIdx = change.getFrom();
-            BoardCorner bc = corners.get(posIdx);
-            System.err.printf("%s %s %s\n", bc, newPos, posIdx);
-            bc.setCenterX(newPos.getX());
-            bc.setCenterY(newPos.getY());
-        });
 
-        // add the board dimensions
+// Board dimensions
         Font dimFont = Font.font("Courier", 2.0);
         final Point2D unitVec = new Point2D(1.0, 0.0);
         lineIterator(boardShape.getPoints(), (p1, p2) -> {

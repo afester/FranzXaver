@@ -1,8 +1,7 @@
 package afester.javafx.examples.board;
 
-import javafx.scene.shape.Polygon;
+import afester.javafx.examples.board.tools.Polygon2D;
 
-public class BoardShape extends Polygon {
-
+public class BoardShape extends Polygon2D {
 }
 
