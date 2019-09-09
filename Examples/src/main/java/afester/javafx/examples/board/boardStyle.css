@@ -1,27 +1,47 @@
 
 BoardShape {
-   -fx-fill: #ffec80;			/* Board color */
+   -fx-fill: #ffec80; /*#E1B576; 			/* #D08B0D; 			/* #ffec80;			/* Board color */
    -fx-stroke: gray;			/* Board border color */
    -fx-stroke-width: 0.3px;		/* Board border width */
 }
 
 
+HoleViewTop {
+   -fx-fill: white;
+}
+
+HoleViewBottom {
+   -fx-fill: white;
+   -fx-stroke: #C39B5D; 		/* #ECB76F; /*#F2EAD8; /*#b87333;*/
+   -fx-stroke-width: 0.6px;
+}
+
+PadViewTop Circle {
+   -fx-fill: #808080;
+}
+
+PadViewBottom Circle {
+   -fx-fill: silver;
+/*   -fx-stroke: #C39B5D;
+   -fx-stroke-width: 0.6px;*/
+}
+
 TraceView.TraceNormal{
 	-fx-stroke: silver;
-	-fx-stroke-width: 1.0px;
+	-fx-stroke-width: 0.8px;
 	-fx-stroke-line-cap: round;
 }
 
 TraceView.TraceHighlight{
 	-fx-stroke: red;
-	-fx-stroke-width: 1.0px;
+	-fx-stroke-width: 0.8px;
 	-fx-opacity: 0.5;
 	-fx-stroke-line-cap: round;
 }
 
 TraceView.TraceSelect {
 	-fx-stroke: red;
-	-fx-stroke-width: 1.0px;
+	-fx-stroke-width: 0.8px;
 	-fx-stroke-line-cap: round;
 }
 

@@ -25,9 +25,12 @@ public class PartView extends Group implements Interactable {
     private Rotate rot = new Rotate();
     private Group padViews = new Group();
     private Group shapeViews = new Group();
+    private boolean isBottom;
 
-    public PartView(Part part) {
+    
+    public PartView(Part part, boolean isBottom) {
         this.part = part;
+        this.isBottom = isBottom;
 
         this.setMouseTransparent(false);
         //this.setPickOnBounds(true);
@@ -98,12 +101,17 @@ public class PartView extends Group implements Interactable {
         }
 
         for (Pad ps : part.getPads()) {
-            Node s = new PadView(ps);
+            Node s = null;
+            if (isBottom) {
+                s = new PadViewBottom(ps);
+            } else {
+                s = new PadViewTop(ps);
+            }
             padViews.getChildren().add(s);
         }
 
-        getChildren().add(padViews);
         getChildren().add(shapeViews);
+        getChildren().add(padViews);
 
         // Create a marker for the mid point
 

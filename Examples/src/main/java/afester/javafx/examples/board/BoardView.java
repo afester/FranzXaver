@@ -13,8 +13,8 @@ import afester.javafx.examples.board.model.Junction;
 import afester.javafx.examples.board.model.Part;
 import afester.javafx.examples.board.BoardShape;
 import afester.javafx.examples.board.tools.Polygon2D;
+import javafx.scene.shape.Circle;
 import afester.javafx.examples.board.model.Net;
-
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
@@ -24,7 +24,6 @@ import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -38,11 +37,6 @@ class DoubleVal {
 public class BoardView extends Pane {
 
     private Board board;
-    private Color padColor   = // Color.rgb(0xB2, 0x99, 0x70);
-                                // Color.rgb(0xf8, 0xe7, 0xbe, 1.0);
-                                //Color.rgb(0xfe, 0xcc, 0x00, 1.0);
-                                Color.rgb(0xb8, 0x73, 0x33, 1.0);   // COPPER
-
     private final Point2D padOffset = new Point2D(2.5, 2.0);
     private BoardShape boardShape;
 
@@ -57,6 +51,7 @@ public class BoardView extends Pane {
 
     private Interactor interactor = null;
     private boolean isReadOnly = false;
+    private boolean isBottom;
 
     // The interactable object which is currently selected; TODO: Can this be moved to the Interactor?
     private final ObjectProperty<Interactable> selectedObject = new SimpleObjectProperty<>();
@@ -71,6 +66,11 @@ public class BoardView extends Pane {
      * @param board The board for which to create the new view.
      */
     public BoardView(Board board) {
+        this(board, false);
+    }
+
+    public BoardView(Board board, boolean isBottom) {
+        this.isBottom = isBottom;
         String css = BoardView.class.getResource("boardStyle.css").toExternalForm();
         getStylesheets().add(css);
         setBoard(board);
@@ -218,9 +218,16 @@ public class BoardView extends Pane {
         handleGroup = new Group();
         handleGroup.setId("handleGroup");
 
-        getChildren().addAll(boardGroup, partsGroup,
-                             traceGroup, bridgeGroup, airWireGroup,
-                             junctionGroup, handleGroup);
+        if (isBottom) {
+            getChildren().addAll(boardGroup, partsGroup,
+                                 traceGroup, bridgeGroup, airWireGroup,
+                                 junctionGroup, handleGroup);
+        } else {
+            getChildren().addAll(boardGroup,
+                                 traceGroup, bridgeGroup, airWireGroup,
+                                 partsGroup,
+                                 junctionGroup, handleGroup);
+        }
 
         createPlainBoard();
         board.getBoardCorners().addListener((javafx.collections.ListChangeListener.Change<? extends Point2D> change) -> {
@@ -253,7 +260,7 @@ public class BoardView extends Pane {
         System.err.println("Adding Parts ...");
         board.getParts().forEach((k, g) -> {
             // Create a PartView from the model
-            PartView partView = new PartView(g);
+            PartView partView = new PartView(g, isBottom);
             System.err.println("  " + g);
             partsGroup.getChildren().add(partView);
 
@@ -270,7 +277,7 @@ public class BoardView extends Pane {
 
             if (change.wasAdded()) {
                 Part added = change.getValueAdded();
-                PartView partView = new PartView(added);
+                PartView partView = new PartView(added, isBottom);
                 partsGroup.getChildren().add(partView);
 
                 pMap.put(added, partView);
@@ -300,7 +307,7 @@ public class BoardView extends Pane {
     private void createPlainBoard() {
         boardGroup.getChildren().clear();
 
-        System.err.println("\nCreating board background ...");
+        System.err.println("\nCreating plain board ...");
 
 // Board shape
         boardShape = new BoardShape();
@@ -312,18 +319,13 @@ public class BoardView extends Pane {
         Group padsGroup = new Group();
         for (double ypos = padOffset.getY();  ypos < b.getHeight();  ypos += 2.54 ) {
             for (double xpos = padOffset.getX();  xpos < b.getWidth();  xpos += 2.54) {
-
-                // pad (backside of board)
-//                Circle c = new Circle(xpos, ypos, 0.7);
-//                c.setFill(Color.WHITE);
-//                c.setStroke(padColor);
-//                c.setStrokeWidth(0.6);
-//                getChildren().add(c);
-
-                // hole (frontside of board)
-                Circle c = new Circle(xpos, ypos, 0.4);
-                c.setFill(Color.WHITE);
-                c.setStroke(null);
+                Circle c = null;
+                if (isBottom) {
+                    c = new HoleViewBottom(xpos, ypos);
+                } else  {
+                    c = new HoleViewTop(xpos, ypos);
+                }
+                
                 padsGroup.getChildren().add(c);
             }
         }
@@ -331,7 +333,8 @@ public class BoardView extends Pane {
 // Real shape of the board to clip the Holes/Pads 
         Polygon2D clipShape = new Polygon2D();
         clipShape.setPoints(boardDims);
-        padsGroup.setClip(clipShape);
+        padsGroup.setClip(clipShape);       // note: a single Polygon2D can only be either 
+                                            // assigned as clip area OR as child of a Parent!
 
         boardGroup.getChildren().addAll(boardShape, padsGroup, dimensionGroup);
     }

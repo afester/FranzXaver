@@ -90,7 +90,7 @@ public class TraceView extends AbstractEdgeView {
                 break;
 
             case SELECTED:
-                getStyleClass().add("AirwireStroke");
+                getStyleClass().add("AirwireSelect");
                 break;
 
             default:

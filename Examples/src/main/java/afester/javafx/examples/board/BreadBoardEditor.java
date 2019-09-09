@@ -277,7 +277,7 @@ public class BreadBoardEditor extends Application {
 
             if (bottomView == null) {
                 Board b = topView.getBoard();
-                bottomView = new BoardView(b);
+                bottomView = new BoardView(b, true);
                 bottomView.showBoardDimensions(true);
                 bottomView.setReadOnly(true);
 

@@ -78,7 +78,7 @@ public class PrintPanel extends BorderPane {
         topView = new BoardView(b);
         topView.setReadOnly(true);
 
-        bottomView = new BoardView(b);
+        bottomView = new BoardView(b, true);
         bottomView.setReadOnly(true);
         bottomView.getTransforms().add(Transform.scale(-1, 1));
 
