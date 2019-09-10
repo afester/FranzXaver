@@ -244,10 +244,12 @@ public class BreadBoardEditor extends Application {
                 new Separator(),
 
                 shortestPathButton,
-                shortestAllButton,
                 resetNetButton,
                 cleanupNetButton,
-                deleteSegmentButton
+                deleteSegmentButton,
+                new Separator(),
+
+                shortestAllButton
             );
 
         VBox topBar = new VBox();
