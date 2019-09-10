@@ -138,9 +138,6 @@ public class BreadBoardEditor extends Application {
         final Button shortestAllButton = new ToolbarButton("Shortest all", "afester/javafx/examples/board/net-shortestall.png");
         shortestAllButton.setOnAction(e -> calculateShortestPathAll());
 
-        final Button traceToBridge = new ToolbarButton("Bridge", "afester/javafx/examples/board/net-tracetobridge.png");
-        traceToBridge.setOnAction(e -> traceToBridge());
-
         final Button resetNetButton = new ToolbarButton("Reset net", "afester/javafx/examples/board/net-reset.png");
         resetNetButton.setOnAction(e -> resetNet());
 
@@ -158,21 +155,36 @@ public class BreadBoardEditor extends Application {
         // final Interactor editTraceInteractor = new EditTraceInteractor(bv);
         final Interactor splitTraceInteractor = new SplitTraceInteractor(topView);
         final Interactor editShapeInteractor = new EditShapeInteractor(topView);
-        
+
         ToggleGroup toggleGroup = new ToggleGroup();
-        ToolbarToggleButton selectToolButton = new ToolbarToggleButton("Select", "afester/javafx/examples/board/mode-select.png");
+        final ToolbarToggleButton selectToolButton = new ToolbarToggleButton("Select", "afester/javafx/examples/board/mode-select.png");
         selectToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
                 topView.setInteractor(editInteractor);
             }
         });
-        ToolbarToggleButton traceToolButton = new ToolbarToggleButton("Trace", "afester/javafx/examples/board/mode-trace.png");
-        traceToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
+        final ToolbarToggleButton toTraceToolButton = new ToolbarToggleButton("Trace", "afester/javafx/examples/board/mode-trace.png");
+        toTraceToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
                 topView.setInteractor(traceInteractor);   
             }
         });
-        ToolbarToggleButton splitTraceToolButton = new ToolbarToggleButton("Split Trace", "afester/javafx/examples/board/mode-splittrace.png");
+
+        final ToolbarToggleButton toBridgeToolButton = new ToolbarToggleButton("Bridge", "afester/javafx/examples/board/mode-bridge.png");
+        toBridgeToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
+            if (newValue) {
+                topView.setInteractor(traceInteractor);   
+            }
+        });
+
+        final ToolbarToggleButton toAirwireToolButton = new ToolbarToggleButton("Airwire", "afester/javafx/examples/board/mode-airwire.png");
+        toAirwireToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
+            if (newValue) {
+                topView.setInteractor(traceInteractor);   
+            }
+        });
+
+        final ToolbarToggleButton splitTraceToolButton = new ToolbarToggleButton("Split Trace", "afester/javafx/examples/board/mode-splittrace.png");
         splitTraceToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
                 topView.setInteractor(splitTraceInteractor);   
@@ -181,18 +193,36 @@ public class BreadBoardEditor extends Application {
         ToolbarToggleButton editShapeToolButton = new ToolbarToggleButton("Edit shape", "afester/javafx/examples/board/mode-editshape.png");
         editShapeToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                System.err.println("SETTING SHAPE EDITOR");
                 topView.setInteractor(editShapeInteractor);
             }
         });
 
         selectToolButton.setToggleGroup(toggleGroup);
-        traceToolButton.setToggleGroup(toggleGroup);
-        // editTraceToolButton.setToggleGroup(toggleGroup);
+        toTraceToolButton.setToggleGroup(toggleGroup);
+        toBridgeToolButton.setToggleGroup(toggleGroup);
         splitTraceToolButton.setToggleGroup(toggleGroup);
         editShapeToolButton.setToggleGroup(toggleGroup);
 
         selectToolButton.setSelected(true);
+
+        
+        final ToolbarToggleButton reconnectTraceModeToolButton = new ToolbarToggleButton("Reconnect Trace", "afester/javafx/examples/board/mode-reconnect.png");
+//        splitTraceToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
+//            if (newValue) {
+//                topView.setInteractor(splitTraceInteractor);   
+//            }
+//        });
+        ToolbarToggleButton moveJunctionToolButton = new ToolbarToggleButton("Move Junction", "afester/javafx/examples/board/mode-movejunction.png");
+//        editShapeToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
+//            if (newValue) {
+//                topView.setInteractor(editShapeInteractor);
+//            }
+//        });
+        ToggleGroup junctionModeToggleGroup = new ToggleGroup();
+
+        reconnectTraceModeToolButton.setToggleGroup(junctionModeToggleGroup);
+        moveJunctionToolButton.setToggleGroup(junctionModeToggleGroup);
+        moveJunctionToolButton.setSelected(true);
 
         ToolBar toolBar = new ToolBar(
                 new ToolbarButton("New board", "afester/javafx/examples/board/file-new.png"),
@@ -202,15 +232,19 @@ public class BreadBoardEditor extends Application {
                 new Separator(),
 
                 selectToolButton,
-                traceToolButton,
-                // editTraceToolButton,
+                toTraceToolButton,
+                toBridgeToolButton,
+                toAirwireToolButton,
                 splitTraceToolButton,
                 editShapeToolButton,
                 new Separator(),
 
+                reconnectTraceModeToolButton,
+                moveJunctionToolButton,
+                new Separator(),
+
                 shortestPathButton,
                 shortestAllButton,
-                traceToBridge,
                 resetNetButton,
                 cleanupNetButton,
                 deleteSegmentButton

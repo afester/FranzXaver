@@ -171,4 +171,10 @@ public class EditInteractor  extends MouseInteractor {
             part.rotatePart();
         }
     }
+    
+    
+    @Override
+    public String toString() {
+        return "EditInteractor";
+    }
 }

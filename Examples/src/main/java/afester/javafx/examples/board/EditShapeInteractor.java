@@ -35,5 +35,9 @@ public class EditShapeInteractor extends MouseInteractor {
             b.setCornerPos(cornerToMove, newPos);
         }
     }
-    
+
+    @Override
+    public String toString() {
+        return "EditShapeInteractor";
+    }
 }

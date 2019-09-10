@@ -1,0 +1,32 @@
+
+* Edit Mode
+  * Select Part
+    * Move part
+    * Rotate part
+
+  * Select Net (When clicking a segment - how to convert between Airwire/Trace/Bridge?)
+    * Calculate shortest path for Net
+    * Validate/Cleanup net
+    * Delete Segment - Removes the selected segment, if possible
+    * Reset Net - recreate all airwires for the selected net
+
+  * Toggles:
+    * Reconnect lines to other junctions (not only for AirWire, but also for Traces)
+    * Move junction
+
+* Convert to Trace Mode (After conversion, the segment/net is selected so that it can be edited immediately)
+  => Move junction is possible now, but "Convert to Trace" remains selected!
+
+* Convert to Bridge Mode (After conversion, the segment/net is selected so that it can be edited immediately)
+  => Move junction is possible now, but "Convert to Trace" remains selected!
+
+* Convert to Airwire Mode (After conversion, the segment/net is selected so that it can be edited immediately)
+  => Move junction is possible now, but "Convert to Trace" remains selected!
+
+* Split Trace Mode - add new junction into existing Trace (Afterwards, the segment/net is selected so that it can be edited immediately)
+  => Move junction is possible now, but "Convert to Trace" remains selected!
+
+* Edit Shape
+  * Move corner
+  * Remove corner
+  * Add corner

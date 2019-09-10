@@ -9,6 +9,7 @@ public class TraceInteractor extends MouseInteractor {
         super(boardView);
     }
 
+
     @Override
     protected void clickObjectLeft(Interactable obj) {
         System.err.println("CLICKED LEFT!");
@@ -17,5 +18,11 @@ public class TraceInteractor extends MouseInteractor {
             final AbstractWire wire = tw.getTrace();
             wire.convertToStraightTrace();
         }
+    }
+
+
+    @Override
+    public String toString() {
+        return "TraceInteractor";
     }
 }

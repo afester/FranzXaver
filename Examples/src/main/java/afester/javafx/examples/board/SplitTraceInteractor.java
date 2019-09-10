@@ -28,4 +28,9 @@ public class SplitTraceInteractor extends MouseInteractor {
             net.addTrace(newTrace);
         }
     }
+    
+    @Override
+    public String toString() {
+        return "SplitTraceInteractor";
+    }
 }
