@@ -1,10 +1,14 @@
 package afester.javafx.examples.board;
 
+import java.io.InputStream;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import afester.javafx.examples.board.model.Pad;
 import afester.javafx.examples.board.model.Part;
 import afester.javafx.examples.board.model.PartShape;
+import afester.javafx.svg.SvgLoader;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -90,14 +94,36 @@ public class PartView extends Group implements Interactable {
          }
     }
     
+    
+    
+    @SuppressWarnings("serial")
+    private final Map<String, String> package2svg = new HashMap<>() {{
+        put("0204/5",  "0204_5.svg");
+        put("DO41Z10", "DO41Z10.svg");
+        put("DO41-10", "DO41Z10.svg");
+        put("E5-8,5",  "E5-8,5.svg");
+    }};
+   
+
     /**
      * Creates the Part as a JavaFX node
      */
     private void createNode() {
 
-        for (PartShape ps : part.getShapes()) {
-            Node s = ps.createNode();
-            shapeViews.getChildren().add(s);
+        // check if an SVG document is available for the part
+        final String packageName = part.getPackageRef();
+        final String packageSvg = package2svg.get(packageName);
+        if (packageSvg != null) {
+            InputStream svgFile = getClass().getResourceAsStream(packageSvg);
+            SvgLoader loader = new SvgLoader();
+            Group svgImage = loader.loadSvg(svgFile);
+            shapeViews.getChildren().add(svgImage);
+        } else {
+            
+            for (PartShape ps : part.getShapes()) {
+                Node s = ps.createNode();
+                shapeViews.getChildren().add(s);
+            }
         }
 
         for (Pad ps : part.getPads()) {
@@ -114,18 +140,15 @@ public class PartView extends Group implements Interactable {
         getChildren().add(padViews);
 
         // Create a marker for the mid point
-
-        //Circle c = new Circle(0, 0, 0.5);
-        //c.setFill(null);
-
-        Line l1 = new Line(-0.5, 0.0, 0.5, 0.0);
-        l1.setStroke(Color.RED);
-        l1.setStrokeWidth(0.2);
-        Line l2 = new Line(0.0, -0.5, 0.0, 0.5);
-        l2.setStroke(Color.RED);
-        l2.setStrokeWidth(0.2);
-
-        getChildren().addAll(l1, l2);
+        if (packageSvg == null) {
+            Line l1 = new Line(-0.5, 0.0, 0.5, 0.0);
+            l1.setStroke(Color.RED);
+            l1.setStrokeWidth(0.2);
+            Line l2 = new Line(0.0, -0.5, 0.0, 0.5);
+            l2.setStroke(Color.RED);
+            l2.setStrokeWidth(0.2);
+            getChildren().addAll(l1, l2);
+        }
 
         // Finally add a shape which can be used to select the device
         // TODO: This is a Hack

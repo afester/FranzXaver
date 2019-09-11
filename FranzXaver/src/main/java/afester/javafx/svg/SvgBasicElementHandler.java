@@ -31,6 +31,8 @@ import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.shape.Shape;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 
@@ -202,6 +204,7 @@ public class SvgBasicElementHandler {
 
         // Create JavaFX Line object
         Line result = new Line(x1, y1, x2, y2);
+        result.setStrokeLineCap(StrokeLineCap.BUTT);
         result.setId(element.getId());
 
         Affine transformation = styleTools.getTransform(element);

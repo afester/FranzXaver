@@ -19,6 +19,7 @@ package afester.javafx.svg;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Shape;
+import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
@@ -168,8 +169,22 @@ public class SvgStyleTools {
         Paint strokeColor = getStrokeColor(element);
         fxObj.setStroke(strokeColor);
 
+
+        final CSSStyleDeclaration style = svgElement.getComputedStyle(element, null);
+
+        CSSOMSVGComputedStyle.ComputedCSSValue sLineCap = 
+                    (ComputedCSSValue) style.getPropertyCSSValue("stroke-linecap");
+        if (sLineCap != null) {
+            if (sLineCap.getCssText().equals("butt")) {
+                fxObj.setStrokeLineCap(StrokeLineCap.BUTT);
+            } else if (sLineCap.getCssText().equals("round")) {
+                fxObj.setStrokeLineCap(StrokeLineCap.ROUND);
+            } else if (sLineCap.getCssText().equals("square")) {
+                fxObj.setStrokeLineCap(StrokeLineCap.SQUARE);
+            }
+        }
+
         // stroke-width
-        CSSStyleDeclaration style = svgElement.getComputedStyle(element, null);
         CSSOMSVGComputedStyle.ComputedCSSValue swidth = 
                     (ComputedCSSValue) style.getPropertyCSSValue("stroke-width");
         if (swidth != null) {
