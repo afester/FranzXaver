@@ -102,6 +102,8 @@ public class PartView extends Group implements Interactable {
         put("DO41Z10", "DO41Z10.svg");
         put("DO41-10", "DO41Z10.svg");
         put("E5-8,5",  "E5-8,5.svg");
+        put("E55-30H", "E55-30H.svg");
+        put("691121710004", "691121710004.svg");
     }};
    
 
@@ -126,14 +128,16 @@ public class PartView extends Group implements Interactable {
             }
         }
 
-        for (Pad ps : part.getPads()) {
-            Node s = null;
-            if (isBottom) {
-                s = new PadViewBottom(ps);
-            } else {
-                s = new PadViewTop(ps);
+        if (packageSvg == null) {
+            for (Pad ps : part.getPads()) {
+                Node s = null;
+                if (isBottom) {
+                    s = new PadViewBottom(ps);
+                } else {
+                    s = new PadViewTop(ps);
+                }
+                padViews.getChildren().add(s);
             }
-            padViews.getChildren().add(s);
         }
 
         getChildren().add(shapeViews);
