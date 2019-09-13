@@ -30,6 +30,7 @@ public class PartView extends Group implements Interactable {
     private Group padViews = new Group();
     private Group shapeViews = new Group();
     private boolean isBottom;
+    private boolean isSvg = false;
 
     
     public PartView(Part part, boolean isBottom) {
@@ -98,37 +99,51 @@ public class PartView extends Group implements Interactable {
     
     @SuppressWarnings("serial")
     private final Map<String, String> package2svg = new HashMap<>() {{
-        put("0204/5",  "0204_5.svg");
-        put("DO41Z10", "DO41Z10.svg");
-        put("DO41-10", "DO41Z10.svg");
-        put("E5-8,5",  "E5-8,5.svg");
-        put("E55-30H", "E55-30H.svg");
-        put("691121710004", "691121710004.svg");
+        put("0204/5",        "0204_5.svg");
+        put("C050-025X075",  "C050-025X075.svg");
+        put("DO41Z10",       "DO41Z10.svg");
+        put("DO41-10",       "DO41Z10.svg");
+        put("E5-8,5",        "E5-8,5.svg");
+        put("E55-30H",       "E55-30H.svg");
+        put("691121710004",  "691121710004.svg");
+        put("691216510002",  "691216510002.svg");
+        put("691216510003",  "691216510003.svg");
+        put("HR91C-12H",     "HR91C-12H.svg");
+        put("DC-DC_CONVERTER_78XX",  "DC-DC_CONVERTER_78XX.svg");
+        
     }};
-   
+
 
     /**
      * Creates the Part as a JavaFX node
      */
     private void createNode() {
+        getChildren().clear();
+        shapeViews = new Group();
+        padViews = new Group();
 
-        // check if an SVG document is available for the part
-        final String packageName = part.getPackageRef();
-        final String packageSvg = package2svg.get(packageName);
-        if (packageSvg != null) {
-            InputStream svgFile = getClass().getResourceAsStream(packageSvg);
-            SvgLoader loader = new SvgLoader();
-            Group svgImage = loader.loadSvg(svgFile);
-            shapeViews.getChildren().add(svgImage);
-        } else {
-            
+        System.err.printf("Render %s as Svg: %s\n", this, isSvg);
+
+        // render part as SVG?
+        boolean svgAvailable = false;
+        if (isSvg) {
+            final String packageName = part.getPackageRef();
+            final String packageSvg = package2svg.get(packageName);
+            if (packageSvg != null) {
+                InputStream svgFile = getClass().getResourceAsStream(packageSvg);
+                SvgLoader loader = new SvgLoader();
+                Group svgImage = loader.loadSvg(svgFile);
+                shapeViews.getChildren().add(svgImage);
+                svgAvailable = true;
+            }
+        }
+
+        if (!svgAvailable) {
             for (PartShape ps : part.getShapes()) {
                 Node s = ps.createNode();
                 shapeViews.getChildren().add(s);
             }
-        }
 
-        if (packageSvg == null) {
             for (Pad ps : part.getPads()) {
                 Node s = null;
                 if (isBottom) {
@@ -144,7 +159,7 @@ public class PartView extends Group implements Interactable {
         getChildren().add(padViews);
 
         // Create a marker for the mid point
-        if (packageSvg == null) {
+        if (!svgAvailable) {
             Line l1 = new Line(-0.5, 0.0, 0.5, 0.0);
             l1.setStroke(Color.RED);
             l1.setStrokeWidth(0.2);
@@ -160,6 +175,10 @@ public class PartView extends Group implements Interactable {
         getChildren().add(selectShape);
     }
 
+    public void renderSVG(Boolean newValue) {
+        this.isSvg = newValue;
+        createNode();
+    }
 
     public Collection<Pad> getPads() {
         return part.getPads(); // .values();
@@ -184,4 +203,6 @@ public class PartView extends Group implements Interactable {
     public String toString() {
         return String.format("PartView[partName=%s %s]", part.getName(), getBoundsInLocal());
     }
+
+
 }

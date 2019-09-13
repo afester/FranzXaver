@@ -135,9 +135,6 @@ public class BreadBoardEditor extends Application {
         final Button shortestPathButton = new ToolbarButton("Shortest", "afester/javafx/examples/board/net-shortest.png");
         shortestPathButton.setOnAction(e -> calculateShortestPath());
 
-        final Button shortestAllButton = new ToolbarButton("Shortest all", "afester/javafx/examples/board/net-shortestall.png");
-        shortestAllButton.setOnAction(e -> calculateShortestPathAll());
-
         final Button resetNetButton = new ToolbarButton("Reset net", "afester/javafx/examples/board/net-reset.png");
         resetNetButton.setOnAction(e -> resetNet());
 
@@ -147,8 +144,14 @@ public class BreadBoardEditor extends Application {
         final Button deleteSegmentButton = new ToolbarButton("Delete segment", "afester/javafx/examples/board/net-delsegment.png");
         deleteSegmentButton.setOnAction(e -> deleteSegment());
 
-//        final Button printButton = new ToolbarButton("Print", "afester/javafx/examples/board/print.png");
-//        printButton.setOnAction(e -> printLayout());
+        final Button shortestAllButton = new ToolbarButton("Shortest all", "afester/javafx/examples/board/net-shortestall.png");
+        shortestAllButton.setOnAction(e -> calculateShortestPathAll());
+
+        final ToolbarToggleButton toggleSvgToolButton = new ToolbarToggleButton("Toggle draft / SVG", "afester/javafx/examples/board/view-svg.png");
+        topView.showSvgProperty().bind(toggleSvgToolButton.selectedProperty());
+
+        final ToolbarToggleButton toggleShowNetsToolButton = new ToolbarToggleButton("Show / hide nets", "afester/javafx/examples/board/view-shownets.png");
+        topView.showNetsProperty().bind(toggleShowNetsToolButton.selectedProperty());
 
         final Interactor editInteractor = new EditInteractor(topView);
         final Interactor traceInteractor = new TraceInteractor(topView);
@@ -249,7 +252,11 @@ public class BreadBoardEditor extends Application {
                 deleteSegmentButton,
                 new Separator(),
 
-                shortestAllButton
+                shortestAllButton,
+                new Separator(),
+                
+                toggleSvgToolButton,
+                toggleShowNetsToolButton
             );
 
         VBox topBar = new VBox();

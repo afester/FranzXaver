@@ -15,7 +15,10 @@ import afester.javafx.examples.board.BoardShape;
 import afester.javafx.examples.board.tools.Polygon2D;
 import javafx.scene.shape.Circle;
 import afester.javafx.examples.board.model.Net;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
@@ -59,6 +62,18 @@ public class BoardView extends Pane {
     public Interactable getSelectedObject() { return selectedObject.get(); }
     public void setSelectedObject(Interactable obj) { selectedObject.set(obj); }
 
+    // A flag to indicate whether to show the parts as drafts or as SVG graphics
+    private final BooleanProperty showSvg = new SimpleBooleanProperty();
+    public BooleanProperty showSvgProperty() { return showSvg; }
+    public boolean isShowSvg() { return showSvg.get(); }
+    public void setShowSvg(boolean flag) { showSvg.set(flag); }
+
+    // A flag to indicate whether to show or hide the nets
+    private final BooleanProperty showNets = new SimpleBooleanProperty();
+    public BooleanProperty showNetsProperty() { return showNets; }
+    public boolean isShowNets() { return showNets.get(); }
+    public void setShowNets(boolean flag) { showNets.set(flag); }
+
 
     /**
      * Creates a new BoardView for an existing Board.
@@ -74,6 +89,18 @@ public class BoardView extends Pane {
         String css = BoardView.class.getResource("boardStyle.css").toExternalForm();
         getStylesheets().add(css);
         setBoard(board);
+        
+        showSvg.addListener((obj, oldValue, newValue) -> { partsGroup.getChildren().forEach(part -> ((PartView) part).renderSVG(newValue)); });
+        showNets.addListener((obj, oldValue, newValue) -> { showOrHideNets(newValue); });
+    }
+
+    private void showOrHideNets(Boolean newValue) {
+        airWireGroup.getChildren().clear();
+        traceGroup.getChildren().clear();
+        bridgeGroup.getChildren().clear();
+        if (newValue) {
+            
+        }
     }
 
     private static <T> void pointIterator(Iterable<T> iterable, BiConsumer<T, T> consumer) {
