@@ -151,6 +151,7 @@ public class BreadBoardEditor extends Application {
         topView.showSvgProperty().bind(toggleSvgToolButton.selectedProperty());
 
         final ToolbarToggleButton toggleShowNetsToolButton = new ToolbarToggleButton("Show / hide nets", "afester/javafx/examples/board/view-shownets.png");
+        toggleShowNetsToolButton.setSelected(true);
         topView.showNetsProperty().bind(toggleShowNetsToolButton.selectedProperty());
 
         final Interactor editInteractor = new EditInteractor(topView);

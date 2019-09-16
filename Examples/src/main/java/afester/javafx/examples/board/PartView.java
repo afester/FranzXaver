@@ -100,6 +100,7 @@ public class PartView extends Group implements Interactable {
     @SuppressWarnings("serial")
     private final Map<String, String> package2svg = new HashMap<>() {{
         put("0204/5",        "0204_5.svg");
+        put("0204/7",        "0204_7.svg");
         put("C050-025X075",  "C050-025X075.svg");
         put("DO41Z10",       "DO41Z10.svg");
         put("DO41-10",       "DO41Z10.svg");
@@ -110,6 +111,7 @@ public class PartView extends Group implements Interactable {
         put("691216510003",  "691216510003.svg");
         put("HR91C-12H",     "HR91C-12H.svg");
         put("DC-DC_CONVERTER_78XX",  "DC-DC_CONVERTER_78XX.svg");
+        put("MA10-2",                "MA10-2.svg");
         
     }};
 

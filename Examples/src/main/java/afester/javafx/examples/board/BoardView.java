@@ -13,11 +13,11 @@ import afester.javafx.examples.board.model.Junction;
 import afester.javafx.examples.board.model.Part;
 import afester.javafx.examples.board.BoardShape;
 import afester.javafx.examples.board.tools.Polygon2D;
-import javafx.scene.shape.Circle;
 import afester.javafx.examples.board.model.Net;
+
+import javafx.scene.shape.Circle;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
@@ -46,6 +46,7 @@ public class BoardView extends Pane {
     private Group boardGroup;       // The board itself, including dimensions
     private Group dimensionGroup;   // The board dimensions - a children of boardGroup
     private Group partsGroup;       // all parts (and their pads) on the board
+    private Group netsGroup;       // all nets (Airwires, Traces, Bridges)
     private Group airWireGroup;     // all AirWires,
     private Group traceGroup;       //     Traces,
     private Group bridgeGroup;      // and Bridges on the board
@@ -63,13 +64,13 @@ public class BoardView extends Pane {
     public void setSelectedObject(Interactable obj) { selectedObject.set(obj); }
 
     // A flag to indicate whether to show the parts as drafts or as SVG graphics
-    private final BooleanProperty showSvg = new SimpleBooleanProperty();
+    private final BooleanProperty showSvg = new SimpleBooleanProperty(false);
     public BooleanProperty showSvgProperty() { return showSvg; }
     public boolean isShowSvg() { return showSvg.get(); }
     public void setShowSvg(boolean flag) { showSvg.set(flag); }
 
     // A flag to indicate whether to show or hide the nets
-    private final BooleanProperty showNets = new SimpleBooleanProperty();
+    private final BooleanProperty showNets = new SimpleBooleanProperty(true);
     public BooleanProperty showNetsProperty() { return showNets; }
     public boolean isShowNets() { return showNets.get(); }
     public void setShowNets(boolean flag) { showNets.set(flag); }
@@ -91,17 +92,9 @@ public class BoardView extends Pane {
         setBoard(board);
         
         showSvg.addListener((obj, oldValue, newValue) -> { partsGroup.getChildren().forEach(part -> ((PartView) part).renderSVG(newValue)); });
-        showNets.addListener((obj, oldValue, newValue) -> { showOrHideNets(newValue); });
+        netsGroup.visibleProperty().bind(showNetsProperty());
     }
 
-    private void showOrHideNets(Boolean newValue) {
-        airWireGroup.getChildren().clear();
-        traceGroup.getChildren().clear();
-        bridgeGroup.getChildren().clear();
-        if (newValue) {
-            
-        }
-    }
 
     private static <T> void pointIterator(Iterable<T> iterable, BiConsumer<T, T> consumer) {
         Iterator<T> it = iterable.iterator();
@@ -226,32 +219,40 @@ public class BoardView extends Pane {
     }
 
     public void setBoard(Board board) {
+        getChildren().clear();
         this.board = board;
 
         boardGroup = new Group();
         boardGroup.setId("boardGroup");
+        dimensionGroup = new Group();
+        dimensionGroup.setId("dimensionGroup");
+
         partsGroup = new Group();
         partsGroup.setId("partsGroup");
+
+        netsGroup = new Group();
+        netsGroup.setId("netsGroup");
         airWireGroup = new Group();
         airWireGroup.setId("airWireGroup");
         traceGroup = new Group();
         traceGroup.setId("traceGroup");
         bridgeGroup = new Group();
         bridgeGroup.setId("bridgeGroup");
-        dimensionGroup = new Group();
-        dimensionGroup.setId("dimensionGroup");
+        netsGroup.getChildren().addAll(airWireGroup, traceGroup, bridgeGroup);
+
         junctionGroup = new Group();
         junctionGroup.setId("junctionGroup");
         handleGroup = new Group();
         handleGroup.setId("handleGroup");
 
         if (isBottom) {
-            getChildren().addAll(boardGroup, partsGroup,
-                                 traceGroup, bridgeGroup, airWireGroup,
+            getChildren().addAll(boardGroup, dimensionGroup,
+                                 partsGroup,
+                                 netsGroup,
                                  junctionGroup, handleGroup);
         } else {
-            getChildren().addAll(boardGroup,
-                                 traceGroup, bridgeGroup, airWireGroup,
+            getChildren().addAll(boardGroup, dimensionGroup,
+                                 netsGroup,
                                  partsGroup,
                                  junctionGroup, handleGroup);
         }
