@@ -5,6 +5,10 @@ BoardShape {
    -fx-stroke-width: 0.3px;		/* Board border width */
 }
 
+DimensionView Line {
+   -fx-stroke: darkred;
+   -fx-stroke-width: 0.3px;
+}
 
 HoleViewTop {
    -fx-fill: white;
@@ -21,13 +25,13 @@ PadViewTop Circle {
 }
 
 PadViewBottom Circle {
-   -fx-fill: silver;
+   -fx-fill: #606060; /*silver;*/
 /*   -fx-stroke: #C39B5D;
    -fx-stroke-width: 0.6px;*/
 }
 
 TraceView.TraceNormal{
-	-fx-stroke: silver;
+	-fx-stroke: #606060; /*silver;*/
 	-fx-stroke-width: 0.8px;
 	-fx-stroke-line-cap: round;
 }

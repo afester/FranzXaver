@@ -44,6 +44,7 @@ public class BoardView extends Pane {
     private BoardShape boardShape;
 
     private Group boardGroup;       // The board itself, including dimensions
+    private Group boardHandlesGroup;// The handles for the board
     private Group dimensionGroup;   // The board dimensions - a children of boardGroup
     private Group partsGroup;       // all parts (and their pads) on the board
     private Group netsGroup;       // all nets (Airwires, Traces, Bridges)
@@ -75,6 +76,12 @@ public class BoardView extends Pane {
     public boolean isShowNets() { return showNets.get(); }
     public void setShowNets(boolean flag) { showNets.set(flag); }
 
+    // A flag to indicate whether to show or hide the board handles
+    private final BooleanProperty showBoardHandles = new SimpleBooleanProperty(false);
+    public BooleanProperty showBoardHandlesProperty() { return showBoardHandles; }
+    public boolean isShowBoardHandles() { return showBoardHandles.get(); }
+    public void setShowBoardHandles(boolean flag) { showBoardHandles.set(flag); }
+
 
     /**
      * Creates a new BoardView for an existing Board.
@@ -93,6 +100,7 @@ public class BoardView extends Pane {
         
         showSvg.addListener((obj, oldValue, newValue) -> { partsGroup.getChildren().forEach(part -> ((PartView) part).renderSVG(newValue)); });
         netsGroup.visibleProperty().bind(showNetsProperty());
+        boardHandlesGroup.visibleProperty().bind(showBoardHandlesProperty());
     }
 
 
@@ -224,6 +232,8 @@ public class BoardView extends Pane {
 
         boardGroup = new Group();
         boardGroup.setId("boardGroup");
+        boardHandlesGroup = new Group();
+        boardHandlesGroup.setId("boardHandlesGroup");
         dimensionGroup = new Group();
         dimensionGroup.setId("dimensionGroup");
 
@@ -246,12 +256,12 @@ public class BoardView extends Pane {
         handleGroup.setId("handleGroup");
 
         if (isBottom) {
-            getChildren().addAll(boardGroup, dimensionGroup,
+            getChildren().addAll(boardGroup, dimensionGroup, boardHandlesGroup,
                                  partsGroup,
                                  netsGroup,
                                  junctionGroup, handleGroup);
         } else {
-            getChildren().addAll(boardGroup, dimensionGroup,
+            getChildren().addAll(boardGroup, dimensionGroup, boardHandlesGroup,
                                  netsGroup,
                                  partsGroup,
                                  junctionGroup, handleGroup);
@@ -388,24 +398,24 @@ public class BoardView extends Pane {
     private void createBoardDimensions() {
         // add the board dimensions
         System.err.println("Adding Board dimensions ...");
-        dimensionGroup.getChildren().clear();
 
 // Handles for each corner of the board        
+        boardHandlesGroup.getChildren().clear();
         final List<BoardCorner> corners = new ArrayList<>();
         IntVal idx = new IntVal();
         pointIterator(boardShape.getPoints(), (xpos, ypos) -> {
             BoardCorner c = new BoardCorner(xpos, ypos, getBoard(), idx.val);
             idx.val++;
-            dimensionGroup.getChildren().add(c);
+            boardHandlesGroup.getChildren().add(c);
             corners.add(c);
         });
 
 // Board dimensions
-        Font dimFont = Font.font("Courier", 2.0);
+        dimensionGroup.getChildren().clear();
         final Point2D unitVec = new Point2D(1.0, 0.0);
         lineIterator(boardShape.getPoints(), (p1, p2) -> {
             System.err.printf("%s/%s\n", p1, p2);
-            
+
             Point2D vecDir = p2.subtract(p1);                               // direction vector
             Point2D vecNorm = new Point2D(vecDir.getY(), -vecDir.getX());   // norm vector
             vecNorm = vecNorm.normalize();                                  // normalized norm vector ...
@@ -414,31 +424,16 @@ public class BoardView extends Pane {
             Point2D p1_1 = p1.add(vecNorm);                                 // line parallel to existing line, outside the shape
             Point2D p2_1 = p2.add(vecNorm);
 
-            Line l = new Line(p1_1.getX(), p1_1.getY(), p2_1.getX(), p2_1.getY());
-            l.setStroke(Color.BLUE);
-            l.setStrokeWidth(0.5);
-            dimensionGroup.getChildren().add(l);
-
             Point2D midpoint = p2_1.midpoint(p1_1);
-//            Circle c = new Circle(midpoint.getX(), midpoint.getY(), 0.5);
-//            c.setFill(null);
-//            c.setStroke(Color.RED);
-//            c.setStrokeWidth(0.3);
-//            getChildren().add(c);
-
             Double angle = unitVec.angle(vecDir);
 //            if (angle > 180) {
 //                angle -= 180;
 //            }
             Double length = p1.distance(p2);
             System.err.printf("%s/%s => %s\n", Point2D.ZERO, vecDir, angle);
-            Text value = new Text(midpoint.getX(), midpoint.getY(), String.format("%.1f mm", length));
-            // value.setRotationAxis(new Point3D(midpoint.getX(), midpoint.getY(), 0.0));
-            value.setTextOrigin(VPos.BASELINE);
-            value.setRotate(angle);
-            value.setFont(dimFont);
-
-            dimensionGroup.getChildren().add(value);
+            
+            Group dim = new DimensionView(p1_1, p2_1, midpoint, length, angle);
+            dimensionGroup.getChildren().add(dim);
         });
     }
 

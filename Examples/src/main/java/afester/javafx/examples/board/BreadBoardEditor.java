@@ -195,9 +195,11 @@ public class BreadBoardEditor extends Application {
             }
         });
         ToolbarToggleButton editShapeToolButton = new ToolbarToggleButton("Edit shape", "afester/javafx/examples/board/mode-editshape.png");
+        topView.showBoardHandlesProperty().bind(editShapeToolButton.selectedProperty());
         editShapeToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
                 topView.setInteractor(editShapeInteractor);
+                topView.setShowBoardHandles(true);
             }
         });
 
