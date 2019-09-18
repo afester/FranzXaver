@@ -101,7 +101,17 @@ public class DimensionView extends Group {
         textBox.setRotate(angle);
         textBox.setLayoutX(midpoint.getX());
         textBox.setLayoutY(midpoint.getY());
-        getChildren().add(textBox);
+
+        Bounds b2 = textBox.localToParent(textBox.getLayoutBounds());
+
+        Circle c2 = new Circle(b2.getMinX() + b2.getWidth() / 2.0, b2.getMinY() + b2.getHeight() / 2, 0.5);
+        c2.setFill(null);
+        c2.setStroke(Color.RED);
+        c2.setStrokeWidth(0.3);
+
+//        Rectangle r2 = new Rectangle(b2.getMinX(), b2.getMinY(), b2.getWidth(), b2.getHeight());
+//        r2.setFill(Color.CADETBLUE);
+        getChildren().addAll(textBox, c2);
     }
 
 //    @Override
