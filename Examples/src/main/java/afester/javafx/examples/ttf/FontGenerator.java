@@ -1054,7 +1054,7 @@ public class FontGenerator extends Application {
         //List<Bounds> effectiveBounds = new ArrayList<>();
         inputLine.getText().chars().forEach(e -> {
                 
-            Text t = new Text(xpos, 100, String.valueOf((char) e));  // inputLine.getText());
+            final Text t = new Text(xpos, 100, String.valueOf((char) e));  // inputLine.getText());
             t.setFont(currentFont);
             t.setFill(currentColor);
             glyphMetricArea.getChildren().add(t);

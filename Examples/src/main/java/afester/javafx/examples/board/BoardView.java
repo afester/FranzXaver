@@ -412,27 +412,26 @@ public class BoardView extends Pane {
 
 // Board dimensions
         dimensionGroup.getChildren().clear();
-        final Point2D unitVec = new Point2D(1.0, 0.0);
         lineIterator(boardShape.getPoints(), (p1, p2) -> {
             System.err.printf("%s/%s\n", p1, p2);
 
-            Point2D vecDir = p2.subtract(p1);                               // direction vector
-            Point2D vecNorm = new Point2D(vecDir.getY(), -vecDir.getX());   // norm vector
-            vecNorm = vecNorm.normalize();                                  // normalized norm vector ...
-            vecNorm = vecNorm.multiply(3.0);                                // ... of length 3.0
+//            Point2D vecDir = p2.subtract(p1);                               // direction vector
+//            Point2D vecNorm = new Point2D(vecDir.getY(), -vecDir.getX());   // norm vector
+//            vecNorm = vecNorm.normalize();                                  // normalized norm vector ...
+//            vecNorm = vecNorm.multiply(3.0);                                // ... of length 3.0
+//
+//            Point2D p1_1 = p1.add(vecNorm);                                 // line parallel to existing line, outside the shape
+//            Point2D p2_1 = p2.add(vecNorm);
+//
+//            Point2D midpoint = p2_1.midpoint(p1_1);
+//            Double angle = unitVec.angle(vecDir);
+////            if (angle > 180) {
+////                angle -= 180;
+////            }
+//            Double length = p1.distance(p2);
+//            System.err.printf("%s/%s => %s\n", Point2D.ZERO, vecDir, angle);
 
-            Point2D p1_1 = p1.add(vecNorm);                                 // line parallel to existing line, outside the shape
-            Point2D p2_1 = p2.add(vecNorm);
-
-            Point2D midpoint = p2_1.midpoint(p1_1);
-            Double angle = unitVec.angle(vecDir);
-//            if (angle > 180) {
-//                angle -= 180;
-//            }
-            Double length = p1.distance(p2);
-            System.err.printf("%s/%s => %s\n", Point2D.ZERO, vecDir, angle);
-            
-            Group dim = new DimensionView(p1_1, p2_1, midpoint, length, angle);
+            Group dim = new DimensionView(p1, p2); // , midpoint, length, angle);
             dimensionGroup.getChildren().add(dim);
         });
     }
