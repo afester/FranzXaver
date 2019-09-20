@@ -150,7 +150,7 @@ public class BreadBoardEditor extends Application {
         final ToolbarToggleButton toggleSvgToolButton = new ToolbarToggleButton("Toggle draft / SVG", "afester/javafx/examples/board/view-svg.png");
         topView.showSvgProperty().bind(toggleSvgToolButton.selectedProperty());
 
-        final ToolbarToggleButton toggleShowNetsToolButton = new ToolbarToggleButton("Show / hide nets", "afester/javafx/examples/board/view-shownets.png");
+        final ToolbarToggleButton toggleShowNetsToolButton = new ToolbarToggleButton("Show / hide nets", "afester/javafx/examples/board/view-nets.png");
         toggleShowNetsToolButton.setSelected(true);
         topView.showNetsProperty().bind(toggleShowNetsToolButton.selectedProperty());
 
