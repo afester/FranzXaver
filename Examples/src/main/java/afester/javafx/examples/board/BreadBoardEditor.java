@@ -154,6 +154,10 @@ public class BreadBoardEditor extends Application {
         toggleShowNetsToolButton.setSelected(true);
         topView.showNetsProperty().bind(toggleShowNetsToolButton.selectedProperty());
 
+        final ToolbarToggleButton toggleShowDimensionsToolButton = new ToolbarToggleButton("Show / hide dimensions", "afester/javafx/examples/board/view-dimensions.png");
+        toggleShowDimensionsToolButton.setSelected(true);
+        // topView.showNetsProperty().bind(toggleShowNetsToolButton.selectedProperty());
+
         final Interactor editInteractor = new EditInteractor(topView);
         final Interactor traceInteractor = new TraceInteractor(topView);
         // final Interactor editTraceInteractor = new EditTraceInteractor(bv);
@@ -259,7 +263,8 @@ public class BreadBoardEditor extends Application {
                 new Separator(),
                 
                 toggleSvgToolButton,
-                toggleShowNetsToolButton
+                toggleShowNetsToolButton,
+                toggleShowDimensionsToolButton
             );
 
         VBox topBar = new VBox();
