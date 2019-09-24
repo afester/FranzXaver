@@ -99,20 +99,38 @@ public class PartView extends Group implements Interactable {
     
     @SuppressWarnings("serial")
     private final Map<String, String> package2svg = new HashMap<>() {{
+        // Resistors
         put("0204/5",        "0204_5.svg");
         put("0204/7",        "0204_7.svg");
+
+        // Capacitors
+        put("C025-025X050",  "C025-025X050.svg");
         put("C050-025X075",  "C050-025X075.svg");
-        put("DO41Z10",       "DO41Z10.svg");
-        put("DO41-10",       "DO41Z10.svg");
         put("E5-8,5",        "E5-8,5.svg");
         put("E55-30H",       "E55-30H.svg");
+
+        // Diodes
+        put("DO41Z10",       "DO41Z10.svg");
+        put("DO41-10",       "DO41Z10.svg");
+
+        // clamps
         put("691121710004",  "691121710004.svg");
         put("691216510002",  "691216510002.svg");
         put("691216510003",  "691216510003.svg");
+        put("AK500/9",       "AK500_9.svg");    // HACK!!!!!
+
+        // Relais
         put("HR91C-12H",     "HR91C-12H.svg");
-        put("DC-DC_CONVERTER_78XX",  "DC-DC_CONVERTER_78XX.svg");
+
+        // Headers
         put("MA10-2",                "MA10-2.svg");
-        
+
+        // ICs
+        put("DC-DC_CONVERTER_78XX",  "DC-DC_CONVERTER_78XX.svg");
+        put("DIL06",         "DIL6.svg");
+        put("DIL08",         "DIL8.svg");
+        put("PDIP8",         "DIL8.svg");
+        put("DIL14",         "DIL14.svg");
     }};
 
 

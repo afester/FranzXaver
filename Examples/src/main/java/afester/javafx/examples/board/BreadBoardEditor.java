@@ -61,13 +61,12 @@ public class BreadBoardEditor extends Application {
     public void start(Stage stage){
 
         Board board = new Board();
-        board.load(new File("supply.brd"));
+//        board.load(new File("supply.brd"));
 //        board.load(new File("small.brd"));
-//        board.load(new File("large.brd"));
+        board.load(new File("large.brd"));
 //        board.load(new File("first.brd"));
 
         topView = new BoardView(board);
-        topView.showBoardDimensions(true);
 
         // The pane is exactly the size of the center component. Its children (which is the BoardView) are clipped
         // and the view can be panned and zoomed.
@@ -156,7 +155,7 @@ public class BreadBoardEditor extends Application {
 
         final ToolbarToggleButton toggleShowDimensionsToolButton = new ToolbarToggleButton("Show / hide dimensions", "afester/javafx/examples/board/view-dimensions.png");
         toggleShowDimensionsToolButton.setSelected(true);
-        // topView.showNetsProperty().bind(toggleShowNetsToolButton.selectedProperty());
+        topView.showDimensionsProperty().bind(toggleShowDimensionsToolButton.selectedProperty());
 
         final Interactor editInteractor = new EditInteractor(topView);
         final Interactor traceInteractor = new TraceInteractor(topView);
@@ -329,7 +328,6 @@ public class BreadBoardEditor extends Application {
             if (bottomView == null) {
                 Board b = topView.getBoard();
                 bottomView = new BoardView(b, true);
-                bottomView.showBoardDimensions(true);
                 bottomView.setReadOnly(true);
 
                 bottomView.getTransforms().add(Transform.scale(-1, 1));
@@ -470,7 +468,6 @@ public class BreadBoardEditor extends Application {
     private void newBoard() {
         Board board = new Board();
         topView.setBoard(board);
-        topView.showBoardDimensions(true);
         bottomView = null;
     }
 

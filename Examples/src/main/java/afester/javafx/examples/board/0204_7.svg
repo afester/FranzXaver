@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="22.4"
-     inkscape:cx="-5.3327021"
-     inkscape:cy="1045.6939"
+     inkscape:zoom="7.919596"
+     inkscape:cx="-32.816265"
+     inkscape:cy="1056.2679"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -66,7 +66,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -77,13 +77,13 @@
      transform="translate(0,-17.6)">
     <path
        style="display:inline;fill:none;stroke:#c3c2c0;stroke-width:0.50000006;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M -2.0320002,17.599997 H -5.08"
+       d="M -2.0320002,17.599997 H -3.81"
        id="path5257-8"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
     <path
        style="display:inline;fill:none;stroke:#c3c2c0;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 5.0799999,17.599999 H 2.0319998"
+       d="M 3.81,17.599999 H 2.0319998"
        id="path5257-7-2"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
@@ -121,13 +121,13 @@
     <circle
        style="display:inline;opacity:1;fill:#969696;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.08132929;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="path5477-3"
-       cx="-5.0840001"
+       cx="-3.8099999"
        cy="17.6"
        r="0.25" />
     <circle
        style="display:inline;opacity:1;fill:#969696;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.08132929;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="path5477-3-2"
-       cx="5.0840001"
+       cx="3.806"
        cy="17.6"
        r="0.25" />
   </g>

@@ -23,13 +23,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
-import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 
 
 class DoubleVal {
@@ -76,6 +71,12 @@ public class BoardView extends Pane {
     public boolean isShowNets() { return showNets.get(); }
     public void setShowNets(boolean flag) { showNets.set(flag); }
 
+    // A flag to indicate whether to show or hide the dimensions
+    private final BooleanProperty showDimensions = new SimpleBooleanProperty(true);
+    public BooleanProperty showDimensionsProperty() { return showDimensions; }
+    public boolean isShowDimensions() { return showDimensions.get(); }
+    public void setShowDimensions(boolean flag) { showDimensions.set(flag); }
+
     // A flag to indicate whether to show or hide the board handles
     private final BooleanProperty showBoardHandles = new SimpleBooleanProperty(false);
     public BooleanProperty showBoardHandlesProperty() { return showBoardHandles; }
@@ -100,6 +101,7 @@ public class BoardView extends Pane {
         
         showSvg.addListener((obj, oldValue, newValue) -> { partsGroup.getChildren().forEach(part -> ((PartView) part).renderSVG(newValue)); });
         netsGroup.visibleProperty().bind(showNetsProperty());
+        dimensionGroup.visibleProperty().bind(showDimensionsProperty());
         boardHandlesGroup.visibleProperty().bind(showBoardHandlesProperty());
     }
 
@@ -268,6 +270,7 @@ public class BoardView extends Pane {
         }
 
         createPlainBoard();
+        createBoardDimensions();
         board.getBoardCorners().addListener((javafx.collections.ListChangeListener.Change<? extends Point2D> change) -> {
             // When the board shape changes, we simply recreate the whole board
             // This might be too heavy, but it at least works and ensures that the whole board shape is consistent
@@ -378,17 +381,17 @@ public class BoardView extends Pane {
     }
 
     
-    /**
-     * Enable or disable showing the board dimensions.
-     *
-     * @param doShow Defines whether to show or hide the board dimensions.
-     */
-    public void showBoardDimensions(boolean doShow) {
-        dimensionGroup.getChildren().clear();
-        if (doShow) {
-            createBoardDimensions();
-        }
-    }
+//    /**
+//     * Enable or disable showing the board dimensions.
+//     *
+//     * @param doShow Defines whether to show or hide the board dimensions.
+//     */
+//    public void showBoardDimensions(boolean doShow) {
+//        dimensionGroup.getChildren().clear();
+//        if (doShow) {
+//            createBoardDimensions();
+//        }
+//    }
 
 
     class IntVal {
