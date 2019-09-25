@@ -102,12 +102,15 @@ public class PartView extends Group implements Interactable {
         // Resistors
         put("0204/5",        "0204_5.svg");
         put("0204/7",        "0204_7.svg");
+        put("RTRIM64Y",      "RTRIM64Y.svg");
+        put("RTRIM64Z",      "RTRIM64Z.svg");
 
         // Capacitors
-        put("C025-025X050",  "C025-025X050.svg");
-        put("C050-025X075",  "C050-025X075.svg");
-        put("E5-8,5",        "E5-8,5.svg");
-        put("E55-30H",       "E55-30H.svg");
+        put("C025-025X050", "C025-025X050.svg");
+        put("C050-025X075", "C050-025X075.svg");
+        put("E2-5",         "E2-5.svg");
+        put("E5-8,5",       "E5-8,5.svg");
+        put("E55-30H",      "E55-30H.svg");
 
         // Diodes
         put("DO41Z10",       "DO41Z10.svg");
@@ -117,6 +120,7 @@ public class PartView extends Group implements Interactable {
         put("691121710004",  "691121710004.svg");
         put("691216510002",  "691216510002.svg");
         put("691216510003",  "691216510003.svg");
+        put("AK500/4",       "AK500_4.svg");    // HACK!!!!!
         put("AK500/9",       "AK500_9.svg");    // HACK!!!!!
 
         // Relais
