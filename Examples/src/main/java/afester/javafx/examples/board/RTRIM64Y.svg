@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="22.627416"
-     inkscape:cx="-2.0118703"
-     inkscape:cy="1055.9957"
+     inkscape:zoom="3.9999998"
+     inkscape:cx="-101.67828"
+     inkscape:cy="1044.1219"
      inkscape:document-units="mm"
      inkscape:current-layer="layer2"
      showgrid="true"
@@ -50,7 +50,7 @@
      inkscape:snap-others="true"
      inkscape:lockguides="false"
      units="in"
-     inkscape:snap-grids="true"
+     inkscape:snap-grids="false"
      inkscape:snap-nodes="true"
      inkscape:object-nodes="true"
      inkscape:snap-global="true"
@@ -72,7 +72,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -87,33 +87,16 @@
      id="layer2"
      inkscape:label="PIns"
      style="display:inline">
-    <rect
-       style="opacity:1;fill:#3647ff;fill-opacity:0.98634817;fill-rule:nonzero;stroke:none;stroke-width:0.08643258;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       id="rect864"
-       width="4.4000001"
-       height="9.5"
-       x="-3.6900003"
-       y="-4.75" />
-    <rect
-       style="display:inline;opacity:1;fill:#3647ff;fill-opacity:0.98634817;fill-rule:nonzero;stroke:none;stroke-width:0.08643258;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       id="rect864-9"
-       width="0.45000002"
-       height="1"
-       x="0.70999992"
-       y="3.750001" />
-    <rect
-       style="display:inline;opacity:1;fill:#3647ff;fill-opacity:0.98634817;fill-rule:nonzero;stroke:none;stroke-width:0.08643258;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+    <path
        id="rect864-9-8"
-       width="0.45000005"
-       height="1"
-       x="0.70999992"
-       y="-4.75" />
+       style="display:inline;opacity:1;fill:#3647ff;fill-opacity:0.98634817;fill-rule:nonzero;stroke:none;stroke-width:0.08643258;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 0.7099998,-4.75 h 0.45 v 1.5 h -0.45 z m 1.2e-7,8.000001 H 1.1599999 v 1.5 H 0.70999992 Z M -3.6900003,-4.75 h 4.4000001 v 9.5 h -4.4000001 z" />
     <circle
-       style="opacity:1;fill:#7d7d7d;fill-opacity:0.98634817;fill-rule:nonzero;stroke:none;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="opacity:1;fill:#b87407;fill-opacity:0.98634815;fill-rule:nonzero;stroke:none;stroke-width:0.49999997;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="path1411"
-       cx="-2.4722157"
-       cy="3.2386177"
-       r="0.98221552" />
+       cx="-2.3900003"
+       cy="3.5999999"
+       r="1.0999999" />
     <g
        id="g2032"
        transform="translate(-1.4900001,-1.3079129)">
@@ -136,5 +119,10 @@
          id="path1411-9-1-9"
          style="display:inline;opacity:1;fill:none;fill-opacity:0.98634817;fill-rule:nonzero;stroke:#999999;stroke-width:0.01;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:0.02, 0.01;stroke-dashoffset:0;stroke-opacity:1" />
     </g>
+    <path
+       style="display:inline;opacity:1;fill:#895400;fill-opacity:0.98634815;fill-rule:nonzero;stroke:none;stroke-width:0.49999997;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="M -1.9683207,2.5840412 -3.2814189,4.2423378 A 1.0999999,1.0999999 0 0 0 -2.81168,4.6159586 L -1.4985818,2.9576618 A 1.0999999,1.0999999 0 0 0 -1.9683207,2.5840412 Z"
+       id="path1411-5"
+       inkscape:connector-curvature="0" />
   </g>
 </svg>

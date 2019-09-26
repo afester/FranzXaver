@@ -59,6 +59,7 @@ import org.apache.batik.anim.dom.SVGOMTextElement;
 import org.apache.batik.css.dom.CSSOMSVGColor;
 import org.apache.batik.css.dom.CSSOMValue;
 import org.apache.batik.dom.svg.SVGPathSegItem;
+import org.apache.batik.gvt.text.TextPaintInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -163,10 +164,17 @@ public class SvgBasicElementHandler {
         loader.parentNode.getChildren().add(result);
     }
 
+    void d(TextPaintInfo tpi) {
+        java.awt.Paint p = tpi.fillPaint;
+        
+    }
 
     void handleElement(SVGOMTextElement element) {
         // Get attributes from SVG node
+        TextPaintInfo tpi;
+
         String text = element.getTextContent();
+        System.err.println("TEXT:" + text);
         float xpos = element.getX().getBaseVal().getItem(0).getValue();
         float ypos = element.getY().getBaseVal().getItem(0).getValue();
 

@@ -163,6 +163,7 @@ public class SvgStyleTools {
 
         // fill
         Paint fillColor = getFillColor(element);
+        System.err.println("FILLCOLOR: " + fillColor);
         fxObj.setFill(fillColor);
 
         // stroke

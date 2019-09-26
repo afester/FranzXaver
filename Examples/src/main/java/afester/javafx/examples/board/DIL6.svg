@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="11.313708"
-     inkscape:cx="13.388198"
-     inkscape:cy="1064.1559"
+     inkscape:zoom="15.999999"
+     inkscape:cx="7.0858745"
+     inkscape:cy="1072.3085"
      inkscape:document-units="mm"
      inkscape:current-layer="layer2"
      showgrid="true"
@@ -72,7 +72,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -126,5 +126,16 @@
        sodipodi:start="4.712389"
        sodipodi:end="1.5707963"
        d="M -3.8099999,-1.1154159 A 1.1154158,1.1154159 0 0 1 -2.6945841,0 1.1154158,1.1154159 0 0 1 -3.8099999,1.1154159 l 0,-1.1154159 z" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.41111112px;line-height:1;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.26458332;"
+       x="-3.6731331"
+       y="-1.5996405"
+       id="text4115"><tspan
+         sodipodi:role="line"
+         id="tspan4113"
+         x="-3.6731331"
+         y="-1.5996405"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.41111112px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ff0000;fill-opacity:1;stroke-width:0.26458332;">$Name</tspan></text>
   </g>
 </svg>

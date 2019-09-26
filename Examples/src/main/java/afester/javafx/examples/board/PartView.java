@@ -100,10 +100,12 @@ public class PartView extends Group implements Interactable {
     @SuppressWarnings("serial")
     private final Map<String, String> package2svg = new HashMap<>() {{
         // Resistors
-        put("0204/5",        "0204_5.svg");
-        put("0204/7",        "0204_7.svg");
-        put("RTRIM64Y",      "RTRIM64Y.svg");
-        put("RTRIM64Z",      "RTRIM64Z.svg");
+        put("0204/5",   "0204_5.svg");
+        put("0204/7",   "0204_7.svg");
+        put("0617/17",  "0617_17.svg");
+        put("RTRIM64Y", "RTRIM64Y.svg");
+        put("RTRIM64Z", "RTRIM64Z.svg");
+        put("PTH",      "PTH.svg");
 
         // Capacitors
         put("C025-025X050", "C025-025X050.svg");
@@ -115,6 +117,10 @@ public class PartView extends Group implements Interactable {
         // Diodes
         put("DO41Z10",       "DO41Z10.svg");
         put("DO41-10",       "DO41Z10.svg");
+        put("ZDIO-5",        "ZDIO-5.svg");
+
+        // Transistors
+        put("TO92-EBC",      "TO92.svg");
 
         // clamps
         put("691121710004",  "691121710004.svg");
