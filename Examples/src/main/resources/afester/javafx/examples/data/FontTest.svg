@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.7"
-     inkscape:cx="252.73897"
-     inkscape:cy="694.20176"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="4.8872894"
+     inkscape:cy="832.92139"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -44,7 +44,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -54,7 +54,7 @@
      id="layer1">
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ff0707;fill-opacity:1;stroke:none;stroke-width:0.26458332;"
        x="13.229166"
        y="33.550594"
        id="text817"><tspan
@@ -62,10 +62,10 @@
          id="tspan815"
          x="13.229166"
          y="33.550594"
-         style="stroke-width:0.26458332;fill:#ff0000;fill-opacity:1">Red</tspan></text>
+         style="stroke-width:0.26458332;fill:#ff0707;fill-opacity:1;">Red</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#1aff00;fill-opacity:1;stroke:none;stroke-width:0.26458332;"
        x="13.673583"
        y="47.157719"
        id="text821"><tspan
@@ -73,10 +73,10 @@
          id="tspan819"
          x="13.673583"
          y="47.157719"
-         style="stroke-width:0.26458332;fill:#09ff00;fill-opacity:1">Green</tspan></text>
+         style="stroke-width:0.26458332;fill:#1aff00;fill-opacity:1;">Green</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#0028f6;fill-opacity:1;stroke:none;stroke-width:0.26458332;"
        x="13.229166"
        y="60.764877"
        id="text825"><tspan
@@ -84,6 +84,66 @@
          id="tspan823"
          x="13.229166"
          y="60.764877"
-         style="stroke-width:0.26458332;fill:#0015ff;fill-opacity:1">Blue</tspan></text>
+         style="stroke-width:0.26458332;fill:#0028f6;fill-opacity:1;">Blue</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#0028f6;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="11.486935"
+       y="78.846687"
+       id="text825-9"><tspan
+         sodipodi:role="line"
+         id="tspan823-5"
+         x="11.486935"
+         y="78.846687"
+         style="fill:#0028f6;fill-opacity:1;stroke-width:0.26458332"><tspan
+   style="fill:#f60022;fill-opacity:1"
+   id="tspan2521">Red</tspan> <tspan
+   style="fill:#2ff600;fill-opacity:1"
+   id="tspan2525">Green</tspan> Blue</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#f10000;fill-opacity:1;stroke:none;stroke-width:0.26458332;"
+       x="86.060791"
+       y="33.472252"
+       id="text2531"><tspan
+         sodipodi:role="line"
+         id="tspan2529"
+         x="86.060791"
+         y="33.472252"
+         style="stroke-width:0.26458332;fill:#f10000;fill-opacity:1;">Red</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#0bcd0f;fill-opacity:1;stroke:none;stroke-width:0.26458332;"
+       x="86.505211"
+       y="50.246677"
+       id="text2531-6"><tspan
+         sodipodi:role="line"
+         id="tspan2529-6"
+         x="86.505211"
+         y="50.246677"
+         style="stroke-width:0.26458332;fill:#0bcd0f;fill-opacity:1;">Green</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#070eff;fill-opacity:1;stroke:none;stroke-width:0.26458332;"
+       x="86.060791"
+       y="65.120758"
+       id="text2531-6-2"><tspan
+         sodipodi:role="line"
+         id="tspan2529-6-7"
+         x="86.060791"
+         y="65.120758"
+         style="stroke-width:0.26458332;fill:#070eff;fill-opacity:1;">Blue</tspan></text>
+	<text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20pt;line-height:1;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.26458332;"
+       x="-3.6731331"
+       y="-1.5996405"
+       id="text4115"><tspan
+         sodipodi:role="line"
+         id="tspan4113"
+         x="-3.6731331"
+         y="-1.5996405"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20pt;font-family:sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ff0000;fill-opacity:1;stroke-width:0.26458332;">$Name</tspan></text>
+         
   </g>
 </svg>

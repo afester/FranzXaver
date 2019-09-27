@@ -17,6 +17,7 @@
 package afester.javafx.svg;
 
 import javafx.scene.Group;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Paint;
@@ -58,11 +59,13 @@ import org.apache.batik.anim.dom.SVGOMTSpanElement;
 import org.apache.batik.anim.dom.SVGOMTextElement;
 import org.apache.batik.css.dom.CSSOMSVGColor;
 import org.apache.batik.css.dom.CSSOMValue;
+import org.apache.batik.dom.GenericText;
 import org.apache.batik.dom.svg.SVGPathSegItem;
 import org.apache.batik.gvt.text.TextPaintInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSStyleDeclaration;
 import org.w3c.dom.svg.SVGRect;
@@ -169,34 +172,66 @@ public class SvgBasicElementHandler {
         
     }
 
+    
+    private HBox currentTextBox = new HBox();
+    
     void handleElement(SVGOMTextElement element) {
-        // Get attributes from SVG node
-        TextPaintInfo tpi;
+        //logger.debug("Handling <text>: {}", element);
 
-        String text = element.getTextContent();
-        System.err.println("TEXT:" + text);
+        // Get attributes from SVG node
         float xpos = element.getX().getBaseVal().getItem(0).getValue();
         float ypos = element.getY().getBaseVal().getItem(0).getValue();
 
-        // Create JavaFX text object
-        Text result = new Text(xpos, ypos, text);
-        result.setId(element.getId());
+        // Create Container for <tspan> child elements
+        currentTextBox = new HBox();
+        currentTextBox.setId(element.getId());
+        currentTextBox.setLayoutX(xpos);
+        currentTextBox.setLayoutY(ypos);
 
+        // TODO: Transformation does not properly work anymore after the change to proper <tspan> handling ...
         Affine transformation = styleTools.getTransform(element);
         if (transformation != null) {
-            result.getTransforms().add(transformation);
+            currentTextBox.getTransforms().add(transformation);
         }
 
-        styleTools.applyTextStyle(result, element);
+//        styleTools.applyTextStyle(result, element);
 
-        loader.parentNode.getChildren().add(result);
+        loader.parentNode.getChildren().add(currentTextBox);
+
+        // traverse all <span> elements - can also be nested!
+        NodeList nl = element.getChildNodes();
+        for (int idx = 0; idx < nl.getLength();  idx++) {
+            Node n = nl.item(idx);
+            if (n instanceof SVGOMTSpanElement) {
+                handleTSpan((SVGOMTSpanElement) n, 1);    
+            }
+        }
     }
 
-
-    void handleElement(SVGOMTSpanElement element) {
-        logger.debug("Handling <tspan>: {}", element);
+    
+    private String createIndent(int level) {
+        return "                                  ".substring(0, level*2);
     }
+    
+    private void handleTSpan(SVGOMTSpanElement tspan, int level) {
+        final NodeList nl = tspan.getChildNodes();
+        for (int idx = 0; idx < nl.getLength();  idx++) {
+            Node n = nl.item(idx);
 
+            if (n instanceof SVGOMTSpanElement) {
+                SVGOMTSpanElement childTspan = (SVGOMTSpanElement) n;
+                handleTSpan(childTspan, level+1);
+            }
+            else if (n instanceof GenericText) {
+                GenericText gt = (GenericText) n;
+
+                final Text text = new Text(gt.getTextContent());
+                styleTools.applyTextStyle(text, tspan);
+                currentTextBox.getChildren().add(text);
+            }
+        }
+    }
+ 
 
     void handleElement(SVGOMPatternElement element) {
         logger.debug("Handling <pattern>: {}", element);

@@ -93,7 +93,7 @@ public class SvgLoader {
         elementMap.put("ellipse", e -> bh.handleElement((SVGOMEllipseElement) e));
         elementMap.put("text", e -> bh.handleElement((SVGOMTextElement) e));
         
-        elementMap.put("tspan", e -> bh.handleElement((SVGOMTSpanElement) e));
+        elementMap.put("tspan", e -> {} );
         elementMap.put("pattern", e -> bh.handleElement((SVGOMPatternElement) e));
 
         elementMap.put("linearGradient", e -> bh.handleElement((SVGOMLinearGradientElement) e));
