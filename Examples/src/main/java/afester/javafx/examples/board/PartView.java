@@ -166,7 +166,7 @@ public class PartView extends Group implements Interactable {
                 SvgLoader loader = new SvgLoader();
                 Group svgImage = loader.loadSvg(svgFile);
 
-                // update the part name
+                // update the part value
                 SvgTextBox partNameText = (SvgTextBox) svgImage.lookup("#partValue");
                 if (partNameText != null) {
                     Text text = partNameText.getTextSpan(0);
