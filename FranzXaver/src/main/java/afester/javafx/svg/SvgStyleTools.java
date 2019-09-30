@@ -21,6 +21,8 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Shape;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 
@@ -221,8 +223,9 @@ public class SvgStyleTools {
 
 
     void applyTextStyle(Text fxObj, SVGStylableElement obj) {
-        CSSStyleDeclaration style = svgElement.getComputedStyle(obj, null); // obj.getStyle();
+        CSSStyleDeclaration style = svgElement.getComputedStyle(obj, null);
 
+        // Font family
         String fontFamily = null;
         CSSOMComputedStyle.ComputedCSSValue val = 
                     (ComputedCSSValue) style.getPropertyCSSValue("font-family");
@@ -230,6 +233,7 @@ public class SvgStyleTools {
             fontFamily = val.getCssText();
         }
 
+        // Font size
         float fontSize = 0;
         CSSOMComputedStyle.ComputedCSSValue val2 = 
                     (ComputedCSSValue) style.getPropertyCSSValue("font-size");
@@ -241,17 +245,45 @@ public class SvgStyleTools {
             }
         }
 
-        logger.debug("Font: {}/{}", fontFamily, fontSize);
-        Font font = Font.font(fontFamily, fontSize);
+        
+        // Font posture
+        FontPosture fontPosture = FontPosture.REGULAR; 
+        CSSOMComputedStyle.ComputedCSSValue val3 = 
+                (ComputedCSSValue) style.getPropertyCSSValue("font-style");  // italic / normal
+        if (val3 != null) {
+            if (val3.getPrimitiveType() == CSSPrimitiveValue.CSS_IDENT) {
+                final String fontStyle = val3.getStringValue();
+                if (fontStyle.equals("italic")) {
+                    fontPosture = FontPosture.ITALIC;
+                }
+                
+            }
+            
+        }
+
+        // Font weight
+        FontWeight fontWeight = FontWeight.NORMAL; 
+        CSSOMComputedStyle.ComputedCSSValue val4 = 
+                (ComputedCSSValue) style.getPropertyCSSValue("font-weight"); // normal / bold
+        if (val4 != null) {
+            if (val4.getPrimitiveType() == CSSPrimitiveValue.CSS_NUMBER) {
+                final int fontWeightValue = (int) val4.getFloatValue(CSSPrimitiveValue.CSS_NUMBER);
+                fontWeight = FontWeight.findByWeight(fontWeightValue);
+            }
+        }
+
+        /*
+        font-variant:normal;
+        font-stretch:normal;
+        */
+
+        // Create font and set font for Text node
+        logger.debug("Font: family={}, size={}, posture={}, weight={}", fontFamily, fontSize, fontPosture, fontWeight);
+        Font font = Font.font(fontFamily, fontWeight, fontPosture, fontSize);
         fxObj.setFont(font);
 
+        // Apply other styles (Fill color, Stroke color etc.)
         applyStyle(fxObj, obj);
-        
-/*        font-style:normal;
-        font-variant:normal;
-        font-weight:normal;
-        font-stretch:normal;
-*/
     }
 
     public void addPaint(String id, Paint paintObject) {

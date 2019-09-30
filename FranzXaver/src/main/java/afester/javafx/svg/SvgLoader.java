@@ -204,6 +204,8 @@ public class SvgLoader {
             // Enable CSS- and SVG-specific enhancements.
             (new GVTBuilder()).build(bridgeContext, document);
 
+            XMLResourceDescriptor.setCSSParserClassName(InkscapeCssParser.class.getName());
+
             return document;
         } catch (IOException e) {
             e.printStackTrace();

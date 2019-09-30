@@ -16,7 +16,11 @@
 
 package afester.javafx.svg;
 
+import javafx.geometry.Insets;
 import javafx.scene.Group;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.LinearGradient;
@@ -173,28 +177,26 @@ public class SvgBasicElementHandler {
     }
 
     
-    private HBox currentTextBox = new HBox();
-    
+    //private HBox currentTextBox = new HBox();
+    private Group currentTextBox = new Group();
+    private float textXpos = 0;
+    private float textYpos = 0;
+
     void handleElement(SVGOMTextElement element) {
         //logger.debug("Handling <text>: {}", element);
 
         // Get attributes from SVG node
-        float xpos = element.getX().getBaseVal().getItem(0).getValue();
-        float ypos = element.getY().getBaseVal().getItem(0).getValue();
+        textXpos = element.getX().getBaseVal().getItem(0).getValue();
+        textYpos = element.getY().getBaseVal().getItem(0).getValue();
 
         // Create Container for <tspan> child elements
-        currentTextBox = new HBox();
+        currentTextBox = new Group();
         currentTextBox.setId(element.getId());
-        currentTextBox.setLayoutX(xpos);
-        currentTextBox.setLayoutY(ypos);
 
-        // TODO: Transformation does not properly work anymore after the change to proper <tspan> handling ...
         Affine transformation = styleTools.getTransform(element);
         if (transformation != null) {
             currentTextBox.getTransforms().add(transformation);
         }
-
-//        styleTools.applyTextStyle(result, element);
 
         loader.parentNode.getChildren().add(currentTextBox);
 
@@ -214,6 +216,14 @@ public class SvgBasicElementHandler {
     }
     
     private void handleTSpan(SVGOMTSpanElement tspan, int level) {
+        
+        if (tspan.getX().getBaseVal().getNumberOfItems() > 0) {
+            textXpos = tspan.getX().getBaseVal().getItem(0).getValue();
+        }
+        if (tspan.getY().getBaseVal().getNumberOfItems() > 0) {
+            textYpos = tspan.getY().getBaseVal().getItem(0).getValue();
+        }
+
         final NodeList nl = tspan.getChildNodes();
         for (int idx = 0; idx < nl.getLength();  idx++) {
             Node n = nl.item(idx);
@@ -225,9 +235,15 @@ public class SvgBasicElementHandler {
             else if (n instanceof GenericText) {
                 GenericText gt = (GenericText) n;
 
-                final Text text = new Text(gt.getTextContent());
+                final String textString = gt.getTextContent();
+
+                final Text text = new Text(textXpos, textYpos, textString);
                 styleTools.applyTextStyle(text, tspan);
                 currentTextBox.getChildren().add(text);
+
+                // advance text position for next tspan
+                double textWidth = text.getBoundsInLocal().getWidth();
+                textXpos += textWidth;
             }
         }
     }
