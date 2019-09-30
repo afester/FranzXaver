@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="15.999999"
-     inkscape:cx="7.0858745"
-     inkscape:cy="1072.3085"
+     inkscape:zoom="7.9999995"
+     inkscape:cx="1.0158146"
+     inkscape:cy="1067.8683"
      inkscape:document-units="mm"
      inkscape:current-layer="layer2"
      showgrid="true"
@@ -109,33 +109,34 @@
        x="-3.1499994"
        y="-3.9400005" />
     <rect
-       style="opacity:1;fill:#161616;fill-opacity:0.98634817;fill-rule:nonzero;stroke:none;stroke-width:0.08643256;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="opacity:1;fill:#282725;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.08643256;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect864"
        width="7.6199999"
        height="6.5"
        x="-3.8099999"
        y="-3.2400007" />
     <path
-       style="opacity:1;fill:#343434;fill-opacity:0.98634817;fill-rule:nonzero;stroke:none;stroke-width:0.1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="opacity:1;fill:#494949;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="path980"
        sodipodi:type="arc"
        sodipodi:cx="-3.8099999"
-       sodipodi:cy="-5.6843419e-014"
-       sodipodi:rx="1.1154158"
-       sodipodi:ry="1.1154159"
+       sodipodi:cy="-8.5265128e-014"
+       sodipodi:rx="0.55770791"
+       sodipodi:ry="0.55770797"
        sodipodi:start="4.712389"
        sodipodi:end="1.5707963"
-       d="M -3.8099999,-1.1154159 A 1.1154158,1.1154159 0 0 1 -2.6945841,0 1.1154158,1.1154159 0 0 1 -3.8099999,1.1154159 l 0,-1.1154159 z" />
+       d="M -3.8099999,-0.55770797 A 0.55770791,0.55770797 0 0 1 -3.252292,0 0.55770791,0.55770797 0 0 1 -3.8099999,0.55770797 L -3.8099999,0 Z" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.41111112px;line-height:1;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.26458332;"
-       x="-3.6731331"
-       y="-1.5996405"
-       id="text4115"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.41111112px;line-height:1;font-family:sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#aaa5a5;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="-3.2022161"
+       y="0.50255328"
+       id="partValue"
+       inkscape:label="#text4115"><tspan
          sodipodi:role="line"
          id="tspan4113"
-         x="-3.6731331"
-         y="-1.5996405"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.41111112px;font-family:sans-serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ff0000;fill-opacity:1;stroke-width:0.26458332;">$Name</tspan></text>
+         x="-3.2022161"
+         y="0.50255328"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:1.76388884px;font-family:'Courier New';-inkscape-font-specification:'Courier New, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#4a4e51;fill-opacity:1;stroke-width:0.26458332">$Value</tspan></text>
   </g>
 </svg>

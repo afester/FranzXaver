@@ -16,12 +16,7 @@
 
 package afester.javafx.svg;
 
-import javafx.geometry.Insets;
 import javafx.scene.Group;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Paint;
@@ -37,7 +32,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.shape.Shape;
 import javafx.scene.shape.StrokeLineCap;
-import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 
@@ -65,7 +59,6 @@ import org.apache.batik.css.dom.CSSOMSVGColor;
 import org.apache.batik.css.dom.CSSOMValue;
 import org.apache.batik.dom.GenericText;
 import org.apache.batik.dom.svg.SVGPathSegItem;
-import org.apache.batik.gvt.text.TextPaintInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Node;
@@ -171,14 +164,8 @@ public class SvgBasicElementHandler {
         loader.parentNode.getChildren().add(result);
     }
 
-    void d(TextPaintInfo tpi) {
-        java.awt.Paint p = tpi.fillPaint;
-        
-    }
 
-    
-    //private HBox currentTextBox = new HBox();
-    private Group currentTextBox = new Group();
+    private SvgTextBox currentTextBox = null;
     private float textXpos = 0;
     private float textYpos = 0;
 
@@ -190,7 +177,7 @@ public class SvgBasicElementHandler {
         textYpos = element.getY().getBaseVal().getItem(0).getValue();
 
         // Create Container for <tspan> child elements
-        currentTextBox = new Group();
+        currentTextBox = new SvgTextBox();
         currentTextBox.setId(element.getId());
 
         Affine transformation = styleTools.getTransform(element);
@@ -211,9 +198,9 @@ public class SvgBasicElementHandler {
     }
 
     
-    private String createIndent(int level) {
-        return "                                  ".substring(0, level*2);
-    }
+//    private String createIndent(int level) {
+//        return "                                  ".substring(0, level*2);
+//    }
     
     private void handleTSpan(SVGOMTSpanElement tspan, int level) {
         

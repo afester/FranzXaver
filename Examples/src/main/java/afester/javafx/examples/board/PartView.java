@@ -9,6 +9,7 @@ import afester.javafx.examples.board.model.Pad;
 import afester.javafx.examples.board.model.Part;
 import afester.javafx.examples.board.model.PartShape;
 import afester.javafx.svg.SvgLoader;
+import afester.javafx.svg.SvgTextBox;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -16,6 +17,7 @@ import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 
 /**
@@ -139,7 +141,7 @@ public class PartView extends Group implements Interactable {
         put("DC-DC_CONVERTER_78XX",  "DC-DC_CONVERTER_78XX.svg");
         put("DIL06",         "DIL6.svg");
         put("DIL08",         "DIL8.svg");
-        put("PDIP8",         "DIL8.svg");
+        put("PDIP8",         "PDIP8.svg");
         put("DIL14",         "DIL14.svg");
     }};
 
@@ -163,6 +165,14 @@ public class PartView extends Group implements Interactable {
                 InputStream svgFile = getClass().getResourceAsStream(packageSvg);
                 SvgLoader loader = new SvgLoader();
                 Group svgImage = loader.loadSvg(svgFile);
+
+                // update the part name
+                SvgTextBox partNameText = (SvgTextBox) svgImage.lookup("#partValue");
+                if (partNameText != null) {
+                    Text text = partNameText.getTextSpan(0);
+                    text.setText(part.getValue());
+               }
+
                 shapeViews.getChildren().add(svgImage);
                 svgAvailable = true;
             }
