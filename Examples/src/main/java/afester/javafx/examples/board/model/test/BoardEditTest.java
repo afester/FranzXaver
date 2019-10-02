@@ -30,15 +30,10 @@ public class BoardEditTest {
         boardView = new BoardView(board);
     }
 
-    private Node findChild(Parent startWith, String id) {
-        Node result = startWith.getChildrenUnmodifiable().stream().filter(e -> id.equals(e.getId())).findFirst().get();
-        return result;
-    }
-
     @Test
     public void testMovePart() {
         // get a reference to a part view and its part model
-        Group partsGroup = (Group) findChild(boardView, "partsGroup");
+        final Group partsGroup = (Group) boardView.lookup("#partsGroup");
         PartView r2PartView = (PartView) partsGroup.getChildrenUnmodifiable().stream().filter(e -> ((PartView) e).getName().equals("R2")).findFirst().get();
         Part r2part = board.getPart("R2");
         assertSame(r2part, r2PartView.getPart());
@@ -57,18 +52,24 @@ public class BoardEditTest {
     @Test
     public void testRotatePart() {
         // get a reference to a part view and its part model
-        Group partsGroup = (Group) findChild(boardView, "partsGroup");
-        PartView r2PartView = (PartView) partsGroup.getChildrenUnmodifiable().stream().filter(e -> ((PartView) e).getName().equals("R2")).findFirst().get();
+        final Group partsGroup = (Group) boardView.lookup("#partsGroup");
+        PartView r2PartView = (PartView) partsGroup.getChildrenUnmodifiable()
+                .stream()
+                .filter(e -> ((PartView) e).getName().equals("R2"))
+                .findFirst()
+                .get();
         Part r2part = board.getPart("R2");
-        final double oldRot = ((Rotate) r2PartView.getTransforms().get(0)).getAngle();
         assertSame(r2part, r2PartView.getPart());
 
         // rotate the part
-        double rot = r2part.getRotation();
-        r2PartView.rotatePart();
+        final double oldRot = ((Rotate) r2PartView.getTransforms().get(0)).getAngle();  // current rotation in view
+        final double rot = r2part.getRotation();                                        // current rotation in model
+        r2part.rotateClockwise();
+
+        // check that rotation has been updated in model
+        assertEquals(rot + 90, r2part.getRotation(), 1.0);
 
         // check that model and view are in sync
-        assertEquals(rot + 90, r2part.getRotation(), 1.0);
         final double newRot = ((Rotate) r2PartView.getTransforms().get(0)).getAngle();
         assertEquals(oldRot + 90, newRot, 1.0);
     }

@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.EagleNetImport;
+import afester.javafx.examples.board.model.EagleNetImportNew;
 import afester.javafx.examples.board.model.NetImport;
 import afester.javafx.examples.board.model.Part;
 
@@ -28,7 +29,7 @@ public class BoardTest {
     @Test
     public void importTest() {
         File schematicFile = new File("small.sch");
-        NetImport ni = new EagleNetImport(schematicFile);
+        NetImport ni = new EagleNetImportNew(schematicFile);
         Board board = new Board();
         ni.importFile(board);
 

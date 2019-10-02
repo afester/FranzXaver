@@ -167,8 +167,9 @@ public class EditInteractor  extends MouseInteractor {
     @Override
     protected void clickObjectRight(Interactable obj) {
         if (obj instanceof PartView) {
-            PartView part = (PartView) obj;
-            part.rotatePart();
+            PartView partView = (PartView) obj;
+            Part part = partView.getPart();
+            part.rotateClockwise();
         }
     }
     

@@ -58,13 +58,6 @@ public class PartView extends Group implements Interactable {
         createNode();
     }
 
-    
-    /**
-     * Rotates the part clockwise at 90 degrees.
-     */
-    public void rotatePart() {
-        part.rotateClockwise();
-    }
 
     public Part getPart() {
         return part;
