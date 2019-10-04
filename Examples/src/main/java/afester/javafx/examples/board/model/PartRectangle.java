@@ -47,4 +47,8 @@ public class PartRectangle implements PartShape {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return String.format("PartRectangle[%s %s]", p1, p2);
+    }
 }

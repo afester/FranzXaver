@@ -56,4 +56,8 @@ public class PartArc implements PartShape {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return String.format("PartArc[center=%s radius=%s start=%s angle=%s]", center, radius, startAngle, angle); 
+    }
 }

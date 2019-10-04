@@ -42,4 +42,8 @@ public class PartLine implements PartShape {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return String.format("PartLine[%s %s width=%s]", p1, p2, width);
+    }
 }

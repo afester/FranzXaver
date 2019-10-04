@@ -19,7 +19,7 @@ public class ArcFactory {
 	 *         spans the given angle.
 	 */
 	public static ArcParameters arcFromPointsAndAnglePos(Point2D p1, Point2D p2, double cAngle, Color col) {
-		System.err.printf("IN: %s, %s, %s, %s\n", p1, p2, cAngle, col);
+		// System.err.printf("IN: %s, %s, %s, %s\n", p1, p2, cAngle, col);
 
 		// calculate the direction vector between the two points
 		final Point2D dirVec = p2.subtract(p1);
@@ -47,12 +47,12 @@ public class ArcFactory {
 		final double startAngle = 90 - cAngle / 2 + beta;
 
 		ArcParameters result = new ArcParameters(centerPoint, r, startAngle, cAngle, col);
-		System.err.println(result);
+        // System.err.println("OUT: " + result);
 		return result;
 	}
 
 	public static ArcParameters arcFromPointsAndAngleNeg(Point2D p1, Point2D p2, double cAngle, Color col) {
-		System.err.printf("IN: %s, %s, %s, %s\n", p1, p2, cAngle, col);
+		// System.err.printf("IN: %s, %s, %s, %s\n", p1, p2, cAngle, col);
 
     	// calculate the direction vector between the two points
 		final Point2D dirVec = p1.subtract(p2);
@@ -80,7 +80,7 @@ public class ArcFactory {
         final double startAngle = 90 - cAngle/2 + beta;
 
         ArcParameters result = new ArcParameters(centerPoint, r, startAngle, cAngle, col);
-        System.err.println(result);
+        // System.err.println("OUT: " + result);
         return result;
 	}
 

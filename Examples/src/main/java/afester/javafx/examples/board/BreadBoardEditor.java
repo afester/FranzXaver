@@ -9,6 +9,7 @@ import afester.javafx.examples.board.model.AbstractNode;
 import afester.javafx.examples.board.model.AbstractWire;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.EagleNetImport;
+import afester.javafx.examples.board.model.EagleNetImportNew;
 import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.model.NetImport;
 import afester.javafx.examples.board.model.Trace;
@@ -506,7 +507,7 @@ public class BreadBoardEditor extends Application {
         if (result != null) {
             System.err.println("Importing " + result.getAbsolutePath());
 
-            NetImport ni = new EagleNetImport(result);
+            NetImport ni = new EagleNetImportNew(result);
             Board board = topView.getBoard();
             board.importSchematic(ni);
             topView.setBoard(board);

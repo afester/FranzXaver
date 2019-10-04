@@ -182,7 +182,7 @@ public class EagleNetImport extends NetImport {
             return null;
         }
 
-        Part part = new Part(partName, partValue, packageRef);
+        Part part = null; //  new Part(partName, partValue, packageRef);
 
         // load through-hole pads
         NodeList padNodes = (NodeList) xPath.evaluate("./pad", packageNode, XPathConstants.NODESET);

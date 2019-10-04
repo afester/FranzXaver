@@ -21,10 +21,13 @@ public class Part {
 
     private final String partName;
     private final String partValue;
-    private final String packageRef;      // TODO: This should refer to a "package / footprint template"
-    private Map<String, Pad> pads = new HashMap<>();
-    private List<PartShape> shapes = new ArrayList<>();
 
+//    private List<PartShape> shapes = new ArrayList<>();
+
+    private Map<String, Pad> pads = new HashMap<>();
+    private Package thePackage;
+
+    
     // Position of the part
     private ObjectProperty<Point2D> position = new SimpleObjectProperty<>(new Point2D(0, 0));
     public ObjectProperty<Point2D> positionProperty() { return position; }
@@ -52,12 +55,22 @@ public class Part {
      * @param partValue The part value
      * @param packageRef The name of the part's package.
      */
+    public Part(String partName, String partValue, Package pkg) {
+        this.partName = partName;
+        this.partValue = partValue;
+        this.thePackage = pkg;
+    }
+
+    @Deprecated
     public Part(String partName, String partValue, String packageRef) {
         this.partName = partName;
         this.partValue = partValue;
-        this.packageRef = packageRef;
+        this.thePackage = new Package(packageRef);
     }
 
+    public Package getPackage() {
+        return thePackage;
+    }
 
     public void addPad(Pad pad) { /// , String pinId) {
         System.err.println("ADDING:" + pad);
@@ -69,12 +82,16 @@ public class Part {
         return pads.get(pinId);
     }
 
+    @Deprecated
     public void addShape(PartShape shape) {
-        shapes.add(shape);
+        thePackage.addShape(shape);
+        // shapes.add(shape);
     }
 
+    @Deprecated
     public List<PartShape> getShapes() {
-        return shapes;
+        return thePackage.getShapes();
+//        return shapes;
     }
 
     public Collection<Pad> getPads() {
@@ -99,7 +116,8 @@ public class Part {
      * @return The package name of this part (like 205/07)
      */
     public String getPackageRef() {
-        return packageRef;
+        // return packageRef;
+        return thePackage.getName();
     }
 
 
@@ -108,12 +126,12 @@ public class Part {
         Element partNode = doc.createElement("part");
         partNode.setAttribute("name", partName);
         partNode.setAttribute("value", partValue);
-        partNode.setAttribute("package", packageRef);
+        partNode.setAttribute("package", getPackageRef());
         partNode.setAttribute("x", Double.toString(getPosition().getX()));
         partNode.setAttribute("y", Double.toString(getPosition().getY()));
         partNode.setAttribute("rotation", Double.toString(getRotation()));
 
-        for (PartShape ps : getShapes()) {
+        for (PartShape ps : thePackage.getShapes()) {
             org.w3c.dom.Node shapeNode = ps.getXML(doc);
             partNode.appendChild(shapeNode);
         }
@@ -129,7 +147,7 @@ public class Part {
 
     protected boolean replacedWith(Part p2) {
         // This is a first trivial attempt to decide whether the package for the part has changed:
-        return !packageRef.equals(p2.packageRef);
+        return !getPackageRef().equals(p2.getPackage().getName());
     }
 
 
@@ -166,7 +184,7 @@ public class Part {
     public String toString() {
         String padList = getPads().stream()
                                   .map( p -> p.getPadName())
-                                  .collect( Collectors.joining( "," ) ); 
-        return String.format("Part[partName=%s, pads=[%s]]", partName, padList);
+                                  .collect( Collectors.joining(",") ); 
+        return String.format("Part[name=\"%s\", pos=%s, pads=[%s]]", partName, getPosition(), padList);
     }
 }

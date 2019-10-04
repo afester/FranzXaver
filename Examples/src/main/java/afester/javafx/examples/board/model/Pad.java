@@ -25,10 +25,19 @@ public class Pad extends AbstractNode {
     public Pad(Part part, String padName, Point2D padPos) {
         super(null, part.globalPadPos(padPos));
 
-        this.localPos = padPos;
-        
         this.part = part;
+
         this.padName = padName;
+        this.localPos = padPos;
+    }
+
+    public Pad(Part part, PartPad pad) {
+        super(null, part.globalPadPos(pad.getPos()));
+        this.part = part;
+
+        // These can be replaced by a reference to PartPad
+        this.padName = pad.getName();
+        this.localPos = pad.getPos();
     }
 
     public Point2D getLocalPos() {
