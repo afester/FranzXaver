@@ -1,6 +1,5 @@
 package afester.javafx.examples.board.model;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -22,12 +21,10 @@ public class Part {
     private final String partName;
     private final String partValue;
 
-//    private List<PartShape> shapes = new ArrayList<>();
-
     private Map<String, Pad> pads = new HashMap<>();
     private Package thePackage;
 
-    
+
     // Position of the part
     private ObjectProperty<Point2D> position = new SimpleObjectProperty<>(new Point2D(0, 0));
     public ObjectProperty<Point2D> positionProperty() { return position; }
@@ -37,7 +34,7 @@ public class Part {
     }
     public Point2D getPosition() { return position.getValue(); }
 
-    // direction of the part
+    // Rotation of the part
     private DoubleProperty rotation = new SimpleDoubleProperty(0.0);
     public DoubleProperty rotationProperty() { return rotation; } 
     public void setRotation(double angle) { 

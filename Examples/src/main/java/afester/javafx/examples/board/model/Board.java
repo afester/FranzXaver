@@ -34,6 +34,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import afester.javafx.examples.board.eagle.EagleImport;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -626,7 +627,7 @@ public class Board {
         System.err.println("Synchronizing " + schematicFile);
 
         Board updatedBoard = new Board();
-        NetImport ni = new EagleNetImport(new File(schematicFile));
+        NetImport ni = new EagleImport(new File(schematicFile));
         ni.importFile(updatedBoard);
         update(updatedBoard);
     }

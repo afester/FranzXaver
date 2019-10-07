@@ -9,28 +9,29 @@ import javafx.geometry.VPos;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 public class PartText implements PartShape {
 
-    
-//    private Double x;
-//    private Double y;
-    private Point2D pos;
-    private Double size;
-    private StringBuffer text;
+    private final Point2D pos;
+    private final Double size;          // text height in mm
+    private final FontWeight weight;    // text weight
+    private final StringBuffer text;
 
     @Deprecated
     public PartText(Double x, Double y, String text, Double size) {
         this.pos = new Point2D(x, y);
         this.text = new StringBuffer(text);
         this.size = size;
+        this.weight = FontWeight.NORMAL;
     }
 
-    public PartText(Point2D textPos, Double size) {
+    public PartText(Point2D textPos, Double size, FontWeight weight) {
         this.pos = textPos;
         this.text = new StringBuffer();
         this.size = size;
+        this.weight = weight;
     }
 
     public void append(String s) {
@@ -40,10 +41,11 @@ public class PartText implements PartShape {
     @Override
     public Shape createNode() {
         Text textShape = new Text(pos.getX(), pos.getY(), text.toString());
-        Font theFont = Font.font("Courier", size);	// TODO: The rendered text is messed up if the size is too small!
+
+        Font theFont = Font.font("Courier", weight, size);	// TODO: The rendered text is messed up if the size is too small!
         textShape.setFont(theFont);
         textShape.setFill(Color.GRAY);
-        textShape.setTextOrigin(VPos.TOP);
+        textShape.setTextOrigin(VPos.BOTTOM); // .BASELINE);
 
         return textShape;
     }
@@ -54,6 +56,7 @@ public class PartText implements PartShape {
         result.setAttribute("x", Double.toString(pos.getX()));
         result.setAttribute("y", Double.toString(pos.getY()));
         result.setAttribute("size", size.toString());
+        result.setAttribute("weight", weight.toString());
         result.setTextContent(text.toString());
 
         return result;

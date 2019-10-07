@@ -5,11 +5,10 @@ import java.io.File;
 import afester.javafx.components.StatusBar;
 import afester.javafx.components.ToolbarButton;
 import afester.javafx.components.ToolbarToggleButton;
+import afester.javafx.examples.board.eagle.EagleImport;
 import afester.javafx.examples.board.model.AbstractNode;
 import afester.javafx.examples.board.model.AbstractWire;
 import afester.javafx.examples.board.model.Board;
-import afester.javafx.examples.board.model.EagleNetImport;
-import afester.javafx.examples.board.model.EagleNetImportNew;
 import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.model.NetImport;
 import afester.javafx.examples.board.model.Trace;
@@ -507,7 +506,7 @@ public class BreadBoardEditor extends Application {
         if (result != null) {
             System.err.println("Importing " + result.getAbsolutePath());
 
-            NetImport ni = new EagleNetImportNew(result);
+            NetImport ni = new EagleImport(result);
             Board board = topView.getBoard();
             board.importSchematic(ni);
             topView.setBoard(board);

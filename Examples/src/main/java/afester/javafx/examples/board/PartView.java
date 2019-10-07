@@ -172,8 +172,20 @@ public class PartView extends Group implements Interactable {
         }
 
         if (!svgAvailable) {
+
             for (PartShape ps : part.getShapes()) {
                 Node s = ps.createNode();
+
+                // Replace name and value placeholders
+                if (s instanceof Text) {    // TODO: Hack
+                    Text t = (Text) s;
+                    if (t.getText().equals(">NAME")) {  // TODO: Eagle specific!!!
+                        t.setText(part.getName());
+                    } if (t.getText().equals(">VALUE")) {   // TODO: Eagle specific!
+                        t.setText(part.getValue());
+                    }
+                }
+
                 shapeViews.getChildren().add(s);
             }
 
