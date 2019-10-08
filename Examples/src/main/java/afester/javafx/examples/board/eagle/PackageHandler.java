@@ -32,7 +32,7 @@ class PackageHandler extends SubContentHandler {
             final String packageName = attributes.getValue("name");
             System.err.printf("    <package name=\"%s\"\n", packageName);
 
-            result = new Package(packageName);
+            result = new Package(libHandler.currentLibrary.getId() + "$" + packageName, packageName);
         } else if (localName.equals("pad") ){
             final String padName = attributes.getValue("name");
             final Point2D padPos = new Point2D(Double.parseDouble(attributes.getValue("x")),

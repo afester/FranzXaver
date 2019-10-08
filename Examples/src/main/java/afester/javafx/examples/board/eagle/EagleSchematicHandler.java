@@ -40,12 +40,12 @@ class EagleSchematicHandler extends DefaultHandler {
         nets.add(net);
     }
 
-    public Library getLibrary(String name) {
-        return libraries.get(name);
+    public Library getLibrary(String id) {
+        return libraries.get(id);
     }
 
     public void addLibrary(Library lib) {
-        libraries.put(lib.getName(), lib);
+        libraries.put(lib.getId(), lib);
     }
 
     public Part getPart(String partName) {

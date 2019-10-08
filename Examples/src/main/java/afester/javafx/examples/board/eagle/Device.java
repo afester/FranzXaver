@@ -2,6 +2,7 @@ package afester.javafx.examples.board.eagle;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import afester.javafx.examples.board.model.Package;
 
@@ -9,14 +10,14 @@ import afester.javafx.examples.board.model.Package;
 class Device {
 
     private String name;
-    private Package thePackage;
+    private Optional<Package> thePackage;
 
     // Maps gate/pin to pad
     private Map<String, String> connections = new HashMap<>();
     
     public Device(String deviceName, Package pkg) {
         this.name = deviceName;
-        this.thePackage = pkg;
+        this.thePackage = Optional.ofNullable(pkg);
     }
 
     public String getName() {
@@ -24,7 +25,7 @@ class Device {
     }
 
     public Package getPackage() {
-        return thePackage;
+        return thePackage.orElse(null);
     }
 
     public Map<String, String> getPinPadMapping() {
@@ -37,7 +38,6 @@ class Device {
 
     @Override
     public String toString() {
-        return String.format("Device[name=\"%s\"]", name);
+        return String.format("Device[name=\"%s\" package=\"%s\"]", name, getPackage());
     }
-
 }

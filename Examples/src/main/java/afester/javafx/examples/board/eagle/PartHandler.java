@@ -25,16 +25,24 @@ class PartHandler extends SubContentHandler {
             String partName = atts.getValue("name");        // unique id (reference designator)
             String partValue = atts.getValue("value");      // might be null - then we can use "deviceset" as value
 
-            String partLibrary = atts.getValue("library");
+            String partLibraryName = atts.getValue("library");
+            String partLibraryId = atts.getValue("library_urn");
+            if (partLibraryId == null) {
+                partLibraryId = partLibraryName;
+            }
             String partDeviceSet = atts.getValue("deviceset");
             String partDevice = atts.getValue("device");
 
-            System.err.printf("  <part name=\"%s\" library=\"%s\" deviceset=\"%s\" device=\"%s\" value=\"%s\">\n", partName, partLibrary, partDeviceSet, partDevice, partValue);
+            System.err.printf("  <part name=\"%s\" library=\"%s\" deviceset=\"%s\" device=\"%s\" value=\"%s\">\n", partName, partLibraryId, partDeviceSet, partDevice, partValue);
 
             // get reference to package
-            Library lib = mainHandler.getLibrary(partLibrary);
+            Library lib = mainHandler.getLibrary(partLibraryId);
+            System.err.println(lib);
             DeviceSet deviceSet = lib.getDeviceSet(partDeviceSet);
+            System.err.println(deviceSet);
             Device dev = deviceSet.getDevice(partDevice);
+            System.err.println(dev);
+
 
             // Set the part value from the device set if none was specified with the part
             if (partValue == null) {

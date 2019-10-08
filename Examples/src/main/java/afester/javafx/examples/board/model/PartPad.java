@@ -43,8 +43,7 @@ public class PartPad implements PartShape {
         Element result = doc.createElement("pad");
         result.setAttribute("x", Double.toString(pos.getX()));
         result.setAttribute("y", Double.toString(pos.getY()));
-        result.setAttribute("pinNumber", name);      // TODO: This should be renamed to "padName"
-
+        result.setAttribute("padName", name);
 //        result.setAttribute("id", Integer.toString(id));  // TODO
 
         return result;

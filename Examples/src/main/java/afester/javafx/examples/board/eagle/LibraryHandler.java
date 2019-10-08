@@ -28,7 +28,11 @@ class LibraryHandler extends SubContentHandler {
 
             if (localName.equals("library")) {
                 final String libraryName = atts.getValue("name");
-                currentLibrary = new Library(libraryName);
+                String libraryUrn = atts.getValue("urn");
+                if (libraryUrn == null) {
+                    libraryUrn = libraryName;
+                }
+                currentLibrary = new Library(libraryUrn); // , libraryName);
                 System.err.printf("  %s\n", currentLibrary);    
             } else if (localName.equals("packages")) {
                 currentHandler = new PackageHandler(this);

@@ -20,10 +20,9 @@ public class Part {
 
     private final String partName;
     private final String partValue;
-
-    private Map<String, Pad> pads = new HashMap<>();
     private Package thePackage;
 
+    private Map<String, Pad> pads = new HashMap<>();
 
     // Position of the part
     private ObjectProperty<Point2D> position = new SimpleObjectProperty<>(new Point2D(0, 0));
@@ -62,7 +61,7 @@ public class Part {
     public Part(String partName, String partValue, String packageRef) {
         this.partName = partName;
         this.partValue = partValue;
-        this.thePackage = new Package(packageRef);
+        this.thePackage = new Package(packageRef, packageRef);
     }
 
     public Package getPackage() {
@@ -123,15 +122,10 @@ public class Part {
         Element partNode = doc.createElement("part");
         partNode.setAttribute("name", partName);
         partNode.setAttribute("value", partValue);
-        partNode.setAttribute("package", getPackageRef());
+        partNode.setAttribute("packageRef", thePackage.getId());
         partNode.setAttribute("x", Double.toString(getPosition().getX()));
         partNode.setAttribute("y", Double.toString(getPosition().getY()));
         partNode.setAttribute("rotation", Double.toString(getRotation()));
-
-        for (PartShape ps : thePackage.getShapes()) {
-            org.w3c.dom.Node shapeNode = ps.getXML(doc);
-            partNode.appendChild(shapeNode);
-        }
 
         for (Pad ps : getPads()) {
             ps.setId(junctionId.val++);
@@ -142,9 +136,12 @@ public class Part {
         return partNode;
     }
 
+
     protected boolean replacedWith(Part p2) {
         // This is a first trivial attempt to decide whether the package for the part has changed:
-        return !getPackageRef().equals(p2.getPackage().getName());
+        return !getPackageRef().equals(p2.getPackage().getName()) || 
+                getValue().equals(p2.getValue()) || 
+                getName().equals(p2.getName());
     }
 
 

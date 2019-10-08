@@ -6,14 +6,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+
 public class Package {
 
-    private final String packageName;
+    private final String name;
+    private final String id;
     private final Map<String, PartPad> pads = new HashMap<>();  // pad shapes
     private final List<PartShape> shapes = new ArrayList<>();   // normal shapes
 
-    public Package(String name) {
-        this.packageName = name;
+    public Package(String id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public void addPad(PartPad pad) {
@@ -39,11 +45,34 @@ public class Package {
     }
 
     public String getName() {
-        return packageName;
+        return name;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+
+    public Element getXml(Document doc) {
+        Element packageNode = doc.createElement("package");
+        packageNode.setAttribute("id", id);
+        packageNode.setAttribute("name", name);
+
+        getShapes().forEach(shape -> {
+            org.w3c.dom.Node shapeNode = shape.getXML(doc);
+            packageNode.appendChild(shapeNode);
+        });
+
+        getPads().forEach(pad -> {
+            org.w3c.dom.Node padNode = pad.getXML(doc);
+            packageNode.appendChild(padNode);
+        });
+
+        return packageNode;
     }
 
     @Override
     public String toString() {
-        return String.format("Package[name=\"%s\", %s shapes, %s pads]", packageName, shapes.size(), pads.size());
+        return String.format("Package[name=\"%s\", %s shapes, %s pads]", name, shapes.size(), pads.size());
     }
 }

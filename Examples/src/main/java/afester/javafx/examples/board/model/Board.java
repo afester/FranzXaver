@@ -125,6 +125,17 @@ public class Board {
             }
             rootNode.appendChild(boardShape);
 
+            // The packages
+            Set<Package> packages = new HashSet<>();
+            parts.values().forEach(p -> {
+                Package thePackage = p.getPackage();
+                packages.add(thePackage);
+            });
+            packages.forEach(p -> {
+                Element packageNode = p.getXml(doc);
+                rootNode.appendChild(packageNode);
+            });
+
             // The parts
             IntVal junctionId = new IntVal();
             parts.forEach( (k, v) -> {

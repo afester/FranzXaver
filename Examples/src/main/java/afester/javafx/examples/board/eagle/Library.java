@@ -7,16 +7,23 @@ import afester.javafx.examples.board.model.Package;
 
 // A collection of devicesets and packages
 class Library {
-    private String name;        // library name
+    private String id;
+//    private String name;        // library name - not necessarily unique!!
+
     private Map<String, Package> packages = new HashMap<>();    // package name => package
     private Map<String, DeviceSet> deviceSets = new HashMap<>();
 
-    public Library(String libraryName) {
-        this.name = libraryName;
+    public Library(String id) { // , String name) {
+        this.id = id;
+//        this.name = name;
     }
 
-    public String getName() {
-        return name;
+//    public String getName() {
+//        return name;
+//    }
+
+    public String getId() {
+        return id;
     }
 
     public void addPackage(Package result) {
@@ -39,6 +46,6 @@ class Library {
 
     @Override
     public String toString() {
-        return String.format("Library[name=\"%s\"]", name);
+        return String.format("Library[id=\"%s\"]" + deviceSets, id);
     }
 }
