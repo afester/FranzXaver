@@ -9,6 +9,7 @@ import afester.javafx.examples.board.eagle.EagleImport;
 import afester.javafx.examples.board.model.AbstractNode;
 import afester.javafx.examples.board.model.AbstractWire;
 import afester.javafx.examples.board.model.Board;
+import afester.javafx.examples.board.model.BoardLoader;
 import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.model.NetImport;
 import afester.javafx.examples.board.model.Trace;
@@ -60,10 +61,11 @@ public class BreadBoardEditor extends Application {
     @Override
     public void start(Stage stage){
 
-        Board board = new Board();
-//        board.load(new File("supply.brd"));
+        BoardLoader bl = new BoardLoader(new File("supplyNewFormat.brd"));
+        Board board = bl.load();
+
 //        board.load(new File("small.brd"));
-        board.load(new File("large.brd"));
+//        board.load(new File("large.brd"));
 //        board.load(new File("first.brd"));
 
         topView = new BoardView(board);
@@ -477,8 +479,8 @@ public class BreadBoardEditor extends Application {
         fileChooser.setTitle("Open Board ...");
         File result = fileChooser.showOpenDialog(stage);
         if (result != null) {
-            Board board = new Board();
-            board.load(result);
+            BoardLoader bl = new BoardLoader(result);
+            Board board = bl.load();
             topView.setBoard(board);
             bottomView = null;
         }

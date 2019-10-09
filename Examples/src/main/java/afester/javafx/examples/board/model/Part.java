@@ -57,12 +57,12 @@ public class Part {
         this.thePackage = pkg;
     }
 
-    @Deprecated
-    public Part(String partName, String partValue, String packageRef) {
-        this.partName = partName;
-        this.partValue = partValue;
-        this.thePackage = new Package(packageRef, packageRef);
-    }
+//    @Deprecated
+//    public Part(String partName, String partValue, String packageRef) {
+//        this.partName = partName;
+//        this.partValue = partValue;
+//        this.thePackage = new Package(packageRef, packageRef);
+//    }
 
     public Package getPackage() {
         return thePackage;
@@ -78,17 +78,17 @@ public class Part {
         return pads.get(pinId);
     }
 
-    @Deprecated
-    public void addShape(PartShape shape) {
-        thePackage.addShape(shape);
-        // shapes.add(shape);
-    }
+//    @Deprecated
+//    public void addShape(PartShape shape) {
+//        thePackage.addShape(shape);
+//        // shapes.add(shape);
+//    }
 
-    @Deprecated
-    public List<PartShape> getShapes() {
-        return thePackage.getShapes();
-//        return shapes;
-    }
+//    @Deprecated
+//    public List<PartShape> getShapes() {
+//        return thePackage.getShapes();
+////        return shapes;
+//    }
 
     public Collection<Pad> getPads() {
         return pads.values();

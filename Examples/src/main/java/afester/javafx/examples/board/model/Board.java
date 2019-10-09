@@ -6,10 +6,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -23,30 +21,23 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import afester.javafx.examples.board.eagle.EagleImport;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.geometry.Point2D;
-import javafx.scene.paint.Color;
 
 public class Board {
 
-    private final ObservableList<Point2D> boardShapePoints = FXCollections.observableArrayList();
+    final ObservableList<Point2D> boardShapePoints = FXCollections.observableArrayList();
     private final ObservableMap<String, Part> parts = FXCollections.observableHashMap();
     private final ObservableMap<String, Net> nets = FXCollections.observableHashMap();
-    private String schematicFile;
+    String schematicFile;
     private File boardFile;
 
     
@@ -188,207 +179,13 @@ public class Board {
         System.err.println("Saved " + destFile.getAbsolutePath());
     }
 
-    public void load(File file) {
-        System.err.println("Loading " + file.getAbsolutePath());
-        boardFile = file;
 
-        XPath xPath = XPathFactory.newInstance().newXPath();
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        dbFactory.setValidating(false);
-        try {
-            dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
-            dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-    
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(file);
-            
-            Element breadboardNode = (Element) xPath.evaluate("/breadboard", doc, XPathConstants.NODE);
-            //String widthAttr = breadboardNode.getAttribute("width");
-            //String heightAttr = breadboardNode.getAttribute("height");
-            schematicFile = breadboardNode.getAttribute("schematic");
-
-            //width = Double.parseDouble(widthAttr);
-            //height = Double.parseDouble(heightAttr);
-
-            boardShapePoints.clear();
-            Element boardShapeNode = (Element) xPath.evaluate("boardShape", breadboardNode, XPathConstants.NODE);
-            System.err.println("NODE:" + boardShapeNode);
-
-            NodeList boardShapePointNodes = (NodeList) xPath.evaluate("./point", boardShapeNode, XPathConstants.NODESET);
-            for (int i = 0; i < boardShapePointNodes.getLength(); ++i) {
-                Element boardShapePointNode = (Element) boardShapePointNodes.item(i);
-                String xPos = boardShapePointNode.getAttribute("x");
-                String yPos = boardShapePointNode.getAttribute("y");
-                boardShapePoints.add(new Point2D(Double.parseDouble(xPos), Double.parseDouble(yPos)));
-            }
-
-            Map<String, Junction> junctions = new HashMap<>();
-            Map<String, Pad> pads = new HashMap<>();
-
-            NodeList partNodes = (NodeList) xPath.evaluate("part", breadboardNode, XPathConstants.NODESET);
-            for (int i = 0; i < partNodes.getLength(); ++i) {
-                Element partNode = (Element) partNodes.item(i);
-                String partName = partNode.getAttribute("name");
-                String partValue = partNode.getAttribute("value");
-                String packageRef = partNode.getAttribute("package");
-                Double rotation = Double.parseDouble(partNode.getAttribute("rotation"));
-                Point2D partPosition = new Point2D(Double.parseDouble(partNode.getAttribute("x")),
-                                                   Double.parseDouble(partNode.getAttribute("y")));
-                Part part = new Part(partName, partValue, packageRef);
-                part.setPosition(partPosition);
-                part.setRotation(rotation);
-
-                NodeList padNodes = (NodeList) xPath.evaluate("./pad", partNode, XPathConstants.NODESET);
-                for (int j = 0; j < padNodes.getLength(); ++j) {
-                    final Element padNode = (Element) padNodes.item(j);
-                    final String padNumber = padNode.getAttribute("pinNumber"); // this should really be called "padName"
-                    final String padId = padNode.getAttribute("id");
-                    final Point2D padPos = new Point2D(Double.parseDouble(padNode.getAttribute("x")),
-                                                       Double.parseDouble(padNode.getAttribute("y")));
-
-                    Pad pad = new Pad(part, padNumber, padPos);
-                    pads.put(padId, pad);
-                    part.addPad(pad);
-                }
-
-                NodeList lineNodes = (NodeList) xPath.evaluate("./line", partNode, XPathConstants.NODESET);
-                for (int j = 0; j < lineNodes.getLength(); ++j) {
-                    Element lineNode = (Element) lineNodes.item(j);
-                    Point2D p1 = new Point2D(Double.parseDouble(lineNode.getAttribute("x1")),
-                                             Double.parseDouble(lineNode.getAttribute("y1")));
-                    Point2D p2 = new Point2D(Double.parseDouble(lineNode.getAttribute("x2")),
-                                             Double.parseDouble(lineNode.getAttribute("y2")));
-                    Double width = Double.parseDouble(lineNode.getAttribute("width"));
-
-                    part.addShape(new PartLine(p1, p2, width));
-                }
-
-                NodeList rectNodes = (NodeList) xPath.evaluate("./rectangle", partNode, XPathConstants.NODESET);
-                for (int j = 0; j < rectNodes.getLength(); ++j) {
-                    Element rectNode = (Element) rectNodes.item(j);
-
-                    Point2D p1 = new Point2D(Double.parseDouble(rectNode.getAttribute("x1")),
-                                             Double.parseDouble(rectNode.getAttribute("y1")));
-                    Point2D p2 = new Point2D(Double.parseDouble(rectNode.getAttribute("x2")),
-                                             Double.parseDouble(rectNode.getAttribute("y2")));
-
-                    part.addShape(new PartRectangle(p1, p2));
-                }
-
-                NodeList circleNodes = (NodeList) xPath.evaluate("./circle", partNode, XPathConstants.NODESET);
-                for (int j = 0; j < circleNodes.getLength(); ++j) {
-                    Element circleNode = (Element) circleNodes.item(j);
-
-                    Point2D center = new Point2D(Double.parseDouble(circleNode.getAttribute("x")),
-                                                 Double.parseDouble(circleNode.getAttribute("y")));
-                    double radius = Double.parseDouble(circleNode.getAttribute("radius"));
-                    double width = Double.parseDouble(circleNode.getAttribute("width"));
-
-                    part.addShape(new PartCircle(center, radius, width));
-                }
-
-                NodeList arcNodes = (NodeList) xPath.evaluate("./arc", partNode, XPathConstants.NODESET);
-                for (int j = 0; j < arcNodes.getLength(); ++j) {
-                    Element arcNode = (Element) arcNodes.item(j);
-                    
-                    Point2D cx = new Point2D(Double.parseDouble(arcNode.getAttribute("cx")),
-                                             Double.parseDouble(arcNode.getAttribute("cy")));
-                    Double radius = Double.parseDouble(arcNode.getAttribute("radius"));
-                    Double start = Double.parseDouble(arcNode.getAttribute("start"));
-                    Double angle = Double.parseDouble(arcNode.getAttribute("angle"));
-                    Double width = Double.parseDouble(arcNode.getAttribute("width"));
-
-                    part.addShape(new PartArc(cx, radius, start, angle, width, Color.GREEN));
-                }
-
-                NodeList textNodes = (NodeList) xPath.evaluate("./text", partNode, XPathConstants.NODESET);
-                for (int j = 0; j < textNodes.getLength(); ++j) {
-                    Element textNode = (Element) textNodes.item(j);
-                    Double x = Double.parseDouble(textNode.getAttribute("x"));
-                    Double y = Double.parseDouble(textNode.getAttribute("y"));
-                    Double size = Double.parseDouble(textNode.getAttribute("size"));
-                    // String layer = textNode.getAttribute("layer");
-                    String text = textNode.getTextContent();
-//                    if (text.isEmpty()) {
-//                        text = "???";
-//                    }
-                    part.addShape(new PartText(x, y, text, size));
-                }
-
-                System.err.printf("Part: %s\n", part);
-                addPart(part);
-            }
-
-            NodeList netNodes = (NodeList) xPath.evaluate("net", breadboardNode, XPathConstants.NODESET);
-            for (int i = 0; i < netNodes.getLength(); ++i) {
-                Element netNode = (Element) netNodes.item(i);
-                String netName = netNode.getAttribute("name");
-                Net net = new Net(netName);
-
-                NodeList junctionNodes = (NodeList) xPath.evaluate("./junction", netNode, XPathConstants.NODESET);
-                for (int j = 0; j < junctionNodes.getLength(); ++j) {
-                    Element junctionNode = (Element) junctionNodes.item(j);
-                    String junctionId = junctionNode.getAttribute("id");
-                    Point2D jPos = new Point2D(Double.parseDouble(junctionNode.getAttribute("x")),
-                                               Double.parseDouble(junctionNode.getAttribute("y")));
-
-                    Junction junction = new Junction(net, jPos);
-                    junctions.put(junctionId, junction);
-                    System.err.printf("  %s\n", junction);
-                    
-                    net.addJunction(junction);
-                }
-
-                NodeList airwireNodes = (NodeList) xPath.evaluate("./airwire", netNode, XPathConstants.NODESET);
-                for (int j = 0; j < airwireNodes.getLength(); ++j) {
-                    Element airwireNode = (Element) airwireNodes.item(j);
-                    String fromId = airwireNode.getAttribute("from");
-                    String toId = airwireNode.getAttribute("to");
-
-                    AbstractNode from = junctions.get(fromId);
-                    if (from == null) from = pads.get(fromId);  // TODO: This is a bad hack!!!!
-                    AbstractNode to = junctions.get(toId);
-                    if (to == null) to = pads.get(toId);        // TODO: This is a bad hack!!!!
-                    System.err.printf("  AW: %s -> %s\n", from, to);
-
-                    AirWire aw = new AirWire(from, to, net);
-                    net.addTrace(aw);
-                }
-
-                NodeList traceNodes = (NodeList) xPath.evaluate("./trace", netNode, XPathConstants.NODESET);
-                for (int j = 0; j < traceNodes.getLength(); ++j) {
-                    Element traceNode = (Element) traceNodes.item(j);
-                    String fromId = traceNode.getAttribute("from");
-                    String toId = traceNode.getAttribute("to");
-                    boolean isBridge = Boolean.parseBoolean(traceNode.getAttribute("isBridge"));
-
-                    AbstractNode from = junctions.get(fromId);
-                    if (from == null) from = pads.get(fromId);      // TODO: This is a bad hack!!!!
-                    AbstractNode to = junctions.get(toId);
-                    if (to == null) to = pads.get(toId);          // TODO: This is a bad hack!!!!
-                    System.err.printf("  T : %s -> %s\n", from, to);
-
-                    Trace t = new Trace(from, to, net);
-                    if (isBridge) {
-                        t.setAsBridge();
-                    }
-                    net.addTrace(t);
-                }
-
-                System.err.printf("Net: %s\n", net);
-
-                addNet(net);
-            }
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (XPathExpressionException e) {
-            e.printStackTrace();
-        }
-    }
+//    public void load(File file) {
+//        boardFile = file;
+//
+//        BoardLoader bl = new BoardLoader(file);
+//        bl.load(this);
+//    }
 
 
     public String getSchematicFile() {

@@ -43,4 +43,10 @@ public class PartCircle implements PartShape {
         return result;
     }
 
+
+    @Override
+    public String toString() {
+        return String.format("PartCircle[center=%s radius=%s width=%s]", center, radius, width);
+    }
+
 }

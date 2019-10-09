@@ -11,11 +11,10 @@ import org.junit.Test;
 import afester.javafx.examples.board.BoardView;
 import afester.javafx.examples.board.PartView;
 import afester.javafx.examples.board.model.Board;
+import afester.javafx.examples.board.model.BoardLoader;
 import afester.javafx.examples.board.model.Part;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.transform.Rotate;
 
 public class BoardEditTest {
@@ -25,8 +24,8 @@ public class BoardEditTest {
 
     @Before
     public void loadData() {
-        board = new Board();
-        board.load(new File("small.brd"));
+        BoardLoader bl = new BoardLoader(new File("small.brd"));
+        board = bl.load();
         boardView = new BoardView(board);
     }
 

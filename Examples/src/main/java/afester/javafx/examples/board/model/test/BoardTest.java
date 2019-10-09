@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import afester.javafx.examples.board.eagle.EagleImport;
 import afester.javafx.examples.board.model.Board;
+import afester.javafx.examples.board.model.BoardLoader;
 import afester.javafx.examples.board.model.NetImport;
 import afester.javafx.examples.board.model.Part;
 
@@ -16,9 +17,8 @@ public class BoardTest {
 
     @Test
     public void test() {
-        File boardFile = new File("large.brd");
-        Board board = new Board();
-        board.load(boardFile);
+        BoardLoader bl = new BoardLoader(new File("large.brd"));
+        Board board = bl.load();
 
         assertEquals(69, board.getParts().size());
         assertEquals(67, board.getNets().size());
@@ -57,8 +57,8 @@ public class BoardTest {
         File boardFile = new File("smallTest.brd");
         board.saveAs(boardFile);
 
-        Board loadedBoard = new Board();
-        loadedBoard.load(boardFile);
+        BoardLoader bl = new BoardLoader(boardFile);
+        Board loadedBoard = bl.load();
         assertEquals(7, loadedBoard.getParts().size());
         assertEquals(4, loadedBoard.getNets().size());
     }

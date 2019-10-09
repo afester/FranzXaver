@@ -7,6 +7,7 @@ import java.util.Map;
 
 import afester.javafx.examples.board.model.Pad;
 import afester.javafx.examples.board.model.Part;
+import afester.javafx.examples.board.model.Package;
 import afester.javafx.examples.board.model.PartShape;
 import afester.javafx.svg.SvgLoader;
 import afester.javafx.svg.SvgTextBox;
@@ -173,7 +174,8 @@ public class PartView extends Group implements Interactable {
 
         if (!svgAvailable) {
 
-            for (PartShape ps : part.getShapes()) {
+            Package pkg = part.getPackage();
+            for (PartShape ps : pkg.getShapes()) {
                 Node s = ps.createNode();
 
                 // Replace name and value placeholders
