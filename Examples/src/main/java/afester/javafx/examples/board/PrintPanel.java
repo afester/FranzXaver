@@ -3,6 +3,8 @@ package afester.javafx.examples.board;
 import java.io.IOException;
 
 import afester.javafx.examples.board.model.Board;
+import afester.javafx.examples.board.view.BoardView;
+import afester.javafx.examples.board.view.DrawingView;
 import afester.javafx.shapes.Line;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;

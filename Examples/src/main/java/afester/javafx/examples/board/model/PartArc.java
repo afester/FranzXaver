@@ -18,16 +18,14 @@ public class PartArc implements PartShape {
     private Double angle;
     private Double startAngle;
     private Double width;
-    private Color color;
     
 
-    public PartArc(Point2D center, Double radius, Double startAngle, Double angle, Double width, Color color) {
+    public PartArc(Point2D center, Double radius, Double startAngle, Double angle, Double width) {
         this.center = center;
         this.radius = radius;
         this.startAngle = startAngle;
         this.angle = angle;
         this.width = width;
-        this.color = color;
     }
 
 

@@ -8,13 +8,13 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import afester.javafx.examples.board.model.AirWire;
-import afester.javafx.examples.board.model.Pad;
+import afester.javafx.examples.board.model.Pin;
 import afester.javafx.examples.board.model.Part;
 
 class NetHandler extends SubContentHandler {
     private EagleSchematicHandler mainHandler;
     private SheetHandler sheetHandler;
-    private final List<Pad> padList = new ArrayList<>();
+    private final List<Pin> padList = new ArrayList<>();
 
     public NetHandler(SheetHandler sh, EagleSchematicHandler mainHandler) {
         this.sheetHandler = sh;
@@ -37,7 +37,7 @@ class NetHandler extends SubContentHandler {
                 String padName = pinPadMappings.get(pin + "@" + gate);
 
                 // Here we need the "global" Pad as a graph node, not the pad template from the Package! 
-                Pad pad = p.getPad(padName);
+                Pin pad = p.getPad(padName);
                 System.err.printf("    %s\n", pad);
 
                 padList.add(pad);
@@ -48,8 +48,8 @@ class NetHandler extends SubContentHandler {
     @Override
     public boolean endElement(String uri, String localName, String qName) throws SAXException {
         if (localName.equals("net")) {
-            Pad p1 = null;
-            for (Pad p2 : padList) {
+            Pin p1 = null;
+            for (Pin p2 : padList) {
                 if (p1 != null) {
                     // TODO: can we simply add the Pads to the net here and afterwards to a "Reset Net" to create the actual AirWires??
                     sheetHandler.currentNet.addTrace(new AirWire(p1, p2, sheetHandler.currentNet));

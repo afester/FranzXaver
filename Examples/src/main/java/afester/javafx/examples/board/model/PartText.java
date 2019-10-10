@@ -41,11 +41,11 @@ public class PartText implements PartShape {
     @Override
     public Shape createNode() {
         Text textShape = new Text(pos.getX(), pos.getY(), text.toString());
-
-        Font theFont = Font.font("Courier", weight, size);	// TODO: The rendered text is messed up if the size is too small!
-        textShape.setFont(theFont);
-        textShape.setFill(Color.GRAY);
         textShape.setTextOrigin(VPos.BOTTOM); // .BASELINE);
+
+        // Overwrite explicit settings through inline style (which has 
+        // the highest precedence):
+        textShape.setStyle(String.format("-fx-font-size:%s; -fx-font-weight: %s", size, weight.getWeight()));
 
         return textShape;
     }

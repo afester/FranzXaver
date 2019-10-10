@@ -8,11 +8,11 @@ import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 
-import afester.javafx.examples.board.BoardView;
-import afester.javafx.examples.board.PartView;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.BoardLoader;
 import afester.javafx.examples.board.model.Part;
+import afester.javafx.examples.board.view.BoardView;
+import afester.javafx.examples.board.view.PartView;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.transform.Rotate;
@@ -24,9 +24,24 @@ public class BoardEditTest {
 
     @Before
     public void loadData() {
-        BoardLoader bl = new BoardLoader(new File("small.brd"));
+        BoardLoader bl = new BoardLoader(new File("loadTest.brd"));
         board = bl.load();
         boardView = new BoardView(board);
+    }
+
+    
+    @Test
+    public void testNameValue() {
+        
+        Part part = board.getPart("R2");
+        assertEquals("R2", part.getName());
+        assertEquals("10k", part.getValue());
+
+        final Group partsGroup = (Group) boardView.lookup("#partsGroup");
+        final PartView r2PartView = (PartView) partsGroup.getChildrenUnmodifiable().stream().filter(e -> ((PartView) e).getName().equals("R2")).findFirst().get();
+
+        Group shapes = (Group) r2PartView.lookup("#partShapes");
+        shapes.getChildren().forEach(e -> System.err.println("   " + e));
     }
 
     @Test

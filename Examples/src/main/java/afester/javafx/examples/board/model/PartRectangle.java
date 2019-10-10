@@ -28,9 +28,6 @@ public class PartRectangle implements PartShape {
         final double y = Math.min(p1.getY(), p2.getY());
 
         Shape rect = new Rectangle(x, y, width, height);
-        rect.setFill(Color.GRAY);
-        rect.setStroke(null);
-        rect.setStrokeLineCap(StrokeLineCap.ROUND);
 
         return rect;
     }

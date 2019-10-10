@@ -22,7 +22,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import afester.javafx.examples.board.eagle.SubContentHandler;
 import javafx.geometry.Point2D;
-import javafx.scene.paint.Color;
 import javafx.scene.text.FontWeight;
 
 class BoardShapeHandler extends SubContentHandler {
@@ -100,7 +99,7 @@ class PackageHandler extends SubContentHandler {
             Double angle = Double.parseDouble(attributes.getValue("angle"));
             Double width = Double.parseDouble(attributes.getValue("width"));
 
-            PartShape shape = new PartArc(cx, radius, start, angle, width, Color.GREEN);
+            PartShape shape = new PartArc(cx, radius, start, angle, width);
             System.err.println("  " + shape);
             thePackage.addShape(shape);
         } else if (localName.equals("text")) {
@@ -131,6 +130,7 @@ class PackageHandler extends SubContentHandler {
     public boolean endElement(String uri, String localName, String qName) throws SAXException {
         if (localName.equals("text")) {
             System.err.println("  " + currentText);
+            thePackage.addShape(currentText);
             currentText = null;
             return false;
         }
@@ -166,7 +166,7 @@ class PartHandler extends SubContentHandler {
 
             Package pkg = part.getPackage();
             PartPad partPad = pkg.getPad(padName);
-            Pad pad = new Pad(part, partPad);
+            Pin pad = new Pin(part, partPad);
             bl.nodes.put(padId, pad);
             System.err.printf("  %s\n", pad);
         } else {

@@ -1,6 +1,6 @@
-package afester.javafx.examples.board;
+package afester.javafx.examples.board.view;
 
-import afester.javafx.examples.board.model.Pad;
+import afester.javafx.examples.board.model.Pin;
 import javafx.geometry.VPos;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -13,12 +13,12 @@ import javafx.scene.text.Text;
  */
 public class PadViewBottom extends AbstractNodeView {
 
-    private Pad pad;
+    private Pin pad;
 
     /**
      * Creates a new PadView.
      */
-    public PadViewBottom(Pad pad) {
+    public PadViewBottom(Pin pad) {
         super(pad);
         this.pad = pad;
 

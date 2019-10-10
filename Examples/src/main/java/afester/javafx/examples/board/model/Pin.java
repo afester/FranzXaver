@@ -8,7 +8,7 @@ import javafx.geometry.Point2D;
 /**
  * A Pad is a junction which refers to a specific pin of a Part.
  */
-public class Pad extends AbstractNode {
+public class Pin extends AbstractNode {
 
     private final Part part;
     private final String padName; // the physical pad name (unique within a Part)
@@ -22,16 +22,16 @@ public class Pad extends AbstractNode {
      * @param padName   The (physical) pad number of this pad
      * @param padPos    The position of the pad (in Part coordinates!!!!)
      */
-    public Pad(Part part, String padName, Point2D padPos) {
-        super(null, part.globalPadPos(padPos));
+//    public Pin(Part part, String padName, Point2D padPos) {
+//        super(null, part.globalPadPos(padPos));
+//
+//        this.part = part;
+//
+//        this.padName = padName;
+//        this.localPos = padPos;
+//    }
 
-        this.part = part;
-
-        this.padName = padName;
-        this.localPos = padPos;
-    }
-
-    public Pad(Part part, PartPad pad) {
+    public Pin(Part part, PartPad pad) {
         super(null, part.globalPadPos(pad.getPos()));
         this.part = part;
 
@@ -54,8 +54,6 @@ public class Pad extends AbstractNode {
 
     public org.w3c.dom.Node getXML(Document doc) {
         Element result = doc.createElement("pad");
-        //result.setAttribute("x", Double.toString(getLocalPos().getX()));
-        //result.setAttribute("y", Double.toString(getLocalPos().getY()));
         result.setAttribute("padName", padName);
         result.setAttribute("id", Integer.toString(id));
 
@@ -89,7 +87,7 @@ public class Pad extends AbstractNode {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Pad other = (Pad) obj;
+        Pin other = (Pin) obj;
         
         final String key = getPadId();
 

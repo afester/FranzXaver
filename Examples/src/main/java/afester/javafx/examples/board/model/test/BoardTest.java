@@ -4,6 +4,7 @@ package afester.javafx.examples.board.model.test;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -12,6 +13,7 @@ import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.BoardLoader;
 import afester.javafx.examples.board.model.NetImport;
 import afester.javafx.examples.board.model.Part;
+import afester.javafx.examples.board.model.PartShape;
 
 public class BoardTest {
 
@@ -62,4 +64,21 @@ public class BoardTest {
         assertEquals(7, loadedBoard.getParts().size());
         assertEquals(4, loadedBoard.getNets().size());
     }
+
+    
+    @Test
+    public void loadTest() {
+        BoardLoader bl = new BoardLoader(new File("loadTest.brd"));
+        Board loadedBoard = bl.load();
+        assertEquals(7, loadedBoard.getParts().size());
+        assertEquals(4, loadedBoard.getNets().size());
+
+        Part part = loadedBoard.getPart("D1");
+        assertEquals("D1", part.getName());
+        assertEquals("1N4148", part.getValue());
+
+        List<PartShape> shapes = part.getPackage().getShapes();
+        assertEquals(22,  shapes.size());
+    }
+
 }

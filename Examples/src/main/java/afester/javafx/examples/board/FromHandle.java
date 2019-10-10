@@ -1,7 +1,7 @@
 package afester.javafx.examples.board;
 
 import afester.javafx.examples.board.model.AbstractNode;
-import afester.javafx.examples.board.model.AirWire;
+import afester.javafx.examples.board.view.TraceView;
 import javafx.geometry.Point2D;
 
 public class FromHandle extends AirWireHandle {

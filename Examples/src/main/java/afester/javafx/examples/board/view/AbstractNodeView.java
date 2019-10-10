@@ -1,5 +1,6 @@
-package afester.javafx.examples.board;
+package afester.javafx.examples.board.view;
 
+import afester.javafx.examples.board.Interactable;
 import afester.javafx.examples.board.model.AbstractNode;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;

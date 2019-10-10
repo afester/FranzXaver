@@ -1,13 +1,14 @@
 package afester.javafx.examples.board;
 
 import afester.javafx.examples.board.model.AbstractNode;
+import afester.javafx.examples.board.view.TraceView;
 import javafx.geometry.Point2D;
 
 public class ToHandle extends AirWireHandle {
 
     public ToHandle(TraceView airWire) {
         super(airWire, airWire.getEnd());
-    }
+    } 
 
     @Override
     public AbstractNode getNode() {

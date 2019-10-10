@@ -96,8 +96,26 @@ TraceView.BridgeSelect {
 	-fx-stroke-line-cap: round;
 }
 
-
-PartView Line {
+/* default fill- and stroke color for all shapes */
+PartView * {
 	-fx-stroke: gray;
+	-fx-fill: gray;
 	-fx-stroke-line-cap: round;
+}
+
+PartView Circle {
+	-fx-fill: none;
+}
+
+PartView Arc {
+	-fx-fill: none;
+}
+
+PartView Rectangle {
+	-fx-stroke: none;
+}
+
+PartView Text {
+	-fx-font: normal normal 4pt sans;
+	-fx-stroke: none;
 }

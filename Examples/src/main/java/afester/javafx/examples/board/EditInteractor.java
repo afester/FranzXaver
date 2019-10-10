@@ -1,12 +1,14 @@
 package afester.javafx.examples.board;
 
-import java.util.Random;
-
 import afester.javafx.examples.board.model.Junction;
 import afester.javafx.examples.board.model.Part;
 import afester.javafx.examples.board.model.TraceType;
+import afester.javafx.examples.board.view.BoardView;
+import afester.javafx.examples.board.view.JunctionView;
+import afester.javafx.examples.board.view.PartView;
+import afester.javafx.examples.board.view.TraceView;
 import javafx.geometry.Point2D;
-import javafx.scene.paint.Color;
+
 
 public class EditInteractor  extends MouseInteractor {
 

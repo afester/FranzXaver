@@ -1,4 +1,4 @@
-package afester.javafx.examples.board;
+package afester.javafx.examples.board.view;
 
 import afester.javafx.examples.board.tools.Polygon2D;
 

@@ -3,11 +3,10 @@ package afester.javafx.examples.board;
 import java.io.IOException;
 
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Pane;
+
 
 public class AboutDialog extends Dialog<Void> {
 

@@ -4,6 +4,7 @@ import afester.javafx.examples.board.model.AbstractNode;
 import afester.javafx.examples.board.model.Junction;
 import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.model.Trace;
+import afester.javafx.examples.board.view.BoardView;
 import javafx.geometry.Point2D;
 
 public class SplitTraceInteractor extends MouseInteractor {

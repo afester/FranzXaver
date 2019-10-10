@@ -1,19 +1,17 @@
-package afester.javafx.examples.board;
+package afester.javafx.examples.board.view;
 
+import afester.javafx.examples.board.Interactable;
 import afester.javafx.examples.board.model.AbstractWire;
 import afester.javafx.examples.board.model.Net;
 import javafx.geometry.Point2D;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.StrokeLineCap;
 
 /**
  * A JavaFX shape to visualize the edge of a graph.
  */
 public abstract class AbstractEdgeView extends Line implements Interactable  {
 
-    protected AbstractWire edge;
+    public AbstractWire edge;
 
     /**
      * Creates a new AbstractWireView for a given AbstractWire.
@@ -81,7 +79,7 @@ public abstract class AbstractEdgeView extends Line implements Interactable  {
 
 
     // TODO: currently each trace has its own context menu instance!
-    private ContextMenu contextMenu;
+//    private ContextMenu contextMenu;
     private void createContextMenu() {
 //        contextMenu = new ContextMenu();
 //    	MenuItem item1 = new MenuItem("Delete");

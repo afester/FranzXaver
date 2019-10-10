@@ -5,10 +5,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javafx.geometry.Point2D;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Shape;
-import javafx.scene.shape.StrokeLineCap;
+
 
 public class PartPad implements PartShape {
 

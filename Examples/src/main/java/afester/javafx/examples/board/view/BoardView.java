@@ -1,4 +1,4 @@
-package afester.javafx.examples.board;
+package afester.javafx.examples.board.view;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,13 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
+import afester.javafx.examples.board.Interactable;
+import afester.javafx.examples.board.Interactor;
 import afester.javafx.examples.board.model.AbstractWire;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.Junction;
 import afester.javafx.examples.board.model.Part;
-import afester.javafx.examples.board.BoardShape;
-import afester.javafx.examples.board.tools.Polygon2D;
 import afester.javafx.examples.board.model.Net;
+import afester.javafx.examples.board.tools.Polygon2D;
 
 import javafx.scene.shape.Circle;
 import javafx.beans.property.BooleanProperty;

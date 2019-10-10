@@ -244,10 +244,10 @@ public class Board {
             Part partNew = updatedBoard.getParts().get(partName);
 
             System.err.printf("  %s => %s\n", partOld, partNew);
-            for (Pad p : partNew.getPads()) {
+            for (Pin p : partNew.getPads()) {
                 // try to reconnect pins with the same name
                 String pinNr = p.getPadName();
-                Pad oldPad = partOld.getPad(pinNr);
+                Pin oldPad = partOld.getPad(pinNr);
                 if (oldPad != null) {
                     p.traceStarts = oldPad.traceStarts;
                     p.traceStarts.forEach(wire -> wire.from = p);
@@ -320,7 +320,7 @@ public class Board {
             getNets().remove(netName);
 
             // TODO: The following code is the same as in addedNets below! 
-            List<Pad> padList = new ArrayList<>();
+            List<Pin> padList = new ArrayList<>();
             Net newNet = updatedBoard.getNets().get(netName);
             newNet.getPads().forEach(pad -> {
                 String partName = pad.getPart().getName();
@@ -330,7 +330,7 @@ public class Board {
                     final String padName = pad.getPadName();
                     System.err.printf("   %s, %s\n", part, padName);
 
-                    final Pad p = part.getPad(padName);
+                    final Pin p = part.getPad(padName);
 
                     if (p != null) {
                         padList.add(p);
@@ -344,8 +344,8 @@ public class Board {
 
             // Create a new net and connect all pads through an AirWire (TODO: duplicate code in EagleNetImport)
             Net net = new Net(netName);
-            Pad p1 = null;
-            for (Pad p2 : padList) {
+            Pin p1 = null;
+            for (Pin p2 : padList) {
                 if (p1 != null) {
                     net.addTrace(new AirWire(p1, p2, net));
                 }
@@ -356,14 +356,14 @@ public class Board {
         });
 
         addedNets.forEach(netName -> {
-            List<Pad> padList = new ArrayList<>();
+            List<Pin> padList = new ArrayList<>();
             Net newNet = updatedBoard.getNets().get(netName);
             newNet.getPads().forEach(pad -> {
                 String partName = pad.getPart().getName();
                 Part part = getParts().get(partName);
                 if (part != null) {
                     final String padName = pad.getPadName();
-                    final Pad p = part.getPad(padName);
+                    final Pin p = part.getPad(padName);
                     if (p != null) {
                         padList.add(p);
                     } else {
@@ -376,8 +376,8 @@ public class Board {
 
             // Create a new net and connect all pads through an AirWire (TODO: duplicate code in EagleNetImport)
             Net net = new Net(netName);
-            Pad p1 = null;
-            for (Pad p2 : padList) {
+            Pin p1 = null;
+            for (Pin p2 : padList) {
                 if (p1 != null) {
                     net.addTrace(new AirWire(p1, p2, net));
                 }

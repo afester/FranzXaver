@@ -1,14 +1,13 @@
 package afester.javafx.examples.board.model;
 
 import java.util.List;
-import java.util.Random;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javafx.geometry.Point2D;
-import javafx.scene.paint.Color;
+
 
 /**
  * An AirWire is a line between two Junctions which has not been routed yet.
@@ -151,7 +150,7 @@ public class AirWire extends AbstractWire {
 //            Trace t = new Trace(pFrom, pTo);
 //            net.addTrace(t);
 
-        } else if (pFrom instanceof Pad && pTo instanceof Pad) { 
+        } else if (pFrom instanceof Pin && pTo instanceof Pin) { 
             System.err.println("PAD/PAD");
             //     Pad - AirWire - Pad 
             // ==> Pad - AirWire - (Junction1 - Trace - Junction2 - AirWire2) - Pad
@@ -170,7 +169,7 @@ public class AirWire extends AbstractWire {
     
             AirWire aw2 = new AirWire(j2, pTo, getNet());
             net.addTrace(aw2);
-        } else if (pFrom instanceof Junction && pTo instanceof Pad) {
+        } else if (pFrom instanceof Junction && pTo instanceof Pin) {
             System.err.println("JUNCTION/PAD");
 
             //    Junction -                       AirWire - Pad 
@@ -184,7 +183,7 @@ public class AirWire extends AbstractWire {
 
             Trace t = new Trace(pFrom, j2, getNet());
             net.addTrace(t);
-        } else if (pFrom instanceof Pad && pTo instanceof Junction) {
+        } else if (pFrom instanceof Pin && pTo instanceof Junction) {
             System.err.println("PAD/JUNCTION");
 
             //    Pad - AirWire - Junction 
@@ -204,14 +203,6 @@ public class AirWire extends AbstractWire {
     @Override
     public TraceType getType() {
         return TraceType.AIRWIRE;
-    }
-
-    private Random r = new Random(System.currentTimeMillis());
-    private final Color getRandomColor() {
-        final double red = r.nextDouble();
-        final double green = r.nextDouble();
-        final double blue = r.nextDouble();
-        return new Color(red, green, blue, 1.0);
     }
 
     @Override

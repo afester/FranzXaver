@@ -6,7 +6,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import afester.javafx.examples.board.model.Package;
-import afester.javafx.examples.board.model.Pad;
+import afester.javafx.examples.board.model.Pin;
 import afester.javafx.examples.board.model.Part;
 
 class PartHandler extends SubContentHandler {
@@ -64,7 +64,7 @@ class PartHandler extends SubContentHandler {
                 System.err.printf("    %s\n", partPackage);
                 System.err.printf("    %s\n", pinPadMapping);
                 Part part = new Part(partName, partValue, partPackage);
-                partPackage.getPads().forEach(pad -> part.addPad(new Pad(part, pad)));
+                partPackage.getPads().forEach(pad -> part.addPad(new Pin(part, pad)));
                 mainHandler.addPart(part, pinPadMapping);
             } else {
                 System.err.printf("    Ignored %s since it does not have a package\n", partName);

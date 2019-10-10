@@ -73,7 +73,7 @@ class PackageHandler extends SubContentHandler {
                 // NOTE: -alpha is required due to the transformation of the y coordinate!
                 ArcParameters ap = ArcFactory.arcFromPointsAndAngle(p1,  p2, -alpha);
                 wireShape = new PartArc(ap.getCenter(), ap.getRadius(), ap.getStartAngle(),
-                                        ap.getLength(), width, ap.getColor());
+                                        ap.getLength(), width);
             } else {
                 wireShape = new PartLine(p1, p2, width);
             }

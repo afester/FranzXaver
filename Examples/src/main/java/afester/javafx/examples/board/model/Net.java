@@ -95,17 +95,17 @@ public class Net {
     }
 
 
-    public Set<Pad> getPads() {
-        final Set<Pad> result = new HashSet<>();
+    public Set<Pin> getPads() {
+        final Set<Pin> result = new HashSet<>();
         for (AbstractWire t : traceList) {
             AbstractNode j1 = t.getFrom();
-            if (j1 instanceof Pad) {
-                result.add((Pad) j1);
+            if (j1 instanceof Pin) {
+                result.add((Pin) j1);
             }
 
             AbstractNode j2 = t.getTo();
-            if (j2 instanceof Pad) {
-                result.add((Pad) j2);
+            if (j2 instanceof Pin) {
+                result.add((Pin) j2);
             }
         }
         return result;
@@ -144,17 +144,17 @@ public class Net {
      * @param pads The input list of Pads.
      * @return The list of Pads in the order of their nearest point.
      */
-    private List<Pad> calculateNearestPath(List<Pad> pads) {
-        List<Pad> result = new ArrayList<>(pads);
+    private List<Pin> calculateNearestPath(List<Pin> pads) {
+        List<Pin> result = new ArrayList<>(pads);
 
         for (int idx2 = 0;  idx2 < pads.size() - 1;  idx2++) {
-            Pad P0 = result.get(idx2);
+            Pin P0 = result.get(idx2);
 
             double minDist = Double.MAX_VALUE;
             int nearestIdx = -1;
-            Pad nearest = null;
+            Pin nearest = null;
             for (int idx = idx2+1;  idx < result.size();  idx++) {
-                Pad p = result.get(idx);
+                Pin p = result.get(idx);
                 double dist = P0.getPosition().distance(p.getPosition());
                 if (dist < minDist) {
                     nearestIdx = idx;
@@ -164,7 +164,7 @@ public class Net {
             }
 
             // swap the next point with the nearest one.
-            Pad tmp = result.get(idx2+1);
+            Pin tmp = result.get(idx2+1);
             result.set(idx2+1, nearest);
             result.set(nearestIdx, tmp);
         }
@@ -196,8 +196,8 @@ public class Net {
      * 
      */
     public void resetNet() {
-        List<Pad> pads = getPads().stream().collect(Collectors.toList());
-        List<Pad> sortedPads = calculateNearestPath(pads);
+        List<Pin> pads = getPads().stream().collect(Collectors.toList());
+        List<Pin> sortedPads = calculateNearestPath(pads);
 
         clear();
 

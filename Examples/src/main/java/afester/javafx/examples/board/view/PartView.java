@@ -1,12 +1,14 @@
-package afester.javafx.examples.board;
+package afester.javafx.examples.board.view;
 
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import afester.javafx.examples.board.model.Pad;
+import afester.javafx.examples.board.model.Pin;
 import afester.javafx.examples.board.model.Part;
+import afester.javafx.examples.board.Interactable;
+import afester.javafx.examples.board.SelectionShape;
 import afester.javafx.examples.board.model.Package;
 import afester.javafx.examples.board.model.PartShape;
 import afester.javafx.svg.SvgLoader;
@@ -30,8 +32,8 @@ public class PartView extends Group implements Interactable {
 
     private Rectangle selectionRect;
     private Rotate rot = new Rotate();
-    private Group padViews = new Group();
-    private Group shapeViews = new Group();
+    private Group padViews;
+    private Group shapeViews;
     private boolean isBottom;
     private boolean isSvg = false;
 
@@ -146,14 +148,16 @@ public class PartView extends Group implements Interactable {
     private void createNode() {
         getChildren().clear();
         shapeViews = new Group();
+        shapeViews.setId("partShapes");
         padViews = new Group();
+        padViews.setId("partPads");
 
         System.err.printf("Render %s as Svg: %s\n", this, isSvg);
 
         // render part as SVG?
         boolean svgAvailable = false;
         if (isSvg) {
-            final String packageName = part.getPackageRef();
+            final String packageName = part.getPackage().getName();
             final String packageSvg = package2svg.get(packageName);
             if (packageSvg != null) {
                 InputStream svgFile = getClass().getResourceAsStream(packageSvg);
@@ -191,7 +195,7 @@ public class PartView extends Group implements Interactable {
                 shapeViews.getChildren().add(s);
             }
 
-            for (Pad ps : part.getPads()) {
+            for (Pin ps : part.getPads()) {
                 Node s = null;
                 if (isBottom) {
                     s = new PadViewBottom(ps);
@@ -227,8 +231,8 @@ public class PartView extends Group implements Interactable {
         createNode();
     }
 
-    public Collection<Pad> getPads() {
-        return part.getPads(); // .values();
+    public Collection<Pin> getPads() {
+        return part.getPads();
     }
 
 	@Override
@@ -242,7 +246,7 @@ public class PartView extends Group implements Interactable {
 
     @Override
     public String getRepr() {
-        return String.format("Part: %s (%s) - %s", part.getName(), part.getValue(), part.getPackageRef()); 
+        return String.format("Part: %s (%s) - %s", part.getName(), part.getValue(), part.getPackage().getName()); 
     }
 
 

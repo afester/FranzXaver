@@ -1,5 +1,7 @@
 package afester.javafx.examples.board;
 
+import afester.javafx.examples.board.view.BoardCorner;
+import afester.javafx.examples.board.view.BoardView;
 import javafx.event.EventTarget;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;

@@ -1,9 +1,8 @@
-package afester.javafx.examples.board;
+package afester.javafx.examples.board.view;
 
 import afester.javafx.examples.board.model.AbstractWire;
 import afester.javafx.examples.board.model.AbstractWire.AbstractWireState;
 import afester.javafx.examples.board.model.TraceType;
-import javafx.scene.paint.Color;
 
 
 /**

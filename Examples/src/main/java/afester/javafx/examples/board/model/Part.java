@@ -2,7 +2,6 @@ package afester.javafx.examples.board.model;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -22,7 +21,7 @@ public class Part {
     private final String partValue;
     private Package thePackage;
 
-    private Map<String, Pad> pads = new HashMap<>();
+    private Map<String, Pin> pads = new HashMap<>();
 
     // Position of the part
     private ObjectProperty<Point2D> position = new SimpleObjectProperty<>(new Point2D(0, 0));
@@ -49,7 +48,7 @@ public class Part {
      *
      * @param partName  The name of the part
      * @param partValue The part value
-     * @param packageRef The name of the part's package.
+     * @param pkg       The package which defines the outline of this part
      */
     public Part(String partName, String partValue, Package pkg) {
         this.partName = partName;
@@ -57,40 +56,21 @@ public class Part {
         this.thePackage = pkg;
     }
 
-//    @Deprecated
-//    public Part(String partName, String partValue, String packageRef) {
-//        this.partName = partName;
-//        this.partValue = partValue;
-//        this.thePackage = new Package(packageRef, packageRef);
-//    }
 
     public Package getPackage() {
         return thePackage;
     }
 
-    public void addPad(Pad pad) { /// , String pinId) {
-        System.err.println("ADDING:" + pad);
+    public void addPad(Pin pad) {
         final String key = pad.getPadName();
         pads.put(key, pad);
     }
 
-    public Pad getPad(String pinId) {
+    public Pin getPad(String pinId) {
         return pads.get(pinId);
     }
 
-//    @Deprecated
-//    public void addShape(PartShape shape) {
-//        thePackage.addShape(shape);
-//        // shapes.add(shape);
-//    }
-
-//    @Deprecated
-//    public List<PartShape> getShapes() {
-//        return thePackage.getShapes();
-////        return shapes;
-//    }
-
-    public Collection<Pad> getPads() {
+    public Collection<Pin> getPads() {
         return pads.values();
     }
 
@@ -111,7 +91,7 @@ public class Part {
     /**
      * @return The package name of this part (like 205/07)
      */
-    public String getPackageRef() {
+    public String getPackageRef1() {
         // return packageRef;
         return thePackage.getName();
     }
@@ -127,7 +107,7 @@ public class Part {
         partNode.setAttribute("y", Double.toString(getPosition().getY()));
         partNode.setAttribute("rotation", Double.toString(getRotation()));
 
-        for (Pad ps : getPads()) {
+        for (Pin ps : getPads()) {
             ps.setId(junctionId.val++);
             org.w3c.dom.Node padNode = ps.getXML(doc);
             partNode.appendChild(padNode);
@@ -139,7 +119,7 @@ public class Part {
 
     protected boolean replacedWith(Part p2) {
         // This is a first trivial attempt to decide whether the package for the part has changed:
-        return !getPackageRef().equals(p2.getPackage().getName()) || 
+        return !getPackage().getName().equals(p2.getPackage().getName()) || 
                 getValue().equals(p2.getValue()) || 
                 getName().equals(p2.getName());
     }
