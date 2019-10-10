@@ -6,9 +6,7 @@ import org.w3c.dom.Node;
 
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
-import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
