@@ -116,6 +116,6 @@ PartView Rectangle {
 }
 
 PartView Text {
-	-fx-font: normal normal 4pt "pcbiusregular";
+	-fx-font: normal normal 4pt "PCBiusRegular";
 	-fx-stroke: none;
 }

@@ -1,5 +1,12 @@
 package afester.javafx.examples.ttf;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+
+import afester.javafx.examples.board.model.Board;
+import afester.javafx.examples.board.model.BoardLoader;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
@@ -10,11 +17,14 @@ import javafx.scene.control.Control;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SkinBase;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 
 interface FontSelectedHandler extends EventHandler<FontChangedEvent> {
@@ -42,8 +52,11 @@ class FontSelectionSkin extends SkinBase<FontSelectionPanel> {
 
 /// Font family
         VBox fontFamilyPanel = new VBox();
+        final TextField fontFamilyFilter = new TextField();
+        fontFamilyFilter.textProperty().addListener((obj, oldVal, newVal) -> populateFontFamilyList(newVal));
         fontFamilies = new ListView<>();
-        Font.getFamilies().forEach(e -> fontFamilies.getItems().add(e));
+        populateFontFamilyList("");
+        // Font.getFamilies().forEach(e -> fontFamilies.getItems().add(e));
         fontFamilies.getSelectionModel().select(fsp.currentFont.getFamily());
         fontFamilies.getSelectionModel().getSelectedIndices().addListener( new ListChangeListener<Integer>() {
     
@@ -62,8 +75,10 @@ class FontSelectionSkin extends SkinBase<FontSelectionPanel> {
 
         } );
 
-        fontFamilyPanel.getChildren().addAll(new Text("Font"), fontFamilies, new Button("Load ..."));
-    
+        final Button loadButton = new Button("Load ...");
+        loadButton.setOnAction(e -> loadFont());
+        fontFamilyPanel.getChildren().addAll(new Text("Font"), fontFamilyFilter, fontFamilies, loadButton);
+
 /// Font style
         VBox fontStylePanel = new VBox();
         italic = new CheckBox("Italic");
@@ -110,6 +125,32 @@ class FontSelectionSkin extends SkinBase<FontSelectionPanel> {
         fontPanel.setSpacing(10);
         fontPanel.getChildren().addAll(fontFamilyPanel, fontStylePanel, fontSizePanel);
         getChildren().add(fontPanel);
+    }
+
+    private void populateFontFamilyList(String filter) {
+        fontFamilies.getItems().clear();
+        //Font.getFamilies().forEach(e -> {
+        Font.getFontNames().forEach(e -> {
+            if (filter.isEmpty() || e.contains(filter)) {
+                fontFamilies.getItems().add(e);
+            }
+        });
+    }
+
+    private void loadFont() {
+        FileChooser fileChooser = new FileChooser();
+        // fileChooser.setSelectedExtensionFilter(new ExtensionFilter("True Type Font", ".ttf"));
+        fileChooser.setTitle("Load font from file ...");
+        File result = fileChooser.showOpenDialog(null);
+        if (result != null) {
+            InputStream is;
+            try {
+                is = new FileInputStream(result);
+                Font.loadFont(is, 72);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
 

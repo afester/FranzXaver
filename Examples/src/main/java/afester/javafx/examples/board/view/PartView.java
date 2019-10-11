@@ -68,19 +68,20 @@ public class PartView extends Group implements Interactable {
 
     @Override
     public void setSelected(boolean isSelected) {
-        getChildren().remove(selectionRect);
+        //getChildren().remove(selectionRect);
         if (isSelected) {
             // Calculate bounds of the selected element in the content's coordinates
-            Bounds b = getBoundsInLocal();
+            //Bounds b = getBoundsInLocal();
 
             final double nonScaledWidth = 1 / getParent().getParent().getScaleX();      // TODO: This is (probably) a hack!
 
             // create the visualization for selection
-            selectionRect = new Rectangle(b.getMinX(), b.getMinY(), b.getWidth(), b.getHeight());
+            //selectionRect = new Rectangle(b.getMinX(), b.getMinY(), b.getWidth(), b.getHeight());
+
             selectionRect.setFill(null);
+            selectionRect.setOpacity(1.0);
             selectionRect.setStroke(Color.RED);
             selectionRect.setStrokeWidth(nonScaledWidth);
-            selectionRect.getStrokeDashArray().addAll(1.0, 1.0);
 
 //            l1 = new Line(b.getMinX(), b.getMinY(),               b.getMinX()+b.getWidth(), b.getMinY()+b.getHeight());
 //            l1.setStroke(Color.BLUE);
@@ -89,7 +90,13 @@ public class PartView extends Group implements Interactable {
 //            l2.setStroke(Color.BLUE);
 //            l2.setStrokeWidth(nonScaledWidth);
 
-            getChildren().addAll(selectionRect); // , l1, l2);
+//            getChildren().addAll(selectionRect); // , l1, l2);
+         } else {
+             selectionRect.setFill(Color.WHITE);
+             selectionRect.setOpacity(0.0);
+             selectionRect.setStroke(null);
+             //selectionRect.setStrokeWidth(nonScaledWidth);
+             //selectionRect.getStrokeDashArray().addAll(1.0, 1.0);
          }
     }
     
@@ -222,8 +229,10 @@ public class PartView extends Group implements Interactable {
 
         // Finally add a shape which can be used to select the device
         // TODO: This is a Hack
-        SelectionShape selectShape = new SelectionShape(getBoundsInLocal());
-        getChildren().add(selectShape);
+        /*SelectionShape selectShape*/ selectionRect = new SelectionShape(getBoundsInLocal());
+        getChildren().add(selectionRect); // selectShape);
+        selectionRect.getStrokeDashArray().addAll(1.0, 1.0);
+
     }
 
     public void renderSVG(Boolean newValue) {

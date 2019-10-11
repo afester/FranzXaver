@@ -135,8 +135,8 @@ public class FontGenerator extends Application {
  
     public static void main(String[] args) {
         // The following properties are required on Linux for improved text rendering
-        System.setProperty("prism.lcdtext", "false");
-        System.setProperty("prism.text", "t2k");
+//        System.setProperty("prism.lcdtext", "false");
+//        System.setProperty("prism.text", "t2k");
         launch(args);
     }
 
@@ -202,7 +202,9 @@ public class FontGenerator extends Application {
 
         FontSelectionPanel fsp = new FontSelectionPanel(currentFont);
         fsp.setOnFontChanged( e-> {
-            currentFont = Font.font(e.getFamily(), e.getWeight(), e.isItalic() ? FontPosture.ITALIC : FontPosture.REGULAR, e.getSize());
+            System.err.println(e);
+            currentFont = Font.font(e.getFamily()); // , e.getWeight(), e.isItalic() ? FontPosture.ITALIC : FontPosture.REGULAR, e.getSize());
+            System.err.println(currentFont);
             t.setFont(currentFont);
             updateGlyphs();
         });
