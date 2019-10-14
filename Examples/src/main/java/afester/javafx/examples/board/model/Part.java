@@ -15,13 +15,17 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
 
+/**
+ * A Part consists of a Name, a Value, the Pins to which nets can be connected, and the
+ * Package which specified the outline of the part. 
+ */
 public class Part {
 
     private final String partName;
     private final String partValue;
-    private Package thePackage;
+    private final Package thePackage;
 
-    private Map<String, Pin> pads = new HashMap<>();
+    private Map<String, Pin> pins = new HashMap<>();
 
     // Position of the part
     private ObjectProperty<Point2D> position = new SimpleObjectProperty<>(new Point2D(0, 0));
@@ -54,24 +58,26 @@ public class Part {
         this.partName = partName;
         this.partValue = partValue;
         this.thePackage = pkg;
-    }
 
+        // create actual connection points for the new part from each of the package pads 
+        pkg.getPads().forEach(pad -> addPad(new Pin(this, pad)));
+    }
 
     public Package getPackage() {
         return thePackage;
     }
 
-    public void addPad(Pin pad) {
+    private void addPad(Pin pad) {
         final String key = pad.getPadName();
-        pads.put(key, pad);
+        pins.put(key, pad);
     }
 
     public Pin getPad(String pinId) {
-        return pads.get(pinId);
+        return pins.get(pinId);
     }
 
     public Collection<Pin> getPads() {
-        return pads.values();
+        return pins.values();
     }
 
     /**
@@ -87,16 +93,6 @@ public class Part {
     public String getValue() {
         return partValue;
     }
-
-    /**
-     * @return The package name of this part (like 205/07)
-     */
-    public String getPackageRef1() {
-        // return packageRef;
-        return thePackage.getName();
-    }
-
-
 
     public Element getXml(Document doc, IntVal junctionId) {
         Element partNode = doc.createElement("part");

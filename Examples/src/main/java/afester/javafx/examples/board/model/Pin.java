@@ -6,9 +6,9 @@ import org.w3c.dom.Element;
 import javafx.geometry.Point2D;
 
 /**
- * A Pad is a junction which refers to a specific pin of a Part.
+ * A Pin is a junction which refers to a specific pin of a Part.
  */
-public class Pin extends AbstractNode {
+public final class Pin extends AbstractNode {
 
     private final Part part;
     private final String padName; // the physical pad name (unique within a Part)
@@ -16,23 +16,16 @@ public class Pin extends AbstractNode {
     private Point2D localPos;
 
     /**
-     * Creates a new Pad.
+     * Creates a new Pin.
      *
      * @param part	    The part to which this pad is attached
      * @param padName   The (physical) pad number of this pad
      * @param padPos    The position of the pad (in Part coordinates!!!!)
      */
-//    public Pin(Part part, String padName, Point2D padPos) {
-//        super(null, part.globalPadPos(padPos));
-//
-//        this.part = part;
-//
-//        this.padName = padName;
-//        this.localPos = padPos;
-//    }
-
     public Pin(Part part, PartPad pad) {
         super(null, part.globalPadPos(pad.getPos()));
+
+        System.err.printf(">> NEW PIN %s\n", part);
         this.part = part;
 
         // These can be replaced by a reference to PartPad
@@ -99,7 +92,7 @@ public class Pin extends AbstractNode {
 
     @Override
     public String toString() {
-        return String.format("Pad[part=\"%s\", padName=\"%s\", pos=%s]", 
-                             part.getName(), padName, /*pin + "@" + gate,*/ getPosition());  
+        return String.format("Pin[part=\"%s\", padName=\"%s\", pos=%s]", 
+                             (part == null? "null" : part.getName()), padName, /*pin + "@" + gate,*/ getPosition());  
     }
 }

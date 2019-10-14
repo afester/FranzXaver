@@ -11,8 +11,8 @@ import javafx.scene.paint.Color;
 
 public abstract class AbstractNode {
     private Net net;
-    public List<AbstractWire> traceStarts = new ArrayList<>();
-    public List<AbstractWire> traceEnds = new ArrayList<>();
+    List<AbstractWire> traceStarts = new ArrayList<>();
+    List<AbstractWire> traceEnds = new ArrayList<>();
 
     protected int id;	// currently only required for serialization and deserialization
 

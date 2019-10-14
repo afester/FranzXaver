@@ -15,9 +15,6 @@ public abstract class AbstractWire {
     protected AbstractNode to;
     protected Net net;
 
-    
-    
-
     public AbstractWire(AbstractNode from, AbstractNode to, Net net) {
         this.from = from;
         this.to = to;
@@ -25,7 +22,7 @@ public abstract class AbstractWire {
 
         from.addStart(this);
         to.addEnd(this);
-        
+
         setStart(from.getPosition());
         setEnd(to.getPosition());
     }

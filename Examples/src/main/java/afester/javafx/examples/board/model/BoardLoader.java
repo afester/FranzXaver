@@ -164,11 +164,8 @@ class PartHandler extends SubContentHandler {
             final String padName = attributes.getValue("padName");
             final String padId = attributes.getValue("id");
 
-            Package pkg = part.getPackage();
-            PartPad partPad = pkg.getPad(padName);
-            Pin pad = new Pin(part, partPad);
-            bl.nodes.put(padId, pad);
-            System.err.printf("  %s\n", pad);
+            final Pin pin = part.getPad(padName);
+            bl.nodes.put(padId, pin);
         } else {
             System.err.println("   " + localName);
         }

@@ -64,7 +64,6 @@ class PartHandler extends SubContentHandler {
                 System.err.printf("    %s\n", partPackage);
                 System.err.printf("    %s\n", pinPadMapping);
                 Part part = new Part(partName, partValue, partPackage);
-                partPackage.getPads().forEach(pad -> part.addPad(new Pin(part, pad)));
                 mainHandler.addPart(part, pinPadMapping);
             } else {
                 System.err.printf("    Ignored %s since it does not have a package\n", partName);
