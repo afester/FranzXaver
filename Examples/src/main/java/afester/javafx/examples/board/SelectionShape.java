@@ -1,17 +1,17 @@
 package afester.javafx.examples.board;
 
 import javafx.geometry.Bounds;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class SelectionShape extends Rectangle {
 
     public SelectionShape(Bounds bounds) {
         super(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
-        setFill(Color.WHITE);
-        setOpacity(0);
-        //setMouseTransparent(false);
-        // setOnMousePressed(e -> System.err.println(e));
+
+        setFill(null);
+        setStroke(null);
+        setMouseTransparent(true);      // this shape must not react to mouse events
+        getStrokeDashArray().addAll(1.0, 1.0);
     }
 
 //    public void setSelected(boolean isSelected) {

@@ -77,4 +77,11 @@ public abstract class AbstractNode {
     public Net getNet() {
         return net;
     }
+
+    /**
+     * @return The number of edges which are connected to this node.
+     */
+    public int getEdgeCount() {
+        return traceStarts.size() + traceEnds.size();
+    }
 }

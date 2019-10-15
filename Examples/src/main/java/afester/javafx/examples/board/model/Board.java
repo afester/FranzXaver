@@ -244,10 +244,10 @@ public class Board {
             Part partNew = updatedBoard.getParts().get(partName);
 
             System.err.printf("  %s => %s\n", partOld, partNew);
-            for (Pin p : partNew.getPads()) {
+            for (Pin p : partNew.getPins()) {
                 // try to reconnect pins with the same name
                 String pinNr = p.getPadName();
-                Pin oldPad = partOld.getPad(pinNr);
+                Pin oldPad = partOld.getPin(pinNr);
                 if (oldPad != null) {
                     p.traceStarts = oldPad.traceStarts;
                     p.traceStarts.forEach(wire -> wire.from = p);
@@ -270,7 +270,7 @@ public class Board {
 
         addedParts.forEach(partName -> {
             Part newPart = updatedBoard.getParts().get(partName);
-            newPart.getPads().forEach(pad -> {
+            newPart.getPins().forEach(pad -> {
                 pad.traceStarts.clear();    // remove references to "new" board
                 pad.traceEnds.clear();      // remove references to "new" board
             });
@@ -330,7 +330,7 @@ public class Board {
                     final String padName = pad.getPadName();
                     System.err.printf("   %s, %s\n", part, padName);
 
-                    final Pin p = part.getPad(padName);
+                    final Pin p = part.getPin(padName);
 
                     if (p != null) {
                         padList.add(p);
@@ -363,7 +363,7 @@ public class Board {
                 Part part = getParts().get(partName);
                 if (part != null) {
                     final String padName = pad.getPadName();
-                    final Pin p = part.getPad(padName);
+                    final Pin p = part.getPin(padName);
                     if (p != null) {
                         padList.add(p);
                     } else {
@@ -399,7 +399,7 @@ public class Board {
     private void removePart(String partName) {
         Part part = getParts().get(partName);
         if (part != null) {
-            part.getPads().forEach(pad -> {
+            part.getPins().forEach(pad -> {
                 pad.traceStarts.forEach(trace -> {
                     Net net = trace.getNet();
                     net.getTraces().remove(trace);

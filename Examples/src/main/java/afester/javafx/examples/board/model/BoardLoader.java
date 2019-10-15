@@ -164,7 +164,7 @@ class PartHandler extends SubContentHandler {
             final String padName = attributes.getValue("padName");
             final String padId = attributes.getValue("id");
 
-            final Pin pin = part.getPad(padName);
+            final Pin pin = part.getPin(padName);
             bl.nodes.put(padId, pin);
         } else {
             System.err.println("   " + localName);

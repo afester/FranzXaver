@@ -32,7 +32,7 @@ public class Part {
     public ObjectProperty<Point2D> positionProperty() { return position; }
     public void setPosition(Point2D pos) { 
         position.setValue(pos);
-        getPads().forEach(pad -> pad.setPosition(this.globalPadPos(pad.getLocalPos())));
+        getPins().forEach(pad -> pad.setPosition(this.globalPadPos(pad.getLocalPos())));
     }
     public Point2D getPosition() { return position.getValue(); }
 
@@ -41,10 +41,9 @@ public class Part {
     public DoubleProperty rotationProperty() { return rotation; } 
     public void setRotation(double angle) { 
         rotation.setValue(angle); 
-        getPads().forEach(pad -> pad.setPosition(this.globalPadPos(pad.getLocalPos())));
+        getPins().forEach(pad -> pad.setPosition(this.globalPadPos(pad.getLocalPos())));
     }
     public double getRotation() { return rotation.getValue(); }
-
 
 
     /**
@@ -60,23 +59,25 @@ public class Part {
         this.thePackage = pkg;
 
         // create actual connection points for the new part from each of the package pads 
-        pkg.getPads().forEach(pad -> addPad(new Pin(this, pad)));
+        pkg.getPads().forEach(pad -> pins.put(pad.getName(), new Pin(this, pad)));
     }
 
     public Package getPackage() {
         return thePackage;
     }
 
-    private void addPad(Pin pad) {
-        final String key = pad.getPadName();
-        pins.put(key, pad);
-    }
-
-    public Pin getPad(String pinId) {
+    /**
+     * @param pinId The name of the pin to return.
+     * @return Returns the pin with the given name. 
+     */
+    public Pin getPin(String pinId) {
         return pins.get(pinId);
     }
 
-    public Collection<Pin> getPads() {
+    /**
+     * @return All pins of this Part.
+     */
+    public Collection<Pin> getPins() {
         return pins.values();
     }
 
@@ -103,7 +104,7 @@ public class Part {
         partNode.setAttribute("y", Double.toString(getPosition().getY()));
         partNode.setAttribute("rotation", Double.toString(getRotation()));
 
-        for (Pin ps : getPads()) {
+        for (Pin ps : getPins()) {
             ps.setId(junctionId.val++);
             org.w3c.dom.Node padNode = ps.getXML(doc);
             partNode.appendChild(padNode);
@@ -152,7 +153,7 @@ public class Part {
 
     @Override
     public String toString() {
-        String padList = getPads().stream()
+        String padList = getPins().stream()
                                   .map( p -> p.getPadName())
                                   .collect( Collectors.joining(",") ); 
         return String.format("Part[name=\"%s\", pos=%s, pads=[%s]]", partName, getPosition(), padList);

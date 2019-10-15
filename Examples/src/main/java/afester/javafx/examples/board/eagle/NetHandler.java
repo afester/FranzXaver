@@ -37,7 +37,7 @@ class NetHandler extends SubContentHandler {
                 String padName = pinPadMappings.get(pin + "@" + gate);
 
                 // Here we need the "global" Pad as a graph node, not the pad template from the Package! 
-                Pin pad = p.getPad(padName);
+                Pin pad = p.getPin(padName);
                 System.err.printf("    %s\n", pad);
 
                 padList.add(pad);

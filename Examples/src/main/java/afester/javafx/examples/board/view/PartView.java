@@ -13,7 +13,6 @@ import afester.javafx.examples.board.model.Package;
 import afester.javafx.examples.board.model.PartShape;
 import afester.javafx.svg.SvgLoader;
 import afester.javafx.svg.SvgTextBox;
-import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -25,6 +24,19 @@ import javafx.scene.transform.Rotate;
 
 /**
  * This class is the JavaFX node which visualizes a specific Part.
+ * The Part is either visualized through its package shapes or through an SVG image.
+ * 
+ * Node hierarchy:
+ * PartView  pickOnBounds=true
+ *   +-shapeViews       mouseTransparent=true
+ *   |   +-Line
+ *   |   +-Rectangle
+ *   |   +-Text
+ *   |   +-...
+ *   +-padViews         mouseTransparent=true
+ *   +-crossLine1
+ *   +-crossLine2
+ *   +-selectionRect    mouseTransparent=true
  */
 public class PartView extends Group implements Interactable {
 
@@ -35,15 +47,15 @@ public class PartView extends Group implements Interactable {
     private Group padViews;
     private Group shapeViews;
     private boolean isBottom;
-    private boolean isSvg = false;
+    private boolean isSvg = false;  // flag to determine if the node is rendered as SVG image or not
 
-    
+
     public PartView(Part part, boolean isBottom) {
         this.part = part;
         this.isBottom = isBottom;
 
-        this.setMouseTransparent(false);
-        //this.setPickOnBounds(true);
+        // Any reason why this seems to not have worked earlier?????
+        setPickOnBounds(true);
 
         rot.setAngle(part.getRotation());
         getTransforms().add(rot);
@@ -58,7 +70,7 @@ public class PartView extends Group implements Interactable {
             setLayoutY(newValue.getY());
         });
 
-        createNode();
+        render(false);
     }
 
 
@@ -68,18 +80,9 @@ public class PartView extends Group implements Interactable {
 
     @Override
     public void setSelected(boolean isSelected) {
-        //getChildren().remove(selectionRect);
         if (isSelected) {
-            // Calculate bounds of the selected element in the content's coordinates
-            //Bounds b = getBoundsInLocal();
-
             final double nonScaledWidth = 1 / getParent().getParent().getScaleX();      // TODO: This is (probably) a hack!
 
-            // create the visualization for selection
-            //selectionRect = new Rectangle(b.getMinX(), b.getMinY(), b.getWidth(), b.getHeight());
-
-            selectionRect.setFill(null);
-            selectionRect.setOpacity(1.0);
             selectionRect.setStroke(Color.RED);
             selectionRect.setStrokeWidth(nonScaledWidth);
 
@@ -89,14 +92,15 @@ public class PartView extends Group implements Interactable {
 //            l2 = new Line(b.getMinX(), b.getMinY()+b.getHeight(), b.getMinX()+b.getWidth(), b.getMinY());
 //            l2.setStroke(Color.BLUE);
 //            l2.setStrokeWidth(nonScaledWidth);
-
 //            getChildren().addAll(selectionRect); // , l1, l2);
+
+            if (isSvg) {
+                shapeViews.setOpacity(0.4);
+            }
+            
          } else {
-             selectionRect.setFill(Color.WHITE);
-             selectionRect.setOpacity(0.0);
              selectionRect.setStroke(null);
-             //selectionRect.setStrokeWidth(nonScaledWidth);
-             //selectionRect.getStrokeDashArray().addAll(1.0, 1.0);
+             shapeViews.setOpacity(1.0);
          }
     }
     
@@ -152,18 +156,20 @@ public class PartView extends Group implements Interactable {
     /**
      * Creates the Part as a JavaFX node
      */
-    private void createNode() {
+    public void render(Boolean asSvg) {
         getChildren().clear();
         shapeViews = new Group();
         shapeViews.setId("partShapes");
+        shapeViews.setMouseTransparent(true);
         padViews = new Group();
         padViews.setId("partPads");
+        padViews.setMouseTransparent(true);
 
-        System.err.printf("Render %s as Svg: %s\n", this, isSvg);
+        System.err.printf("Render %s as Svg: %s\n", this, asSvg);
 
         // render part as SVG?
-        boolean svgAvailable = false;
-        if (isSvg) {
+        isSvg = false;
+        if (asSvg) {
             final String packageName = part.getPackage().getName();
             final String packageSvg = package2svg.get(packageName);
             if (packageSvg != null) {
@@ -171,19 +177,25 @@ public class PartView extends Group implements Interactable {
                 SvgLoader loader = new SvgLoader();
                 Group svgImage = loader.loadSvg(svgFile);
 
-                // update the part value
-                SvgTextBox partNameText = (SvgTextBox) svgImage.lookup("#partValue");
+                // update the part Value
+                final SvgTextBox partValueText = (SvgTextBox) svgImage.lookup("#partValue");
+                if (partValueText != null) {
+                    Text text = partValueText.getTextSpan(0);
+                    text.setText(part.getValue());
+                }
+                // update the part Name
+                final SvgTextBox partNameText = (SvgTextBox) svgImage.lookup("#partName");
                 if (partNameText != null) {
                     Text text = partNameText.getTextSpan(0);
-                    text.setText(part.getValue());
-               }
+                    text.setText(part.getName());
+                }
 
                 shapeViews.getChildren().add(svgImage);
-                svgAvailable = true;
+                isSvg = true;
             }
         }
 
-        if (!svgAvailable) {
+        if (!isSvg) {
 
             Package pkg = part.getPackage();
             for (PartShape ps : pkg.getShapes()) {
@@ -202,7 +214,7 @@ public class PartView extends Group implements Interactable {
                 shapeViews.getChildren().add(s);
             }
 
-            for (Pin ps : part.getPads()) {
+            for (Pin ps : part.getPins()) {
                 Node s = null;
                 if (isBottom) {
                     s = new PadViewBottom(ps);
@@ -217,31 +229,34 @@ public class PartView extends Group implements Interactable {
         getChildren().add(padViews);
 
         // Create a marker for the mid point
-        if (!svgAvailable) {
+        if (!isSvg) {
             Line l1 = new Line(-0.5, 0.0, 0.5, 0.0);
-            l1.setStroke(Color.RED);
-            l1.setStrokeWidth(0.2);
+            l1.getStyleClass().add("centerCross");
+
             Line l2 = new Line(0.0, -0.5, 0.0, 0.5);
-            l2.setStroke(Color.RED);
-            l2.setStrokeWidth(0.2);
+            l2.getStyleClass().add("centerCross");
+
             getChildren().addAll(l1, l2);
         }
 
-        // Finally add a shape which can be used to select the device
-        // TODO: This is a Hack
-        /*SelectionShape selectShape*/ selectionRect = new SelectionShape(getBoundsInLocal());
-        getChildren().add(selectionRect); // selectShape);
-        selectionRect.getStrokeDashArray().addAll(1.0, 1.0);
-
+        // Finally add a shape which can be used to visualize the selection state
+        selectionRect = new SelectionShape(getBoundsInLocal());
+        getChildren().add(selectionRect);
     }
 
-    public void renderSVG(Boolean newValue) {
-        this.isSvg = newValue;
-        createNode();
+
+    @Override
+    public String getTypeSelector() {
+        // for SVG rendering, we must disable CSS styling of the Part
+        if (isSvg) {
+            return "SvgPart";
+        }
+
+        return super.getTypeSelector();
     }
 
     public Collection<Pin> getPads() {
-        return part.getPads();
+        return part.getPins();
     }
 
 	@Override
@@ -263,6 +278,4 @@ public class PartView extends Group implements Interactable {
     public String toString() {
         return String.format("PartView[partName=%s %s]", part.getName(), getBoundsInLocal());
     }
-
-
 }

@@ -386,7 +386,7 @@ public class BreadBoardEditor extends Application {
             AbstractNode from = trace.getFrom();
             AbstractNode to = trace.getTo();
 
-            if (from.traceStarts.size() > 1 || to.traceEnds.size() > 1) {
+            if (from.getEdgeCount() > 2 || to.getEdgeCount() > 2) {
                 System.err.println("Currently only intermediate traces can be removed");
                 return;
             }

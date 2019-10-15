@@ -28,15 +28,11 @@ public abstract class MouseInteractor implements Interactor {
 
         if (target instanceof Interactable) {
             result = (Interactable) target;
-        } else if (target instanceof SelectionShape) {
-            Node parent = ((Node) target).getParent();
-            if (parent instanceof Interactable) {
-                result = (Interactable) parent;
-            }
         } else if (target instanceof Handle || target instanceof BoardCorner) {
             result = (Interactable) target;
         } else {
             Node parent = ((Node) target).getParent();
+            System.err.println("   Parent:" + parent);
             if (parent instanceof Interactable) {
                 result = (Interactable) parent;
             } else {

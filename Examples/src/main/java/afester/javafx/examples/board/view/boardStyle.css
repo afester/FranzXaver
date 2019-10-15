@@ -97,25 +97,30 @@ TraceView.BridgeSelect {
 }
 
 /* default fill- and stroke color for all shapes */
-PartView * {
+PartView #partShapes * {
 	-fx-stroke: gray;
 	-fx-fill: gray;
 	-fx-stroke-line-cap: round;
 }
 
-PartView Circle {
+PartView #partShapes Circle {
 	-fx-fill: none;
 }
 
-PartView Arc {
+PartView #partShapes Arc {
 	-fx-fill: none;
 }
 
-PartView Rectangle {
+PartView #partShapes Rectangle {
 	-fx-stroke: none;
 }
 
-PartView Text {
+PartView #partShapes Text {
 	-fx-font: normal normal 4pt "PCBiusRegular";
 	-fx-stroke: none;
+}
+
+PartView .centerCross {
+    -fx-stroke: red;
+    -fx-stroke-width: 0.2px;
 }

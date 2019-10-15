@@ -100,7 +100,7 @@ public class BoardView extends Pane {
         getStylesheets().add(css);
         setBoard(board);
         
-        showSvg.addListener((obj, oldValue, newValue) -> { partsGroup.getChildren().forEach(part -> ((PartView) part).renderSVG(newValue)); });
+        showSvg.addListener((obj, oldValue, newValue) -> { partsGroup.getChildren().forEach(part -> ((PartView) part).render(newValue)); });
         netsGroup.visibleProperty().bind(showNetsProperty());
         dimensionGroup.visibleProperty().bind(showDimensionsProperty());
         boardHandlesGroup.visibleProperty().bind(showBoardHandlesProperty());
@@ -303,9 +303,7 @@ public class BoardView extends Pane {
         board.getParts().forEach((k, g) -> {
             // Create a PartView from the model
             PartView partView = new PartView(g, isBottom);
-            System.err.println("  " + g);
             partsGroup.getChildren().add(partView);
-
             pMap.put(g, partView);
         });
         board.getParts().addListener((javafx.collections.MapChangeListener.Change<? extends String, ? extends Part> change) -> {

@@ -11,9 +11,7 @@ import javafx.geometry.Point2D;
 public final class Pin extends AbstractNode {
 
     private final Part part;
-    private final String padName; // the physical pad name (unique within a Part)
-
-    private Point2D localPos;
+    private final PartPad pad;
 
     /**
      * Creates a new Pin.
@@ -25,16 +23,12 @@ public final class Pin extends AbstractNode {
     public Pin(Part part, PartPad pad) {
         super(null, part.globalPadPos(pad.getPos()));
 
-        System.err.printf(">> NEW PIN %s\n", part);
         this.part = part;
-
-        // These can be replaced by a reference to PartPad
-        this.padName = pad.getName();
-        this.localPos = pad.getPos();
+        this.pad = pad;
     }
 
     public Point2D getLocalPos() {
-        return localPos;
+        return pad.getPos();
     }
 
     public Part getPart() {
@@ -42,12 +36,12 @@ public final class Pin extends AbstractNode {
     }
 
     public String getPadName() {
-        return padName;
+        return pad.getName();
     }
 
     public org.w3c.dom.Node getXML(Document doc) {
         Element result = doc.createElement("pad");
-        result.setAttribute("padName", padName);
+        result.setAttribute("padName", getPadName());
         result.setAttribute("id", Integer.toString(id));
 
         return result;
@@ -59,7 +53,7 @@ public final class Pin extends AbstractNode {
      * @return A board-unique pad id in the form "partName$pinNumber"
      */
     public String getPadId() {
-        return part.getName() + "$" + padName;
+        return part.getName() + "$" + getPadName();
     }
 
     @Override
@@ -93,6 +87,6 @@ public final class Pin extends AbstractNode {
     @Override
     public String toString() {
         return String.format("Pin[part=\"%s\", padName=\"%s\", pos=%s]", 
-                             (part == null? "null" : part.getName()), padName, /*pin + "@" + gate,*/ getPosition());  
+                             (part == null? "null" : part.getName()), getPadName(), /*pin + "@" + gate,*/ getPosition());  
     }
 }
