@@ -10,12 +10,14 @@ DimensionView Line {
    -fx-stroke-width: 0.3px;
 }
 
-/*
 DimensionView Text {
 	-fx-fill: darkred;
+
+/* When styling the font from here, the text positioning doesnot work anymore
 	-fx-font-family: monospace;
 	-fx-font-size: 2.0pt;
-}*/
+*/
+}
 
 HoleViewTop {
    -fx-fill: white;

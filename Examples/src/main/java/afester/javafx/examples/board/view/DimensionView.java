@@ -5,6 +5,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
@@ -16,18 +17,24 @@ class TextBox extends Group {
     private final Text theText;
 
     public TextBox(String text, Font font) {
-        
+
         theText = new Text(text);
-        theText.setFont(font);
         theText.setBoundsType(TextBoundsType.VISUAL);
-        theText.setFill(Color.DARKRED);
+
+        if (font != null) {
+            theText.setFont(font);
+        }
 
         // value.setTextAlignment(TextAlignment.RIGHT); // In the case of a single line of text, where the width of the node
                                                         // is determined by the width of the text, the alignment setting has no effect.
 
+        getChildren().add(theText);
+        this.applyCss();
+
 // DEBUG: Add a highlighted background behind the text
 //        Bounds b = getBoundsInLocal();
 //        Rectangle r = new Rectangle(b.getMinX(), b.getMinY(), b.getWidth(), b.getHeight());
+//        System.err.println("XXXX:" + r);
 //        r.setFill(Color.GREENYELLOW);
 //        r.setStroke(null);
 //        r.setStrokeWidth(0);
@@ -51,7 +58,7 @@ class TextBox extends Group {
 //        l2.setStrokeWidth(0.1);
 
         // getChildren().addAll(r, theText, l1, l2);
-        getChildren().addAll(theText);
+//        getChildren().addAll(theText);
     }
 }
 

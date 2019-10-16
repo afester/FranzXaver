@@ -132,6 +132,7 @@ public class PartView extends Group implements Interactable {
         put("TO92-EBC",      "TO92.svg");
 
         // clamps
+        
         put("691121710004",  "691121710004.svg");
         put("691216510002",  "691216510002.svg");
         put("691216510003",  "691216510003.svg");

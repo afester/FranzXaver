@@ -1,12 +1,10 @@
 package afester.javafx.examples.board;
 
-import afester.javafx.examples.board.view.BoardCorner;
 import afester.javafx.examples.board.view.BoardView;
-import javafx.event.EventTarget;
+import afester.javafx.examples.board.view.InteractableEvent;
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
+
 
 public abstract class MouseInteractor implements Interactor {
 
@@ -17,33 +15,6 @@ public abstract class MouseInteractor implements Interactor {
     public MouseInteractor(BoardView boardView) {
     	bv = boardView;
 	}
-
-    // TODO: This is a mess.
-    // E.g. it it still unclear how to select a Group or a Pane - even with setMouseTransparent(false)
-    // the child objects like Circle or Line are retrieved as the target, not the Group or Pane!
-    protected Interactable getClickedObject(MouseEvent e) {
-        Interactable result = null;
-        EventTarget target = e.getTarget();
-        System.err.println("\nTarget:" + target);
-
-        if (target instanceof Interactable) {
-            result = (Interactable) target;
-        } else if (target instanceof Handle || target instanceof BoardCorner) {
-            result = (Interactable) target;
-        } else {
-            Node parent = ((Node) target).getParent();
-            System.err.println("   Parent:" + parent);
-            if (parent instanceof Interactable) {
-                result = (Interactable) parent;
-            } else {
-                getBoardView().getHandleGroup().getChildren().clear();
-            }
-        }
-
-        System.err.println("Clicked Object:" + result);
-        return result;
-    }
-
     
     public BoardView getBoardView() {
         return bv;
@@ -61,13 +32,14 @@ public abstract class MouseInteractor implements Interactor {
     }
 
 	@Override
-    public final void mousePressed(MouseEvent e) {
-	    pos = new Point2D(e.getX(), e.getY());
+    public final void mousePressed(InteractableEvent e) {
+	    pos = e.getPos();
+
 	    System.err.println("SOURCE:" + e.getSource());
-        Interactable clickedObject = getClickedObject(e);
+        Interactable clickedObject = e.getTarget();
         if (clickedObject != null) {
             System.err.printf("CLICKED OBJECT: %s (%s)\n", clickedObject.getPos(), pos);
-            offset = clickedObject.getPos().subtract(e.getX(), e.getY());
+            offset = clickedObject.getPos().subtract(e.getPos());
 
             if (e.getButton() == MouseButton.PRIMARY) {
                 if (e.isControlDown()) {
@@ -88,8 +60,9 @@ public abstract class MouseInteractor implements Interactor {
 
 	
 	@Override
-    public final void mouseDragged(MouseEvent e) {
-	    pos = new Point2D(e.getX(), e.getY());
+    public final void mouseDragged(InteractableEvent e) {
+	    pos = e.getPos();
+
         Interactable currentObject = bv.getSelectedObject();
         if (!e.isControlDown() && e.isPrimaryButtonDown()) { // && currentObject != null) {
             dragObject(currentObject);
@@ -149,7 +122,7 @@ public abstract class MouseInteractor implements Interactor {
     }
 
     @Override
-    public void mouseReleased(MouseEvent e) {
+    public void mouseReleased(InteractableEvent e) {
     }
     
 	protected void dragObject(Interactable obj) {

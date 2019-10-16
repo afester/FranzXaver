@@ -22,9 +22,11 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
+import javafx.event.EventTarget;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 
 
@@ -42,8 +44,8 @@ public class BoardView extends Pane {
     private Group boardGroup;       // The board itself, including dimensions
     private Group boardHandlesGroup;// The handles for the board
     private Group dimensionGroup;   // The board dimensions - a children of boardGroup
-    private Group partsGroup;       // all parts (and their pads) on the board
-    private Group netsGroup;       // all nets (Airwires, Traces, Bridges)
+    private LookupGroup partsGroup; // all parts (and their pads) on the board
+    private Group netsGroup;        // all nets (Airwires, Traces, Bridges)
     private Group airWireGroup;     // all AirWires,
     private Group traceGroup;       //     Traces,
     private Group bridgeGroup;      // and Bridges on the board
@@ -104,7 +106,59 @@ public class BoardView extends Pane {
         netsGroup.visibleProperty().bind(showNetsProperty());
         dimensionGroup.visibleProperty().bind(showDimensionsProperty());
         boardHandlesGroup.visibleProperty().bind(showBoardHandlesProperty());
+
+        setOnMousePressed(e -> { 
+            if (interactor != null) {
+
+                // find a list of all nodes at the specified position. This is necessary to 
+                // allow selecting nodes further down in the Z order.
+                List<Interactable> nodes = partsGroup.pickAll(new Point2D(e.getSceneX(), e.getSceneY()));
+                System.err.println("FOUND: ");
+                for (Interactable inter : nodes) {
+                    System.err.println("  " + inter);
+                }
+
+                EventTarget target = e.getTarget(); // EventTarget is implemented by all JavaFX nodes
+                final InteractableEvent iv;
+                if (target instanceof Interactable) {
+                    iv = new InteractableEvent((Interactable) target, e);
+                    
+                } else {
+                    iv = new InteractableEvent(null, e);
+                }
+                interactor.mousePressed(iv);
+            }
+        });
+
+        setOnMouseDragged(e -> {
+            if (interactor != null) {
+                EventTarget target = e.getTarget(); // EventTarget is implemented by all JavaFX nodes
+                final InteractableEvent iv;
+                if (target instanceof Interactable) {
+                    iv = new InteractableEvent((Interactable) target, e);
+                    
+                } else {
+                    iv = new InteractableEvent(null, e);
+                }
+                interactor.mouseDragged(iv);
+            }
+         });
+
+        setOnMouseReleased(e -> {
+            if (interactor != null) {
+                EventTarget target = e.getTarget(); // EventTarget is implemented by all JavaFX nodes
+                final InteractableEvent iv;
+                if (target instanceof Interactable) {
+                    iv = new InteractableEvent((Interactable) target, e);
+                    
+                } else {
+                    iv = new InteractableEvent(null, e);
+                }
+                interactor.mouseReleased(iv);
+            }
+        });
     }
+
 
 
     private static <T> void pointIterator(Iterable<T> iterable, BiConsumer<T, T> consumer) {
@@ -240,7 +294,7 @@ public class BoardView extends Pane {
         dimensionGroup = new Group();
         dimensionGroup.setId("dimensionGroup");
 
-        partsGroup = new Group();
+        partsGroup = new LookupGroup();
         partsGroup.setId("partsGroup");
 
         netsGroup = new Group();
@@ -321,24 +375,6 @@ public class BoardView extends Pane {
                 partsGroup.getChildren().add(partView);
 
                 pMap.put(added, partView);
-            }
-        });
-
-        setOnMousePressed(e -> { 
-            if (interactor != null) {
-                interactor.mousePressed(e);
-            }
-        });
-
-        setOnMouseDragged(e -> {
-            if (interactor != null) {
-                interactor.mouseDragged(e);
-            }
-         });
-        
-        setOnMouseReleased(e -> {
-            if (interactor != null) {
-                interactor.mouseReleased(e);
             }
         });
     }
