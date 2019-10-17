@@ -3,8 +3,8 @@ package afester.javafx.examples.board;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.view.BoardCorner;
 import afester.javafx.examples.board.view.BoardView;
-import afester.javafx.examples.board.view.InteractableEvent;
 import javafx.geometry.Point2D;
+import javafx.scene.input.MouseEvent;
 
 public class EditShapeInteractor extends MouseInteractor {
 
@@ -23,7 +23,7 @@ public class EditShapeInteractor extends MouseInteractor {
     }
 
     @Override
-    public void mouseReleased(InteractableEvent e) {
+    public void mouseReleased(MouseEvent e) {
         cornerToMove = -1;
     }
 

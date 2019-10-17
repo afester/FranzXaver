@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
+import javax.annotation.Nonnull;
+
 import afester.javafx.examples.board.Interactable;
 import afester.javafx.examples.board.Interactor;
 import afester.javafx.examples.board.model.AbstractWire;
@@ -45,14 +47,15 @@ public class BoardView extends Pane {
     private Group boardHandlesGroup;// The handles for the board
     private Group dimensionGroup;   // The board dimensions - a children of boardGroup
     private LookupGroup partsGroup; // all parts (and their pads) on the board
-    private Group netsGroup;        // all nets (Airwires, Traces, Bridges)
+    private LookupGroup netsGroup;        // all nets (Parent group for airWireGroup, traceGroup, bridgeGroup)
     private Group airWireGroup;     // all AirWires,
     private Group traceGroup;       //     Traces,
     private Group bridgeGroup;      // and Bridges on the board
-    private Group junctionGroup;    // all junctions
-    private Group handleGroup;      // all dynamic handles (topmost layer)
+    private LookupGroup junctionGroup;    // all junctions
+    private LookupGroup handleGroup;      // all dynamic handles (topmost layer)
 
     private Interactor interactor = null;
+
     private boolean isReadOnly = false;
     private boolean isBottom;
 
@@ -109,52 +112,29 @@ public class BoardView extends Pane {
 
         setOnMousePressed(e -> { 
             if (interactor != null) {
-
-                // find a list of all nodes at the specified position. This is necessary to 
+                // find all Interactable nodes at the specified position. This is necessary to 
                 // allow selecting nodes further down in the Z order.
-                List<Interactable> nodes = partsGroup.pickAll(new Point2D(e.getSceneX(), e.getSceneY()));
-                System.err.println("FOUND: ");
-                for (Interactable inter : nodes) {
-                    System.err.println("  " + inter);
-                }
+                // TODO: This is probably not the most performant solution ...
+                // TODO: This is interactor specific - another interactor might require a complete different set of nodes
+                final Point2D mpos = new Point2D(e.getSceneX(), e.getSceneY());
+                List<Interactable> nodes = partsGroup.pickAll(mpos);
+                nodes.addAll(netsGroup.pickAll(mpos));
+                nodes.addAll(junctionGroup.pickAll(mpos));
+                nodes.addAll(handleGroup.pickAll(mpos));
 
-                EventTarget target = e.getTarget(); // EventTarget is implemented by all JavaFX nodes
-                final InteractableEvent iv;
-                if (target instanceof Interactable) {
-                    iv = new InteractableEvent((Interactable) target, e);
-                    
-                } else {
-                    iv = new InteractableEvent(null, e);
-                }
-                interactor.mousePressed(iv);
+                interactor.mousePressed(nodes, e);
             }
         });
 
         setOnMouseDragged(e -> {
             if (interactor != null) {
-                EventTarget target = e.getTarget(); // EventTarget is implemented by all JavaFX nodes
-                final InteractableEvent iv;
-                if (target instanceof Interactable) {
-                    iv = new InteractableEvent((Interactable) target, e);
-                    
-                } else {
-                    iv = new InteractableEvent(null, e);
-                }
-                interactor.mouseDragged(iv);
+                interactor.mouseDragged(e);
             }
          });
 
         setOnMouseReleased(e -> {
             if (interactor != null) {
-                EventTarget target = e.getTarget(); // EventTarget is implemented by all JavaFX nodes
-                final InteractableEvent iv;
-                if (target instanceof Interactable) {
-                    iv = new InteractableEvent((Interactable) target, e);
-                    
-                } else {
-                    iv = new InteractableEvent(null, e);
-                }
-                interactor.mouseReleased(iv);
+                interactor.mouseReleased(e);
             }
         });
     }
@@ -296,9 +276,9 @@ public class BoardView extends Pane {
 
         partsGroup = new LookupGroup();
         partsGroup.setId("partsGroup");
-
-        netsGroup = new Group();
+        netsGroup = new LookupGroup();
         netsGroup.setId("netsGroup");
+
         airWireGroup = new Group();
         airWireGroup.setId("airWireGroup");
         traceGroup = new Group();
@@ -307,9 +287,9 @@ public class BoardView extends Pane {
         bridgeGroup.setId("bridgeGroup");
         netsGroup.getChildren().addAll(airWireGroup, traceGroup, bridgeGroup);
 
-        junctionGroup = new Group();
+        junctionGroup = new LookupGroup();
         junctionGroup.setId("junctionGroup");
-        handleGroup = new Group();
+        handleGroup = new LookupGroup();
         handleGroup.setId("handleGroup");
 
         if (isBottom) {

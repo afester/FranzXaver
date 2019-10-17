@@ -28,7 +28,6 @@ public class LookupGroup extends Group {
     private void collectInteractablesRec(Point2D mpos, Parent parent, List<Interactable> result) {
         parent.getChildrenUnmodifiable().forEach(child -> {
             if (child instanceof Interactable) {
-                System.err.println("    CONTAINS: " + child + "/" + mpos);
                 final Point2D pos = child.sceneToLocal(mpos);
                 if (child.contains(pos)) {
                     System.err.println("    YES");

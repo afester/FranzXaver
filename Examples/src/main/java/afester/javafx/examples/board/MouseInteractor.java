@@ -1,9 +1,11 @@
 package afester.javafx.examples.board;
 
+import java.util.List;
+
 import afester.javafx.examples.board.view.BoardView;
-import afester.javafx.examples.board.view.InteractableEvent;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 
 
 public abstract class MouseInteractor implements Interactor {
@@ -11,6 +13,10 @@ public abstract class MouseInteractor implements Interactor {
     private Point2D offset; 
     private Point2D pos; 
     private BoardView bv;
+
+    private List<Interactable> pickedNodes;
+    private Interactable selectedNode = null;
+    private int pickIndex = 0;
 
     public MouseInteractor(BoardView boardView) {
     	bv = boardView;
@@ -32,44 +38,73 @@ public abstract class MouseInteractor implements Interactor {
     }
 
 	@Override
-    public final void mousePressed(InteractableEvent e) {
-	    pos = e.getPos();
+    public final void mousePressed(List<Interactable> newPickedNodes, MouseEvent e) {
+	    pos = new Point2D(e.getX(), e.getY());
 
-	    System.err.println("SOURCE:" + e.getSource());
-        Interactable clickedObject = e.getTarget();
-        if (clickedObject != null) {
-            System.err.printf("CLICKED OBJECT: %s (%s)\n", clickedObject.getPos(), pos);
-            offset = clickedObject.getPos().subtract(e.getPos());
-
-            if (e.getButton() == MouseButton.PRIMARY) {
-                if (e.isControlDown()) {
-                } else if (e.isAltDown()) {
-                } else if (e.isShiftDown()) {
-                } else if (e.isMetaDown()) {
-                } else { // no modifiers pressed
-                    clickObjectLeft(clickedObject);
-                }
-            } else if (e.getButton() == MouseButton.SECONDARY) {
-                clickObjectRight(clickedObject);
-            }
-
-          } else {
-            bv.clearSelection();
+        if (!newPickedNodes.equals(pickedNodes)) {
+            pickedNodes = newPickedNodes;
+            pickIndex = 0;
         }
 	}
 
-	
-	@Override
-    public final void mouseDragged(InteractableEvent e) {
-	    pos = e.getPos();
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if (!pickedNodes.isEmpty()) {
+            selectedNode = pickedNodes.get(pickIndex);
+            pickIndex++;
+            if (pickIndex >= pickedNodes.size()) {
+                pickIndex = 0;
+            }
 
-        Interactable currentObject = bv.getSelectedObject();
-        if (!e.isControlDown() && e.isPrimaryButtonDown()) { // && currentObject != null) {
-            dragObject(currentObject);
+            offset = selectedNode.getPos().subtract(e.getX(), e.getY());
+
+            if (e.getButton() == MouseButton.PRIMARY) {
+              if (e.isControlDown()) {
+              } else if (e.isAltDown()) {
+              } else if (e.isShiftDown()) {
+              } else if (e.isMetaDown()) {
+              } else { // no modifiers pressed
+                  clickObjectLeft(selectedNode);
+              }
+           } else if (e.getButton() == MouseButton.SECONDARY) {
+              clickObjectRight(selectedNode);
+           }
+        } else {
+            bv.clearSelection();
+            selectedNode = null;
         }
     }
+
+
+	@Override
+    public final void mouseDragged(MouseEvent e) {
+        pos = new Point2D(e.getX(), e.getY());
+
+        if (!pickedNodes.isEmpty()) {
+            if (selectedNode == null) {
+                selectedNode = pickedNodes.get(pickIndex);
+                
+                offset = selectedNode.getPos().subtract(e.getX(), e.getY());
+
+                if (e.getButton() == MouseButton.PRIMARY) {
+                  if (e.isControlDown()) {
+                  } else if (e.isAltDown()) {
+                  } else if (e.isShiftDown()) {
+                  } else if (e.isMetaDown()) {
+                  } else { // no modifiers pressed
+                      clickObjectLeft(selectedNode);
+                  }
+               }
+            }
+
+           Interactable currentObject = bv.getSelectedObject();
+           if (!e.isControlDown() && e.isPrimaryButtonDown()) { // && currentObject != null) {
+               dragObject(currentObject);
+           }
+        } 
+    }
 	
-	
+
 	// private final static double GRID = 2.54;
 	private final static double GRID = 1.27;   // for now, we also allow positions between pads - this is        
                                                // required to properly position the Eagle parts ...
@@ -121,9 +156,6 @@ public abstract class MouseInteractor implements Interactor {
         }
     }
 
-    @Override
-    public void mouseReleased(InteractableEvent e) {
-    }
     
 	protected void dragObject(Interactable obj) {
 	}

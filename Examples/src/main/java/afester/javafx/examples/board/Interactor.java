@@ -1,12 +1,14 @@
 package afester.javafx.examples.board;
 
-import afester.javafx.examples.board.view.InteractableEvent;
+import java.util.List;
+
+import javafx.scene.input.MouseEvent;
 
 public interface Interactor {
 
-    void mousePressed(InteractableEvent e);
+    void mousePressed(List<Interactable> pickedObjects, MouseEvent e);
 
-    void mouseDragged(InteractableEvent e);
+    void mouseDragged(MouseEvent e);
 
-    void mouseReleased(InteractableEvent e);
+    void mouseReleased(MouseEvent e);
 }
