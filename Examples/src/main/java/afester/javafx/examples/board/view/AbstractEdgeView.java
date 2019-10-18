@@ -148,6 +148,11 @@ public abstract class AbstractEdgeView extends Line implements Interactable  {
 
 
     @Override
+    public void moveToGrid(Point2D clickPos) {
+        System.err.println("MOVE " + this + " to " + clickPos);
+    }
+
+    @Override
     public void setSelected(boolean isSelected) {
         Net net = edge.getNet();
         net.setSelected(isSelected, edge);

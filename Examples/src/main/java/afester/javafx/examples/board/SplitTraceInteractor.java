@@ -14,7 +14,7 @@ public class SplitTraceInteractor extends MouseInteractor {
     }
 
     @Override
-    protected void clickObjectLeft(Interactable obj) {
+    protected void selectObject(Interactable obj) {
         if (obj instanceof Trace) {
             Trace trace = (Trace) obj;
             Net net = trace.getNet();

@@ -279,4 +279,10 @@ public class PartView extends Group implements Interactable {
     public String toString() {
         return String.format("PartView[partName=%s %s]", part.getName(), getBoundsInLocal());
     }
+
+
+    @Override
+    public void moveToGrid(Point2D clickPos) {
+        System.err.println("MOVE " + this + " to " + clickPos);
+    }
 }

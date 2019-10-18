@@ -1,5 +1,7 @@
 package afester.javafx.examples.board;
 
+import java.util.List;
+
 import afester.javafx.examples.board.model.Junction;
 import afester.javafx.examples.board.model.Part;
 import afester.javafx.examples.board.model.TraceType;
@@ -13,6 +15,7 @@ import javafx.geometry.Point2D;
 public class EditInteractor  extends MouseInteractor {
 
     private Junction junctionToMove;
+
     private Part partToMove;
 
     private AirWireHandle handleToMove;
@@ -21,11 +24,15 @@ public class EditInteractor  extends MouseInteractor {
         super(boardView);
     }
 
+    @Override
+    protected List<Interactable> pickObjects(Point2D mpos) {
+        return getBoardView().getPartsAndNets(mpos);
+    }
 
     @Override
-    protected void clickObjectLeft(Interactable obj) {
+    protected void selectObject(Interactable obj) {
         if (obj instanceof PartView) {
-            clickedPartView(obj);
+           // clickedPartView(obj);
         } else if (obj instanceof TraceView) {
             clickedTraceView((TraceView) obj);
         } else if (obj instanceof AirWireHandle) {
@@ -152,22 +159,23 @@ public class EditInteractor  extends MouseInteractor {
     }
 
     @Override
-    protected void dragObject(Interactable obj) {
+    protected void moveSelectedObjects() {
+        selectedNodes.forEach(e -> e.moveToGrid(getClickPos()));
 
-        if (partToMove != null) {
-            Point2D snapPos = snapToGrid(getClickPos(), getBoardView(), getOffset());
-            partToMove.setPosition(snapPos);
-        } else if (junctionToMove != null) {
-            // move the junction to the new position
-            Point2D snapPos = snapToGrid(getClickPos(), getBoardView(), getOffset());
-            junctionToMove.setPosition(snapPos);
-        } else if (handleToMove != null) {
-            handleToMove.setPosition(getClickPos());
-        }
+//        if (partToMove != null) {
+//            Point2D snapPos = snapToGrid(getClickPos(), getBoardView(), getOffset());
+//            partToMove.setPosition(snapPos);
+//        } else if (junctionToMove != null) {
+//            // move the junction to the new position
+//            Point2D snapPos = snapToGrid(getClickPos(), getBoardView(), getOffset());
+//            junctionToMove.setPosition(snapPos);
+//        } else if (handleToMove != null) {
+//            handleToMove.setPosition(getClickPos());
+//        }
     }
 
     @Override
-    protected void clickObjectRight(Interactable obj) {
+    protected void rightClickObject(Interactable obj) {
         if (obj instanceof PartView) {
             PartView partView = (PartView) obj;
             Part part = partView.getPart();

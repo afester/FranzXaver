@@ -28,6 +28,12 @@ public class Handle extends Circle implements Interactable {
         return "";
     }
 
+
+    @Override
+    public void moveToGrid(Point2D clickPos) {
+        System.err.println("MOVE " + this + " to " + clickPos);
+    }
+
     
     @Override
     public String toString() {

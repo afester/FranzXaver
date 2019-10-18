@@ -19,4 +19,11 @@ public abstract class AbstractNodeView extends Group implements Interactable {
 	public Point2D getPos() {
 	    return node.getPosition();
     }
+    
+
+    @Override
+    public void moveToGrid(Point2D clickPos) {
+        System.err.println("MOVE " + this + " to " + clickPos);
+    }
+
 }

@@ -9,4 +9,6 @@ public interface Interactable {
     void setSelected(boolean isSelected);
 
     String getRepr();
+
+    void moveToGrid(Point2D clickPos);
 }

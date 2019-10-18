@@ -12,7 +12,7 @@ public class TraceInteractor extends MouseInteractor {
 
 
     @Override
-    protected void clickObjectLeft(Interactable obj) {
+    protected void selectObject(Interactable obj) {
         System.err.println("CLICKED LEFT!");
         if (obj instanceof TraceView) {
             TraceView tw = (TraceView) obj;       // TODO: How to remove this cast and the instanceof

@@ -46,6 +46,12 @@ public class BoardCorner extends Circle implements Interactable {
         return null;
     }
 
+
+    @Override
+    public void moveToGrid(Point2D clickPos) {
+        System.err.println("MOVE " + this + " to " + clickPos);
+    }
+
     public String toString() {
         return String.format("BoardHandle[centerX=%s, centerY=%s, radius=%s, fill=%s, stroke=%s, strokeWidth=%s]",
                               getCenterX(), getCenterY(), getRadius(), getFill(), getStroke(),getStrokeWidth());

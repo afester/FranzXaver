@@ -15,7 +15,7 @@ public class EditShapeInteractor extends MouseInteractor {
     }
 
     @Override
-    protected void clickObjectLeft(Interactable obj) {
+    protected void selectObject(Interactable obj) {
         if (obj instanceof BoardCorner) {
             System.err.println("Clicked: " + obj);
             cornerToMove = ((BoardCorner) obj).getCornerIdx();
@@ -29,13 +29,13 @@ public class EditShapeInteractor extends MouseInteractor {
 
     
     @Override
-    protected void dragObject(Interactable obj) {
-        if (cornerToMove != -1) {
-            Board b = this.getBoardView().getBoard();
-            System.err.printf("Moving %s in %s\n", cornerToMove, b);
-            Point2D newPos = this.getClickPos().add(this.getOffset());
-            b.setCornerPos(cornerToMove, newPos);
-        }
+    protected void moveSelectedObjects() {
+//        if (cornerToMove != -1) {
+//            Board b = this.getBoardView().getBoard();
+//            System.err.printf("Moving %s in %s\n", cornerToMove, b);
+//            Point2D newPos = this.getClickPos().add(this.getOffset());
+//            b.setCornerPos(cornerToMove, newPos);
+//        }
     }
 
     @Override

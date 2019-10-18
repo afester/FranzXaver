@@ -112,17 +112,7 @@ public class BoardView extends Pane {
 
         setOnMousePressed(e -> { 
             if (interactor != null) {
-                // find all Interactable nodes at the specified position. This is necessary to 
-                // allow selecting nodes further down in the Z order.
-                // TODO: This is probably not the most performant solution ...
-                // TODO: This is interactor specific - another interactor might require a complete different set of nodes
-                final Point2D mpos = new Point2D(e.getSceneX(), e.getSceneY());
-                List<Interactable> nodes = partsGroup.pickAll(mpos);
-                nodes.addAll(netsGroup.pickAll(mpos));
-                nodes.addAll(junctionGroup.pickAll(mpos));
-                nodes.addAll(handleGroup.pickAll(mpos));
-
-                interactor.mousePressed(nodes, e);
+                interactor.mousePressed(e);
             }
         });
 
@@ -470,5 +460,20 @@ public class BoardView extends Pane {
     public void setReadOnly(boolean b) {
         interactor = null;
         isReadOnly = b;
+    }
+
+    /**
+     * @return A list of all Interactable objects at the given position
+     * which are either Parts or Segments of a net
+     * 
+     * @param mpos The position which the objects need to contain. 
+     */
+    public List<Interactable> getPartsAndNets(Point2D mpos) {
+        List<Interactable> result = partsGroup.pickAll(mpos);
+        result.addAll(netsGroup.pickAll(mpos));
+        result.addAll(junctionGroup.pickAll(mpos));
+        result.addAll(handleGroup.pickAll(mpos));
+
+        return result;
     }
 }

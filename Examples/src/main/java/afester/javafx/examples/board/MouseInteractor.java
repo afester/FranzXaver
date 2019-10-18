@@ -1,5 +1,7 @@
 package afester.javafx.examples.board;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import afester.javafx.examples.board.view.BoardView;
@@ -15,7 +17,7 @@ public abstract class MouseInteractor implements Interactor {
     private BoardView bv;
 
     private List<Interactable> pickedNodes;
-    private Interactable selectedNode = null;
+    protected final List<Interactable> selectedNodes = new ArrayList<>();
     private int pickIndex = 0;
 
     public MouseInteractor(BoardView boardView) {
@@ -38,8 +40,13 @@ public abstract class MouseInteractor implements Interactor {
     }
 
 	@Override
-    public final void mousePressed(List<Interactable> newPickedNodes, MouseEvent e) {
+    public final void mousePressed(MouseEvent e) {
 	    pos = new Point2D(e.getX(), e.getY());
+
+        // find all Interactable nodes at the specified position. This is necessary to 
+        // allow selecting nodes further down in the Z order.
+        final Point2D mpos = new Point2D(e.getSceneX(), e.getSceneY());
+        final List<Interactable> newPickedNodes = pickObjects(mpos);
 
         if (!newPickedNodes.equals(pickedNodes)) {
             pickedNodes = newPickedNodes;
@@ -50,7 +57,7 @@ public abstract class MouseInteractor implements Interactor {
     @Override
     public void mouseReleased(MouseEvent e) {
         if (!pickedNodes.isEmpty()) {
-            selectedNode = pickedNodes.get(pickIndex);
+            final Interactable selectedNode = pickedNodes.get(pickIndex);
             pickIndex++;
             if (pickIndex >= pickedNodes.size()) {
                 pickIndex = 0;
@@ -60,18 +67,26 @@ public abstract class MouseInteractor implements Interactor {
 
             if (e.getButton() == MouseButton.PRIMARY) {
               if (e.isControlDown()) {
+                  selectedNode.setSelected(true);
+                  selectedNodes.add(selectedNode);
               } else if (e.isAltDown()) {
               } else if (e.isShiftDown()) {
               } else if (e.isMetaDown()) {
               } else { // no modifiers pressed
-                  clickObjectLeft(selectedNode);
+                  selectedNodes.forEach(node -> node.setSelected(false));
+                  selectedNodes.clear();
+
+                  selectedNode.setSelected(true);
+                  selectedNodes.add(selectedNode);
+                  //selectObject(selectedNode);
               }
            } else if (e.getButton() == MouseButton.SECONDARY) {
-              clickObjectRight(selectedNode);
+              rightClickObject(selectedNode);
            }
-        } else {
-            bv.clearSelection();
-            selectedNode = null;
+        } else if (!e.isControlDown()) {
+            // bv.clearSelection();
+            selectedNodes.forEach(node -> node.setSelected(false));
+            selectedNodes.clear();
         }
     }
 
@@ -81,8 +96,8 @@ public abstract class MouseInteractor implements Interactor {
         pos = new Point2D(e.getX(), e.getY());
 
         if (!pickedNodes.isEmpty()) {
-            if (selectedNode == null) {
-                selectedNode = pickedNodes.get(pickIndex);
+            if (selectedNodes.isEmpty()) {
+                final Interactable selectedNode = pickedNodes.get(pickIndex);
                 
                 offset = selectedNode.getPos().subtract(e.getX(), e.getY());
 
@@ -92,14 +107,16 @@ public abstract class MouseInteractor implements Interactor {
                   } else if (e.isShiftDown()) {
                   } else if (e.isMetaDown()) {
                   } else { // no modifiers pressed
-                      clickObjectLeft(selectedNode);
+                      selectedNode.setSelected(true);
+                      selectedNodes.add(selectedNode);
+                      // selectObject(selectedNode);
                   }
                }
             }
 
            Interactable currentObject = bv.getSelectedObject();
            if (!e.isControlDown() && e.isPrimaryButtonDown()) { // && currentObject != null) {
-               dragObject(currentObject);
+               moveSelectedObjects();
            }
         } 
     }
@@ -156,13 +173,24 @@ public abstract class MouseInteractor implements Interactor {
         }
     }
 
-    
-	protected void dragObject(Interactable obj) {
-	}
 
-    protected void clickObjectLeft(Interactable obj) {
+    /* Interactor specific high level functions */
+
+    /**
+     * @return A list of potentially selectable objects at the specified position.
+     * 
+     * @param mpos The position for which to return the objects.
+     */
+    protected List<Interactable> pickObjects(Point2D mpos) {
+        return Collections.emptyList();
     }
 
-    protected void clickObjectRight(Interactable obj) {
+    protected void selectObject(Interactable obj) {
+    }
+
+    protected void moveSelectedObjects() {
+    }
+
+    protected void rightClickObject(Interactable obj) {
     }
 }

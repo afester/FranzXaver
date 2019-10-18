@@ -6,7 +6,7 @@ import javafx.scene.input.MouseEvent;
 
 public interface Interactor {
 
-    void mousePressed(List<Interactable> pickedObjects, MouseEvent e);
+    void mousePressed(MouseEvent e);
 
     void mouseDragged(MouseEvent e);
 
