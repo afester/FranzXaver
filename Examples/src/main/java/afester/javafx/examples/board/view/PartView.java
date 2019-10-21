@@ -281,8 +281,11 @@ public class PartView extends Group implements Interactable {
     }
 
 
+
     @Override
-    public void moveToGrid(Point2D clickPos) {
-        System.err.println("MOVE " + this + " to " + clickPos);
+    public void moveToGrid(BoardView bv, Point2D newPos) {
+        System.err.println("MOVE " + this + " to " + newPos);
+        newPos = bv.snapToGrid(newPos, false);
+        part.setPosition(newPos);
     }
 }

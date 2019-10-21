@@ -1,5 +1,6 @@
 package afester.javafx.examples.board;
 
+import afester.javafx.examples.board.view.BoardView;
 import javafx.geometry.Point2D;
 
 public interface Interactable {
@@ -10,5 +11,5 @@ public interface Interactable {
 
     String getRepr();
 
-    void moveToGrid(Point2D clickPos);
+    void moveToGrid(BoardView bv, Point2D clickPos);
 }

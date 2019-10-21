@@ -1,8 +1,9 @@
 package afester.javafx.examples.board;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import afester.javafx.examples.board.view.BoardView;
 import javafx.geometry.Point2D;
@@ -12,12 +13,12 @@ import javafx.scene.input.MouseEvent;
 
 public abstract class MouseInteractor implements Interactor {
 
-    private Point2D offset; 
-    private Point2D pos; 
+
+    private Point2D pickPos;
     private BoardView bv;
 
     private List<Interactable> pickedNodes;
-    protected final List<Interactable> selectedNodes = new ArrayList<>();
+    protected final Map<Interactable, Point2D> selectedNodes = new HashMap<>();
     private int pickIndex = 0;
 
     public MouseInteractor(BoardView boardView) {
@@ -28,20 +29,10 @@ public abstract class MouseInteractor implements Interactor {
         return bv;
     }
 
-    public Point2D getOffset() {
-        return offset;
-    }
-
-    /**
-     * @return The position where the mouse click occurred.
-     */
-    public final Point2D getClickPos() {
-        return pos;
-    }
 
 	@Override
     public final void mousePressed(MouseEvent e) {
-	    pos = new Point2D(e.getX(), e.getY());
+	    pickPos = new Point2D(e.getX(), e.getY());
 
         // find all Interactable nodes at the specified position. This is necessary to 
         // allow selecting nodes further down in the Z order.
@@ -63,21 +54,19 @@ public abstract class MouseInteractor implements Interactor {
                 pickIndex = 0;
             }
 
-            offset = selectedNode.getPos().subtract(e.getX(), e.getY());
-
             if (e.getButton() == MouseButton.PRIMARY) {
               if (e.isControlDown()) {
                   selectedNode.setSelected(true);
-                  selectedNodes.add(selectedNode);
+                  selectedNodes.put(selectedNode, selectedNode.getPos());
               } else if (e.isAltDown()) {
               } else if (e.isShiftDown()) {
               } else if (e.isMetaDown()) {
               } else { // no modifiers pressed
-                  selectedNodes.forEach(node -> node.setSelected(false));
+                  selectedNodes.keySet().forEach(node -> node.setSelected(false));
                   selectedNodes.clear();
 
                   selectedNode.setSelected(true);
-                  selectedNodes.add(selectedNode);
+                  selectedNodes.put(selectedNode, selectedNode.getPos());
                   //selectObject(selectedNode);
               }
            } else if (e.getButton() == MouseButton.SECONDARY) {
@@ -85,7 +74,7 @@ public abstract class MouseInteractor implements Interactor {
            }
         } else if (!e.isControlDown()) {
             // bv.clearSelection();
-            selectedNodes.forEach(node -> node.setSelected(false));
+            selectedNodes.keySet().forEach(node -> node.setSelected(false));
             selectedNodes.clear();
         }
     }
@@ -93,13 +82,13 @@ public abstract class MouseInteractor implements Interactor {
 
 	@Override
     public final void mouseDragged(MouseEvent e) {
-        pos = new Point2D(e.getX(), e.getY());
+	    final Point2D newPos = new Point2D(e.getX(), e.getY()); 
+	    final Point2D delta = newPos.subtract(pickPos);
+
 
         if (!pickedNodes.isEmpty()) {
             if (selectedNodes.isEmpty()) {
                 final Interactable selectedNode = pickedNodes.get(pickIndex);
-                
-                offset = selectedNode.getPos().subtract(e.getX(), e.getY());
 
                 if (e.getButton() == MouseButton.PRIMARY) {
                   if (e.isControlDown()) {
@@ -108,69 +97,18 @@ public abstract class MouseInteractor implements Interactor {
                   } else if (e.isMetaDown()) {
                   } else { // no modifiers pressed
                       selectedNode.setSelected(true);
-                      selectedNodes.add(selectedNode);
-                      // selectObject(selectedNode);
+                      selectedNodes.put(selectedNode, selectedNode.getPos());
                   }
                }
             }
 
-           Interactable currentObject = bv.getSelectedObject();
            if (!e.isControlDown() && e.isPrimaryButtonDown()) { // && currentObject != null) {
-               moveSelectedObjects();
+               selectedNodes.forEach((node, pos)  -> {
+                   final Point2D newObjPos = pos.add(delta);
+                   moveObject(node, newObjPos); 
+               });
            }
         } 
-    }
-	
-
-	// private final static double GRID = 2.54;
-	private final static double GRID = 1.27;   // for now, we also allow positions between pads - this is        
-                                               // required to properly position the Eagle parts ...
-
-
-    @Deprecated
-    protected Point2D snapToGrid(Point2D pos, BoardView bv, Point2D offset) {                                                      
-        System.err.println("OFFSET:" + offset);
-        System.err.println("POS   :" + pos);
-        double xpos = offset.getX() + pos.getX();                                                                        
-        double ypos = offset.getY() + pos.getY();                                                                        
-
-        xpos = (int) ( (xpos - bv.getPadOffset().getX()) / GRID);                                         
-        ypos = (int) ( (ypos - bv.getPadOffset().getY()) / GRID);                                         
-    
-        xpos = xpos * GRID + bv.getPadOffset().getX();                                                    
-        ypos = ypos * GRID + bv.getPadOffset().getY();                                                    
-    
-        return new Point2D(xpos, ypos);                                                                   
-    }
-
-
-    protected Point2D snapToGrid(Point2D clickPos, boolean useOffset){
-        if (useOffset) {
-            System.err.println("OFFSET:" + offset);
-            System.err.println("POS   :" + pos);
-            double xpos = offset.getX() + pos.getX();                                                                        
-            double ypos = offset.getY() + pos.getY();                                                                        
-    
-            xpos = (int) ( (xpos - bv.getPadOffset().getX()) / GRID);                                         
-            ypos = (int) ( (ypos - bv.getPadOffset().getY()) / GRID);                                         
-        
-            xpos = xpos * GRID + bv.getPadOffset().getX();                                                    
-            ypos = ypos * GRID + bv.getPadOffset().getY();                                                    
-        
-            return new Point2D(xpos, ypos);
-        } else {
-            System.err.println("POS   :" + pos);
-            double xpos = pos.getX();                                                                        
-            double ypos = pos.getY();                                                                        
-    
-            xpos = (int) ( (xpos - bv.getPadOffset().getX()) / GRID);                                         
-            ypos = (int) ( (ypos - bv.getPadOffset().getY()) / GRID);                                         
-        
-            xpos = xpos * GRID + bv.getPadOffset().getX();                                                    
-            ypos = ypos * GRID + bv.getPadOffset().getY();                                                    
-
-            return new Point2D(xpos, ypos);
-        }
     }
 
 
@@ -188,7 +126,7 @@ public abstract class MouseInteractor implements Interactor {
     protected void selectObject(Interactable obj) {
     }
 
-    protected void moveSelectedObjects() {
+    protected void moveObject(Interactable obj, Point2D newPos) {
     }
 
     protected void rightClickObject(Interactable obj) {

@@ -159,8 +159,8 @@ public class EditInteractor  extends MouseInteractor {
     }
 
     @Override
-    protected void moveSelectedObjects() {
-        selectedNodes.forEach(e -> e.moveToGrid(getClickPos()));
+    protected void moveObject(Interactable obj, Point2D newPos) {
+        obj.moveToGrid(getBoardView(), newPos); 
 
 //        if (partToMove != null) {
 //            Point2D snapPos = snapToGrid(getClickPos(), getBoardView(), getOffset());

@@ -27,9 +27,9 @@ public class EditShapeInteractor extends MouseInteractor {
         cornerToMove = -1;
     }
 
-    
+
     @Override
-    protected void moveSelectedObjects() {
+    protected void moveObject(Interactable obj, Point2D newPos) {
 //        if (cornerToMove != -1) {
 //            Board b = this.getBoardView().getBoard();
 //            System.err.printf("Moving %s in %s\n", cornerToMove, b);

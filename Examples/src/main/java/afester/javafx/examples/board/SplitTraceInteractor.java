@@ -19,7 +19,7 @@ public class SplitTraceInteractor extends MouseInteractor {
             Trace trace = (Trace) obj;
             Net net = trace.getNet();
             AbstractNode oldDest = trace.getTo();
-            Point2D snapPos = snapToGrid(getClickPos(), false);
+            Point2D snapPos = new Point2D(0, 0); // snapToGrid(getClickPos(), false);
 
             Junction newJunction = new Junction(net, snapPos);
             net.addJunction(newJunction);

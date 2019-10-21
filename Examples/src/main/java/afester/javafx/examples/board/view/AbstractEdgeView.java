@@ -148,7 +148,7 @@ public abstract class AbstractEdgeView extends Line implements Interactable  {
 
 
     @Override
-    public void moveToGrid(Point2D clickPos) {
+    public void moveToGrid(BoardView bv, Point2D clickPos) {
         System.err.println("MOVE " + this + " to " + clickPos);
     }
 

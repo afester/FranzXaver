@@ -476,4 +476,56 @@ public class BoardView extends Pane {
 
         return result;
     }
+
+    
+    
+    // private final static double GRID = 2.54;
+    private final static double GRID = 1.27;   // for now, we also allow positions between pads - this is        
+                                               // required to properly position the Eagle parts ...
+
+//    @Deprecated
+//    protected Point2D snapToGrid(Point2D pos, BoardView bv, Point2D offset) {                                                      
+//        System.err.println("OFFSET:" + offset);
+//        System.err.println("POS   :" + pos);
+//        double xpos = offset.getX() + pos.getX();                                                                        
+//        double ypos = offset.getY() + pos.getY();                                                                        
+//
+//        xpos = (int) ( (xpos - bv.getPadOffset().getX()) / GRID);                                         
+//        ypos = (int) ( (ypos - bv.getPadOffset().getY()) / GRID);                                         
+//    
+//        xpos = xpos * GRID + bv.getPadOffset().getX();                                                    
+//        ypos = ypos * GRID + bv.getPadOffset().getY();                                                    
+//    
+//        return new Point2D(xpos, ypos);                                                                   
+//    }
+
+
+    protected Point2D snapToGrid(Point2D pos, boolean useOffset){
+//        if (useOffset) {
+//            System.err.println("OFFSET:" + offset);
+//            System.err.println("POS   :" + pos);
+//            double xpos = offset.getX() + pos.getX();                                                                        
+//            double ypos = offset.getY() + pos.getY();                                                                        
+//    
+//            xpos = (int) ( (xpos - bv.getPadOffset().getX()) / GRID);                                         
+//            ypos = (int) ( (ypos - bv.getPadOffset().getY()) / GRID);                                         
+//        
+//            xpos = xpos * GRID + bv.getPadOffset().getX();                                                    
+//            ypos = ypos * GRID + bv.getPadOffset().getY();                                                    
+//        
+//            return new Point2D(xpos, ypos);
+//        } else {
+            System.err.println("POS   :" + pos);
+            double xpos = pos.getX();
+            double ypos = pos.getY();
+
+            xpos = (int) ( (xpos - getPadOffset().getX()) / GRID);
+            ypos = (int) ( (ypos - getPadOffset().getY()) / GRID);
+
+            xpos = xpos * GRID + getPadOffset().getX();
+            ypos = ypos * GRID + getPadOffset().getY();
+
+            return new Point2D(xpos, ypos);
+//        }
+    }
 }
