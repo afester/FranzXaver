@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import afester.javafx.examples.board.view.BoardView;
+import afester.javafx.examples.board.view.Handle;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -13,69 +14,79 @@ import javafx.scene.input.MouseEvent;
 
 public abstract class MouseInteractor implements Interactor {
 
+    private BoardView bv;       // The BoardView to which this interactor is attached
 
-    private Point2D pickPos;
-    private BoardView bv;
+    private Point2D pickPos;                // the position where the mouse click occurred
+    private List<Interactable> pickedNodes; // the list of objects at the mouse click position 
+    private int pickIndex = 0;              // The current index in the pickedNodes list
 
-    private List<Interactable> pickedNodes;
+    // The currently selected nodes and their original mouse position
     protected final Map<Interactable, Point2D> selectedNodes = new HashMap<>();
-    private int pickIndex = 0;
+
+    // The handle which is currently dragged
+    private Interactable handleToDrag = null;
+    private Point2D handlePos = null;
 
     public MouseInteractor(BoardView boardView) {
     	bv = boardView;
 	}
-    
+
     public BoardView getBoardView() {
         return bv;
     }
-
 
 	@Override
     public final void mousePressed(MouseEvent e) {
 	    pickPos = new Point2D(e.getX(), e.getY());
 
-        // find all Interactable nodes at the specified position. This is necessary to 
-        // allow selecting nodes further down in the Z order.
         final Point2D mpos = new Point2D(e.getSceneX(), e.getSceneY());
-        final List<Interactable> newPickedNodes = pickObjects(mpos);
 
-        if (!newPickedNodes.equals(pickedNodes)) {
-            pickedNodes = newPickedNodes;
-            pickIndex = 0;
-        }
+        // check for Handles
+	    List<Interactable> handles = bv.getHandleGroup().pickAll(mpos);
+	    if (!handles.isEmpty()) {
+	        handleToDrag = handles.get(0);
+	        handlePos = handleToDrag.getPos();
+	    } else {
+            // find all Interactable nodes at the specified position. This is necessary to 
+            // allow selecting nodes further down in the Z order.
+            final List<Interactable> newPickedNodes = pickObjects(mpos);
+    
+            // If the list of objects has changed, then reset the Z order iterator
+            if (!newPickedNodes.equals(pickedNodes)) {
+                pickedNodes = newPickedNodes;
+                pickIndex = 0;
+            }
+	    }
 	}
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (!pickedNodes.isEmpty()) {
-            final Interactable selectedNode = pickedNodes.get(pickIndex);
-            pickIndex++;
-            if (pickIndex >= pickedNodes.size()) {
-                pickIndex = 0;
+        if (handleToDrag != null) {
+            handleToDrag = null;
+        } else {
+            if (!pickedNodes.isEmpty()) {
+                final Interactable selectedNode = pickedNodes.get(pickIndex);
+                pickIndex++;
+                if (pickIndex >= pickedNodes.size()) {
+                    pickIndex = 0;
+                }
+    
+                if (e.getButton() == MouseButton.PRIMARY) {
+                  if (e.isControlDown()) {
+                      selectObject(selectedNode);
+                  } else if (e.isAltDown()) {
+                  } else if (e.isShiftDown()) {
+                  } else if (e.isMetaDown()) {
+                  } else { // no modifiers pressed
+                      clearSelection();
+                      selectObject(selectedNode);
+                  }
+               } else if (e.getButton() == MouseButton.SECONDARY) {
+                  rightClickObject(selectedNode);
+               }
+            } else if (!e.isControlDown()) {
+                clearSelection();
             }
-
-            if (e.getButton() == MouseButton.PRIMARY) {
-              if (e.isControlDown()) {
-                  selectedNode.setSelected(true);
-                  selectedNodes.put(selectedNode, selectedNode.getPos());
-              } else if (e.isAltDown()) {
-              } else if (e.isShiftDown()) {
-              } else if (e.isMetaDown()) {
-              } else { // no modifiers pressed
-                  selectedNodes.keySet().forEach(node -> node.setSelected(false));
-                  selectedNodes.clear();
-
-                  selectedNode.setSelected(true);
-                  selectedNodes.put(selectedNode, selectedNode.getPos());
-                  //selectObject(selectedNode);
-              }
-           } else if (e.getButton() == MouseButton.SECONDARY) {
-              rightClickObject(selectedNode);
-           }
-        } else if (!e.isControlDown()) {
-            // bv.clearSelection();
-            selectedNodes.keySet().forEach(node -> node.setSelected(false));
-            selectedNodes.clear();
         }
     }
 
@@ -85,8 +96,10 @@ public abstract class MouseInteractor implements Interactor {
 	    final Point2D newPos = new Point2D(e.getX(), e.getY()); 
 	    final Point2D delta = newPos.subtract(pickPos);
 
-
-        if (!pickedNodes.isEmpty()) {
+	    if (handleToDrag != null) {
+            final Point2D newObjPos = handlePos.add(delta);
+            moveObject(handleToDrag, newObjPos); 
+	    } else if (!pickedNodes.isEmpty()) {
             if (selectedNodes.isEmpty()) {
                 final Interactable selectedNode = pickedNodes.get(pickIndex);
 
@@ -96,13 +109,12 @@ public abstract class MouseInteractor implements Interactor {
                   } else if (e.isShiftDown()) {
                   } else if (e.isMetaDown()) {
                   } else { // no modifiers pressed
-                      selectedNode.setSelected(true);
-                      selectedNodes.put(selectedNode, selectedNode.getPos());
+                      selectObject(selectedNode);
                   }
                }
             }
 
-           if (!e.isControlDown() && e.isPrimaryButtonDown()) { // && currentObject != null) {
+            if (!e.isControlDown() && e.isPrimaryButtonDown()) {
                selectedNodes.forEach((node, pos)  -> {
                    final Point2D newObjPos = pos.add(delta);
                    moveObject(node, newObjPos); 
@@ -111,6 +123,19 @@ public abstract class MouseInteractor implements Interactor {
         } 
     }
 
+
+	private void selectObject(Interactable node) {
+	    System.err.printf("Select: %s\n", node);
+        node.setSelected(bv, true);
+        selectedNodes.put(node, node.getPos());
+	}
+
+
+	private void clearSelection() {
+	    System.err.printf("Clear selection\n");
+        selectedNodes.keySet().forEach(node -> node.setSelected(bv, false));
+        selectedNodes.clear();
+	}
 
     /* Interactor specific high level functions */
 
@@ -122,9 +147,9 @@ public abstract class MouseInteractor implements Interactor {
     protected List<Interactable> pickObjects(Point2D mpos) {
         return Collections.emptyList();
     }
-
-    protected void selectObject(Interactable obj) {
-    }
+//
+//    protected void selectObject(Interactable obj) {
+//    }
 
     protected void moveObject(Interactable obj, Point2D newPos) {
     }

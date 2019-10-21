@@ -1,11 +1,11 @@
-package afester.javafx.examples.board;
+package afester.javafx.examples.board.view;
 
-import afester.javafx.examples.board.view.BoardView;
+import afester.javafx.examples.board.Interactable;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
-public class Handle extends Circle implements Interactable {
+public abstract class Handle extends Circle implements Interactable {
 
     public Handle(Point2D pos, double radius) {
         super(pos.getX(), pos.getY(), radius);
@@ -20,7 +20,7 @@ public class Handle extends Circle implements Interactable {
 
 
     @Override
-    public void setSelected(boolean isSelected) {
+    public void setSelected(BoardView bv, boolean isSelected) {
     }
 
 
@@ -30,12 +30,6 @@ public class Handle extends Circle implements Interactable {
     }
 
 
-    @Override
-    public void moveToGrid(BoardView bv, Point2D clickPos) {
-        System.err.println("MOVE " + this + " to " + clickPos);
-    }
-
-    
     @Override
     public String toString() {
         return String.format("Handle[pos=%s/%s]", getCenterX(), getCenterY());  

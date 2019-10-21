@@ -1,12 +1,12 @@
-package afester.javafx.examples.board;
+package afester.javafx.examples.board.view;
 
+import afester.javafx.examples.board.AirWireHandle;
 import afester.javafx.examples.board.model.AbstractNode;
-import afester.javafx.examples.board.view.TraceView;
 import javafx.geometry.Point2D;
 
 public class ToHandle extends AirWireHandle {
 
-    public ToHandle(TraceView airWire) {
+    public ToHandle(AbstractEdgeView airWire) {
         super(airWire, airWire.getEnd());
     } 
 
@@ -19,6 +19,16 @@ public class ToHandle extends AirWireHandle {
     protected void setPosition(Point2D clickPos) {
         getAirWire().edge.reconnectToNearestJunction(clickPos);
     }
+
+    @Override
+    public void moveToGrid(BoardView bv, Point2D newPos) {
+        System.err.println("MOVE " + this + " to " + newPos);
+        newPos = bv.snapToGrid(newPos, false);
+        this.getNode().setPosition(newPos);
+
+        // setPosition(newPos);
+    }
+
 
     @Override
     public String toString() {

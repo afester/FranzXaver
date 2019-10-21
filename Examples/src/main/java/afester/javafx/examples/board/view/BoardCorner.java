@@ -38,7 +38,7 @@ public class BoardCorner extends Circle implements Interactable {
     }
 
     @Override
-    public void setSelected(boolean isSelected) {
+    public void setSelected(BoardView bv, boolean isSelected) {
     }
 
     @Override

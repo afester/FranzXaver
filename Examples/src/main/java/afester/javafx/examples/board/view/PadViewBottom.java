@@ -11,7 +11,7 @@ import javafx.scene.text.Text;
 /**
  * A Pad is a junction which refers to a specific pin of a Part.
  */
-public class PadViewBottom extends AbstractNodeView {
+public class PadViewBottom extends AbstractPadView {
 
     private Pin pad;
 
@@ -42,18 +42,7 @@ public class PadViewBottom extends AbstractNodeView {
 
 
     @Override
-    public String getRepr() {
-        return "Pad: " + pad.getPadId();
-    }
-
-
-    @Override
     public String toString() {
         return String.format("PadView[pad=%s]", pad); 
-    }
-
-
-    @Override
-    public void setSelected(boolean isSelected) {
     }
 }

@@ -6,8 +6,9 @@ import afester.javafx.examples.board.model.Junction;
 import afester.javafx.examples.board.model.Part;
 import afester.javafx.examples.board.model.TraceType;
 import afester.javafx.examples.board.view.BoardView;
-import afester.javafx.examples.board.view.JunctionView;
+import afester.javafx.examples.board.view.FromHandle;
 import afester.javafx.examples.board.view.PartView;
+import afester.javafx.examples.board.view.ToHandle;
 import afester.javafx.examples.board.view.TraceView;
 import javafx.geometry.Point2D;
 
@@ -26,31 +27,32 @@ public class EditInteractor  extends MouseInteractor {
 
     @Override
     protected List<Interactable> pickObjects(Point2D mpos) {
+        // return a list of all selectable objects at the given mouse position (Parts and Net segments) 
         return getBoardView().getPartsAndNets(mpos);
     }
 
-    @Override
-    protected void selectObject(Interactable obj) {
-        if (obj instanceof PartView) {
-           // clickedPartView(obj);
-        } else if (obj instanceof TraceView) {
-            clickedTraceView((TraceView) obj);
-        } else if (obj instanceof AirWireHandle) {
-            clickedHandle((AirWireHandle) obj);
-        } else if (obj instanceof JunctionView) {
-            clickedJunction(obj);
-        }
-    }
+//    @Override
+//    protected void selectObject(Interactable obj) {
+//        if (obj instanceof PartView) {
+//           // clickedPartView(obj);
+//        } else if (obj instanceof TraceView) {
+//            clickedTraceView((TraceView) obj);
+//        } else if (obj instanceof AirWireHandle) {
+//            clickedHandle((AirWireHandle) obj);
+//        } else if (obj instanceof JunctionView) {
+//            clickedJunction(obj);
+//        }
+//    }
+//
 
-
-    private void clickedJunction(Interactable obj) {
-        System.err.println("Clicked junction view: " + obj);
-        junctionToMove = ((JunctionView) obj).getJunction();
-        System.err.println("Clicked junction: " + junctionToMove);
-
-        partToMove = null;
-        handleToMove = null;
-    }
+//    private void clickedJunction(Interactable obj) {
+//        System.err.println("Clicked junction view: " + obj);
+//        junctionToMove = ((JunctionView) obj).getJunction();
+//        System.err.println("Clicked junction: " + junctionToMove);
+//
+//        partToMove = null;
+//        handleToMove = null;
+//    }
 
 
     private void clickedHandle(AirWireHandle obj) {
@@ -72,13 +74,13 @@ public class EditInteractor  extends MouseInteractor {
         if (obj != currentSelection) {
             if (currentSelection != null) {
                 System.err.println("DESELECTING ...");
-                currentSelection.setSelected(false);
+                currentSelection.setSelected(bv, false);
                 bv.setSelectedObject(null);
             }
         }
 
         bv.setSelectedObject(obj);
-        obj.setSelected(true);
+        obj.setSelected(bv, true);
 
         partToMove = null;
         handleToMove = null;
@@ -144,11 +146,11 @@ public class EditInteractor  extends MouseInteractor {
         Interactable currentSelection = bv.getSelectedObject();
         if (currentSelection != obj) {
             if (currentSelection != null) {
-                currentSelection.setSelected(false);
+                currentSelection.setSelected(bv, false);
             }
 
             System.err.println("Selecting " + obj);
-            obj.setSelected(true);
+            obj.setSelected(bv, true);
             bv.setSelectedObject(obj);
 
             // TODO: Should all be accessed through the Interactable interface!

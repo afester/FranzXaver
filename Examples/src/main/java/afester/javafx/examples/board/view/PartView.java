@@ -79,7 +79,7 @@ public class PartView extends Group implements Interactable {
     }
 
     @Override
-    public void setSelected(boolean isSelected) {
+    public void setSelected(BoardView bv, boolean isSelected) {
         if (isSelected) {
             final double nonScaledWidth = 1 / getParent().getParent().getScaleX();      // TODO: This is (probably) a hack!
 

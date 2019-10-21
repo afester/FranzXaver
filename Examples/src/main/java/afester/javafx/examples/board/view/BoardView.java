@@ -7,13 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import javax.annotation.Nonnull;
-
 import afester.javafx.examples.board.Interactable;
 import afester.javafx.examples.board.Interactor;
 import afester.javafx.examples.board.model.AbstractWire;
 import afester.javafx.examples.board.model.Board;
-import afester.javafx.examples.board.model.Junction;
 import afester.javafx.examples.board.model.Part;
 import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.tools.Polygon2D;
@@ -24,11 +21,9 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
-import javafx.event.EventTarget;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 
 
@@ -51,7 +46,6 @@ public class BoardView extends Pane {
     private Group airWireGroup;     // all AirWires,
     private Group traceGroup;       //     Traces,
     private Group bridgeGroup;      // and Bridges on the board
-    private LookupGroup junctionGroup;    // all junctions
     private LookupGroup handleGroup;      // all dynamic handles (topmost layer)
 
     private Interactor interactor = null;
@@ -231,26 +225,6 @@ public class BoardView extends Pane {
                 }  
             });
         });
-
-//Handling junctions
-        Map<Junction, JunctionView> jMap = new HashMap<>();
-        net.getJunctions().forEach(junction -> {
-            JunctionView junctionView = new JunctionView(junction);
-            jMap.put(junction,  junctionView);
-            junctionGroup.getChildren().add(junctionView);
-        });
-        net.getJunctions().addListener((javafx.collections.ListChangeListener.Change<? extends Junction> change) -> {
-            change.next();
-            change.getRemoved().forEach(junction -> {
-                JunctionView jView = jMap.remove(junction);
-                junctionGroup.getChildren().remove(jView);
-            });
-            change.getAddedSubList().forEach(junction -> {
-                JunctionView jView = new JunctionView(junction);
-                jMap.put(junction,  jView);
-                junctionGroup.getChildren().add(jView);
-            });
-        });
     }
 
     public void setBoard(Board board) {
@@ -277,21 +251,15 @@ public class BoardView extends Pane {
         bridgeGroup.setId("bridgeGroup");
         netsGroup.getChildren().addAll(airWireGroup, traceGroup, bridgeGroup);
 
-        junctionGroup = new LookupGroup();
-        junctionGroup.setId("junctionGroup");
         handleGroup = new LookupGroup();
         handleGroup.setId("handleGroup");
 
         if (isBottom) {
             getChildren().addAll(boardGroup, dimensionGroup, boardHandlesGroup,
-                                 partsGroup,
-                                 netsGroup,
-                                 junctionGroup, handleGroup);
+                                 partsGroup, netsGroup, handleGroup);
         } else {
             getChildren().addAll(boardGroup, dimensionGroup, boardHandlesGroup,
-                                 netsGroup,
-                                 partsGroup,
-                                 junctionGroup, handleGroup);
+                                 netsGroup, partsGroup, handleGroup);
         }
 
         createPlainBoard();
@@ -436,7 +404,7 @@ public class BoardView extends Pane {
 
     public void clearSelection() {
         if (getSelectedObject() != null) {
-            getSelectedObject().setSelected(false);
+            getSelectedObject().setSelected(this, false);
         }
         setSelectedObject(null);
     }
@@ -452,7 +420,7 @@ public class BoardView extends Pane {
     }
    
 
-    public Group getHandleGroup() {
+    public LookupGroup getHandleGroup() {
         return handleGroup;
     }
     
@@ -471,8 +439,13 @@ public class BoardView extends Pane {
     public List<Interactable> getPartsAndNets(Point2D mpos) {
         List<Interactable> result = partsGroup.pickAll(mpos);
         result.addAll(netsGroup.pickAll(mpos));
-        result.addAll(junctionGroup.pickAll(mpos));
-        result.addAll(handleGroup.pickAll(mpos));
+
+        // Handles (which includes Junctions) are objects which can be dragged immediately
+        // (No selection step required!)
+        // TODO: Probably JunctionView can be changed to simply be a Handle also????
+        // Means, they do not need to be instantiated immediately for each Node ???
+//         result.addAll(junctionGroup.pickAll(mpos));
+//         result.addAll(handleGroup.pickAll(mpos));
 
         return result;
     }

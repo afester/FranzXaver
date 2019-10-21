@@ -14,13 +14,13 @@ public class EditShapeInteractor extends MouseInteractor {
         super(boardView);
     }
 
-    @Override
-    protected void selectObject(Interactable obj) {
-        if (obj instanceof BoardCorner) {
-            System.err.println("Clicked: " + obj);
-            cornerToMove = ((BoardCorner) obj).getCornerIdx();
-        }
-    }
+//    @Override
+//    protected void selectObject(Interactable obj) {
+//        if (obj instanceof BoardCorner) {
+//            System.err.println("Clicked: " + obj);
+//            cornerToMove = ((BoardCorner) obj).getCornerIdx();
+//        }
+//    }
 
     @Override
     public void mouseReleased(MouseEvent e) {

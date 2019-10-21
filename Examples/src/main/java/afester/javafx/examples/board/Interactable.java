@@ -7,7 +7,7 @@ public interface Interactable {
 
 	Point2D getPos();
 
-    void setSelected(boolean isSelected);
+    void setSelected(BoardView bv, boolean isSelected);
 
     String getRepr();
 

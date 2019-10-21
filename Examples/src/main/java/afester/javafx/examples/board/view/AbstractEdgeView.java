@@ -1,5 +1,6 @@
 package afester.javafx.examples.board.view;
 
+import afester.javafx.examples.board.AirWireHandle;
 import afester.javafx.examples.board.Interactable;
 import afester.javafx.examples.board.model.AbstractWire;
 import afester.javafx.examples.board.model.Net;
@@ -153,9 +154,20 @@ public abstract class AbstractEdgeView extends Line implements Interactable  {
     }
 
     @Override
-    public void setSelected(boolean isSelected) {
+    public void setSelected(BoardView bv, boolean isSelected) {
         Net net = edge.getNet();
         net.setSelected(isSelected, edge);
-    }
 
+        if (isSelected) {
+            FromHandle h1 = new FromHandle(this);
+            ToHandle h2 = new ToHandle(this);
+            bv.getHandleGroup().getChildren().add(h1);
+            bv.getHandleGroup().getChildren().add(h2);
+        } else {
+            // TODO: Hack!
+            bv.getHandleGroup().getChildren().forEach(e -> ((AirWireHandle) e).disconnectListener());
+
+            bv.getHandleGroup().getChildren().clear();
+        }
+    }
 }

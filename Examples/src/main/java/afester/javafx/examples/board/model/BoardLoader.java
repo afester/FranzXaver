@@ -199,15 +199,10 @@ class NetHandler extends SubContentHandler {
             System.err.printf("  %s\n", junction);
 
             bl.nodes.put(junctionId, junction);
-            // net.addJunction(junction);
+            net.addJunction(junction);
         } else if (localName.equals("airwire")) {
             String fromId = attributes.getValue("from");    // unique id
             String toId = attributes.getValue("to");        // unique id
-
-//            AbstractNode from = junctions.get(fromId);
-//            if (from == null) from = pads.get(fromId);  // TODO: This is a bad hack!!!!
-//            AbstractNode to = junctions.get(toId);
-//            if (to == null) to = pads.get(toId);        // TODO: This is a bad hack!!!!
 
             AbstractNode from = bl.nodes.get(fromId);
             AbstractNode to = bl.nodes.get(toId);
@@ -220,11 +215,6 @@ class NetHandler extends SubContentHandler {
             String fromId = attributes.getValue("from");
             String toId = attributes.getValue("to");
             boolean isBridge = Boolean.parseBoolean(attributes.getValue("isBridge"));
-
-//            AbstractNode from = junctions.get(fromId);
-//            if (from == null) from = pads.get(fromId);      // TODO: This is a bad hack!!!!
-//            AbstractNode to = junctions.get(toId);
-//            if (to == null) to = pads.get(toId);          // TODO: This is a bad hack!!!!
 
             AbstractNode from = bl.nodes.get(fromId);
             AbstractNode to = bl.nodes.get(toId);
