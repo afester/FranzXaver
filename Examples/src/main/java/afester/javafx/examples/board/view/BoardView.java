@@ -39,7 +39,7 @@ public class BoardView extends Pane {
     private BoardShape boardShape;
 
     private Group boardGroup;       // The board itself, including dimensions
-    private Group boardHandlesGroup;// The handles for the board
+    private LookupGroup boardHandlesGroup;// The handles for the board
     private Group dimensionGroup;   // The board dimensions - a children of boardGroup
     private LookupGroup partsGroup; // all parts (and their pads) on the board
     private LookupGroup netsGroup;        // all nets (Parent group for airWireGroup, traceGroup, bridgeGroup)
@@ -83,6 +83,11 @@ public class BoardView extends Pane {
     public boolean isShowBoardHandles() { return showBoardHandles.get(); }
     public void setShowBoardHandles(boolean flag) { showBoardHandles.set(flag); }
 
+    // A flag to indicate whether to move nodes or to reconnect nodes
+    private final BooleanProperty reconnectMode = new SimpleBooleanProperty(false);
+    public BooleanProperty reconnectModeProperty() { return reconnectMode; }
+    public boolean isReconnectMode() { return reconnectMode.get(); }
+    public void setReconnectMode(boolean flag) { reconnectMode.set(flag); }
 
     /**
      * Creates a new BoardView for an existing Board.
@@ -233,7 +238,7 @@ public class BoardView extends Pane {
 
         boardGroup = new Group();
         boardGroup.setId("boardGroup");
-        boardHandlesGroup = new Group();
+        boardHandlesGroup = new LookupGroup();
         boardHandlesGroup.setId("boardHandlesGroup");
         dimensionGroup = new Group();
         dimensionGroup.setId("dimensionGroup");
@@ -353,19 +358,6 @@ public class BoardView extends Pane {
         boardGroup.getChildren().addAll(boardShape, padsGroup, dimensionGroup);
     }
 
-    
-//    /**
-//     * Enable or disable showing the board dimensions.
-//     *
-//     * @param doShow Defines whether to show or hide the board dimensions.
-//     */
-//    public void showBoardDimensions(boolean doShow) {
-//        dimensionGroup.getChildren().clear();
-//        if (doShow) {
-//            createBoardDimensions();
-//        }
-//    }
-
 
     class IntVal {
         int val;
@@ -377,10 +369,11 @@ public class BoardView extends Pane {
 
 // Handles for each corner of the board        
         boardHandlesGroup.getChildren().clear();
-        final List<BoardCorner> corners = new ArrayList<>();
+        final List<BoardHandle> corners = new ArrayList<>();
         IntVal idx = new IntVal();
         pointIterator(boardShape.getPoints(), (xpos, ypos) -> {
-            BoardCorner c = new BoardCorner(xpos, ypos, getBoard(), idx.val);
+            BoardHandle c = new BoardHandle(xpos, ypos, getBoard(), idx.val);
+            System.err.println("BoardHanadle: " + c);
             idx.val++;
             boardHandlesGroup.getChildren().add(c);
             corners.add(c);
@@ -423,7 +416,12 @@ public class BoardView extends Pane {
     public LookupGroup getHandleGroup() {
         return handleGroup;
     }
-    
+
+
+    public LookupGroup getBoardHandleGroup() {
+        return boardHandlesGroup;
+    }
+
 
     public void setReadOnly(boolean b) {
         interactor = null;

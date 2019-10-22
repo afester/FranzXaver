@@ -9,7 +9,6 @@ public abstract class Handle extends Circle implements Interactable {
 
     public Handle(Point2D pos, double radius) {
         super(pos.getX(), pos.getY(), radius);
-        setFill(Color.GREEN);
     }
 
 

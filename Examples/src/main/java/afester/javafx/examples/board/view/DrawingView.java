@@ -27,6 +27,9 @@ public class DrawingView extends Pane {
             clipRectangle.setHeight(newValue.getHeight());
         });
 
+        // Show the border of the drawing view for debugging purposes
+        // setStyle("-fx-border-color: black; -fx-border-width: 1px;");
+
         // the Pane also has the mouse listeners for pan and zoom in order to be able to catch them at any position 
         setOnMousePressed( e-> {
             if (e.isControlDown()) {
@@ -34,19 +37,14 @@ public class DrawingView extends Pane {
 
                 mx = e.getX();
                 my = e.getY();
+
+                e.consume();
             }
-//            else {
-//                EventTarget target = e.getTarget();
-//                if (target instanceof SelectionShape) {
-//                    setSelected((SelectionShape) target);
-//                    mx = e.getX();
-//                    my = e.getY();
-//                    
-//                } else {
-//                    setSelected(null);
-//                }
-//            }
         });
+
+//        setOnMouseReleased(e -> {
+//            e.consume();
+//        });
 
         setOnMouseDragged(e -> {
             if (e.isControlDown()) {
@@ -58,6 +56,8 @@ public class DrawingView extends Pane {
                 my = e.getY();
                 content.setLayoutX(content.getLayoutX() - dx);
                 content.setLayoutY(content.getLayoutY() - dy);
+
+                e.consume();
             } 
 //            else {
 //                if (currentSelection != null) {
@@ -101,6 +101,7 @@ public class DrawingView extends Pane {
                     content.setLayoutX(content.getLayoutX() + diff.getX());
                     content.setLayoutY(content.getLayoutY() + diff.getY());
                 }
+                e.consume();
             }
         });
 

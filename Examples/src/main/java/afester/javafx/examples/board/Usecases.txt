@@ -1,7 +1,14 @@
+
+
 * Edit Mode
-  * Select Part
-    * Move part
-    * Rotate part
+  * Select Part - LeftMouse
+  * Move part - LeftMouse + Move
+  * Rotate part - RightMouse
+  * Multiple part selections - Ctrl+LeftMouse
+  * Panning - Ctrl+Shift+LeftMouse+Move
+  * Zooming - Ctrl+Mousewheel
+  * Scroll vertically - Mousewheel
+  * Scroll horizontally - Shift+Mousewheel 
 
   * Select Net (When clicking a segment - how to convert between Airwire/Trace/Bridge?)
     * Calculate shortest path for Net

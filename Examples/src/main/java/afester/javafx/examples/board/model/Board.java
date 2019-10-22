@@ -56,6 +56,7 @@ public class Board {
     public void setCornerPos(int cornerIdx, Point2D newPos) {
         Point2D snappedPos = new Point2D(((int) ( newPos.getX() / GRID)) * GRID,
                                          ((int) ( newPos.getY() / GRID)) * GRID);
+        System.err.printf("setCornerPos %s: %s\n", cornerIdx, snappedPos);
         boardShapePoints.set(cornerIdx, snappedPos);
     }
     

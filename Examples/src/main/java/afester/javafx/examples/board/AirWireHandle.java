@@ -2,9 +2,7 @@ package afester.javafx.examples.board;
 
 import afester.javafx.examples.board.model.AbstractNode;
 import afester.javafx.examples.board.view.AbstractEdgeView;
-import afester.javafx.examples.board.view.BoardView;
 import afester.javafx.examples.board.view.Handle;
-import afester.javafx.examples.board.view.TraceView;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Point2D;
@@ -15,7 +13,6 @@ public abstract class AirWireHandle extends Handle implements ChangeListener<Poi
 
     @Override
     public void changed(ObservableValue<? extends Point2D> observable, Point2D oldValue, Point2D newValue) {
-      System.err.println("CHANGED!" + this);
       this.setCenterX(newValue.getX());
       this.setCenterY(newValue.getY());
     }
@@ -24,13 +21,9 @@ public abstract class AirWireHandle extends Handle implements ChangeListener<Poi
         super(pos, 0.5);
         this.aw = airWire;
 
-        // TODO: the Listener is never removed afterwards!
+        // TODO: We need to make sure that the listener is disconnected when no longer
+        // needed by calling "disconnectListener"!
         getNode().positionProperty().addListener(this);
-//        (obj, oldValue, newValue) -> {
-//            System.err.println("CHANGED!" + this);
-//            this.setCenterX(newValue.getX());
-//            this.setCenterY(newValue.getY());
-//        });
     }
 
     public void disconnectListener() {
@@ -42,7 +35,4 @@ public abstract class AirWireHandle extends Handle implements ChangeListener<Poi
     public AbstractEdgeView getAirWire() {
         return aw;
     }
-
-
-    protected abstract void setPosition(Point2D clickPos);
 }

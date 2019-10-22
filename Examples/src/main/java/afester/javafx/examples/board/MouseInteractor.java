@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import afester.javafx.examples.board.view.BoardView;
-import afester.javafx.examples.board.view.Handle;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -60,7 +59,7 @@ public abstract class MouseInteractor implements Interactor {
 	}
 
     @Override
-    public void mouseReleased(MouseEvent e) {
+    public final void mouseReleased(MouseEvent e) {
         if (handleToDrag != null) {
             handleToDrag = null;
         } else {
@@ -147,9 +146,6 @@ public abstract class MouseInteractor implements Interactor {
     protected List<Interactable> pickObjects(Point2D mpos) {
         return Collections.emptyList();
     }
-//
-//    protected void selectObject(Interactable obj) {
-//    }
 
     protected void moveObject(Interactable obj, Point2D newPos) {
     }

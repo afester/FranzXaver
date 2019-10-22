@@ -5,6 +5,12 @@ BoardShape {
    -fx-stroke-width: 0.3px;		/* Board border width */
 }
 
+BoardHandle {
+   -fx-fill: None;
+   -fx-stroke: red;
+   -fx-stroke-width: 0.3px;
+}
+        
 DimensionView Line {
    -fx-stroke: darkred;
    -fx-stroke-width: 0.3px;
@@ -17,6 +23,18 @@ DimensionView Text {
 	-fx-font-family: monospace;
 	-fx-font-size: 2.0pt;
 */
+}
+
+FromHandle {
+   -fx-fill: yellow;
+   -fx-stroke: green;
+   -fx-stroke-width: 0.1px;
+}
+
+ToHandle {
+   -fx-fill: yellow;
+   -fx-stroke: green;
+   -fx-stroke-width: 0.1px;
 }
 
 HoleViewTop {

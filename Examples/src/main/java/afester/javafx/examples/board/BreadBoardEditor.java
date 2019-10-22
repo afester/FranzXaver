@@ -45,6 +45,22 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
+/**
+ * Scene
+ *   BorderPane mainLayout
+ *       Top: topBar
+ *          menuBar
+ *          toolBar
+ *       Bottom: statusBar
+ *       Left: leftBar (TBD)
+ *       Right: rightBar (TBD)
+ *       Center: tabPane
+ *          Tab editTab
+ *             Content: DrawingView(Pane) topDrawingView. Completely fills the Tab area.
+ *                       Content: BoardView(Pane) topView. Is located at a specific position in the DrawingView.
+ *          Tab bottomViewTab
+ *          Tab printTab
+ */
 public class BreadBoardEditor extends Application {
 
     private Stage stage;
@@ -87,7 +103,7 @@ public class BreadBoardEditor extends Application {
         printTab = new Tab("Print preview");
         printTab.setClosable(false);
 
-        TabPane tabPane = new TabPane();
+        final TabPane tabPane = new TabPane();
         tabPane.getSelectionModel().selectedIndexProperty().addListener((obj, oldIdx, newIdx) -> switchTab(newIdx.intValue()));
         tabPane.getTabs().addAll(editTab, bottomViewTab, printTab);
 
@@ -203,7 +219,6 @@ public class BreadBoardEditor extends Application {
             }
         });
         ToolbarToggleButton editShapeToolButton = new ToolbarToggleButton("Edit shape", "afester/javafx/examples/board/mode-editshape.png");
-        topView.showBoardHandlesProperty().bind(editShapeToolButton.selectedProperty());
         editShapeToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
                 topView.setInteractor(editShapeInteractor);
@@ -219,23 +234,21 @@ public class BreadBoardEditor extends Application {
 
         selectToolButton.setSelected(true);
 
-        
+        final ToggleGroup junctionModeToggleGroup = new ToggleGroup();
         final ToolbarToggleButton reconnectTraceModeToolButton = new ToolbarToggleButton("Reconnect Trace", "afester/javafx/examples/board/mode-reconnect.png");
-//        splitTraceToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
-//            if (newValue) {
-//                topView.setInteractor(splitTraceInteractor);   
-//            }
-//        });
-        ToolbarToggleButton moveJunctionToolButton = new ToolbarToggleButton("Move Junction", "afester/javafx/examples/board/mode-movejunction.png");
-//        editShapeToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
-//            if (newValue) {
-//                topView.setInteractor(editShapeInteractor);
-//            }
-//        });
-        ToggleGroup junctionModeToggleGroup = new ToggleGroup();
-
         reconnectTraceModeToolButton.setToggleGroup(junctionModeToggleGroup);
+        reconnectTraceModeToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
+            if (newValue) {
+                topView.setReconnectMode(true);       
+            }
+        });
+        final ToolbarToggleButton moveJunctionToolButton = new ToolbarToggleButton("Move Junction", "afester/javafx/examples/board/mode-movejunction.png");
         moveJunctionToolButton.setToggleGroup(junctionModeToggleGroup);
+        moveJunctionToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
+            if (newValue) {
+                topView.setReconnectMode(false);       
+            }
+        });
         moveJunctionToolButton.setSelected(true);
 
         ToolBar toolBar = new ToolBar(

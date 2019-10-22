@@ -16,17 +16,13 @@ public class ToHandle extends AirWireHandle {
     }
 
     @Override
-    protected void setPosition(Point2D clickPos) {
-        getAirWire().edge.reconnectToNearestJunction(clickPos);
-    }
-
-    @Override
     public void moveToGrid(BoardView bv, Point2D newPos) {
-        System.err.println("MOVE " + this + " to " + newPos);
-        newPos = bv.snapToGrid(newPos, false);
-        this.getNode().setPosition(newPos);
-
-        // setPosition(newPos);
+        if (bv.isReconnectMode()) {
+            getAirWire().edge.reconnectToNearestJunction(newPos);
+        } else {
+            newPos = bv.snapToGrid(newPos, false);
+            this.getNode().setPosition(newPos);
+        }
     }
 
 
