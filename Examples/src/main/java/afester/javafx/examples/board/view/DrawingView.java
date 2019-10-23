@@ -2,7 +2,9 @@ package afester.javafx.examples.board.view;
 
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 
@@ -13,6 +15,15 @@ public class DrawingView extends Pane {
     private double scaleFactor = 3.7;
     private static final double SCALE_STEP = Math.sqrt(1.3);
     private Parent content;
+
+    private boolean isPanning = false;
+    private Cursor oldCursor;
+
+    // TODO: Move to a central place and make it customizable
+    private boolean isPanelAction(MouseEvent e) {
+        return (e.isControlDown() && e.isShiftDown()); 
+    }
+
 
     public DrawingView(Parent pContent) {
         this.content = pContent;
@@ -32,22 +43,20 @@ public class DrawingView extends Pane {
 
         // the Pane also has the mouse listeners for pan and zoom in order to be able to catch them at any position 
         setOnMousePressed( e-> {
-            if (e.isControlDown()) {
+            if (isPanelAction(e)) {
                 // System.err.println("VIEW:" + e);
 
                 mx = e.getX();
                 my = e.getY();
-
-                e.consume();
+                oldCursor = getCursor();
+                setCursor(Cursor.CLOSED_HAND);
+                isPanning = true;
             }
         });
 
-//        setOnMouseReleased(e -> {
-//            e.consume();
-//        });
 
         setOnMouseDragged(e -> {
-            if (e.isControlDown()) {
+            if (isPanning) {
                 // System.err.println("VIEW:" + e);
 
                 double dx = mx - e.getX();
@@ -56,22 +65,18 @@ public class DrawingView extends Pane {
                 my = e.getY();
                 content.setLayoutX(content.getLayoutX() - dx);
                 content.setLayoutY(content.getLayoutY() - dy);
-
-                e.consume();
             } 
-//            else {
-//                if (currentSelection != null) {
-//                    double dx = mx - e.getX();
-//                    double dy = my - e.getY();
-//                    mx = e.getX();
-//                    my = e.getY();
-//                    currentSelection.setLayoutX(currentSelection.getLayoutX() - dx);
-//                    currentSelection.setLayoutY(currentSelection.getLayoutY() - dy);
-//                }
-//            }
+        });
+
+        setOnMouseReleased(e -> {
+            if (isPanning) {
+                setCursor(oldCursor);
+                isPanning = false;
+            }
         });
 
         setOnScroll(e-> {
+            
             if (e.isControlDown()) {
                 // System.err.println(e);
 
@@ -101,7 +106,6 @@ public class DrawingView extends Pane {
                     content.setLayoutX(content.getLayoutX() + diff.getX());
                     content.setLayoutY(content.getLayoutY() + diff.getY());
                 }
-                e.consume();
             }
         });
 
@@ -120,15 +124,19 @@ public class DrawingView extends Pane {
      * Centers the content pane so that it is in the center of the DrawingArea.
      */
     public void centerContent() {
-        Bounds daBounds = getLayoutBounds();
-        Bounds contentBounds = content.getLayoutBounds();
+        Bounds daBounds = getBoundsInLocal(); // getLayoutBounds();
+//        Bounds contentBounds = content.getLayoutBounds();
 
         System.err.println("DrawingArea:" + daBounds);
-        System.err.println("Contents   :" + contentBounds);
+//        System.err.println("Contents   :" + contentBounds);
 
-        double xpos = (daBounds.getWidth() - contentBounds.getWidth()) / 2;
-        double ypos = (daBounds.getHeight() - contentBounds.getHeight()) / 2;
+        System.err.println("ContentsL  :" + content.getBoundsInLocal());
+        System.err.println("Scale      :" + scaleFactor);
+        System.err.println("ContentsP  :" + content.getBoundsInParent());
         
+        double xpos = (daBounds.getWidth() - content.getBoundsInParent().getWidth()) / 2 + content.getBoundsInParent().getMinX();
+        double ypos = (daBounds.getHeight() - content.getBoundsInParent().getHeight()) / 2 - content.getBoundsInParent().getMinY();
+
         content.setLayoutX(xpos);
         content.setLayoutY(ypos);
     }
@@ -140,6 +148,7 @@ public class DrawingView extends Pane {
     public void fitContentToWindow() {
         Bounds daBounds = getLayoutBounds();
         Bounds contentBounds = content.getLayoutBounds();
+        // Bounds contentBounds = content.getBoundsInParent();
 
         System.err.println("DrawingArea:" + daBounds);
         System.err.println("Contents   :" + contentBounds);

@@ -24,6 +24,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
 
@@ -89,6 +90,11 @@ public class BoardView extends Pane {
     public boolean isReconnectMode() { return reconnectMode.get(); }
     public void setReconnectMode(boolean flag) { reconnectMode.set(flag); }
 
+    // TODO: Move to a central place and make it customizable
+    private boolean isPanelAction(MouseEvent e) {
+        return (e.isControlDown() && e.isShiftDown()); 
+    }
+
     /**
      * Creates a new BoardView for an existing Board.
      *
@@ -109,20 +115,20 @@ public class BoardView extends Pane {
         dimensionGroup.visibleProperty().bind(showDimensionsProperty());
         boardHandlesGroup.visibleProperty().bind(showBoardHandlesProperty());
 
-        setOnMousePressed(e -> { 
-            if (interactor != null) {
+        setOnMousePressed(e -> {
+            if (!isPanelAction(e) && interactor != null) {
                 interactor.mousePressed(e);
             }
         });
 
         setOnMouseDragged(e -> {
-            if (interactor != null) {
+            if (!isPanelAction(e) && interactor != null) {
                 interactor.mouseDragged(e);
             }
          });
 
         setOnMouseReleased(e -> {
-            if (interactor != null) {
+            if (!isPanelAction(e) && interactor != null) {
                 interactor.mouseReleased(e);
             }
         });
