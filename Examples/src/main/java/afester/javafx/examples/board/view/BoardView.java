@@ -132,6 +132,10 @@ public class BoardView extends Pane {
                 interactor.mouseReleased(e);
             }
         });
+
+        setManaged(false);  // !!!!!!!!!!!!
+
+        setStyle("-fx-border-color: red; -fx-border-width: 1px;");
     }
 
 
