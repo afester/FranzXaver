@@ -27,8 +27,6 @@ public class DrawingView extends Pane {
         return (e.isControlDown() && e.isShiftDown()); 
     }
 
-    Rectangle r;
-
     public DrawingView(Parent pContent) {
         this.content = pContent;
 
@@ -43,7 +41,7 @@ public class DrawingView extends Pane {
         });
 
         // Show the border of the drawing view for debugging purposes
-        setStyle("-fx-border-color: black; -fx-border-width: 1px;");
+        // setStyle("-fx-border-color: black; -fx-border-width: 1px;");
 
         // the Pane also has the mouse listeners for pan and zoom in order to be able to catch them at any position 
         setOnMousePressed( e-> {
@@ -69,8 +67,6 @@ public class DrawingView extends Pane {
                 my = e.getY();
                 content.setLayoutX(content.getLayoutX() - dx);
                 content.setLayoutY(content.getLayoutY() - dy);
-              //g.setLayoutX(g.getLayoutX() - dx);
-              //g.setLayoutY(g.getLayoutY() - dy);
             } 
         });
 
@@ -112,18 +108,14 @@ public class DrawingView extends Pane {
                     content.setLayoutX(content.getLayoutX() + diff.getX());
                     content.setLayoutY(content.getLayoutY() + diff.getY());
                 }
+            } else if (e.isShiftDown()) {
+                System.err.println("Scroll horizontally");
+            } else {
+                System.err.println("Scroll vertically");
             }
         });
 
-        //g = new Pane();
-        //g.getChildren().add(content);
-        //g.setStyle("-fx-border-color: blue; -fx-border-width: 1px;");
-        getChildren().add( content);
-        
-        r = new Rectangle();
-        r.setFill(null);
-        r.setStroke(Color.BLUE);
-        ((Pane) content).getChildren().add(r);
+        getChildren().add(content);
     }
 
 
@@ -138,58 +130,31 @@ public class DrawingView extends Pane {
      * Centers the content pane so that it is in the center of the DrawingArea.
      */
     public void centerContent() {
-        Bounds daBounds = getBoundsInLocal(); // getLayoutBounds();
-        Bounds contentBounds = content.getBoundsInLocal();
+        Bounds daBounds = getBoundsInLocal();
+        Bounds contentBoundsInParent = content.getBoundsInParent();
 
-        System.err.println("DrawingArea:" + daBounds);
-        System.err.println("Content    :" + contentBounds);
-        System.err.println("ContentP   :" + content.getBoundsInParent());
+        System.err.println("Bounds in DrawingView area:");
+        System.err.println("  DrawingView:" + daBounds);
+        System.err.println("  Content    :" + contentBoundsInParent);
 
-        // Rectangle is part of contents, hence we need to use local coordinates since the rectangle is scaled 
-        // together with the component
-        r.setLayoutX(contentBounds.getMinX());
-        r.setLayoutY(contentBounds.getMinY());
-        r.setWidth(contentBounds.getWidth());
-        r.setHeight(contentBounds.getHeight());
+        final Point2D destPointParent = new Point2D((daBounds.getWidth()  - contentBoundsInParent.getWidth() ) / 2,
+                                                    (daBounds.getHeight() - contentBoundsInParent.getHeight()) / 2);
+        System.err.println("  New upper left corner of content in DrawingView: " + destPointParent);
 
-//        System.err.println("DrawingArea:" + daBounds);
-////        System.err.println("Contents   :" + contentBounds);
-//        System.err.println("ContentsL  :" + content.getBoundsInLocal());
-//        System.err.println("Scale      :" + scaleFactor);
-//        System.err.println("ContentsP  :" + content.getBoundsInParent());
+        final Point2D destPointChild = content.parentToLocal(destPointParent);
+        System.err.println("  New upper left corner of content in content: " + destPointChild);
 
-        final double marginLeft = (daBounds.getWidth() - content.getBoundsInParent().getWidth()) / 2;
-        System.err.println("  marginLeft:" + marginLeft);
+        final Point2D actualPointChild = new Point2D(content.getBoundsInLocal().getMinX(), content.getBoundsInLocal().getMinY());
+        System.err.println("  Actual upper left corner of content in content: " + actualPointChild);
 
-//        System.err.println("  rand:" + dw/2);
-//        double xpos = (daBounds.getWidth() - content.getBoundsInLocal().getWidth()) / 2 - content.getBoundsInLocal().getMinX() * scaleFactor;
-//        System.err.println("  xpos:" + xpos);
-        
-        final double marginTop = (daBounds.getHeight() - content.getBoundsInParent().getHeight()) / 2;
-        System.err.println("  marginTop:" + marginTop);
+        final Point2D newPosChild = destPointChild.subtract(actualPointChild);
+        System.err.println("  New position of zero point of content in content: " + newPosChild);
 
-        // we now have a point in parent coordinates which shall refer to the top left corner of the content
-        // lets move the content to this position ...
-        
-        content.getBoundsInLocal().getMinX();   // this is the same point 
-        content.getBoundsInLocal().getMinY();   // but in local coordinates. this is essentially the zero point.
+        final Point2D newPosParent = content.localToParent(newPosChild);
+        System.err.println("  New position of zero point of content in parent: " + newPosParent);
 
-        Bounds b1 = content.localToParent(content.getBoundsInLocal());
-        System.err.println("1:" + content.getBoundsInParent());
-        System.err.println("2:" + b1);
-        
-        final double xpos = -content.getBoundsInParent().getMinX() + marginLeft;
-        final double ypos = -content.getBoundsInParent().getMinY() + marginTop;
-        System.err.println("  xpos:" + xpos);
-        System.err.println("  ypos:" + ypos);
-
-//        System.err.println("  rand:" + dh/2);
-//
-//        double ypos = (daBounds.getHeight() - content.getBoundsInLocal().getHeight()) / 2 - content.getBoundsInLocal().getMinY() * scaleFactor;
-//        System.err.println("  ypos:" + ypos);
-
-        content.setLayoutX(xpos);
-        content.setLayoutY(ypos);
+        content.setLayoutX(newPosParent.getX());
+        content.setLayoutY(newPosParent.getY());
     }
 
 
@@ -198,8 +163,7 @@ public class DrawingView extends Pane {
      */
     public void fitContentToWindow() {
         Bounds daBounds = getLayoutBounds();
-        Bounds contentBounds = content.getBoundsInLocal(); // content.getLayoutBounds();
-        // Bounds contentBounds = content.getBoundsInParent();
+        Bounds contentBounds = content.getBoundsInLocal();
 
         System.err.println("DrawingArea:" + daBounds);
         System.err.println("Contents   :" + contentBounds);

@@ -16,7 +16,7 @@ public abstract class MouseInteractor implements Interactor {
     private BoardView bv;       // The BoardView to which this interactor is attached
 
     private Point2D pickPos;                // the position where the mouse click occurred
-    private List<Interactable> pickedNodes; // the list of objects at the mouse click position 
+    private List<Interactable> pickedNodes = Collections.emptyList(); // the list of objects at the mouse click position 
     private int pickIndex = 0;              // The current index in the pickedNodes list
 
     // The currently selected nodes and their original mouse position
