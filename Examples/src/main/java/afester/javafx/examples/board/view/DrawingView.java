@@ -5,13 +5,14 @@ import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Parent;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 // TODO: This also needs to support vertical and horizontal scrolling
-public class DrawingView extends Pane {
+public class DrawingView extends Pane { // ScrollPane {
     private double mx = 0;
     private double my = 0;
     private double scaleFactor = 3.7;
@@ -20,7 +21,6 @@ public class DrawingView extends Pane {
 
     private boolean isPanning = false;
     private Cursor oldCursor;
-    private Pane g;
 
     // TODO: Move to a central place and make it customizable
     private boolean isPanelAction(MouseEvent e) {
@@ -108,12 +108,30 @@ public class DrawingView extends Pane {
                     content.setLayoutX(content.getLayoutX() + diff.getX());
                     content.setLayoutY(content.getLayoutY() + diff.getY());
                 }
-            } else if (e.isShiftDown()) {
+            }/* else if (e.isShiftDown()) {
                 System.err.println("Scroll horizontally");
             } else {
                 System.err.println("Scroll vertically");
-            }
+            }*/
         });
+
+
+        // use a ScrollPane instead
+//        setHbarPolicy(ScrollBarPolicy.ALWAYS);
+//        setVbarPolicy(ScrollBarPolicy.ALWAYS);
+//        setPannable(true);
+//        setContent(new Group(content));
+        
+        Rectangle r = new Rectangle();
+        r.setStroke(Color.LIGHTGREY);
+        r.setFill(Color.WHITE);
+        content.boundsInParentProperty().addListener((obj, oldValue, newValue) -> {
+            r.setLayoutX(newValue.getMinX() - 10);
+            r.setLayoutY(newValue.getMinY() - 10);
+            r.setWidth(newValue.getWidth() + 20);
+            r.setHeight(newValue.getHeight() + 20);
+        });
+        getChildren().add(r);
 
         getChildren().add(content);
     }

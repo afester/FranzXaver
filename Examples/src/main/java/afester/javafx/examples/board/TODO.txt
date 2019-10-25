@@ -1,6 +1,5 @@
 Bug: "Reset Net" needs to remove all junctions from the net!
 
-
 * Installed font PCBius not available through its name even though it is installed
 * Dimension text not properly positioned if styled through the CSS
-* Selecting objects which are *behind* other objects
+* Add scrollbars / use a ScrollPane as the top level container for the BoardView. Need to ensure that panning and scrolling are still working!
