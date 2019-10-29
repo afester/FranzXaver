@@ -2,6 +2,7 @@ package afester.javafx.examples.controls;
 
 import afester.javafx.examples.Example;
 import javafx.application.Application;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
@@ -21,14 +22,43 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 
+
 class BoundsRect extends Rectangle {
 
-    public BoundsRect(Node node, Color color) {
+    protected BoundsRect() {
+    }
+
+    public BoundsRect(ReadOnlyObjectProperty<Bounds> boundsProperty, Color color) {
+        setFill(null);
+        setStroke(color);
+
+        System.err.println("BOUNDS       :" + boundsProperty.getValue());
+        boundsProperty.addListener((obj, o, newValue) -> {
+                System.err.println("BOUNDS       :" + newValue);
+                setBounds(newValue);
+          });
+
+        setBounds(boundsProperty.getValue());
+    }
+
+
+    protected void setBounds(Bounds sceneBounds) {
+        setLayoutX(sceneBounds.getMinX());
+        setLayoutY(sceneBounds.getMinY());
+        setWidth(sceneBounds.getWidth());
+        setHeight(sceneBounds.getHeight());
+    }
+}
+
+class BoundsInParentOrLocalRect extends BoundsRect {
+
+
+    public BoundsInParentOrLocalRect(Node node, Color color) {
         this(node, color, false);
     }
     
     
-    public BoundsRect(Node node, Color color, boolean parentBounds) {
+    public BoundsInParentOrLocalRect(Node node, Color color, boolean parentBounds) {
         setFill(null);
         setStroke(color);
 
@@ -66,13 +96,31 @@ class BoundsRect extends Rectangle {
             setBounds(sceneBounds);
         }
     }
+}
 
 
-    private void setBounds(Bounds sceneBounds) {
-        setLayoutX(sceneBounds.getMinX());
-        setLayoutY(sceneBounds.getMinY());
-        setWidth(sceneBounds.getWidth());
-        setHeight(sceneBounds.getHeight());
+class LayoutBoundsRect extends BoundsRect {
+
+    public LayoutBoundsRect(Node node, Color color) {
+        setFill(null);
+        setStroke(color);
+
+        System.err.println("Layout BOUNDS:" + node.getLayoutBounds());
+        System.err.println("Parent BOUNDS:" + node.getBoundsInParent());
+        System.err.println("Local  BOUNDS:" + node.getBoundsInLocal());
+
+        node.layoutBoundsProperty().addListener((obj, o, newValue) -> {
+            Bounds sceneBounds = newValue; // node.localToScene(newValue);
+
+            System.err.println("Layout BOUNDS:" + newValue); // node.getBoundsInLocal());
+            System.err.println("Parent BOUNDS:" + node.getBoundsInParent());
+            System.err.println("Local  BOUNDS:" + node.getBoundsInLocal());
+
+            setBounds(sceneBounds);
+      });
+
+      Bounds sceneBounds = node.getLayoutBounds(); // node.localToScene(node.getLayoutBounds());
+      setBounds(sceneBounds);
     }
 }
 
@@ -158,7 +206,14 @@ public class ScrollPaneExample extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("JavaFX scrollpane example");
 
-        Pane content = new Pane();
+        Pane content = new Pane() {
+            @Override
+            public String toString() {
+                return "ContentPane";
+            }
+        };
+        content.resize(8000, 8000);
+
         content.setManaged(false);
 //        RectangleObject r1 = new RectangleObject("R1", Color.RED, new Point2D(100, 100), 100, 50);
 //        CircleObject r2 = new CircleObject("C1", Color.YELLOW, new Point2D(-50, -50), 100);
@@ -172,6 +227,7 @@ public class ScrollPaneExample extends Application {
         ScrollPane scrollPaneNode = new ScrollPane();
         scrollPaneNode.setHbarPolicy(ScrollBarPolicy.ALWAYS);
         scrollPaneNode.setVbarPolicy(ScrollBarPolicy.ALWAYS);
+
         // rootNode.setPannable(true);
 
         // need to wrap the top level container into a Group to use visual bounds
@@ -273,10 +329,14 @@ public class ScrollPaneExample extends Application {
         StackPane viewContent = (StackPane) v.getParent();
         StackPane viewRect = (StackPane) viewContent.getParent();
 //        BoundsRect rb2 = new BoundsRect(p, Color.GREEN);
-        BoundsRect rb3 = new BoundsRect(viewContent, Color.BLACK);
+        BoundsRect rb3 = new BoundsInParentOrLocalRect(viewContent, Color.BLACK);
 //        BoundsRect rb4 = new BoundsRect(viewRect, Color.MAGENTA);
-        BoundsRect rb5 = new BoundsRect(content, Color.BLUE);
-        BoundsRect rb6 = new BoundsRect(content, Color.BLACK, true);
-        boundsNode.getChildren().addAll(/*rb2, */rb3, /*rb4, */rb5, rb6);
+//        BoundsRect rb5 = new BoundsRect(content, Color.BLUE);
+//        BoundsRect rb6 = new BoundsRect(content, Color.BLACK, true);
+
+        BoundsRect rb7 = new LayoutBoundsRect(v, Color.MAGENTA);
+        BoundsRect rb8 = new BoundsRect(scrollPaneNode.viewportBoundsProperty(), Color.ORANGE);
+        System.err.println(content);
+        boundsNode.getChildren().addAll(/*rb2, */rb3, /*rb4, rb5, rb6,*/ rb7, rb8);
     }
 }
