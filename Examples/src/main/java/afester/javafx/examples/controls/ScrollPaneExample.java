@@ -17,7 +17,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
@@ -141,39 +140,6 @@ class ContentRoot extends Pane {
     }
 
 }
-
-
-class RectangleObject extends Rectangle {
-
-    public RectangleObject(String id, Color col, Point2D pos, int width, int height) {
-        super(width, height, col);
-        setLayoutX(pos.getX());
-        setLayoutY(pos.getY());
-        setId(id);
-    }
-
-    @Override
-    public String toString() {
-        return String.format("RectangleObject[%s]", getId());
-    }
-}
-
-
-class CircleObject extends Circle {
-
-    public CircleObject(String id, Color col, Point2D center, double radius) {
-        super(center.getX(), center.getY(), radius);
-        setId(id);
-        setFill(null);
-        setStroke(col);
-    }
-
-    @Override
-    public String toString() {
-        return String.format("CircleObject[%s]", getId());
-    }
-}
-
 
 
 @Example(desc = "ScrollPane",
