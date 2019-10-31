@@ -28,7 +28,7 @@ public class ScrollPaneExample2 extends Application {
     private Pane desk;
     private Pane drawingArea;
     private ScrollPane scrollPane;
-
+    Group objGroup ;
     
     public static void main(String[] args) {
         launch(args);
@@ -51,19 +51,25 @@ public class ScrollPaneExample2 extends Application {
         paper.setManaged(false);
         paper.setStyle("-fx-border-style: solid; -fx-border-color: black;");
 
-        RectangleObject r1 = new RectangleObject("R1", Color.RED, new Point2D(-50, -50), 100, 30);
-        RectangleObject r2 = new RectangleObject("R2", Color.BLUE, new Point2D(0, 0), 40, 40);
-        RectangleObject r3 = new RectangleObject("R3", Color.GREEN, new Point2D(-50, 100), 50, 50);
-        RectangleObject r4 = new RectangleObject("R4", Color.ORANGE, new Point2D(100, 100), 50, 50);
+//        RectangleObject r1 = new RectangleObject("R1", Color.RED, new Point2D(-50, -50), 100, 30);
+//        RectangleObject r2 = new RectangleObject("R2", Color.BLUE, new Point2D(0, 0), 40, 40);
+//        RectangleObject r3 = new RectangleObject("R3", Color.GREEN, new Point2D(-50, 100), 50, 50);
+        RectangleObject r1 = new RectangleObject("R1", Color.RED, new Point2D(100, 100), 50, 50);
+        RectangleObject r2 = new RectangleObject("R2", Color.BLUE, new Point2D(20, 120), 50, 50);
+        RectangleObject r3 = new RectangleObject("R3", Color.GREEN, new Point2D(150, 150), 50, 50);
+        RectangleObject r4 = new RectangleObject("R4", Color.ORANGE, new Point2D(130, 100), 50, 50);
         
         drawingArea = new Pane();
         drawingArea.setManaged(false);
         drawingArea.setTranslateX(1500);
         drawingArea.setTranslateY(1500);
-//        coordinates.setTranslateX(1500);
-//        coordinates.setTranslateY(1500);
 
-        drawingArea.getChildren().addAll(r1, r2, r3, r4);
+        objGroup = new Group();
+        objGroup.setManaged(false);
+        objGroup.getChildren().addAll(r1, r2, r3, r4);
+
+        drawingArea.getChildren().add(objGroup);
+        
         paper.getChildren().add(drawingArea);
 
         double deskCenterX = desk.getWidth()/2;
@@ -144,37 +150,27 @@ public class ScrollPaneExample2 extends Application {
         cr.setWidth(coordinatesBounds.getWidth());
         cr.setHeight(coordinatesBounds.getHeight());
 
-        // drawingArea.getChildren().addAll(lp1, lp2); // , pr);
-
         desk.getChildren().addAll(cr, lp1, lp2);
 
-        Bounds paperBounds = paper.getBoundsInParent();
+        Bounds paperBounds = objGroup.getBoundsInParent();
+        paperBounds = drawingArea.localToParent(paperBounds);
         Rectangle pr = new Rectangle(); // paperBounds.getMinX(), paperBounds.getMinY(), paperBounds.getWidth(), paperBounds.getHeight());
         pr.setFill(null);
         pr.setStroke(Color.MAGENTA);
-        paper.boundsInParentProperty().addListener((obj, oldValue, newValue) -> {
+        objGroup.boundsInParentProperty().addListener((obj, oldValue, newValue) -> {
             System.err.println(newValue);
+            newValue = drawingArea.localToParent(newValue);
             pr.relocate(newValue.getMinX(), newValue.getMinY());
             pr.setWidth(newValue.getWidth());
             pr.setHeight(newValue.getHeight());
         });
-        System.err.println(paperBounds);
         pr.relocate(paperBounds.getMinX(), paperBounds.getMinY());
         pr.setWidth(paperBounds.getWidth());
         pr.setHeight(paperBounds.getHeight());
         desk.getChildren().add(pr);
 
-//        double paperCenterX = paperBounds.getWidth()/2 + paperBounds.getMinX();
-//        double paperCenterY = paperBounds.getHeight()/2 + paperBounds.getMinY();
-//        Line lp1 = new Line(paperCenterX - 5, paperCenterY, paperCenterX + 5, paperCenterY);
-//        lp1.setStroke(Color.MAGENTA);
-//        Line lp2 = new Line(paperCenterX, paperCenterY - 5, paperCenterX, paperCenterY + 5);
-//        lp2.setStroke(Color.MAGENTA);
-
-        //paper.getChildren().addAll(lp1, lp2); // , pr);
-
-        CircleObject obj = new CircleObject("C1", Color.ORANGE, new Point2D(0, 0), 25);
-        drawingArea.getChildren().add(obj);
+//        CircleObject obj = new CircleObject("C1", Color.ORANGE, new Point2D(0, 0), 25);
+//        drawingArea.getChildren().add(obj);
 
         scrollPane.setVvalue(0.5);
         scrollPane.setHvalue(0.5);
