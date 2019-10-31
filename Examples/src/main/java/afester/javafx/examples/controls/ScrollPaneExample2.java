@@ -24,11 +24,11 @@ import javafx.stage.Stage;
          cat  = "JavaFX")
 public class ScrollPaneExample2 extends Application {
     
-    private Group paper;
+//    private Group paper;
     private Pane desk;
-    private Pane drawingArea;
+    private Pane transformationArea;
     private ScrollPane scrollPane;
-    Group objGroup ;
+    Group drawingArea ;
     
     public static void main(String[] args) {
         launch(args);
@@ -47,30 +47,30 @@ public class ScrollPaneExample2 extends Application {
         desk.resize(3000, 3000);
         desk.setStyle("-fx-border-style: solid; -fx-border-color: red;");
 
-        paper = new Group();
-        paper.setManaged(false);
-        paper.setStyle("-fx-border-style: solid; -fx-border-color: black;");
+//        paper = new Group();
+//        paper.setManaged(false);
+//        paper.setStyle("-fx-border-style: solid; -fx-border-color: black;");
 
-//        RectangleObject r1 = new RectangleObject("R1", Color.RED, new Point2D(-50, -50), 100, 30);
-//        RectangleObject r2 = new RectangleObject("R2", Color.BLUE, new Point2D(0, 0), 40, 40);
-//        RectangleObject r3 = new RectangleObject("R3", Color.GREEN, new Point2D(-50, 100), 50, 50);
-        RectangleObject r1 = new RectangleObject("R1", Color.RED, new Point2D(100, 100), 50, 50);
-        RectangleObject r2 = new RectangleObject("R2", Color.BLUE, new Point2D(20, 120), 50, 50);
-        RectangleObject r3 = new RectangleObject("R3", Color.GREEN, new Point2D(150, 150), 50, 50);
+        RectangleObject r1 = new RectangleObject("R1", Color.RED, new Point2D(-50, -50), 100, 30);
+        RectangleObject r2 = new RectangleObject("R2", Color.BLUE, new Point2D(0, 0), 40, 40);
+        RectangleObject r3 = new RectangleObject("R3", Color.GREEN, new Point2D(-50, 100), 50, 50);
+//        RectangleObject r1 = new RectangleObject("R1", Color.RED, new Point2D(100, 100), 50, 50);
+//        RectangleObject r2 = new RectangleObject("R2", Color.BLUE, new Point2D(20, 120), 50, 50);
+//        RectangleObject r3 = new RectangleObject("R3", Color.GREEN, new Point2D(150, 150), 50, 50);
         RectangleObject r4 = new RectangleObject("R4", Color.ORANGE, new Point2D(130, 100), 50, 50);
         
-        drawingArea = new Pane();
+        transformationArea = new Pane();
+        transformationArea.setManaged(false);
+        transformationArea.setTranslateX(1500);
+        transformationArea.setTranslateY(1500);
+
+        drawingArea = new Group();
         drawingArea.setManaged(false);
-        drawingArea.setTranslateX(1500);
-        drawingArea.setTranslateY(1500);
+        drawingArea.getChildren().addAll(r1, r2, r3, r4);
 
-        objGroup = new Group();
-        objGroup.setManaged(false);
-        objGroup.getChildren().addAll(r1, r2, r3, r4);
-
-        drawingArea.getChildren().add(objGroup);
+        transformationArea.getChildren().add(drawingArea);
         
-        paper.getChildren().add(drawingArea);
+//        paper.getChildren().add(drawingArea);
 
         double deskCenterX = desk.getWidth()/2;
         double deskCenterY = desk.getHeight()/2;
@@ -78,7 +78,7 @@ public class ScrollPaneExample2 extends Application {
         l1.setStroke(Color.RED);
         Line l2 = new Line(deskCenterX, deskCenterY - 5, deskCenterX, deskCenterY + 5);
         l2.setStroke(Color.RED);
-        desk.getChildren().addAll(paper, l1, l2);
+        desk.getChildren().addAll(transformationArea, l1, l2);
 
         scrollPane = new ScrollPane(new Group(desk));
         scrollPane.setHbarPolicy(ScrollBarPolicy.ALWAYS);
@@ -95,7 +95,7 @@ public class ScrollPaneExample2 extends Application {
                     System.err.println("DRAG RECT" + r);
 
                     final Point2D mScene = new Point2D(event.getSceneX(), event.getSceneY());
-                    Point2D dest = drawingArea.sceneToLocal(mScene);
+                    Point2D dest = transformationArea.sceneToLocal(mScene);
                         
                     r.relocate(dest.getX(), dest.getY());
                 }
@@ -116,22 +116,22 @@ public class ScrollPaneExample2 extends Application {
 
         
         
-        Bounds coordinatesBounds = drawingArea.getBoundsInParent();
+        Bounds coordinatesBounds = transformationArea.getBoundsInParent();
         Rectangle cr = new Rectangle(); // paperBounds.getMinX(), paperBounds.getMinY(), paperBounds.getWidth(), paperBounds.getHeight());
         cr.setFill(null);
         cr.setStroke(Color.GREEN);
 
-        double drawingAreaCenterX = drawingArea.getBoundsInParent().getWidth() / 2 + drawingArea.getBoundsInParent().getMinX();
-        double drawingAreaCenterY = drawingArea.getBoundsInParent().getHeight() / 2  + drawingArea.getBoundsInParent().getMinY();
+        double drawingAreaCenterX = transformationArea.getBoundsInParent().getWidth() / 2 + transformationArea.getBoundsInParent().getMinX();
+        double drawingAreaCenterY = transformationArea.getBoundsInParent().getHeight() / 2  + transformationArea.getBoundsInParent().getMinY();
         Line lp1 = new Line(drawingAreaCenterX - 5, drawingAreaCenterY, drawingAreaCenterX + 5, drawingAreaCenterY);
         lp1.setStroke(Color.MAGENTA);
         Line lp2 = new Line(drawingAreaCenterX, drawingAreaCenterY - 5, drawingAreaCenterX, drawingAreaCenterY + 5);
         lp2.setStroke(Color.MAGENTA);
 
-        drawingArea.boundsInParentProperty().addListener((obj, oldValue, newValue) -> {
+        transformationArea.boundsInParentProperty().addListener((obj, oldValue, newValue) -> {
             System.err.println(newValue);
-            double drawingAreaCenterX1 = drawingArea.getBoundsInParent().getWidth() / 2 + drawingArea.getBoundsInParent().getMinX();
-            double drawingAreaCenterY1 = drawingArea.getBoundsInParent().getHeight() / 2  + drawingArea.getBoundsInParent().getMinY();
+            double drawingAreaCenterX1 = transformationArea.getBoundsInParent().getWidth() / 2 + transformationArea.getBoundsInParent().getMinX();
+            double drawingAreaCenterY1 = transformationArea.getBoundsInParent().getHeight() / 2  + transformationArea.getBoundsInParent().getMinY();
             lp1.setStartX(drawingAreaCenterX1 - 5);
             lp1.setStartY(drawingAreaCenterY1);
             lp1.setEndX(drawingAreaCenterX1 + 5);
@@ -152,14 +152,14 @@ public class ScrollPaneExample2 extends Application {
 
         desk.getChildren().addAll(cr, lp1, lp2);
 
-        Bounds paperBounds = objGroup.getBoundsInParent();
-        paperBounds = drawingArea.localToParent(paperBounds);
+        Bounds paperBounds = drawingArea.getBoundsInParent();
+        paperBounds = transformationArea.localToParent(paperBounds);
         Rectangle pr = new Rectangle(); // paperBounds.getMinX(), paperBounds.getMinY(), paperBounds.getWidth(), paperBounds.getHeight());
         pr.setFill(null);
         pr.setStroke(Color.MAGENTA);
-        objGroup.boundsInParentProperty().addListener((obj, oldValue, newValue) -> {
+        drawingArea.boundsInParentProperty().addListener((obj, oldValue, newValue) -> {
             System.err.println(newValue);
-            newValue = drawingArea.localToParent(newValue);
+            newValue = transformationArea.localToParent(newValue);
             pr.relocate(newValue.getMinX(), newValue.getMinY());
             pr.setWidth(newValue.getWidth());
             pr.setHeight(newValue.getHeight());
@@ -201,8 +201,8 @@ public class ScrollPaneExample2 extends Application {
             System.err.printf("Scrollbar: %s/%s\n", oldHvalue, oldVvalue);
 
             // scale the content
-            drawingArea.setScaleX(scaleFactor);
-            drawingArea.setScaleY(scaleFactor);
+            transformationArea.setScaleX(scaleFactor);
+            transformationArea.setScaleY(scaleFactor);
             //paper.setScaleX(scaleFactor);
             //paper.setScaleY(scaleFactor);
 
@@ -231,18 +231,18 @@ public class ScrollPaneExample2 extends Application {
     }
 
     private void centerContent() {
-        Bounds paperBounds = paper.getBoundsInLocal();
-        Point2D paperCenter = new Point2D(paperBounds.getWidth()/2 + paperBounds.getMinX(),
-                                          paperBounds.getHeight()/2 + paperBounds.getMinY());
-        Point2D deskCenter = new Point2D(desk.getWidth()/2, desk.getHeight()/2);
-        Point2D paperCenterInParent = paper.localToParent(paperCenter);
-        Point2D dist = deskCenter.subtract(paperCenterInParent);
-
-        Point2D pos = new Point2D(paper.getLayoutX(), paper.getLayoutY());
-        Point2D newPos = pos.add(dist);
-        paper.relocate(newPos.getX(), newPos.getY());
-
-        scrollPane.setHvalue(0.5);
-        scrollPane.setVvalue(0.5);
+//        Bounds paperBounds = paper.getBoundsInLocal();
+//        Point2D paperCenter = new Point2D(paperBounds.getWidth()/2 + paperBounds.getMinX(),
+//                                          paperBounds.getHeight()/2 + paperBounds.getMinY());
+//        Point2D deskCenter = new Point2D(desk.getWidth()/2, desk.getHeight()/2);
+//        Point2D paperCenterInParent = paper.localToParent(paperCenter);
+//        Point2D dist = deskCenter.subtract(paperCenterInParent);
+//
+//        Point2D pos = new Point2D(paper.getLayoutX(), paper.getLayoutY());
+//        Point2D newPos = pos.add(dist);
+//        paper.relocate(newPos.getX(), newPos.getY());
+//
+//        scrollPane.setHvalue(0.5);
+//        scrollPane.setVvalue(0.5);
     }
 }
