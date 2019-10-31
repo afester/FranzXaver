@@ -26,7 +26,7 @@ public class ScrollPaneExample2 extends Application {
     
     private Group paper;
     private Pane desk;
-    private Group drawingArea;
+    private Pane drawingArea;
     private ScrollPane scrollPane;
 
     
@@ -56,7 +56,7 @@ public class ScrollPaneExample2 extends Application {
         RectangleObject r3 = new RectangleObject("R3", Color.GREEN, new Point2D(-50, 100), 50, 50);
         RectangleObject r4 = new RectangleObject("R4", Color.ORANGE, new Point2D(100, 100), 50, 50);
         
-        drawingArea = new Group();
+        drawingArea = new Pane();
         drawingArea.setManaged(false);
         drawingArea.setTranslateX(1500);
         drawingArea.setTranslateY(1500);
@@ -175,9 +175,9 @@ public class ScrollPaneExample2 extends Application {
 
         CircleObject obj = new CircleObject("C1", Color.ORANGE, new Point2D(0, 0), 25);
         drawingArea.getChildren().add(obj);
-        //desk.setTranslateX(1500);
-        //desk.setTranslateY(1500);
 
+        scrollPane.setVvalue(0.5);
+        scrollPane.setHvalue(0.5);
      //   centerContent();
     }
 
@@ -205,8 +205,10 @@ public class ScrollPaneExample2 extends Application {
             System.err.printf("Scrollbar: %s/%s\n", oldHvalue, oldVvalue);
 
             // scale the content
-            paper.setScaleX(scaleFactor);
-            paper.setScaleY(scaleFactor);
+            drawingArea.setScaleX(scaleFactor);
+            drawingArea.setScaleY(scaleFactor);
+            //paper.setScaleX(scaleFactor);
+            //paper.setScaleY(scaleFactor);
 
             final Point2D mPosContent2 = desk.sceneToLocal(mPos);               // position in content coordinates
             System.err.println("OLD: " + mPosContent);
