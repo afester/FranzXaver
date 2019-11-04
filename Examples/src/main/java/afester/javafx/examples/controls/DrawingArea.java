@@ -2,6 +2,7 @@ package afester.javafx.examples.controls;
 
 import javafx.event.EventTarget;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.ScrollPane;
@@ -10,7 +11,6 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 
 /**
@@ -30,7 +30,8 @@ public class DrawingArea extends ScrollPane {
     private final Pane desk = new Pane();
     private final Pane transformationArea = new Pane();
     private final Group paper = new Group();
-
+    private final Insets paperBorder = new Insets(10, 10, 10, 10);
+    private final Insets fitPaperMargin = new Insets(5, 5, 5, 5);
 
     public DrawingArea() {
         desk.setManaged(false);
@@ -45,14 +46,23 @@ public class DrawingArea extends ScrollPane {
 
         transformationArea.getChildren().add(paper);
 
-        double deskCenterX = desk.getWidth()/2;
-        double deskCenterY = desk.getHeight()/2;
-        Line l1 = new Line(deskCenterX - 5, deskCenterY, deskCenterX + 5, deskCenterY);
-        l1.setStroke(Color.RED);
-        Line l2 = new Line(deskCenterX, deskCenterY - 5, deskCenterX, deskCenterY + 5);
-        l2.setStroke(Color.RED);
+//        double deskCenterX = desk.getWidth()/2;
+//        double deskCenterY = desk.getHeight()/2;
+//        Line l1 = new Line(deskCenterX - 5, deskCenterY, deskCenterX + 5, deskCenterY);
+//        l1.setStroke(Color.RED);
+//        Line l2 = new Line(deskCenterX, deskCenterY - 5, deskCenterX, deskCenterY + 5);
+//        l2.setStroke(Color.RED);
 
-        desk.getChildren().addAll(transformationArea, l1, l2);
+        pr.setFill(Color.WHITE);
+        pr.setStroke(Color.GRAY);
+
+        Bounds paperBounds = paper.getBoundsInParent();
+        updatePaperBoundsRect(paperBounds);
+        paper.boundsInParentProperty().addListener((obj, oldValue, newValue) -> {
+            updatePaperBoundsRect(newValue);
+        });
+
+        desk.getChildren().addAll(pr, transformationArea); // , l1, l2);
 
         setContent(new Group(desk));
         setHbarPolicy(ScrollBarPolicy.ALWAYS);
@@ -84,75 +94,64 @@ public class DrawingArea extends ScrollPane {
             }
         });
         
+//
+//        Line lp1 = new Line();
+//        lp1.setStroke(Color.GREEN);
+//        Line lp2 = new Line();
+//        lp2.setStroke(Color.GREEN);
+//
+//        Bounds coordinatesBounds = transformationArea.getBoundsInParent();
+//        Rectangle cr = new Rectangle();
+//        cr.setFill(null);
+//        cr.setStroke(Color.GREEN);
+//
+//        transformationArea.boundsInParentProperty().addListener((obj, oldValue, newValue) -> {
+//            System.err.println(newValue);
+//            double drawingAreaCenterX = transformationArea.getBoundsInParent().getWidth() / 2 + transformationArea.getBoundsInParent().getMinX();
+//            double drawingAreaCenterY = transformationArea.getBoundsInParent().getHeight() / 2  + transformationArea.getBoundsInParent().getMinY();
+//            lp1.setStartX(drawingAreaCenterX - 5);
+//            lp1.setStartY(drawingAreaCenterY);
+//            lp1.setEndX(drawingAreaCenterX + 5);
+//            lp1.setEndY(drawingAreaCenterY);
+//
+//            lp2.setStartX(drawingAreaCenterX);
+//            lp2.setStartY(drawingAreaCenterY - 5);
+//            lp2.setEndX(drawingAreaCenterX);
+//            lp2.setEndY(drawingAreaCenterY + 5);
+//
+//            cr.relocate(newValue.getMinX(), newValue.getMinY());
+//            cr.setWidth(newValue.getWidth());
+//            cr.setHeight(newValue.getHeight());
+//        });
+//
+//        double drawingAreaCenterX = coordinatesBounds.getWidth() / 2 + coordinatesBounds.getMinX();
+//        double drawingAreaCenterY = coordinatesBounds.getHeight() / 2  + coordinatesBounds.getMinY();
+//
+//        lp1.setStartX(drawingAreaCenterX - 5);
+//        lp1.setStartY(drawingAreaCenterY);
+//        lp1.setEndX(drawingAreaCenterX + 5);
+//        lp1.setEndY(drawingAreaCenterY);
+//
+//        lp2.setStartX(drawingAreaCenterX);
+//        lp2.setStartY(drawingAreaCenterY - 5);
+//        lp2.setEndX(drawingAreaCenterX);
+//        lp2.setEndY(drawingAreaCenterY + 5);
+//
+//        cr.relocate(coordinatesBounds.getMinX(), coordinatesBounds.getMinY());
+//        cr.setWidth(coordinatesBounds.getWidth());
+//        cr.setHeight(coordinatesBounds.getHeight());
+//
+//        desk.getChildren().addAll(cr, lp1, lp2);
 
-        Line lp1 = new Line();
-        lp1.setStroke(Color.GREEN);
-        Line lp2 = new Line();
-        lp2.setStroke(Color.GREEN);
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+    }
 
-        Bounds coordinatesBounds = transformationArea.getBoundsInParent();
-        Rectangle cr = new Rectangle();
-        cr.setFill(null);
-        cr.setStroke(Color.GREEN);
-
-        transformationArea.boundsInParentProperty().addListener((obj, oldValue, newValue) -> {
-            System.err.println(newValue);
-            double drawingAreaCenterX = transformationArea.getBoundsInParent().getWidth() / 2 + transformationArea.getBoundsInParent().getMinX();
-            double drawingAreaCenterY = transformationArea.getBoundsInParent().getHeight() / 2  + transformationArea.getBoundsInParent().getMinY();
-            lp1.setStartX(drawingAreaCenterX - 5);
-            lp1.setStartY(drawingAreaCenterY);
-            lp1.setEndX(drawingAreaCenterX + 5);
-            lp1.setEndY(drawingAreaCenterY);
-
-            lp2.setStartX(drawingAreaCenterX);
-            lp2.setStartY(drawingAreaCenterY - 5);
-            lp2.setEndX(drawingAreaCenterX);
-            lp2.setEndY(drawingAreaCenterY + 5);
-
-            cr.relocate(newValue.getMinX(), newValue.getMinY());
-            cr.setWidth(newValue.getWidth());
-            cr.setHeight(newValue.getHeight());
-        });
-
-        double drawingAreaCenterX = coordinatesBounds.getWidth() / 2 + coordinatesBounds.getMinX();
-        double drawingAreaCenterY = coordinatesBounds.getHeight() / 2  + coordinatesBounds.getMinY();
-
-        lp1.setStartX(drawingAreaCenterX - 5);
-        lp1.setStartY(drawingAreaCenterY);
-        lp1.setEndX(drawingAreaCenterX + 5);
-        lp1.setEndY(drawingAreaCenterY);
-
-        lp2.setStartX(drawingAreaCenterX);
-        lp2.setStartY(drawingAreaCenterY - 5);
-        lp2.setEndX(drawingAreaCenterX);
-        lp2.setEndY(drawingAreaCenterY + 5);
-
-        cr.relocate(coordinatesBounds.getMinX(), coordinatesBounds.getMinY());
-        cr.setWidth(coordinatesBounds.getWidth());
-        cr.setHeight(coordinatesBounds.getHeight());
-
-        desk.getChildren().addAll(cr, lp1, lp2);
-
-        Bounds paperBounds = paper.getBoundsInParent();
-        paperBounds = transformationArea.localToParent(paperBounds);
-        Rectangle pr = new Rectangle();
-        pr.setFill(null);
-        pr.setStroke(Color.MAGENTA);
-        paper.boundsInParentProperty().addListener((obj, oldValue, newValue) -> {
-            System.err.println(newValue);
-            newValue = transformationArea.localToParent(newValue);
-            pr.relocate(newValue.getMinX(), newValue.getMinY());
-            pr.setWidth(newValue.getWidth());
-            pr.setHeight(newValue.getHeight());
-        });
-        pr.relocate(paperBounds.getMinX(), paperBounds.getMinY());
-        pr.setWidth(paperBounds.getWidth());
-        pr.setHeight(paperBounds.getHeight());
-        desk.getChildren().add(pr);
-
-        setVvalue(0.5);
-        setHvalue(0.5);
-     //   centerContent();
+    private final  Rectangle pr = new Rectangle();
+    private void updatePaperBoundsRect(Bounds b) {
+        Bounds paperBounds = transformationArea.localToParent(b);
+        pr.relocate(paperBounds.getMinX() - paperBorder.getLeft(), paperBounds.getMinY() - paperBorder.getTop());
+        pr.setWidth(paperBounds.getWidth() + paperBorder.getLeft() + paperBorder.getRight());
+        pr.setHeight(paperBounds.getHeight() + paperBorder.getTop() + paperBorder.getBottom());
     }
 
     private double scaleFactor = 1.0; // 3.7;
@@ -175,41 +174,39 @@ public class DrawingArea extends ScrollPane {
     public void setScale(double newScale, Point2D centerPoint) {
         scaleFactor = newScale;
 
-        // store current mouse coordinates as a reference point
-        // final Point2D mPos = new Point2D(e.getSceneX(), e.getSceneY());    // scene coordinates of mouse
-        final Point2D mPosContent = desk.sceneToLocal(centerPoint);               // position in content coordinates
-
-        final double oldHvalue = getHvalue();
-        final double oldVvalue = getVvalue();
-        System.err.printf("Scrollbar: %s/%s\n", oldHvalue, oldVvalue);
-
         // scale the content
+
+        Point2D paperPos = paper.sceneToLocal(centerPoint);
+        Point2D deskPos = paper.localToParent(paperPos);
+        Point2D oldPos = transformationArea.localToParent(deskPos);
+        System.err.println("PAPER POS:" + oldPos);
+
         transformationArea.setScaleX(scaleFactor);
         transformationArea.setScaleY(scaleFactor);
-        //paper.setScaleX(scaleFactor);
-        //paper.setScaleY(scaleFactor);
 
-        final Point2D mPosContent2 = desk.sceneToLocal(centerPoint);               // position in content coordinates
-        System.err.println("OLD: " + mPosContent);
-        System.err.println("NEW: "+ mPosContent2);
-        System.err.printf("Scrollbar: %s/%s\n", getHvalue(), getVvalue());
+        Point2D deskPos2 = paper.localToParent(paperPos);
+        System.err.println("PAPER POS1:" + transformationArea.localToParent(deskPos2));
 
-        Point2D delta = mPosContent2.subtract(mPosContent);
-        System.err.println("DELTA: "+ delta);
+        Point2D delta = transformationArea.localToParent(deskPos2).subtract(oldPos);
+        System.err.println("DELTA:" + delta);
 
-        setHvalue(oldHvalue);
-        setVvalue(oldVvalue);
+        Bounds viewBounds = getViewportBounds();
 
-//        // move the content so that the reference point is again at the mouse position
-//        Point2D dviewPos = desk.localToParent(mPosContent);  // reference point in dview coordinates
-//        Point2D dviewMouse = sceneToLocal(mPos);                // destination point
-//        Point2D diff = dviewMouse.subtract(dviewPos);
-//        
-//        content.setLayoutX(content.getLayoutX() + diff.getX());
-//        content.setLayoutY(content.getLayoutY() + diff.getY());
-//
-//        scrollPane.setHvalue(0.5);
-//        scrollPane.setVvalue(0.5);
+        double maxHdist = desk.getWidth() - viewBounds.getWidth();
+        double maxVdist = desk.getHeight() - viewBounds.getHeight();
+        System.err.println("maxHdist:" + maxHdist);
+        System.err.println("maxVdist:" + maxVdist);
+
+        double hValue = delta.getX() / maxHdist;
+        double vValue = delta.getY() / maxVdist;
+
+        System.err.println("delta hValue:" + hValue);
+        System.err.println("delta vValue:" + vValue);
+
+        setVvalue(getVvalue() + vValue);
+        setHvalue(getHvalue() + hValue);
+
+        updatePaperBoundsRect(paper.getBoundsInParent());
     }
 
     public void centerContent() {
@@ -253,9 +250,12 @@ public class DrawingArea extends ScrollPane {
         System.err.println("Paper:" + paperBounds);
         System.err.println("View :" + viewBounds);
 
-        final double margin = 10;
-        double wFactor = (viewBounds.getWidth() - margin) / paperBounds.getWidth();
-        double hFactor = (viewBounds.getHeight() - margin) / paperBounds.getHeight();
+        
+        final double overallMarginW = paperBorder.getLeft() + paperBorder.getRight() + fitPaperMargin.getLeft() + fitPaperMargin.getRight();
+        final double overallMarginH = paperBorder.getTop() + paperBorder.getBottom() + fitPaperMargin.getTop() + fitPaperMargin.getBottom();
+
+        double wFactor = (viewBounds.getWidth() - overallMarginW) / paperBounds.getWidth();
+        double hFactor = (viewBounds.getHeight() - overallMarginH) / paperBounds.getHeight();
         scaleFactor = Math.min(wFactor,  hFactor);
 
         setScale(scaleFactor, new Point2D(0, 0));

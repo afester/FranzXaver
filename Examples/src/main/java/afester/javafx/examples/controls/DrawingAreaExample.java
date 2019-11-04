@@ -69,5 +69,7 @@ public class DrawingAreaExample extends Application {
         Scene scene = new Scene(mainLayout, 1000, 800);
         primaryStage.setScene(scene);
         primaryStage.show();
+        
+        da.fitContentToWindow();
     }
 }
