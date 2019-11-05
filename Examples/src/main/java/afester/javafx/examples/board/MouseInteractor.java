@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import afester.javafx.components.Interactor;
 import afester.javafx.examples.board.view.BoardView;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseButton;
@@ -15,7 +16,7 @@ public abstract class MouseInteractor implements Interactor {
 
     private BoardView bv;       // The BoardView to which this interactor is attached
 
-    private Point2D pickPos;                // the position where the mouse click occurred
+    private Point2D pickPos;                // the position where the mouse click occurred (in BoardView coordinates)
     private List<Interactable> pickedNodes = Collections.emptyList(); // the list of objects at the mouse click position 
     private int pickIndex = 0;              // The current index in the pickedNodes list
 
@@ -36,7 +37,7 @@ public abstract class MouseInteractor implements Interactor {
 
 	@Override
     public final void mousePressed(MouseEvent e) {
-	    pickPos = new Point2D(e.getX(), e.getY());
+	    pickPos = bv.sceneToLocal(e.getSceneX(), e.getSceneY());
 
         final Point2D mpos = new Point2D(e.getSceneX(), e.getSceneY());
 
@@ -92,7 +93,7 @@ public abstract class MouseInteractor implements Interactor {
 
 	@Override
     public final void mouseDragged(MouseEvent e) {
-	    final Point2D newPos = new Point2D(e.getX(), e.getY()); 
+	    final Point2D newPos = bv.sceneToLocal(e.getSceneX(), e.getSceneY()); 
 	    final Point2D delta = newPos.subtract(pickPos);
 
 	    if (handleToDrag != null) {

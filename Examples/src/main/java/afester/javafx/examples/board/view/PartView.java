@@ -81,7 +81,8 @@ public class PartView extends Group implements Interactable {
     @Override
     public void setSelected(BoardView bv, boolean isSelected) {
         if (isSelected) {
-            final double nonScaledWidth = 1 / getParent().getParent().getScaleX();      // TODO: This is (probably) a hack!
+            // TODO: This is (probably) a hack!
+            final double nonScaledWidth = 1 / bv.getLocalToSceneTransform().getMxx();
 
             selectionRect.setStroke(Color.RED);
             selectionRect.setStrokeWidth(nonScaledWidth);

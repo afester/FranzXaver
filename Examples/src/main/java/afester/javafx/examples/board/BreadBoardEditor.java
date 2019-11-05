@@ -2,6 +2,8 @@ package afester.javafx.examples.board;
 
 import java.io.File;
 
+import afester.javafx.components.DrawingArea;
+import afester.javafx.components.Interactor;
 import afester.javafx.components.StatusBar;
 import afester.javafx.components.ToolbarButton;
 import afester.javafx.components.ToolbarToggleButton;
@@ -14,7 +16,6 @@ import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.model.NetImport;
 import afester.javafx.examples.board.model.Trace;
 import afester.javafx.examples.board.view.BoardView;
-import afester.javafx.examples.board.view.DrawingView;
 import afester.javafx.examples.board.view.TraceView;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -72,9 +73,9 @@ public class BreadBoardEditor extends Application {
     private Tab bottomViewTab;
     private Tab printTab;
 
-    private DrawingView currentDrawingView;
-    private DrawingView topDrawingView;
-    private DrawingView bottomDrawingView;
+    private DrawingArea currentDrawingView;
+    private DrawingArea topDrawingView;
+    private DrawingArea bottomDrawingView;
     private PrintPanel printPanel;
 
     @Override
@@ -91,7 +92,8 @@ public class BreadBoardEditor extends Application {
 
         // The pane is exactly the size of the center component. Its children (which is the BoardView) are clipped
         // and the view can be panned and zoomed.
-        topDrawingView = new DrawingView(topView);
+        topDrawingView = new DrawingArea();
+        topDrawingView.getPaper().getChildren().add(topView);
 
         editTab = new Tab("Top view");
         editTab.setClosable(false);
@@ -188,40 +190,40 @@ public class BreadBoardEditor extends Application {
         final ToolbarToggleButton selectToolButton = new ToolbarToggleButton("Select", "afester/javafx/examples/board/mode-select.png");
         selectToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                topView.setInteractor(editInteractor);
+                topDrawingView.setInteractor(editInteractor);
             }
         });
         final ToolbarToggleButton toTraceToolButton = new ToolbarToggleButton("Trace", "afester/javafx/examples/board/mode-trace.png");
         toTraceToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                topView.setInteractor(traceInteractor);   
+                topDrawingView.setInteractor(traceInteractor);   
             }
         });
 
         final ToolbarToggleButton toBridgeToolButton = new ToolbarToggleButton("Bridge", "afester/javafx/examples/board/mode-bridge.png");
         toBridgeToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                topView.setInteractor(traceInteractor);   
+                topDrawingView.setInteractor(traceInteractor);   
             }
         });
 
         final ToolbarToggleButton toAirwireToolButton = new ToolbarToggleButton("Airwire", "afester/javafx/examples/board/mode-airwire.png");
         toAirwireToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                topView.setInteractor(traceInteractor);   
+                topDrawingView.setInteractor(traceInteractor);   
             }
         });
 
         final ToolbarToggleButton splitTraceToolButton = new ToolbarToggleButton("Split Trace", "afester/javafx/examples/board/mode-splittrace.png");
         splitTraceToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                topView.setInteractor(splitTraceInteractor);   
+                topDrawingView.setInteractor(splitTraceInteractor);   
             }
         });
         ToolbarToggleButton editShapeToolButton = new ToolbarToggleButton("Edit shape", "afester/javafx/examples/board/mode-editshape.png");
         editShapeToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                topView.setInteractor(editShapeInteractor);
+                topDrawingView.setInteractor(editShapeInteractor);
                 topView.setShowBoardHandles(true);
             }
         });
@@ -346,13 +348,15 @@ public class BreadBoardEditor extends Application {
             if (bottomView == null) {
                 Board b = topView.getBoard();
                 bottomView = new BoardView(b, true);
-                bottomView.setReadOnly(true);
+                // bottomView.setReadOnly(true);
 
                 bottomView.getTransforms().add(Transform.scale(-1, 1));
     
-                final Group g = new Group(bottomView);
+                //final Group g = new Group(bottomView);
                 
-                bottomDrawingView = new DrawingView(g);
+                bottomDrawingView = new DrawingArea();
+                bottomDrawingView.setReadOnly(true);
+                bottomDrawingView.getPaper().getChildren().add(bottomView);
                 bottomViewTab.setContent(bottomDrawingView);
 
                 stage.sizeToScene();    // required to properly fit the content to the window
@@ -368,10 +372,10 @@ public class BreadBoardEditor extends Application {
                 printTab.setContent(printPanel);
 
                 stage.sizeToScene();    // required to properly fit the content to the window
-                printPanel.getDrawingView().fitContentToWindow();
+                printPanel.getDrawingArea().fitContentToWindow();
             }
 
-            currentDrawingView = printPanel.getDrawingView();
+            currentDrawingView = printPanel.getDrawingArea();
         }
     }
 

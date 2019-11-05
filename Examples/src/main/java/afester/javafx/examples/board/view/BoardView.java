@@ -8,13 +8,11 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import afester.javafx.examples.board.Interactable;
-import afester.javafx.examples.board.Interactor;
 import afester.javafx.examples.board.model.AbstractWire;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.Part;
 import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.tools.Polygon2D;
-
 import javafx.scene.shape.Circle;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -49,9 +47,8 @@ public class BoardView extends Pane {
     private Group bridgeGroup;      // and Bridges on the board
     private LookupGroup handleGroup;      // all dynamic handles (topmost layer)
 
-    private Interactor interactor = null;
-
-    private boolean isReadOnly = false;
+//    private Interactor interactor = null;
+//    private boolean isReadOnly = false;
     private boolean isBottom;
 
     // The interactable object which is currently selected; TODO: Can this be moved to the Interactor?
@@ -115,23 +112,24 @@ public class BoardView extends Pane {
         dimensionGroup.visibleProperty().bind(showDimensionsProperty());
         boardHandlesGroup.visibleProperty().bind(showBoardHandlesProperty());
 
-        setOnMousePressed(e -> {
-            if (!isPanelAction(e) && interactor != null) {
-                interactor.mousePressed(e);
-            }
-        });
-
-        setOnMouseDragged(e -> {
-            if (!isPanelAction(e) && interactor != null) {
-                interactor.mouseDragged(e);
-            }
-         });
-
-        setOnMouseReleased(e -> {
-            if (!isPanelAction(e) && interactor != null) {
-                interactor.mouseReleased(e);
-            }
-        });
+//        setOnMousePressed(e -> {
+//            System.err.println("MOUSE PRESSED!");
+//            if (!isPanelAction(e) && interactor != null) {
+//                interactor.mousePressed(e);
+//            }
+//        });
+//
+//        setOnMouseDragged(e -> {
+//            if (!isPanelAction(e) && interactor != null) {
+//                interactor.mouseDragged(e);
+//            }
+//         });
+//
+//        setOnMouseReleased(e -> {
+//            if (!isPanelAction(e) && interactor != null) {
+//                interactor.mouseReleased(e);
+//            }
+//        });
 
         setManaged(false);  // !!!!!!!!!!!!
 
@@ -413,14 +411,14 @@ public class BoardView extends Pane {
     }
 
 
-    public void setInteractor(Interactor newInteractor) {
-        if (!isReadOnly) {
-            System.err.println("Setting " + newInteractor);
-            interactor = newInteractor;
-        } else {
-            interactor = null;
-        }
-    }
+//    public void setInteractor(Interactor newInteractor) {
+//        if (!isReadOnly) {
+//            System.err.println("Setting " + newInteractor);
+//            interactor = newInteractor;
+//        } else {
+//            interactor = null;
+//        }
+//    }
    
 
     public LookupGroup getHandleGroup() {
@@ -433,10 +431,10 @@ public class BoardView extends Pane {
     }
 
 
-    public void setReadOnly(boolean b) {
-        interactor = null;
-        isReadOnly = b;
-    }
+//    public void setReadOnly(boolean b) {
+//        interactor = null;
+//        isReadOnly = b;
+//    }
 
     /**
      * @return A list of all Interactable objects at the given position

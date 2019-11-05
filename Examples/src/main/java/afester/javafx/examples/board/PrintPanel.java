@@ -2,9 +2,9 @@ package afester.javafx.examples.board;
 
 import java.io.IOException;
 
+import afester.javafx.components.DrawingArea;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.view.BoardView;
-import afester.javafx.examples.board.view.DrawingView;
 import afester.javafx.shapes.Line;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -38,7 +38,7 @@ public class PrintPanel extends BorderPane {
     // The whole page
     private final Pane pageView = new Pane();
 
-    private DrawingView printDrawingView;
+    private DrawingArea printDrawingView;
     private Group panZoomView;
 
     private PrintControlPanel controller;
@@ -78,10 +78,10 @@ public class PrintPanel extends BorderPane {
         }
 
         topView = new BoardView(b);
-        topView.setReadOnly(true);
+//        topView.setReadOnly(true);
 
         bottomView = new BoardView(b, true);
-        bottomView.setReadOnly(true);
+//        bottomView.setReadOnly(true);
         bottomView.getTransforms().add(Transform.scale(-1, 1));
 
         topLabel = new Text("Top view");
@@ -92,7 +92,9 @@ public class PrintPanel extends BorderPane {
         bottomLabel.setScaleY(0.6);
         panZoomView = new Group(pageView);
         pageView.setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(0), new Insets(0))));
-        printDrawingView = new DrawingView(panZoomView);
+        printDrawingView = new DrawingArea();
+        printDrawingView.setReadOnly(true);
+        printDrawingView.getPaper().getChildren().add(panZoomView);
         printDrawingView.setEffect(new DropShadow(2d, 10, 10, Color.GRAY));
         setCenter(printDrawingView);
 
@@ -283,7 +285,7 @@ public class PrintPanel extends BorderPane {
         return points * PT2MM;
     }
 
-    public DrawingView getDrawingView() {
+    public DrawingArea getDrawingArea() {
         return printDrawingView;
     }
 

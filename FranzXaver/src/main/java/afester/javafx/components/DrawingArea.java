@@ -1,4 +1,4 @@
-package afester.javafx.examples.controls;
+package afester.javafx.components;
 
 import javafx.event.EventTarget;
 import javafx.geometry.Bounds;
@@ -27,6 +27,9 @@ import javafx.scene.shape.Rectangle;
  */
 public class DrawingArea extends ScrollPane {
     
+    private Interactor interactor = null;
+    private boolean isReadOnly = false;
+
     private final Pane desk = new Pane();
     private final Pane transformationArea = new Pane();
     private final Group paper = new Group();
@@ -36,7 +39,7 @@ public class DrawingArea extends ScrollPane {
     public DrawingArea() {
         desk.setManaged(false);
         desk.resize(3000, 3000);
-        desk.setStyle("-fx-border-style: solid; -fx-border-color: red;");
+        // desk.setStyle("-fx-border-style: solid; -fx-border-color: red;");
 
         transformationArea.setManaged(false);
         transformationArea.setTranslateX(1500);
@@ -69,22 +72,49 @@ public class DrawingArea extends ScrollPane {
         setVbarPolicy(ScrollBarPolicy.ALWAYS);
         setPannable(true);
 
-        addEventFilter(MouseEvent.MOUSE_DRAGGED, event -> {
-            if (event.getTarget() instanceof StackPane || (event.isControlDown() && event.isShiftDown())) {
-            } else {
-                EventTarget obj = event.getTarget();
-                System.err.println(obj);
-                if (obj instanceof RectangleObject) {
-                    RectangleObject r = (RectangleObject) obj;
-                    System.err.println("DRAG RECT" + r);
-
-                    final Point2D mScene = new Point2D(event.getSceneX(), event.getSceneY());
-                    Point2D dest = transformationArea.sceneToLocal(mScene);
-                        
-                    r.relocate(dest.getX(), dest.getY());
+        addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            if (!isScrollPaneEvent(event)) {
+                if (interactor != null) {
+                    interactor.mousePressed(event);
                 }
                 event.consume();
             }
+        });
+
+        addEventFilter(MouseEvent.DRAG_DETECTED, event -> {
+            if (!isScrollPaneEvent(event)) {
+                event.consume();
+            }            
+        });
+
+        addEventFilter(MouseEvent.MOUSE_DRAGGED, event -> {
+            if (!isScrollPaneEvent(event)) {
+                if (interactor != null) {
+                    interactor.mouseDragged(event);
+                }
+//                EventTarget obj = event.getTarget();
+//                System.err.println(obj);
+
+//                if (obj instanceof RectangleObject) {
+//                    RectangleObject r = (RectangleObject) obj;
+//                    System.err.println("DRAG RECT" + r);
+//
+//                    final Point2D mScene = new Point2D(event.getSceneX(), event.getSceneY());
+//                    Point2D dest = transformationArea.sceneToLocal(mScene);
+//
+//                    r.relocate(dest.getX(), dest.getY());
+//                }
+                event.consume();
+            }
+        });
+
+        addEventFilter(MouseEvent.MOUSE_RELEASED, event -> {
+            if (!isScrollPaneEvent(event)) {
+                if (interactor != null) {
+                    interactor.mouseReleased(event);
+                }
+                event.consume();
+            }            
         });
 
         addEventFilter(ScrollEvent.SCROLL, event -> {
@@ -94,7 +124,6 @@ public class DrawingArea extends ScrollPane {
             }
         });
         
-//
 //        Line lp1 = new Line();
 //        lp1.setStroke(Color.GREEN);
 //        Line lp2 = new Line();
@@ -144,6 +173,10 @@ public class DrawingArea extends ScrollPane {
 //        desk.getChildren().addAll(cr, lp1, lp2);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
+    }
+
+    private boolean isScrollPaneEvent(MouseEvent event) {
+        return event.getTarget() instanceof StackPane || (event.isControlDown() && event.isShiftDown());
     }
 
     private final  Rectangle pr = new Rectangle();
@@ -261,4 +294,20 @@ public class DrawingArea extends ScrollPane {
         setScale(scaleFactor, new Point2D(0, 0));
         centerContent();
     }
+    
+
+  public void setInteractor(Interactor newInteractor) {
+      if (!isReadOnly) {
+          System.err.println("Setting " + newInteractor);
+          interactor = newInteractor;
+      } else {
+          interactor = null;
+      }
+  }
+
+    public void setReadOnly(boolean b) {
+      interactor = null;
+      isReadOnly = b;
+    }
+
 }
