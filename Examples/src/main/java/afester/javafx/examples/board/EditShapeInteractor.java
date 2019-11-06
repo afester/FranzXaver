@@ -13,7 +13,7 @@ public class EditShapeInteractor extends MouseInteractor {
 
     @Override
     protected List<Interactable> pickObjects(Point2D mpos) {
-        // return a list of all selectable objects at the given mouse position (Parts and Net segments)
+        // return a list of all selectable objects at the given mouse position (Board handles)
         return getBoardView().getBoardHandleGroup().pickAll(mpos);
     }
 

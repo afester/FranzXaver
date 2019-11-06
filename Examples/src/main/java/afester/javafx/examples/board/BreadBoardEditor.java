@@ -19,7 +19,7 @@ import afester.javafx.examples.board.view.BoardView;
 import afester.javafx.examples.board.view.TraceView;
 import javafx.application.Application;
 import javafx.geometry.Insets;
-import javafx.scene.Group;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
@@ -72,11 +72,19 @@ public class BreadBoardEditor extends Application {
     private Tab editTab;
     private Tab bottomViewTab;
     private Tab printTab;
+    private ToolBar editCornersToolBar; 
+    private ToolBar routingToolbar; 
 
     private DrawingArea currentDrawingView;
     private DrawingArea topDrawingView;
     private DrawingArea bottomDrawingView;
     private PrintPanel printPanel;
+
+    private Interactor editInteractor;
+    private Interactor traceInteractor;
+    // private Interactor editTraceInteractor;
+    private Interactor splitTraceInteractor;
+    private Interactor editShapeInteractor;
 
     @Override
     public void start(Stage stage){
@@ -153,7 +161,80 @@ public class BreadBoardEditor extends Application {
         MenuBar menuBar = new MenuBar();
         menuBar.getMenus().addAll(fileMenu, viewMenu, editMenu, helpMenu);
 
+        final ToolBar toolBar = createMainToolbar();
+        editCornersToolBar = createCornerEditToolbar();
+        routingToolbar = createRoutingToolbar();
+        editCornersToolBar.setVisible(false);
+
+        VBox topBar = new VBox();
+        topBar.getChildren().addAll(menuBar, toolBar);
+
+        StatusBar sb = new StatusBar();
+        sb.textProperty().bindBidirectional(topView.selectedObjectProperty(), new StringConverter<Interactable>() {
+
+            @Override
+            public Interactable fromString(String string) {
+                return null;
+            }
+
+            @Override
+            public String toString(Interactable object) {
+                if (object != null) {
+                    return object.getRepr();
+                }
+                return "No selection.";
+            }
+            
+        });
+
+        HBox leftBar = new HBox();
+        leftBar.getChildren().add(new Text("L"));
+        leftBar.setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(0), new Insets(0))));
+
+        VBox rightBar = new VBox();
+        rightBar.getChildren().addAll(editCornersToolBar, routingToolbar);
+
+//        rightBar.getChildren().add(new Text("L"));
+//        rightBar.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(0), new Insets(0))));
+
+        BorderPane mainLayout = new BorderPane();
+        mainLayout.setTop(topBar);
+        mainLayout.setBottom(sb);
+        mainLayout.setLeft(leftBar);
+        mainLayout.setRight(rightBar);
+        mainLayout.setCenter(tabPane);
+
+        Scene mainScene = new Scene(mainLayout, 1024, 768);
+
+        stage.setScene(mainScene);
+        this.stage = stage;
+
+        stage.show();
+        //stage.sizeToScene();
+        topDrawingView.fitContentToWindow();
+    }
+
+
+    private ToolBar createRoutingToolbar() {
         // Create the toolbar
+
+        final ToggleGroup junctionModeToggleGroup = new ToggleGroup();
+        final ToolbarToggleButton reconnectTraceModeToolButton = new ToolbarToggleButton("Reconnect Trace", "afester/javafx/examples/board/mode-reconnect.png");
+        reconnectTraceModeToolButton.setToggleGroup(junctionModeToggleGroup);
+        reconnectTraceModeToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
+            if (newValue) {
+                topView.setReconnectMode(true);       
+            }
+        });
+        final ToolbarToggleButton moveJunctionToolButton = new ToolbarToggleButton("Move Junction", "afester/javafx/examples/board/mode-movejunction.png");
+        moveJunctionToolButton.setToggleGroup(junctionModeToggleGroup);
+        moveJunctionToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
+            if (newValue) {
+                topView.setReconnectMode(false);       
+            }
+        });
+        moveJunctionToolButton.setSelected(true);
+
         final Button shortestPathButton = new ToolbarButton("Shortest", "afester/javafx/examples/board/net-shortest.png");
         shortestPathButton.setOnAction(e -> calculateShortestPath());
 
@@ -169,6 +250,28 @@ public class BreadBoardEditor extends Application {
         final Button shortestAllButton = new ToolbarButton("Shortest all", "afester/javafx/examples/board/net-shortestall.png");
         shortestAllButton.setOnAction(e -> calculateShortestPathAll());
 
+        ToolBar toolBar = new ToolBar(
+                reconnectTraceModeToolButton,
+                moveJunctionToolButton,
+                new Separator(),
+
+                shortestPathButton,
+                resetNetButton,
+                cleanupNetButton,
+                deleteSegmentButton,
+                new Separator(),
+
+                shortestAllButton
+            );
+        toolBar.setOrientation(Orientation.VERTICAL);
+        toolBar.managedProperty().bind(toolBar.visibleProperty());
+        return toolBar;
+    }
+
+
+    private ToolBar createMainToolbar() {
+
+        
         final ToolbarToggleButton toggleSvgToolButton = new ToolbarToggleButton("Toggle draft / SVG", "afester/javafx/examples/board/view-svg.png");
         topView.showSvgProperty().bind(toggleSvgToolButton.selectedProperty());
 
@@ -180,11 +283,11 @@ public class BreadBoardEditor extends Application {
         toggleShowDimensionsToolButton.setSelected(true);
         topView.showDimensionsProperty().bind(toggleShowDimensionsToolButton.selectedProperty());
 
-        final Interactor editInteractor = new EditInteractor(topView);
-        final Interactor traceInteractor = new TraceInteractor(topView);
+        editInteractor = new EditInteractor(topView);
+        traceInteractor = new TraceInteractor(topView);
         // final Interactor editTraceInteractor = new EditTraceInteractor(bv);
-        final Interactor splitTraceInteractor = new SplitTraceInteractor(topView);
-        final Interactor editShapeInteractor = new EditShapeInteractor(topView);
+        splitTraceInteractor = new SplitTraceInteractor(topView);
+        editShapeInteractor = new EditShapeInteractor(topView);
 
         ToggleGroup toggleGroup = new ToggleGroup();
         final ToolbarToggleButton selectToolButton = new ToolbarToggleButton("Select", "afester/javafx/examples/board/mode-select.png");
@@ -221,12 +324,7 @@ public class BreadBoardEditor extends Application {
             }
         });
         ToolbarToggleButton editShapeToolButton = new ToolbarToggleButton("Edit shape", "afester/javafx/examples/board/mode-editshape.png");
-        editShapeToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
-            if (newValue) {
-                topDrawingView.setInteractor(editShapeInteractor);
-                topView.setShowBoardHandles(true);
-            }
-        });
+        editShapeToolButton.selectedProperty().addListener((value, oldValue, newValue) -> setShapeEditMode(newValue));
 
         selectToolButton.setToggleGroup(toggleGroup);
         toTraceToolButton.setToggleGroup(toggleGroup);
@@ -235,23 +333,6 @@ public class BreadBoardEditor extends Application {
         editShapeToolButton.setToggleGroup(toggleGroup);
 
         selectToolButton.setSelected(true);
-
-        final ToggleGroup junctionModeToggleGroup = new ToggleGroup();
-        final ToolbarToggleButton reconnectTraceModeToolButton = new ToolbarToggleButton("Reconnect Trace", "afester/javafx/examples/board/mode-reconnect.png");
-        reconnectTraceModeToolButton.setToggleGroup(junctionModeToggleGroup);
-        reconnectTraceModeToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
-            if (newValue) {
-                topView.setReconnectMode(true);       
-            }
-        });
-        final ToolbarToggleButton moveJunctionToolButton = new ToolbarToggleButton("Move Junction", "afester/javafx/examples/board/mode-movejunction.png");
-        moveJunctionToolButton.setToggleGroup(junctionModeToggleGroup);
-        moveJunctionToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
-            if (newValue) {
-                topView.setReconnectMode(false);       
-            }
-        });
-        moveJunctionToolButton.setSelected(true);
 
         ToolBar toolBar = new ToolBar(
                 new ToolbarButton("New board", "afester/javafx/examples/board/file-new.png"),
@@ -268,69 +349,39 @@ public class BreadBoardEditor extends Application {
                 editShapeToolButton,
                 new Separator(),
 
-                reconnectTraceModeToolButton,
-                moveJunctionToolButton,
-                new Separator(),
-
-                shortestPathButton,
-                resetNetButton,
-                cleanupNetButton,
-                deleteSegmentButton,
-                new Separator(),
-
-                shortestAllButton,
-                new Separator(),
-                
                 toggleSvgToolButton,
                 toggleShowNetsToolButton,
                 toggleShowDimensionsToolButton
             );
-
-        VBox topBar = new VBox();
-        topBar.getChildren().addAll(menuBar, toolBar);
-        
-        StatusBar sb = new StatusBar();
-        sb.textProperty().bindBidirectional(topView.selectedObjectProperty(), new StringConverter<Interactable>() {
-
-            @Override
-            public Interactable fromString(String string) {
-                return null;
-            }
-
-            @Override
-            public String toString(Interactable object) {
-                if (object != null) {
-                    return object.getRepr();
-                }
-                return "No selection.";
-            }
-            
-        });
-
-        HBox leftBar = new HBox();
-        leftBar.getChildren().add(new Text("L"));
-        leftBar.setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(0), new Insets(0))));
-        HBox rightBar = new HBox();
-        rightBar.getChildren().add(new Text("L"));
-        rightBar.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(0), new Insets(0))));
-
-        BorderPane mainLayout = new BorderPane();
-        mainLayout.setTop(topBar);
-        mainLayout.setBottom(sb);
-        mainLayout.setLeft(leftBar);
-        mainLayout.setRight(rightBar);
-        mainLayout.setCenter(tabPane);
-
-        Scene mainScene = new Scene(mainLayout, 1024, 768);
-
-        stage.setScene(mainScene);
-        this.stage = stage;
-
-        stage.show();
-        //stage.sizeToScene();
-        topDrawingView.fitContentToWindow();
+        return toolBar;
     }
 
+
+    private void setShapeEditMode(Boolean newValue) {
+        if (newValue) {
+            topDrawingView.setInteractor(editShapeInteractor);
+        }
+        topView.setShowBoardHandles(newValue);
+        editCornersToolBar.setVisible(newValue);
+        routingToolbar.setVisible(!newValue);
+    }
+
+
+    private ToolBar createCornerEditToolbar() {
+        // Create the toolbar
+        final ToolbarToggleButton addCornerButton = new ToolbarToggleButton("Add corner", "afester/javafx/examples/board/editshape-addcorner.png");
+        //shortestPathButton.setOnAction(e -> calculateShortestPath());
+
+        final ToolbarToggleButton deleteCornerButton = new ToolbarToggleButton("Delete corner", "afester/javafx/examples/board/editshape-deletecorner.png");
+        //resetNetButton.setOnAction(e -> resetNet());
+
+        final ToolBar toolBar = new ToolBar(
+                                        addCornerButton,
+                                        deleteCornerButton);
+        toolBar.setOrientation(Orientation.VERTICAL);
+        toolBar.managedProperty().bind(toolBar.visibleProperty());
+        return toolBar;
+    }
 
     private void showAbout() {
         Dialog<Void> dialog = new AboutDialog();
