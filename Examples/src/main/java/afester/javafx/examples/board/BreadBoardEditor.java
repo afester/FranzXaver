@@ -289,7 +289,6 @@ public class BreadBoardEditor extends Application {
         splitTraceInteractor = new SplitTraceInteractor(topView);
         editShapeInteractor = new EditShapeInteractor(topView);
 
-        ToggleGroup toggleGroup = new ToggleGroup();
         final ToolbarToggleButton selectToolButton = new ToolbarToggleButton("Select", "afester/javafx/examples/board/mode-select.png");
         selectToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
@@ -326,6 +325,7 @@ public class BreadBoardEditor extends Application {
         ToolbarToggleButton editShapeToolButton = new ToolbarToggleButton("Edit shape", "afester/javafx/examples/board/mode-editshape.png");
         editShapeToolButton.selectedProperty().addListener((value, oldValue, newValue) -> setShapeEditMode(newValue));
 
+        ToggleGroup toggleGroup = new ToggleGroup();
         selectToolButton.setToggleGroup(toggleGroup);
         toTraceToolButton.setToggleGroup(toggleGroup);
         toBridgeToolButton.setToggleGroup(toggleGroup);
@@ -369,13 +369,23 @@ public class BreadBoardEditor extends Application {
 
     private ToolBar createCornerEditToolbar() {
         // Create the toolbar
+
+        final ToolbarToggleButton editCornerButton = new ToolbarToggleButton("Move corner", "afester/javafx/examples/board/mode-select.png");
+        //shortestPathButton.setOnAction(e -> calculateShortestPath());
+
         final ToolbarToggleButton addCornerButton = new ToolbarToggleButton("Add corner", "afester/javafx/examples/board/editshape-addcorner.png");
         //shortestPathButton.setOnAction(e -> calculateShortestPath());
 
         final ToolbarToggleButton deleteCornerButton = new ToolbarToggleButton("Delete corner", "afester/javafx/examples/board/editshape-deletecorner.png");
         //resetNetButton.setOnAction(e -> resetNet());
 
+        var toggleGroup = new ToggleGroup();
+        editCornerButton.setToggleGroup(toggleGroup);
+        addCornerButton.setToggleGroup(toggleGroup);
+        deleteCornerButton.setToggleGroup(toggleGroup);
+
         final ToolBar toolBar = new ToolBar(
+                                        editCornerButton,
                                         addCornerButton,
                                         deleteCornerButton);
         toolBar.setOrientation(Orientation.VERTICAL);
