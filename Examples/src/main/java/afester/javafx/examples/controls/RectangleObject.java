@@ -11,6 +11,7 @@ class RectangleObject extends Rectangle {
         setLayoutX(pos.getX());
         setLayoutY(pos.getY());
         setId(id);
+        setMouseTransparent(true);
     }
 
     @Override

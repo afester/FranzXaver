@@ -78,10 +78,10 @@ public class PrintPanel extends BorderPane {
         }
 
         topView = new BoardView(b);
-//        topView.setReadOnly(true);
+        topView.setReadOnly(true);
 
         bottomView = new BoardView(b, true);
-//        bottomView.setReadOnly(true);
+        bottomView.setReadOnly(true);
         bottomView.getTransforms().add(Transform.scale(-1, 1));
 
         topLabel = new Text("Top view");
@@ -93,7 +93,6 @@ public class PrintPanel extends BorderPane {
         panZoomView = new Group(pageView);
         pageView.setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(0), new Insets(0))));
         printDrawingView = new DrawingArea();
-        printDrawingView.setReadOnly(true);
         printDrawingView.getPaper().getChildren().add(panZoomView);
         printDrawingView.setEffect(new DropShadow(2d, 10, 10, Color.GRAY));
         setCenter(printDrawingView);

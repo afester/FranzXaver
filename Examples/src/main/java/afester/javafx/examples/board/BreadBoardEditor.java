@@ -3,7 +3,6 @@ package afester.javafx.examples.board;
 import java.io.File;
 
 import afester.javafx.components.DrawingArea;
-import afester.javafx.components.Interactor;
 import afester.javafx.components.StatusBar;
 import afester.javafx.components.ToolbarButton;
 import afester.javafx.components.ToolbarToggleButton;
@@ -292,34 +291,34 @@ public class BreadBoardEditor extends Application {
         final ToolbarToggleButton selectToolButton = new ToolbarToggleButton("Select", "afester/javafx/examples/board/mode-select.png");
         selectToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                topDrawingView.setInteractor(editInteractor);
+                topView.setInteractor(editInteractor);
             }
         });
         final ToolbarToggleButton toTraceToolButton = new ToolbarToggleButton("Trace", "afester/javafx/examples/board/mode-trace.png");
         toTraceToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                topDrawingView.setInteractor(traceInteractor);   
+                topView.setInteractor(traceInteractor);   
             }
         });
 
         final ToolbarToggleButton toBridgeToolButton = new ToolbarToggleButton("Bridge", "afester/javafx/examples/board/mode-bridge.png");
         toBridgeToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                topDrawingView.setInteractor(traceInteractor);   
+                topView.setInteractor(traceInteractor);   
             }
         });
 
         final ToolbarToggleButton toAirwireToolButton = new ToolbarToggleButton("Airwire", "afester/javafx/examples/board/mode-airwire.png");
         toAirwireToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                topDrawingView.setInteractor(traceInteractor);   
+                topView.setInteractor(traceInteractor);   
             }
         });
 
         final ToolbarToggleButton splitTraceToolButton = new ToolbarToggleButton("Split Trace", "afester/javafx/examples/board/mode-splittrace.png");
         splitTraceToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                topDrawingView.setInteractor(splitTraceInteractor);   
+                topView.setInteractor(splitTraceInteractor);   
             }
         });
         ToolbarToggleButton editShapeToolButton = new ToolbarToggleButton("Edit shape", "afester/javafx/examples/board/mode-editshape.png");
@@ -329,6 +328,7 @@ public class BreadBoardEditor extends Application {
         selectToolButton.setToggleGroup(toggleGroup);
         toTraceToolButton.setToggleGroup(toggleGroup);
         toBridgeToolButton.setToggleGroup(toggleGroup);
+        toAirwireToolButton.setToggleGroup(toggleGroup);
         splitTraceToolButton.setToggleGroup(toggleGroup);
         editShapeToolButton.setToggleGroup(toggleGroup);
 
@@ -359,7 +359,7 @@ public class BreadBoardEditor extends Application {
 
     private void setShapeEditMode(Boolean newValue) {
         if (newValue) {
-            topDrawingView.setInteractor(editShapeInteractor);
+            topView.setInteractor(editShapeInteractor);
         }
         topView.setShowBoardHandles(newValue);
         editCornersToolBar.setVisible(newValue);
@@ -371,13 +371,25 @@ public class BreadBoardEditor extends Application {
         // Create the toolbar
 
         final ToolbarToggleButton editCornerButton = new ToolbarToggleButton("Move corner", "afester/javafx/examples/board/mode-select.png");
-        //shortestPathButton.setOnAction(e -> calculateShortestPath());
+        editCornerButton.selectedProperty().addListener((value, oldValue, newValue) -> {
+            if (newValue) {
+                System.err.println("MOVE CORNER");
+            }
+        });
 
         final ToolbarToggleButton addCornerButton = new ToolbarToggleButton("Add corner", "afester/javafx/examples/board/editshape-addcorner.png");
-        //shortestPathButton.setOnAction(e -> calculateShortestPath());
+        addCornerButton.selectedProperty().addListener((value, oldValue, newValue) -> {
+            if (newValue) {
+                System.err.println("ADD CORNER");
+            }
+        });
 
         final ToolbarToggleButton deleteCornerButton = new ToolbarToggleButton("Delete corner", "afester/javafx/examples/board/editshape-deletecorner.png");
-        //resetNetButton.setOnAction(e -> resetNet());
+        deleteCornerButton.selectedProperty().addListener((value, oldValue, newValue) -> {
+            if (newValue) {
+                System.err.println("DELETE CORNER");
+            }
+        });
 
         var toggleGroup = new ToggleGroup();
         editCornerButton.setToggleGroup(toggleGroup);
@@ -416,7 +428,7 @@ public class BreadBoardEditor extends Application {
                 //final Group g = new Group(bottomView);
                 
                 bottomDrawingView = new DrawingArea();
-                bottomDrawingView.setReadOnly(true);
+                bottomView.setReadOnly(true);
                 bottomDrawingView.getPaper().getChildren().add(bottomView);
                 bottomViewTab.setContent(bottomDrawingView);
 

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import afester.javafx.examples.board.Interactable;
+import afester.javafx.examples.board.Interactor;
 import afester.javafx.examples.board.model.AbstractWire;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.Part;
@@ -22,7 +23,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
 
@@ -47,8 +47,8 @@ public class BoardView extends Pane {
     private Group bridgeGroup;      // and Bridges on the board
     private LookupGroup handleGroup;      // all dynamic handles (topmost layer)
 
-//    private Interactor interactor = null;
-//    private boolean isReadOnly = false;
+    private Interactor interactor = null;
+    private boolean isReadOnly = false;
     private boolean isBottom;
 
     // The interactable object which is currently selected; TODO: Can this be moved to the Interactor?
@@ -87,10 +87,10 @@ public class BoardView extends Pane {
     public boolean isReconnectMode() { return reconnectMode.get(); }
     public void setReconnectMode(boolean flag) { reconnectMode.set(flag); }
 
-    // TODO: Move to a central place and make it customizable
-    private boolean isPanelAction(MouseEvent e) {
-        return (e.isControlDown() && e.isShiftDown()); 
-    }
+//    // TODO: Move to a central place and make it customizable
+//    private boolean isPanelAction(MouseEvent e) {
+//        return (e.isControlDown() && e.isShiftDown()); 
+//    }
 
     /**
      * Creates a new BoardView for an existing Board.
@@ -112,24 +112,23 @@ public class BoardView extends Pane {
         dimensionGroup.visibleProperty().bind(showDimensionsProperty());
         boardHandlesGroup.visibleProperty().bind(showBoardHandlesProperty());
 
-//        setOnMousePressed(e -> {
-//            System.err.println("MOUSE PRESSED!");
-//            if (!isPanelAction(e) && interactor != null) {
-//                interactor.mousePressed(e);
-//            }
-//        });
-//
-//        setOnMouseDragged(e -> {
-//            if (!isPanelAction(e) && interactor != null) {
-//                interactor.mouseDragged(e);
-//            }
-//         });
-//
-//        setOnMouseReleased(e -> {
-//            if (!isPanelAction(e) && interactor != null) {
-//                interactor.mouseReleased(e);
-//            }
-//        });
+        setOnMousePressed(e -> {
+            if (interactor != null) {
+                interactor.mousePressed(e);
+            }
+        });
+
+        setOnMouseDragged(e -> {
+            if (interactor != null) {
+                interactor.mouseDragged(e);
+            }
+         });
+
+        setOnMouseReleased(e -> {
+            if (interactor != null) {
+                interactor.mouseReleased(e);
+            }
+        });
 
         setManaged(false);  // !!!!!!!!!!!!
 
@@ -411,14 +410,14 @@ public class BoardView extends Pane {
     }
 
 
-//    public void setInteractor(Interactor newInteractor) {
-//        if (!isReadOnly) {
-//            System.err.println("Setting " + newInteractor);
-//            interactor = newInteractor;
-//        } else {
-//            interactor = null;
-//        }
-//    }
+    public void setInteractor(Interactor newInteractor) {
+        if (!isReadOnly) {
+            System.err.println("Setting " + newInteractor);
+            interactor = newInteractor;
+        } else {
+            interactor = null;
+        }
+    }
    
 
     public LookupGroup getHandleGroup() {
@@ -506,5 +505,8 @@ public class BoardView extends Pane {
 
             return new Point2D(xpos, ypos);
 //        }
+    }
+    public void setReadOnly(boolean b) {
+        isReadOnly = b;    
     }
 }

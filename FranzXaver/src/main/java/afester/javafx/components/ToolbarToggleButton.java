@@ -2,13 +2,18 @@ package afester.javafx.components;
 
 import java.io.InputStream;
 
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-public class ToolbarToggleButton extends ToggleButton {
+/**
+ * https://stackoverflow.com/questions/33786146/how-to-make-a-radiobutton-look-like-regular-button-in-javafx
+ * https://stackoverflow.com/questions/46835087/prevent-a-toggle-group-from-not-having-a-toggle-selected-java-fx
+ */
+public class ToolbarToggleButton extends RadioButton {
 
+    
     public ToolbarToggleButton(String toolTip, String fileName) {
 
         InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
@@ -19,6 +24,9 @@ public class ToolbarToggleButton extends ToggleButton {
             setText(toolTip);
         }
         setTooltip(new Tooltip(toolTip));
+        
+        getStyleClass().remove("radio-button");
+        getStyleClass().add("toggle-button");
     }
 
 }

@@ -1,4 +1,4 @@
-package afester.javafx.components;
+package afester.javafx.examples.board;
 
 import javafx.scene.input.MouseEvent;
 

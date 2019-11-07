@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import afester.javafx.components.Interactor;
 import afester.javafx.examples.board.view.BoardView;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseButton;
@@ -50,11 +49,24 @@ public abstract class MouseInteractor implements Interactor {
             // find all Interactable nodes at the specified position. This is necessary to 
             // allow selecting nodes further down in the Z order.
             final List<Interactable> newPickedNodes = pickObjects(mpos);
-    
+
             // If the list of objects has changed, then reset the Z order iterator
             if (!newPickedNodes.equals(pickedNodes)) {
                 pickedNodes = newPickedNodes;
+
+                // Calculate the initial pick index - this is the last object in the list of picked objects
+                // which is currently NOT selected
+                var selNodes = selectedNodes.keySet();
                 pickIndex = 0;
+                for (int loopIdx = 0;  loopIdx < pickedNodes.size();  loopIdx++) {
+                    if (selNodes.contains(pickedNodes.get(loopIdx))) {
+                        pickIndex = loopIdx + 1;
+                    }
+                }
+                if (pickIndex >= pickedNodes.size()) {
+                    pickIndex = 0;
+                }
+
             }
 	    }
 	}
@@ -100,6 +112,7 @@ public abstract class MouseInteractor implements Interactor {
             final Point2D newObjPos = handlePos.add(delta);
             moveObject(handleToDrag, newObjPos); 
 	    } else if (!pickedNodes.isEmpty()) {
+
             if (selectedNodes.isEmpty()) {
                 final Interactable selectedNode = pickedNodes.get(pickIndex);
 

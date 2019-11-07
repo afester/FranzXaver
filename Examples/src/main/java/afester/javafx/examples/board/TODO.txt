@@ -2,5 +2,5 @@ Bug: "Reset Net" needs to remove all junctions from the net!
 
 * Installed font PCBius not available through its name even though it is installed
 * Dimension text not properly positioned if styled through the CSS
-* Remove board handles when switching to a different interactor
 * Allow to add and remove board corners
+* Select a Part, click and drack another part => the initially selected part is moved instead of the recent one

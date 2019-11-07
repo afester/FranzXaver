@@ -1,15 +1,12 @@
 package afester.javafx.components;
 
-import javafx.event.EventTarget;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -26,15 +23,14 @@ import javafx.scene.shape.Rectangle;
  *                            ...
  */
 public class DrawingArea extends ScrollPane {
-    
-    private Interactor interactor = null;
-    private boolean isReadOnly = false;
 
     private final Pane desk = new Pane();
     private final Pane transformationArea = new Pane();
     private final Group paper = new Group();
     private final Insets paperBorder = new Insets(10, 10, 10, 10);
     private final Insets fitPaperMargin = new Insets(5, 5, 5, 5);
+
+    private boolean panning = false;
 
     public DrawingArea() {
         desk.setManaged(false);
@@ -70,52 +66,54 @@ public class DrawingArea extends ScrollPane {
         setContent(new Group(desk));
         setHbarPolicy(ScrollBarPolicy.ALWAYS);
         setVbarPolicy(ScrollBarPolicy.ALWAYS);
-        setPannable(true);
 
-        addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-            if (!isScrollPaneEvent(event)) {
-                if (interactor != null) {
-                    interactor.mousePressed(event);
-                }
-                event.consume();
+        setOnMousePressed(e -> {
+           if (e.isControlDown() && e.isShiftDown()) {
+               panning = true;
+               setPannable(true);
+           }
+        });
+
+        setOnMouseReleased(e -> {
+            if (panning) {
+                panning = false;
+                setPannable(false);
             }
-        });
+         });
 
-        addEventFilter(MouseEvent.DRAG_DETECTED, event -> {
-            if (!isScrollPaneEvent(event)) {
-                event.consume();
-            }            
-        });
 
-        addEventFilter(MouseEvent.MOUSE_DRAGGED, event -> {
-            if (!isScrollPaneEvent(event)) {
-                if (interactor != null) {
-                    interactor.mouseDragged(event);
-                }
-//                EventTarget obj = event.getTarget();
-//                System.err.println(obj);
-
-//                if (obj instanceof RectangleObject) {
-//                    RectangleObject r = (RectangleObject) obj;
-//                    System.err.println("DRAG RECT" + r);
-//
-//                    final Point2D mScene = new Point2D(event.getSceneX(), event.getSceneY());
-//                    Point2D dest = transformationArea.sceneToLocal(mScene);
-//
-//                    r.relocate(dest.getX(), dest.getY());
+//        addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+//            if (!isScrollPaneEvent(event)) {
+//                if (interactor != null) {
+//                    interactor.mousePressed(event);
 //                }
-                event.consume();
-            }
-        });
-
-        addEventFilter(MouseEvent.MOUSE_RELEASED, event -> {
-            if (!isScrollPaneEvent(event)) {
-                if (interactor != null) {
-                    interactor.mouseReleased(event);
-                }
-                event.consume();
-            }            
-        });
+//                event.consume();
+//            }
+//        });
+//
+//        addEventFilter(MouseEvent.DRAG_DETECTED, event -> {
+//            if (!isScrollPaneEvent(event)) {
+//                event.consume();
+//            }            
+//        });
+//
+//        addEventFilter(MouseEvent.MOUSE_DRAGGED, event -> {
+//            if (!isScrollPaneEvent(event)) {
+//                if (interactor != null) {
+//                    interactor.mouseDragged(event);
+//                }
+//                event.consume();
+//            }
+//        });
+//
+//        addEventFilter(MouseEvent.MOUSE_RELEASED, event -> {
+//            if (!isScrollPaneEvent(event)) {
+//                if (interactor != null) {
+//                    interactor.mouseReleased(event);
+//                }
+//                event.consume();
+//            }            
+//        });
 
         addEventFilter(ScrollEvent.SCROLL, event -> {
             if (event.isControlDown()) {
@@ -123,7 +121,7 @@ public class DrawingArea extends ScrollPane {
                 event.consume();
             }
         });
-        
+
 //        Line lp1 = new Line();
 //        lp1.setStroke(Color.GREEN);
 //        Line lp2 = new Line();
@@ -173,10 +171,6 @@ public class DrawingArea extends ScrollPane {
 //        desk.getChildren().addAll(cr, lp1, lp2);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
-    }
-
-    private boolean isScrollPaneEvent(MouseEvent event) {
-        return event.getTarget() instanceof StackPane || (event.isControlDown() && event.isShiftDown());
     }
 
     private final  Rectangle pr = new Rectangle();
@@ -294,20 +288,4 @@ public class DrawingArea extends ScrollPane {
         setScale(scaleFactor, new Point2D(0, 0));
         centerContent();
     }
-    
-
-  public void setInteractor(Interactor newInteractor) {
-      if (!isReadOnly) {
-          System.err.println("Setting " + newInteractor);
-          interactor = newInteractor;
-      } else {
-          interactor = null;
-      }
-  }
-
-    public void setReadOnly(boolean b) {
-      interactor = null;
-      isReadOnly = b;
-    }
-
 }
