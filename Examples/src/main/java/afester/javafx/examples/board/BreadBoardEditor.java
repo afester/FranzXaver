@@ -570,6 +570,7 @@ public class BreadBoardEditor extends Application {
     private void newBoard() {
         Board board = new Board();
         topView.setBoard(board);
+        topDrawingView.fitContentToWindow();
         bottomView = null;
     }
 

@@ -37,15 +37,15 @@ public class BoardView extends Pane {
     private final Point2D padOffset = new Point2D(2.5, 2.0);
     private BoardShape boardShape;
 
-    private Group boardGroup;       // The board itself, including dimensions
-    private LookupGroup boardHandlesGroup;// The handles for the board
-    private Group dimensionGroup;   // The board dimensions - a children of boardGroup
-    private LookupGroup partsGroup; // all parts (and their pads) on the board
-    private LookupGroup netsGroup;        // all nets (Parent group for airWireGroup, traceGroup, bridgeGroup)
-    private Group airWireGroup;     // all AirWires,
-    private Group traceGroup;       //     Traces,
-    private Group bridgeGroup;      // and Bridges on the board
-    private LookupGroup handleGroup;      // all dynamic handles (topmost layer)
+    private Group boardGroup;               // The board itself, including dimensions
+    private LookupGroup boardHandlesGroup;  // The handles for the board
+    private Group dimensionGroup;           // The board dimensions - a children of boardGroup
+    private LookupGroup partsGroup;         // all parts (and their pads) on the board
+    private LookupGroup netsGroup;          // all nets (Parent group for airWireGroup, traceGroup, bridgeGroup)
+    private Group airWireGroup;             // all AirWires,
+    private Group traceGroup;               //     Traces,
+    private Group bridgeGroup;              // and Bridges on the board
+    private LookupGroup handleGroup;        // all dynamic handles (topmost layer)
 
     private Interactor interactor = null;
     private boolean isReadOnly = false;
@@ -87,10 +87,6 @@ public class BoardView extends Pane {
     public boolean isReconnectMode() { return reconnectMode.get(); }
     public void setReconnectMode(boolean flag) { reconnectMode.set(flag); }
 
-//    // TODO: Move to a central place and make it customizable
-//    private boolean isPanelAction(MouseEvent e) {
-//        return (e.isControlDown() && e.isShiftDown()); 
-//    }
 
     /**
      * Creates a new BoardView for an existing Board.
@@ -101,16 +97,18 @@ public class BoardView extends Pane {
         this(board, false);
     }
 
+
     public BoardView(Board board, boolean isBottom) {
         this.isBottom = isBottom;
         String css = BoardView.class.getResource("boardStyle.css").toExternalForm();
         getStylesheets().add(css);
         setBoard(board);
-        
-        showSvg.addListener((obj, oldValue, newValue) -> { partsGroup.getChildren().forEach(part -> ((PartView) part).render(newValue)); });
-        netsGroup.visibleProperty().bind(showNetsProperty());
-        dimensionGroup.visibleProperty().bind(showDimensionsProperty());
-        boardHandlesGroup.visibleProperty().bind(showBoardHandlesProperty());
+
+        // The Group objects are changed when calling setBoard. Hence we use Listeners here instad of bindings. 
+        showSvgProperty().addListener((obj, oldValue, newValue) -> { partsGroup.getChildren().forEach(part -> ((PartView) part).render(newValue)); });
+        showNetsProperty().addListener((obj, oldValue, newValue) -> netsGroup.setVisible(newValue));
+        showDimensionsProperty().addListener((obj, oldValue, newValue) -> dimensionGroup.setVisible(newValue));
+        showBoardHandlesProperty().addListener((obj, oldValue, newValue) -> boardHandlesGroup.setVisible(newValue));
 
         setOnMousePressed(e -> {
             if (interactor != null) {
@@ -131,10 +129,7 @@ public class BoardView extends Pane {
         });
 
         setManaged(false);  // !!!!!!!!!!!!
-
-        setStyle("-fx-border-color: red; -fx-border-width: 1px;");
     }
-
 
 
     private static <T> void pointIterator(Iterable<T> iterable, BiConsumer<T, T> consumer) {
@@ -460,23 +455,6 @@ public class BoardView extends Pane {
     // private final static double GRID = 2.54;
     private final static double GRID = 1.27;   // for now, we also allow positions between pads - this is        
                                                // required to properly position the Eagle parts ...
-
-//    @Deprecated
-//    protected Point2D snapToGrid(Point2D pos, BoardView bv, Point2D offset) {                                                      
-//        System.err.println("OFFSET:" + offset);
-//        System.err.println("POS   :" + pos);
-//        double xpos = offset.getX() + pos.getX();                                                                        
-//        double ypos = offset.getY() + pos.getY();                                                                        
-//
-//        xpos = (int) ( (xpos - bv.getPadOffset().getX()) / GRID);                                         
-//        ypos = (int) ( (ypos - bv.getPadOffset().getY()) / GRID);                                         
-//    
-//        xpos = xpos * GRID + bv.getPadOffset().getX();                                                    
-//        ypos = ypos * GRID + bv.getPadOffset().getY();                                                    
-//    
-//        return new Point2D(xpos, ypos);                                                                   
-//    }
-
 
     protected Point2D snapToGrid(Point2D pos, boolean useOffset){
 //        if (useOffset) {
