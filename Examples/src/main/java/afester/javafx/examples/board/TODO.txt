@@ -1,6 +1,11 @@
-Bug: "Reset Net" needs to remove all junctions from the net!
+Missing features
+* Add holes into the board (circle of arbitrary radius) 
 
-* Installed font PCBius not available through its name even though it is installed
-* Dimension text not properly positioned if styled through the CSS
-* Allow to add and remove board corners
+Bugs
+* "Reset Net" needs to remove all junctions from the net
 * Select a Part, click and drack another part => the initially selected part is moved instead of the recent one
+* Zoom should zoom the desk, not the paper - consequently the scroll bars should then be resized as well
+* Dimension text not properly positioned if styled through the CSS
+* Installed font PCBius not available through its name even though it is installed
+* When resizing the board, the holes are not properly rendered when e.g. the upper right corner is moved upwards
+* When adding a board corner, the board should remain convex. Probably we need to calculate the distance to the line connecting two corners.

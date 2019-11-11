@@ -66,7 +66,10 @@ public abstract class MouseInteractor implements Interactor {
                 if (pickIndex >= pickedNodes.size()) {
                     pickIndex = 0;
                 }
+            }
 
+            if (newPickedNodes.isEmpty()) {
+                clickPos(pickPos);
             }
 	    }
 	}
@@ -141,6 +144,7 @@ public abstract class MouseInteractor implements Interactor {
 	    System.err.printf("Select: %s\n", node);
         node.setSelected(bv, true);
         selectedNodes.put(node, node.getPos());
+        clickObject(node);
 	}
 
 
@@ -162,6 +166,12 @@ public abstract class MouseInteractor implements Interactor {
     }
 
     protected void moveObject(Interactable obj, Point2D newPos) {
+    }
+
+    protected void clickObject(Interactable obj) {
+    }
+
+    protected void clickPos(Point2D pos) {
     }
 
     protected void rightClickObject(Interactable obj) {

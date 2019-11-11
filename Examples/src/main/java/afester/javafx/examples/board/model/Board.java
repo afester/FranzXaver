@@ -53,13 +53,48 @@ public class Board {
 
     private final static double GRID = 1.0;        
 
+    private Point2D snapToGrid(Point2D pos, double grid) {
+        return new Point2D(((int) ( pos.getX() / grid)) * grid,
+                           ((int) ( pos.getY() / grid)) * grid);
+    }
+
     public void setCornerPos(int cornerIdx, Point2D newPos) {
-        Point2D snappedPos = new Point2D(((int) ( newPos.getX() / GRID)) * GRID,
-                                         ((int) ( newPos.getY() / GRID)) * GRID);
+        Point2D snappedPos = snapToGrid(newPos, GRID);
         System.err.printf("setCornerPos %s: %s\n", cornerIdx, snappedPos);
         boardShapePoints.set(cornerIdx, snappedPos);
     }
-    
+
+    public ObservableList<Point2D> getBoardCorners() {
+        return boardShapePoints;
+    }
+
+    public void deleteCorner(int cornerIdx) {
+        // at least three points are always required
+        if (boardShapePoints.size() > 3) {
+            boardShapePoints.remove(cornerIdx);
+        }
+    }
+
+    public void addCorner(Point2D pos) {
+        Point2D snappedPos = snapToGrid(pos, GRID);
+        System.err.println("Adding corner at " + snappedPos);
+
+        // calculate the index of the nearest point (TODO: This needs to be improved.
+        // The hull should remain convex after adding a new point. Probably need to calculate the
+        // shortest distance to the line connecting two points.)
+        double dist = Double.MAX_VALUE;
+        int result = 0;
+        for (int idx = 0;  idx < boardShapePoints.size();  idx++) {
+            final Point2D p = boardShapePoints.get(idx);
+            if (p.distance(pos) < dist) {
+                result = idx;
+                dist = p.distance(pos);
+            }
+        }
+
+        boardShapePoints.add(result, pos);
+    }
+
     public void addPart(Part pkg) {
         parts.put(pkg.getName(), pkg);
     }
@@ -419,10 +454,6 @@ public class Board {
         }
     }
 
-    public ObservableList<Point2D> getBoardCorners() {
-        return boardShapePoints;
-    }
-
     public double getWidth() {
         return getBoardCorners().stream()
                               .max((a, b) -> Double.compare(a.getX(), b.getX())).get().getX();
@@ -440,5 +471,6 @@ public class Board {
         ni.importFile(updatedBoard);
         update(updatedBoard);
     }
+
 
 }

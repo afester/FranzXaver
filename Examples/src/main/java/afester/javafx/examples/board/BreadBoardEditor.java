@@ -84,6 +84,8 @@ public class BreadBoardEditor extends Application {
     // private Interactor editTraceInteractor;
     private Interactor splitTraceInteractor;
     private Interactor editShapeInteractor;
+    private Interactor addCornerInteractor;
+    private Interactor deleteCornerInteractor;
 
     @Override
     public void start(Stage stage){
@@ -287,6 +289,8 @@ public class BreadBoardEditor extends Application {
         // final Interactor editTraceInteractor = new EditTraceInteractor(bv);
         splitTraceInteractor = new SplitTraceInteractor(topView);
         editShapeInteractor = new EditShapeInteractor(topView);
+        addCornerInteractor = new AddCornerInteractor(topView);
+        deleteCornerInteractor = new DeleteCornerInteractor(topView);
 
         final ToolbarToggleButton selectToolButton = new ToolbarToggleButton("Select", "afester/javafx/examples/board/mode-select.png");
         selectToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
@@ -373,21 +377,24 @@ public class BreadBoardEditor extends Application {
         final ToolbarToggleButton editCornerButton = new ToolbarToggleButton("Move corner", "afester/javafx/examples/board/mode-select.png");
         editCornerButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                System.err.println("MOVE CORNER");
+                topView.setInteractor(editShapeInteractor);
+                System.err.println("Using " + editShapeInteractor);
             }
         });
 
         final ToolbarToggleButton addCornerButton = new ToolbarToggleButton("Add corner", "afester/javafx/examples/board/editshape-addcorner.png");
         addCornerButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                System.err.println("ADD CORNER");
+                topView.setInteractor(addCornerInteractor);
+                System.err.println("Using " + addCornerInteractor);
             }
         });
 
         final ToolbarToggleButton deleteCornerButton = new ToolbarToggleButton("Delete corner", "afester/javafx/examples/board/editshape-deletecorner.png");
         deleteCornerButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                System.err.println("DELETE CORNER");
+                topView.setInteractor(deleteCornerInteractor);
+                System.err.println("Using " + deleteCornerInteractor);
             }
         });
 
