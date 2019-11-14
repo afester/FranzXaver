@@ -13,6 +13,7 @@ import afester.javafx.examples.board.model.AbstractWire;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.Part;
 import afester.javafx.examples.board.model.Net;
+import afester.javafx.examples.board.tools.PointTools;
 import afester.javafx.examples.board.tools.Polygon2D;
 import javafx.scene.shape.Circle;
 import javafx.beans.property.BooleanProperty;
@@ -131,41 +132,6 @@ public class BoardView extends Pane {
         setManaged(false);  // !!!!!!!!!!!!
     }
 
-
-    private static <T> void pointIterator(Iterable<T> iterable, BiConsumer<T, T> consumer) {
-        Iterator<T> it = iterable.iterator();
-        while(it.hasNext()) {
-            T first = it.next();
-            if(!it.hasNext()) return;
-            T second = it.next();
-            consumer.accept(first, second);
-        }
-    }
-
-
-    private static void lineIterator(Iterable<Double> iterable, BiConsumer<Point2D, Point2D> consumer) {
-        Iterator<Double> it = iterable.iterator();
-
-        if(!it.hasNext()) return;
-        Double firstX = it.next();
-        if(!it.hasNext()) return;
-        Double firstY = it.next();
-
-        Double x1 = firstX;
-        Double y1 = firstY;
-        while(it.hasNext()) {
-            Double x2 = it.next();
-            if(!it.hasNext()) return;
-            Double y2 = it.next();
-
-            consumer.accept(new Point2D(x1, y1), new Point2D(x2, y2));
-            x1 = x2;
-            y1 = y2;
-        }
-
-        // close the polygon
-        consumer.accept(new Point2D(x1, y1), new Point2D(firstX, firstY));
-    }
 
 
     private void netUpdater(Net net) {
@@ -373,7 +339,7 @@ public class BoardView extends Pane {
         boardHandlesGroup.getChildren().clear();
         final List<BoardHandle> corners = new ArrayList<>();
         IntVal idx = new IntVal();
-        pointIterator(boardShape.getPoints(), (xpos, ypos) -> {
+        PointTools.pointIterator(boardShape.getPoints(), (xpos, ypos) -> {
             BoardHandle c = new BoardHandle(xpos, ypos, getBoard(), idx.val);
             System.err.println("BoardHanadle: " + c);
             idx.val++;
@@ -383,7 +349,7 @@ public class BoardView extends Pane {
 
 // Board dimensions
         dimensionGroup.getChildren().clear();
-        lineIterator(boardShape.getPoints(), (p1, p2) -> {
+        PointTools.lineIterator(boardShape.getPoints(), (p1, p2) -> {
             Group dim = new DimensionView(p1, p2);
             dimensionGroup.getChildren().add(dim);
         });

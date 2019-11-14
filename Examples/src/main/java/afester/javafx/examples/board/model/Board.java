@@ -27,6 +27,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import afester.javafx.examples.board.eagle.EagleImport;
+import afester.javafx.examples.board.tools.PointTools;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -75,22 +76,43 @@ public class Board {
         }
     }
 
+    
+    
+    private double dist = Double.MAX_VALUE;
+    private int result = 0;
+    private int idx = 0;
     public void addCorner(Point2D pos) {
         Point2D snappedPos = snapToGrid(pos, GRID);
         System.err.println("Adding corner at " + snappedPos);
 
-        // calculate the index of the nearest point (TODO: This needs to be improved.
-        // The hull should remain convex after adding a new point. Probably need to calculate the
-        // shortest distance to the line connecting two points.)
-        double dist = Double.MAX_VALUE;
-        int result = 0;
-        for (int idx = 0;  idx < boardShapePoints.size();  idx++) {
-            final Point2D p = boardShapePoints.get(idx);
-            if (p.distance(pos) < dist) {
+        // calculate the nearest line.
+        dist = Double.MAX_VALUE;
+        result = 0;
+        idx = 0;
+        PointTools.linePointsIterator(boardShapePoints, (start, end) -> {
+            System.err.printf("LINE: %s %s\n", start, end);
+
+            Point2D vec = end.subtract(start);
+            Point2D vecNorm = new Point2D(vec.getY(), -vec.getX());   // norm vector
+            vecNorm = vecNorm.normalize();                            // normalized norm vector ...
+            final double d = vecNorm.dotProduct(snappedPos);
+            System.err.printf("   d: %s\n", d);
+            if (d < dist) {
                 result = idx;
-                dist = p.distance(pos);
+                dist = d;
             }
-        }
+            idx++;
+        });
+
+//        double dist = Double.MAX_VALUE;
+//        int result = 0;
+//        for (int idx = 0;  idx < boardShapePoints.size();  idx++) {
+//            final Point2D p = boardShapePoints.get(idx);
+//            if (p.distance(pos) < dist) {
+//                result = idx;
+//                dist = p.distance(pos);
+//            }
+//        }
 
         boardShapePoints.add(result, pos);
     }
