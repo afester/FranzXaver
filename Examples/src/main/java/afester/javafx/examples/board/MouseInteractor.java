@@ -52,6 +52,10 @@ public abstract class MouseInteractor implements Interactor {
 
             // If the list of objects has changed, then reset the Z order iterator
             if (!newPickedNodes.equals(pickedNodes)) {
+                if (!e.isControlDown()) {
+                    clearSelection();
+                }
+
                 pickedNodes = newPickedNodes;
 
                 // Calculate the initial pick index - this is the last object in the list of picked objects
@@ -80,6 +84,7 @@ public abstract class MouseInteractor implements Interactor {
             handleToDrag = null;
         } else {
             if (!pickedNodes.isEmpty()) {
+
                 final Interactable selectedNode = pickedNodes.get(pickIndex);
                 pickIndex++;
                 if (pickIndex >= pickedNodes.size()) {
@@ -87,12 +92,16 @@ public abstract class MouseInteractor implements Interactor {
                 }
     
                 if (e.getButton() == MouseButton.PRIMARY) {
-                  if (e.isControlDown()) {
+
+                  if (e.isControlDown() && !e.isShiftDown()) {
                       selectObject(selectedNode);
                   } else if (e.isAltDown()) {
                   } else if (e.isShiftDown()) {
                   } else if (e.isMetaDown()) {
                   } else { // no modifiers pressed
+
+                      // TODO: This conflicts with the multi selection mode!!!!
+                      // the multi selection is resetted when the mouse button is released! 
                       clearSelection();
                       selectObject(selectedNode);
                   }

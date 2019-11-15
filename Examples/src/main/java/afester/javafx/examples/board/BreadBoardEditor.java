@@ -583,6 +583,7 @@ public class BreadBoardEditor extends Application {
             BoardLoader bl = new BoardLoader(result);
             Board board = bl.load();
             topView.setBoard(board);
+            topDrawingView.fitContentToWindow();
             bottomView = null;
         }
     }

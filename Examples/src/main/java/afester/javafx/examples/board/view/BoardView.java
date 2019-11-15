@@ -208,6 +208,7 @@ public class BoardView extends Pane {
         boardGroup.setId("boardGroup");
         boardHandlesGroup = new LookupGroup();
         boardHandlesGroup.setId("boardHandlesGroup");
+        boardHandlesGroup.setVisible(false);
         dimensionGroup = new Group();
         dimensionGroup.setId("dimensionGroup");
 

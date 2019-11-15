@@ -123,4 +123,10 @@ public class StraightLine {
     public Point2D getEnd() {
         return end;
     }
+    
+    
+    @Override
+    public String toString() {
+        return String.format("StraightLine[start=%s, end=%s]", getStart(), getEnd());
+    }
 }

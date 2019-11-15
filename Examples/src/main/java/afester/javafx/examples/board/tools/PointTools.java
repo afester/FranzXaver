@@ -2,6 +2,7 @@ package afester.javafx.examples.board.tools;
 
 import java.util.Iterator;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import javafx.geometry.Point2D;
 
@@ -23,6 +24,30 @@ public class PointTools {
         }
     }
 
+
+    /**
+     * Provides a set of StraightLine instances which form the polygon defined by the given x/y coordinate pairs.  
+     *
+     * @param iterable The X/Y coordinate pairs.
+     * @param consumer A Consumer which receives the StraightLine instances. 
+     */
+    public static void straightLineIteratorFromDoubles(Iterable<Double> iterable, Consumer<StraightLine> consumer) {
+        lineIterator(iterable, (p1, p2) ->  {
+            consumer.accept(new StraightLine(p1, p2));
+        });
+    }
+
+    /**
+     * Provides a set of StraightLine instances which form the polygon defined by the given x/y coordinate pairs.  
+     *
+     * @param iterable The X/Y coordinate pairs.
+     * @param consumer A Consumer which receives the StraightLine instances. 
+     */
+    public static void straightLineIteratorFromPoints(Iterable<Point2D> iterable, Consumer<StraightLine> consumer) {
+        linePointsIterator(iterable, (p1, p2) ->  {
+            consumer.accept(new StraightLine(p1, p2));
+        });
+    }
 
     /**
      * 

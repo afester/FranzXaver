@@ -84,37 +84,61 @@ public class Board {
     public void addCorner(Point2D pos) {
         Point2D snappedPos = snapToGrid(pos, GRID);
         System.err.println("Adding corner at " + snappedPos);
-
+        
         // calculate the nearest line.
-        dist = Double.MAX_VALUE;
-        result = 0;
-        idx = 0;
-        PointTools.linePointsIterator(boardShapePoints, (start, end) -> {
-            System.err.printf("LINE: %s %s\n", start, end);
+        // Note: This is not the correct algorithm since the StraightLines are really "straight lines" - they 
+        // do not really have a start or end point:
+        //
+        //  1    
+        //   \  *:
+        //    \  :
+        //     \ :
+        //      \:
+        //       |.
+        //       | .
+        //       |  .
+        //       2
+        //
+        // In the above diagram, for the point at the asterisk, this algorithm 
+        // would take Line 2 instead of Line 1!!!!
+        //
+        // Taking the center point of each line would also not work.
+        //
+        // At least, we need to check if the foot point of the orthogonal line from the given point to the 
+        // respective straight line is inbetween the start and the end point.
 
-            Point2D vec = end.subtract(start);
-            Point2D vecNorm = new Point2D(vec.getY(), -vec.getX());   // norm vector
-            vecNorm = vecNorm.normalize();                            // normalized norm vector ...
-            final double d = vecNorm.dotProduct(snappedPos);
-            System.err.printf("   d: %s\n", d);
-            if (d < dist) {
-                result = idx;
-                dist = d;
+        dist = Double.MAX_VALUE;
+        result = -1;
+        idx = 0;
+        PointTools.straightLineIteratorFromPoints(boardShapePoints, line -> {
+            // Get the projection of the clicked point on the current line 
+            final Point2D fp = line.getFootpoint(snappedPos);
+
+            // This is a hack - but it should probably work in this case ...
+            // TODO: This needs some improvement. At least checking whether a Point p
+            // is between the start and the end line should be encapsulated in a proper class.
+            if ((line.getStart().getX() <= fp.getX() && fp.getX() <= line.getEnd().getX() ||
+                 line.getEnd().getX() <= fp.getX()   && fp.getX() <= line.getStart().getX())
+                 &&
+                (line.getStart().getY() <= fp.getY() && fp.getY() <= line.getEnd().getY() ||
+                 line.getEnd().getY() <= fp.getY() && fp.getY() <= line.getStart().getY())) {
+
+                // check if the current foot point is closer to the clicked point as
+                // the previous one
+                final double d = fp.distance(snappedPos);
+                if (d < dist) {
+                    result = idx;
+                    dist = d;
+                }
             }
+
             idx++;
         });
 
-//        double dist = Double.MAX_VALUE;
-//        int result = 0;
-//        for (int idx = 0;  idx < boardShapePoints.size();  idx++) {
-//            final Point2D p = boardShapePoints.get(idx);
-//            if (p.distance(pos) < dist) {
-//                result = idx;
-//                dist = p.distance(pos);
-//            }
-//        }
-
-        boardShapePoints.add(result, pos);
+        if (result >= 0) {
+            result = Math.min(result + 1, boardShapePoints.size());         // safety net
+            boardShapePoints.add(result, pos);
+        }
     }
 
     public void addPart(Part pkg) {
