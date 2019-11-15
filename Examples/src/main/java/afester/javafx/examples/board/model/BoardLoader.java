@@ -103,11 +103,10 @@ class PackageHandler extends SubContentHandler {
             System.err.println("  " + shape);
             thePackage.addShape(shape);
         } else if (localName.equals("text")) {
-
-            Point2D pos = new Point2D(Double.parseDouble(attributes.getValue("x")),
-                                      Double.parseDouble(attributes.getValue("y")));
-            Double size = Double.parseDouble(attributes.getValue("size"));
-            FontWeight weight = FontWeight.findByName(attributes.getValue("weight"));
+            final var pos = new Point2D(Double.parseDouble(attributes.getValue("x")),
+                                        Double.parseDouble(attributes.getValue("y")));
+            final var size = Double.parseDouble(attributes.getValue("size"));
+            final var weight = FontWeight.valueOf(attributes.getValue("weight"));
             // String layer = textNode.getAttribute("layer");
 
             currentText = new PartText(pos, size, weight);

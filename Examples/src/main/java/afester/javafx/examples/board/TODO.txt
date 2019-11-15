@@ -1,6 +1,7 @@
 Missing features
 * Add holes into the board (circle of arbitrary radius, or even other objects) 
 * Undo/Redo
+* Rubberband to select multiple parts
 
 Bugs
 * Zoom should zoom the desk, not the paper - consequently the scroll bars should then be resized as well

@@ -20,14 +20,6 @@ public class PartText implements PartShape {
     private final FontWeight weight;    // text weight
     private final StringBuffer text;
 
-    @Deprecated
-    public PartText(Double x, Double y, String text, Double size) {
-        this.pos = new Point2D(x, y);
-        this.text = new StringBuffer(text);
-        this.size = size;
-        this.weight = FontWeight.NORMAL;
-    }
-
     public PartText(Point2D textPos, Double size, FontWeight weight) {
         this.pos = textPos;
         this.text = new StringBuffer();
