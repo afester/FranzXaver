@@ -137,4 +137,8 @@ public abstract class AbstractWire {
 
     public void convertToStraightTrace() {
     }
+
+
+    public void splitTrace(Point2D newPos) {
+    }
 }

@@ -30,7 +30,6 @@ public class LookupGroup extends Group {
             if (child instanceof Interactable) {
                 final Point2D pos = child.sceneToLocal(mpos);
                 if (child.contains(pos)) {
-                    System.err.println("    YES");
                     result.add((Interactable) child);
                 }
             } else if (child instanceof Parent) {

@@ -345,7 +345,7 @@ public class BoardLoader extends DefaultHandler {
             SAXParser saxParser = spf.newSAXParser();
             XMLReader xmlReader = saxParser.getXMLReader();
             xmlReader.setContentHandler(this);
-            InputStream is = new FileInputStream(this.sourceFile);
+            InputStream is = new FileInputStream(sourceFile);
             xmlReader.parse(new InputSource(is));
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
@@ -357,7 +357,7 @@ public class BoardLoader extends DefaultHandler {
             e.printStackTrace();
         }
 
-        Board result = new Board();
+        Board result = new Board(sourceFile);
         nets.forEach(n -> result.addNet(n));
         parts.forEach(p -> result.addPart(p));
         result.boardShapePoints.clear();

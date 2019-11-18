@@ -46,10 +46,15 @@ public class Board {
      * Creates a new empty board with a default dimension of 100mm X 160mm
      */
     public Board() {
+        this(null);
+    }
+
+    public Board(File sourceFile) {
         boardShapePoints.add(new Point2D(  0,   0));
         boardShapePoints.add(new Point2D(100,   0));
         boardShapePoints.add(new Point2D(100, 160));
         boardShapePoints.add(new Point2D(  0, 160));
+        this.boardFile = sourceFile;
     }
 
     private final static double GRID = 1.0;        

@@ -59,7 +59,18 @@ public class Trace extends AbstractWire {
         throw new RuntimeException("NYI");
     }
 
-    
+    @Override
+    public void splitTrace(Point2D pos) {
+        Junction newJunction = new Junction(net, pos);
+        net.addJunction(newJunction);
+        
+        AbstractNode oldDest = getTo();
+        reconnect(getTo(), newJunction);
+
+        Trace newTrace = new Trace(newJunction, oldDest, net);
+        net.addTrace(newTrace);
+    }
+
     @Override
     public String toString() {
         return String.format("Trace[%s - %s]", this.getFrom(), this.getTo());

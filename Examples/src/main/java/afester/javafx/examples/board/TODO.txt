@@ -2,6 +2,9 @@ Missing features
 * Add holes into the board (circle of arbitrary radius, or even other objects) 
 * Undo/Redo
 * Rubberband to select multiple parts
+* When converting Airwires to Traces, a better approach would probably be to allow the user to select the
+  Segments which shall be converted and then convert them. This is probably better than having all these
+  different Interactors.
 
 Bugs
 * Zoom should zoom the desk, not the paper - consequently the scroll bars should then be resized as well

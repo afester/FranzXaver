@@ -1,35 +1,47 @@
 package afester.javafx.examples.board;
 
-import afester.javafx.examples.board.model.AbstractNode;
-import afester.javafx.examples.board.model.Junction;
-import afester.javafx.examples.board.model.Net;
-import afester.javafx.examples.board.model.Trace;
-import afester.javafx.examples.board.view.BoardView;
-import javafx.geometry.Point2D;
+import java.util.List;
 
-public class SplitTraceInteractor extends MouseInteractor {
+import afester.javafx.examples.board.model.AbstractWire;
+import afester.javafx.examples.board.view.BoardView;
+import afester.javafx.examples.board.view.TraceView;
+import javafx.geometry.Point2D;
+import javafx.scene.input.MouseEvent;
+
+public class SplitTraceInteractor implements Interactor {
+    private BoardView bv;       // The BoardView to which this interactor is attached
 
     public SplitTraceInteractor(BoardView boardView) {
-        super(boardView);
+        bv = boardView;
     }
-//
-//    @Override
-//    protected void selectObject(Interactable obj) {
-//        if (obj instanceof Trace) {
-//            Trace trace = (Trace) obj;
-//            Net net = trace.getNet();
-//            AbstractNode oldDest = trace.getTo();
-//            Point2D snapPos = new Point2D(0, 0); // snapToGrid(getClickPos(), false);
-//
-//            Junction newJunction = new Junction(net, snapPos);
-//            net.addJunction(newJunction);
-////            trace.reconnect(trace.getTo(), newJunction);    
-//            
-//            Trace newTrace = new Trace(newJunction, oldDest, net);
-//            net.addTrace(newTrace);
-//        }
-//    }
-//    
+
+    
+    @Override
+    public void mousePressed(MouseEvent e) {
+        final Point2D mpos = new Point2D(e.getSceneX(), e.getSceneY());
+        List<Interactable> edges = bv.getNetsGroup().pickAll(mpos);
+        if (!edges.isEmpty()) {
+            Interactable edge = edges.get(0);
+            if (edge instanceof TraceView) {
+                TraceView trace = (TraceView) edge;
+
+                Point2D newPos = bv.sceneToLocal(e.getSceneX(), e.getSceneY());
+                newPos = bv.snapToGrid(newPos, false);
+
+                AbstractWire aw = trace.getTrace();
+                aw.splitTrace(newPos);
+            }
+        }
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+    }
+
     @Override
     public String toString() {
         return "SplitTraceInteractor";

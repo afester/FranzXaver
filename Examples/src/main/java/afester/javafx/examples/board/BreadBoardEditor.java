@@ -90,13 +90,9 @@ public class BreadBoardEditor extends Application {
     @Override
     public void start(Stage stage){
 
-        BoardLoader bl = new BoardLoader(new File("supplyNewFormat.brd"));
+        // BoardLoader bl = new BoardLoader(new File("supplyNewFormat.brd"));
+        BoardLoader bl = new BoardLoader(new File("Testing.brd"));
         Board board = bl.load();
-
-//        board.load(new File("small.brd"));
-//        board.load(new File("large.brd"));
-//        board.load(new File("first.brd"));
-
         topView = new BoardView(board);
 
         // The pane is exactly the size of the center component. Its children (which is the BoardView) are clipped

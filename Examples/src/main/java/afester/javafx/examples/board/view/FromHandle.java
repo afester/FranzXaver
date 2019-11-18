@@ -2,6 +2,7 @@ package afester.javafx.examples.board.view;
 
 import afester.javafx.examples.board.AirWireHandle;
 import afester.javafx.examples.board.model.AbstractNode;
+import afester.javafx.examples.board.model.Pin;
 import javafx.geometry.Point2D;
 
 public class FromHandle extends AirWireHandle {
@@ -9,21 +10,23 @@ public class FromHandle extends AirWireHandle {
     public FromHandle(AbstractEdgeView airWireView) {
         super(airWireView, airWireView.getStart());
 
+        centerXProperty().bind(airWireView.startXProperty());
+        centerYProperty().bind(airWireView.startYProperty());
     }
-
-    @Override
-    public AbstractNode getNode() {
-        return getAirWire().edge.getFrom();
-    }
-
 
     @Override
     public void moveToGrid(BoardView bv, Point2D newPos) {
+        AbstractNode node = getAirWire().edge.getFrom();
+
         if (bv.isReconnectMode()) {
+            // TODO: Fix API; this should be 
+            // node.reconnectNearest(newPos);
             getAirWire().edge.reconnectFromNearestJunction(newPos);
         } else {
-            newPos = bv.snapToGrid(newPos, false);
-            this.getNode().setPosition(newPos);
+            if (!(node instanceof Pin)) {
+                newPos = bv.snapToGrid(newPos, false);
+                node.setPosition(newPos);
+            }
         }    
     }
 
@@ -32,5 +35,4 @@ public class FromHandle extends AirWireHandle {
     public String toString() {
         return String.format("FromHandle[pos=%s/%s]", getCenterX(), getCenterY());  
     }
-
 }

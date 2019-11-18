@@ -2,10 +2,8 @@ package afester.javafx.examples.board.view;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import afester.javafx.examples.board.Interactable;
 import afester.javafx.examples.board.Interactor;
@@ -386,9 +384,12 @@ public class BoardView extends Pane {
         return handleGroup;
     }
 
-
     public LookupGroup getBoardHandleGroup() {
         return boardHandlesGroup;
+    }
+
+    public LookupGroup getNetsGroup() {
+        return netsGroup;
     }
 
 
@@ -407,13 +408,6 @@ public class BoardView extends Pane {
         List<Interactable> result = partsGroup.pickAll(mpos);
         result.addAll(netsGroup.pickAll(mpos));
 
-        // Handles (which includes Junctions) are objects which can be dragged immediately
-        // (No selection step required!)
-        // TODO: Probably JunctionView can be changed to simply be a Handle also????
-        // Means, they do not need to be instantiated immediately for each Node ???
-//         result.addAll(junctionGroup.pickAll(mpos));
-//         result.addAll(handleGroup.pickAll(mpos));
-
         return result;
     }
 
@@ -423,7 +417,7 @@ public class BoardView extends Pane {
     private final static double GRID = 1.27;   // for now, we also allow positions between pads - this is        
                                                // required to properly position the Eagle parts ...
 
-    protected Point2D snapToGrid(Point2D pos, boolean useOffset){
+    public Point2D snapToGrid(Point2D pos, boolean useOffset){
 //        if (useOffset) {
 //            System.err.println("OFFSET:" + offset);
 //            System.err.println("POS   :" + pos);
