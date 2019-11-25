@@ -15,19 +15,15 @@ import afester.javafx.examples.board.tools.PointTools;
 import afester.javafx.examples.board.tools.Polygon2D;
 import javafx.scene.shape.Circle;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.layout.Pane;
-
-
-class DoubleVal {
-    public double val;
-}
 
 
 public class BoardView extends Pane {
@@ -50,11 +46,11 @@ public class BoardView extends Pane {
     private boolean isReadOnly = false;
     private boolean isBottom;
 
-    // The interactable object which is currently selected; TODO: Can this be moved to the Interactor?
-    private final ObjectProperty<Interactable> selectedObject = new SimpleObjectProperty<>();
-    public ObjectProperty<Interactable> selectedObjectProperty() { return selectedObject; }
-    public Interactable getSelectedObject() { return selectedObject.get(); }
-    public void setSelectedObject(Interactable obj) { selectedObject.set(obj); }
+    // The currently selected objects.
+    private final ListProperty<Interactable> selectedObjects = 
+                        new SimpleListProperty<>(FXCollections.observableArrayList());
+    public ListProperty<Interactable> selectedObjectsProperty() { return selectedObjects; }
+    public ObservableList<Interactable> getSelectedObjects() { return selectedObjects.get(); }
 
     // A flag to indicate whether to show the parts as drafts or as SVG graphics
     private final BooleanProperty showSvg = new SimpleBooleanProperty(false);
@@ -361,14 +357,6 @@ public class BoardView extends Pane {
 	public Point2D getPadOffset() {
 		return padOffset;
 	}
-
-    public void clearSelection() {
-        if (getSelectedObject() != null) {
-            getSelectedObject().setSelected(this, false);
-        }
-        setSelectedObject(null);
-    }
-
 
     public void setInteractor(Interactor newInteractor) {
         if (!isReadOnly) {

@@ -17,10 +17,10 @@ public class EditShapeInteractor extends MouseInteractor {
         return getBoardView().getBoardHandleGroup().pickAll(mpos);
     }
 
-    @Override
-    protected void moveObject(Interactable obj, Point2D newPos) {
-        obj.moveToGrid(getBoardView(), newPos);
-    }
+//    @Override
+//    protected void moveObject(Interactable obj, Point2D newPos) {
+//        obj.move(getBoardView(), newPos);
+//    }
 
     @Override
     public String toString() {

@@ -1,14 +1,18 @@
 package afester.javafx.examples.board.view;
 
+import afester.javafx.examples.board.model.AbstractNode;
 import afester.javafx.examples.board.model.AbstractWire;
 import afester.javafx.examples.board.model.AbstractWire.AbstractWireState;
 import afester.javafx.examples.board.model.TraceType;
+import javafx.geometry.Point2D;
 
 
 /**
  * A Trace can either be rendered as an Airwire, Trace or Bridge. 
  */
 public class TraceView extends AbstractEdgeView {
+
+    private Point2D originalPos = new Point2D(0, 0);
 
     public TraceView(AbstractWire trace) {
         super(trace);
@@ -101,6 +105,34 @@ public class TraceView extends AbstractEdgeView {
         return edge;
     }
 
+    public TraceType getType() {
+        return edge.getType();
+    }
+
+    @Override
+    public Point2D getPos() {
+        // The start position is the reference point!
+        return getStart();
+    }
+
+    @Override
+    public void drag(BoardView boardView, Point2D delta1) {
+        Point2D newPos = originalPos.add(delta1);
+
+        AbstractNode fromNode = edge.getFrom();
+        AbstractNode toNode = edge.getTo();
+
+        final var delta = toNode.getPosition().subtract(fromNode.getPosition());
+
+        // The start node is the reference point and can directly be set to the new position.
+        final var snappedPos = boardView.snapToGrid(newPos, false);
+        fromNode.setPosition(snappedPos);
+
+        // update dependent positions
+        final var newToPos = fromNode.getPosition().add(delta);
+        toNode.setPosition(newToPos);
+    }
+    
     @Override
     public String toString() {
         return String.format("TraceView[p1=(%s %s), p2=(%s %s), type=%s]", 
@@ -109,7 +141,9 @@ public class TraceView extends AbstractEdgeView {
                              edge.getType());
     }
 
-    public TraceType getType() {
-        return edge.getType();
+    @Override
+    public void startDrag() {
+        originalPos = getPos();
     }
+
 }

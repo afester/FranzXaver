@@ -90,66 +90,18 @@ public abstract class AbstractEdgeView extends Line implements Interactable  {
 //    	contextMenu.getItems().addAll(item1);
     }
 
-
-//    @Override
-//    public void setSelected(boolean isSelected) {
-//        TraceView t = (TraceView) obj;
-//        Trace trace = (Trace) t.getTrace();
-//        Net net = trace.getNet();
-//        net.setSelected(trace);
-//
-//            //    	if (isSelected) {
-////                        Net net = getNet();
-////                        net.getTraces().forEach(e -> e.setSegmentSelected(isSelected));
-//            
-//                        //from.setSelected(true);
-//                        //to.setSelected(true);
-//                		//setStroke(Color.DARKGRAY);
-//              //  	} else {
-//                        //from.setSelected(false);
-//                        //to.setSelected(false);
-//                		//setStroke(Color.SILVER);
-//                //	}
-//    }
-
-    protected void setSegmentSelected(boolean isSelected) {
-//      if (isSelected) {
-//        from.setSelected(true);
-//        to.setSelected(true);
-//        setStroke(Color.RED);
-//      } else {
-//        from.setSelected(false);
-//        to.setSelected(false);
-//        setStroke(Color.ORANGE);
-//      }
-    }
-
-	@Override
-	public Point2D getPos() {
-		return new Point2D(getLayoutX(), getLayoutY());
-	}
+//	@Override
+//	public Point2D getPos() {
+//		return new Point2D(getLayoutX(), getLayoutY());
+//	}
 
     @Override
     public String getRepr() {
-        return "Net: "; //  + getNet().getName(); 
+        return String.format("Net: %s", edge.getNet().getName());
     }
 
-//    
-//    public AbstractNode getOtherNode(AbstractNode node) {
-//        if (from == node) {
-//            return to;
-//        }
-//        if (to == node) {
-//            return from;
-//        }
-//
-//        throw new RuntimeException("Unexpected: Edge does neither go FROM nor TO the given node!");
-//    }
-//
-
-
     @Override
-    public void moveToGrid(BoardView bv, Point2D clickPos) {
+    public void drag(BoardView bv, Point2D clickPos) {
         System.err.println("MOVE " + this + " to " + clickPos);
     }
 

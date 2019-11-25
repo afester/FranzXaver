@@ -39,9 +39,12 @@ public class BoardHandle extends Circle implements Interactable {
         return null;
     }
 
+    @Override
+    public void startDrag() {
+    }
 
     @Override
-    public void moveToGrid(BoardView bv, Point2D clickPos) {
+    public void drag(BoardView bv, Point2D clickPos) {
         System.err.println("MOVE " + this + " to " + clickPos);
         board.setCornerPos(cornerIdx, clickPos);
     }
@@ -50,4 +53,5 @@ public class BoardHandle extends Circle implements Interactable {
         return String.format("BoardHandle[center=%s, radius=%s, idx=%s]",
                               new Point2D(getCenterX(), getCenterY()), getRadius(), cornerIdx);
     }
+
 }

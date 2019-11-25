@@ -21,19 +21,8 @@ public class EditInteractor  extends MouseInteractor {
     }
 
     @Override
-    protected void moveObject(Interactable obj, Point2D newPos) {
-        obj.moveToGrid(getBoardView(), newPos); 
-
-//        if (partToMove != null) {
-//            Point2D snapPos = snapToGrid(getClickPos(), getBoardView(), getOffset());
-//            partToMove.setPosition(snapPos);
-//        } else if (junctionToMove != null) {
-//            // move the junction to the new position
-//            Point2D snapPos = snapToGrid(getClickPos(), getBoardView(), getOffset());
-//            junctionToMove.setPosition(snapPos);
-//        } else if (handleToMove != null) {
-//            handleToMove.setPosition(getClickPos());
-//        }
+    protected void drag(Interactable obj, Point2D newPos) {
+        obj.drag(getBoardView(), newPos);
     }
 
     @Override
@@ -44,7 +33,6 @@ public class EditInteractor  extends MouseInteractor {
             part.rotateClockwise();
         }
     }
-    
     
     @Override
     public String toString() {

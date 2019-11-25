@@ -20,7 +20,7 @@ public abstract class MouseInteractor implements Interactor {
     private int pickIndex = 0;              // The current index in the pickedNodes list
 
     // The currently selected nodes and their original mouse position
-    protected final Map<Interactable, Point2D> selectedNodes = new HashMap<>();
+    private final Map<Interactable, Point2D> selectedNodes = new HashMap<>();
 
     // The handle which is currently dragged
     private Interactable handleToDrag = null;
@@ -37,7 +37,6 @@ public abstract class MouseInteractor implements Interactor {
 	@Override
     public final void mousePressed(MouseEvent e) {
 	    pickPos = bv.sceneToLocal(e.getSceneX(), e.getSceneY());
-
         final Point2D mpos = new Point2D(e.getSceneX(), e.getSceneY());
 
         // check for Handles
@@ -117,12 +116,12 @@ public abstract class MouseInteractor implements Interactor {
 
 	@Override
     public final void mouseDragged(MouseEvent e) {
-	    final Point2D newPos = bv.sceneToLocal(e.getSceneX(), e.getSceneY()); 
+	    final Point2D newPos = bv.sceneToLocal(e.getSceneX(), e.getSceneY());
 	    final Point2D delta = newPos.subtract(pickPos);
-
+	    
 	    if (handleToDrag != null) {
             final Point2D newObjPos = handlePos.add(delta);
-            moveObject(handleToDrag, newObjPos); 
+            drag(handleToDrag, newObjPos); 
 	    } else if (!pickedNodes.isEmpty()) {
 
             if (selectedNodes.isEmpty()) {
@@ -140,12 +139,17 @@ public abstract class MouseInteractor implements Interactor {
             }
 
             if (!e.isControlDown() && e.isPrimaryButtonDown()) {
+                // Note: delta is the delta to the original mouse position!
+                // However, depending on the grid, the real object position might or might not change - hence,
+                // the current position of the object is incompatible with the delta value!
+                // we always need to be able to calculate the *possible* new node position...
+                // This requires the original position of the node as well as the delta of the mouse movement.
                selectedNodes.forEach((node, pos)  -> {
-                   final Point2D newObjPos = pos.add(delta);
-                   moveObject(node, newObjPos); 
+                   // final Point2D newObjPos = pos.add(delta);
+                   drag(node, delta); // newObjPos);
                });
            }
-        } 
+        }
     }
 
 
@@ -153,14 +157,17 @@ public abstract class MouseInteractor implements Interactor {
 	    System.err.printf("Select: %s\n", node);
         node.setSelected(bv, true);
         selectedNodes.put(node, node.getPos());
+        bv.selectedObjectsProperty().add(node);     // Update selected nodes in view
+        node.startDrag();
         clickObject(node);
 	}
 
 
 	private void clearSelection() {
-	    System.err.printf("Clear selection\n");
+	    // System.err.printf("Clear selection\n");
         selectedNodes.keySet().forEach(node -> node.setSelected(bv, false));
         selectedNodes.clear();
+        bv.selectedObjectsProperty().clear();       // Update selected nodes in view
 	}
 
     /* Interactor specific high level functions */
@@ -174,8 +181,17 @@ public abstract class MouseInteractor implements Interactor {
         return Collections.emptyList();
     }
 
-    protected void moveObject(Interactable obj, Point2D newPos) {
+    protected void startDrag(Interactable obj) {
     }
+
+    protected void drag(Interactable obj, Point2D delta) {
+    }
+
+    protected void endDrag(Interactable obj) {
+    }
+
+//    protected void moveObject(Interactable obj, Point2D newPos) {
+//    }
 
     protected void clickObject(Interactable obj) {
     }

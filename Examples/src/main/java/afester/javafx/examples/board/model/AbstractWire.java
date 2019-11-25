@@ -62,12 +62,6 @@ public abstract class AbstractWire {
     public void setState(AbstractWireState stat) { state.setValue(stat); }
     public AbstractWireState getState() { return state.get(); }
 
-//    private ObjectProperty<Color> color = new SimpleObjectProperty<Color>(Color.LIGHTGRAY);
-//    public ObjectProperty<Color> colorProperty() { return color; }
-//    public void setColor(Color col) { color.setValue(col); }
-//    public Color getColor() { return color.get(); }
-
-
     public AbstractNode getFrom() {
         return from;
     }
@@ -75,16 +69,6 @@ public abstract class AbstractWire {
     public AbstractNode getTo() {
         return to;
     }
-
-//    public void setFrom(AbstractNode newJunction) {
-//        from = newJunction;
-//        setStart(from.getPos());
-//    }
-//
-//    public void setTo(AbstractNode newJunction) {
-//        to = newJunction;
-//        setEnd(to.getPos());
-//    }
 
     public abstract Node getXML(Document doc);
 

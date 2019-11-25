@@ -48,7 +48,7 @@ public class PartView extends Group implements Interactable {
     private Group shapeViews;
     private boolean isBottom;
     private boolean isSvg = false;  // flag to determine if the node is rendered as SVG image or not
-
+    private Point2D originalPos = new Point2D(0, 0);
 
     public PartView(Part part, boolean isBottom) {
         this.part = part;
@@ -277,16 +277,23 @@ public class PartView extends Group implements Interactable {
 
 
     @Override
+    public void startDrag() {
+        originalPos = getPos();
+    }
+
+    @Override
+    public void drag(BoardView bv, Point2D delta) {
+        Point2D newPos = originalPos.add(delta);
+
+        System.err.println("MOVE " + this + " to " + newPos);
+        newPos = bv.snapToGrid(newPos, false);
+        part.setPosition(newPos);
+    }
+
+    @Override
     public String toString() {
         return String.format("PartView[partName=%s %s]", part.getName(), getBoundsInLocal());
     }
 
 
-
-    @Override
-    public void moveToGrid(BoardView bv, Point2D newPos) {
-        System.err.println("MOVE " + this + " to " + newPos);
-        newPos = bv.snapToGrid(newPos, false);
-        part.setPosition(newPos);
-    }
 }

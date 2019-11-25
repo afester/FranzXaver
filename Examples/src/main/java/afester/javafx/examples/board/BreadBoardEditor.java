@@ -14,9 +14,11 @@ import afester.javafx.examples.board.model.BoardLoader;
 import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.model.NetImport;
 import afester.javafx.examples.board.model.Trace;
+import afester.javafx.examples.board.view.AbstractEdgeView;
 import afester.javafx.examples.board.view.BoardView;
 import afester.javafx.examples.board.view.TraceView;
 import javafx.application.Application;
+import javafx.beans.property.SimpleListProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
@@ -167,21 +169,16 @@ public class BreadBoardEditor extends Application {
         topBar.getChildren().addAll(menuBar, toolBar);
 
         StatusBar sb = new StatusBar();
-        sb.textProperty().bindBidirectional(topView.selectedObjectProperty(), new StringConverter<Interactable>() {
 
-            @Override
-            public Interactable fromString(String string) {
-                return null;
+        topView.selectedObjectsProperty().addListener((obj, oldValue, newValue) -> {
+            SimpleListProperty<Interactable> slp = (SimpleListProperty<Interactable>) obj;
+            if (slp.getSize() == 0) {
+                sb.textProperty().set("");
+            } else if (slp.getSize() == 1) {
+                sb.textProperty().set(slp.get(0).getRepr());
+            } else if (slp.getSize() > 1) {
+                sb.textProperty().set("Multiple objects selected.");
             }
-
-            @Override
-            public String toString(Interactable object) {
-                if (object != null) {
-                    return object.getRepr();
-                }
-                return "No selection.";
-            }
-            
         });
 
         HBox leftBar = new HBox();
@@ -457,53 +454,55 @@ public class BreadBoardEditor extends Application {
 
 
     private void cleanupNet() {
-        Interactable selectedObject = topView.getSelectedObject();
-        if (selectedObject instanceof Trace) {
-            topView.clearSelection();
-            Trace trace = (Trace) selectedObject;
-            Net net = trace.getNet();
-            System.err.println("Cleaning up " + net);
-            
-            net.cleanup();
-        }
+//        Interactable selectedObject = topView.getSelectedObject();
+//        if (selectedObject instanceof Trace) {
+//            topView.clearSelection();
+//            Trace trace = (Trace) selectedObject;
+//            Net net = trace.getNet();
+//            System.err.println("Cleaning up " + net);
+//            
+//            net.cleanup();
+//        }
     }
 
 
     private void deleteSegment() {
-        Interactable selectedObject = topView.getSelectedObject();
-        if (selectedObject instanceof TraceView) {
-            topView.clearSelection();
-
-            AbstractWire trace = ((TraceView) selectedObject).getTrace();
-            Net net  = trace.getNet();
-            AbstractNode from = trace.getFrom();
-            AbstractNode to = trace.getTo();
-
-            if (from.getEdgeCount() > 2 || to.getEdgeCount() > 2) {
-                System.err.println("Currently only intermediate traces can be removed");
-                return;
-            }
-
-            System.err.println("Removing segment ...");
-            net.removeTraceAndFrom(trace);
-        }
+//        Interactable selectedObject = topView.getSelectedObject();
+//        if (selectedObject instanceof TraceView) {
+//            topView.clearSelection();
+//
+//            AbstractWire trace = ((TraceView) selectedObject).getTrace();
+//            Net net  = trace.getNet();
+//            AbstractNode from = trace.getFrom();
+//            AbstractNode to = trace.getTo();
+//
+//            if (from.getEdgeCount() > 2 || to.getEdgeCount() > 2) {
+//                System.err.println("Currently only intermediate traces can be removed");
+//                return;
+//            }
+//
+//            System.err.println("Removing segment ...");
+//            net.removeTraceAndFrom(trace);
+//        }
     }
 
 
     /**
-     * Removes all junctions and all wires from the net and recreates the net by
+     * Removes all junctions and all wires from the selected nets and recreates the net by
      * connecting all pads of the net with the shortest path algorithm. 
      */
     private void resetNet() {
-        Interactable selectedObject = topView.getSelectedObject();
-        if (selectedObject instanceof TraceView) {
-            topView.clearSelection();
-            TraceView wire = (TraceView) selectedObject;
-            Net net = wire.getTrace().getNet();
+        topView.getSelectedObjects().forEach(selectedObject -> {
+            if (selectedObject instanceof TraceView) {
+                TraceView wire = (TraceView) selectedObject;
+                Net net = wire.getTrace().getNet();
 
-            // calculate the shortest path of the net
-            net.resetNet();
-        }
+                // calculate the shortest path of the net
+                net.resetNet();
+            }
+
+//            topView.clearSelection();
+        });
     }
 
 
@@ -511,35 +510,35 @@ public class BreadBoardEditor extends Application {
      * Converts the currently selected trace into a bridge wire.
      */
     private void traceToBridge() {
-        Interactable obj = topView.getSelectedObject();
-        if (obj != null && obj instanceof TraceView) {
-            TraceView traceView = (TraceView) obj;
-
-            if (traceView.getTrace() instanceof Trace) {
-                ((Trace) traceView.getTrace()).setAsBridge();    
-            }
-            
-        }
+//        Interactable obj = topView.getSelectedObject();
+//        if (obj != null && obj instanceof TraceView) {
+//            TraceView traceView = (TraceView) obj;
+//
+//            if (traceView.getTrace() instanceof Trace) {
+//                ((Trace) traceView.getTrace()).setAsBridge();    
+//            }
+//            
+//        }
     }
 
     /**
      * Calculates the shortest path for the currently selected net. 
      */
     private void calculateShortestPath() {
-        Interactable selectedObject = topView.getSelectedObject();
-        if (selectedObject instanceof Trace) {
-            topView.clearSelection();
-
-            Trace trace = (Trace) selectedObject;
-            Net net = (Net) trace.getNet();
-            System.err.printf("NET: %s\n", net.getName());
-
-            // calculate the shortest path of the net
-            net.calculateShortestPath();
-
-            // re-render board
-           // bv.setBoard(bv.getBoard());
-        }
+//        Interactable selectedObject = topView.getSelectedObject();
+//        if (selectedObject instanceof Trace) {
+//            topView.clearSelection();
+//
+//            Trace trace = (Trace) selectedObject;
+//            Net net = (Net) trace.getNet();
+//            System.err.printf("NET: %s\n", net.getName());
+//
+//            // calculate the shortest path of the net
+//            net.calculateShortestPath();
+//
+//            // re-render board
+//           // bv.setBoard(bv.getBoard());
+//        }
     }
 
 
@@ -547,13 +546,13 @@ public class BreadBoardEditor extends Application {
      * Calculates the shortest path for all nets.
      */
     private void calculateShortestPathAll() {
-        topView.clearSelection();
-
-        // calculate the shortest path for all nets
-        topView.getBoard().getNets().values().forEach(net -> net.calculateShortestPath());
-
-        // re-render board
-        // bv.setBoard(bv.getBoard());
+//        topView.clearSelection();
+//
+//        // calculate the shortest path for all nets
+//        topView.getBoard().getNets().values().forEach(net -> net.calculateShortestPath());
+//
+//        // re-render board
+//        // bv.setBoard(bv.getBoard());
     }
 
 

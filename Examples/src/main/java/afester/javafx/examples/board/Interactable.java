@@ -11,5 +11,10 @@ public interface Interactable {
 
     String getRepr();
 
-    void moveToGrid(BoardView bv, Point2D clickPos);
+    void startDrag();
+
+    void drag(BoardView boardView, Point2D newPos);
+
+    // void move(BoardView bv, Point2D pos);
+
 }
