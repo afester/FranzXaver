@@ -52,13 +52,13 @@ PadViewTop Circle {
 }
 
 PadViewBottom Circle {
-   -fx-fill: #606060; /*silver;*/
+   -fx-fill: #606060;
 /*   -fx-stroke: #C39B5D;
    -fx-stroke-width: 0.6px;*/
 }
 
 TraceView.TraceNormal{
-	-fx-stroke: #606060; /*silver;*/
+	-fx-stroke: #D2D1CF; /*#606060;*/
 	-fx-stroke-width: 0.8px;
 	-fx-stroke-line-cap: round;
 }
@@ -100,6 +100,13 @@ TraceView.AirwireSelect {
 TraceView.BridgeNormal{
 	-fx-stroke: #C39B5D;
 	-fx-stroke-width: 0.5px;
+	-fx-stroke-line-cap: round;
+}
+
+TraceView.BridgeNormalBottom{
+	-fx-stroke: #303030;
+	-fx-stroke-dash-array: 0.5 0.5;
+	-fx-stroke-width: 0.3px;
 	-fx-stroke-line-cap: round;
 }
 

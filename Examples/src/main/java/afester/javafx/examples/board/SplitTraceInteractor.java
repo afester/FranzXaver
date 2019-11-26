@@ -30,6 +30,8 @@ public class SplitTraceInteractor implements Interactor {
 
                 AbstractWire aw = trace.getTrace();
                 aw.splitTrace(newPos);
+
+                trace.setSelected(bv,  true);
             }
         }
     }

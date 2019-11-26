@@ -13,18 +13,16 @@ import javafx.geometry.Point2D;
 public class TraceView extends AbstractEdgeView {
 
     private Point2D originalPos = new Point2D(0, 0);
+    private boolean isBottom = false;
 
-    public TraceView(AbstractWire trace) {
+    public TraceView(AbstractWire trace, boolean isBottom) {
         super(trace);
+        this.isBottom = isBottom;
 
         update(AbstractWireState.NORMAL);
         trace.stateProperty().addListener((obj, oldState, newState) -> {
             update(newState);
         });
-
-//        trace.typeProperty().addListener((obj, oldColor, newColor) -> {
-//
-//        });
     }
 
     private void update(AbstractWireState newState) {
@@ -66,7 +64,11 @@ public class TraceView extends AbstractEdgeView {
     private void setBridgeVisual(AbstractWireState newState) {
         switch(newState) {
             case NORMAL:
-                getStyleClass().add("BridgeNormal");
+                if (isBottom) {
+                    getStyleClass().add("BridgeNormalBottom");
+                } else {
+                    getStyleClass().add("BridgeNormal");
+                }
                 break;
     
             case HIGHLIGHTED:

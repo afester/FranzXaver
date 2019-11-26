@@ -134,7 +134,7 @@ public class BoardView extends Pane {
         System.err.println("VIEW: creating Net " + net.getName());
         net.getTraces().forEach(trace -> {
             System.err.printf("  VIEW: creating Trace %s\n", trace);
-            TraceView traceView = new TraceView(trace);
+            TraceView traceView = new TraceView(trace, isBottom);
             tMap.put(trace, traceView);
 
             switch(trace.getType()) {
@@ -171,7 +171,7 @@ public class BoardView extends Pane {
 //!!! Essentially, this is working, but the coordinates of the AirWire are not correct!                
 
             change.getAddedSubList().forEach(trace -> {
-                TraceView traceView = new TraceView(trace);
+                TraceView traceView = new TraceView(trace, isBottom);
                 tMap.put(trace, traceView);
                 System.err.println("ADDING TRACE VIEW: " + traceView);
 

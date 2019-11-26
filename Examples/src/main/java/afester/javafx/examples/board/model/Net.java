@@ -198,7 +198,10 @@ public class Net {
     public void changeToBridge(AbstractWire trace) {
        var from = trace.getFrom();
        var to = trace.getTo();
-       
+
+       // TODO: provide a simpler way to change the trace type - this is
+       // currently required to update the view from the model:
+
        from.traceStarts.remove(trace);
        to.traceEnds.remove(trace);
        traceList.remove(trace);
@@ -207,6 +210,7 @@ public class Net {
        bridge.setAsBridge();
        traceList.add(bridge);
     }
+
 
     /**
      * Removes all traces and re-applies the "shortest path" algorithm to this net.

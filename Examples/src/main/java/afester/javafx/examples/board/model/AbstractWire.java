@@ -84,10 +84,6 @@ public abstract class AbstractWire {
     }
 
 
-    public void setSelected(boolean b) {
-    }
-
-
     public abstract void reconnectToNearestJunction(Point2D clickPos);
 
 
