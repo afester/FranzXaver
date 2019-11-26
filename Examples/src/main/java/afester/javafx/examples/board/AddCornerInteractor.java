@@ -1,6 +1,5 @@
 package afester.javafx.examples.board;
 
-import afester.javafx.examples.board.view.BoardHandle;
 import afester.javafx.examples.board.view.BoardView;
 import javafx.geometry.Point2D;
 

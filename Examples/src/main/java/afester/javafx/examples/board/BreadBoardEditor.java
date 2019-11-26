@@ -7,14 +7,12 @@ import afester.javafx.components.StatusBar;
 import afester.javafx.components.ToolbarButton;
 import afester.javafx.components.ToolbarToggleButton;
 import afester.javafx.examples.board.eagle.EagleImport;
-import afester.javafx.examples.board.model.AbstractNode;
 import afester.javafx.examples.board.model.AbstractWire;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.BoardLoader;
 import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.model.NetImport;
 import afester.javafx.examples.board.model.Trace;
-import afester.javafx.examples.board.view.AbstractEdgeView;
 import afester.javafx.examples.board.view.BoardView;
 import afester.javafx.examples.board.view.TraceView;
 import javafx.application.Application;
@@ -45,7 +43,6 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
 
 /**
  * Scene
@@ -244,6 +241,14 @@ public class BreadBoardEditor extends Application {
         final Button shortestAllButton = new ToolbarButton("Shortest all", "afester/javafx/examples/board/net-shortestall.png");
         shortestAllButton.setOnAction(e -> calculateShortestPathAll());
 
+        final Button toBridgeToolButton = new ToolbarButton("Bridge", "afester/javafx/examples/board/mode-bridge.png");
+        toBridgeToolButton.setOnAction(e -> traceToBridge());
+//        selectedProperty().addListener((value, oldValue, newValue) -> {
+//            if (newValue) {
+//                topView.setInteractor(traceInteractor);   
+//            }
+//        });
+
         ToolBar toolBar = new ToolBar(
                 reconnectTraceModeToolButton,
                 moveJunctionToolButton,
@@ -253,6 +258,7 @@ public class BreadBoardEditor extends Application {
                 resetNetButton,
                 cleanupNetButton,
                 deleteSegmentButton,
+                toBridgeToolButton,
                 new Separator(),
 
                 shortestAllButton
@@ -298,13 +304,6 @@ public class BreadBoardEditor extends Application {
             }
         });
 
-        final ToolbarToggleButton toBridgeToolButton = new ToolbarToggleButton("Bridge", "afester/javafx/examples/board/mode-bridge.png");
-        toBridgeToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
-            if (newValue) {
-                topView.setInteractor(traceInteractor);   
-            }
-        });
-
         final ToolbarToggleButton toAirwireToolButton = new ToolbarToggleButton("Airwire", "afester/javafx/examples/board/mode-airwire.png");
         toAirwireToolButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
@@ -324,7 +323,7 @@ public class BreadBoardEditor extends Application {
         ToggleGroup toggleGroup = new ToggleGroup();
         selectToolButton.setToggleGroup(toggleGroup);
         toTraceToolButton.setToggleGroup(toggleGroup);
-        toBridgeToolButton.setToggleGroup(toggleGroup);
+        // toBridgeToolButton.setToggleGroup(toggleGroup);
         toAirwireToolButton.setToggleGroup(toggleGroup);
         splitTraceToolButton.setToggleGroup(toggleGroup);
         editShapeToolButton.setToggleGroup(toggleGroup);
@@ -340,7 +339,7 @@ public class BreadBoardEditor extends Application {
 
                 selectToolButton,
                 toTraceToolButton,
-                toBridgeToolButton,
+//                toBridgeToolButton,
                 toAirwireToolButton,
                 splitTraceToolButton,
                 editShapeToolButton,
@@ -501,8 +500,9 @@ public class BreadBoardEditor extends Application {
                 net.resetNet();
             }
 
-//            topView.clearSelection();
         });
+
+        topView.clearSelection();
     }
 
 
@@ -510,15 +510,18 @@ public class BreadBoardEditor extends Application {
      * Converts the currently selected trace into a bridge wire.
      */
     private void traceToBridge() {
-//        Interactable obj = topView.getSelectedObject();
-//        if (obj != null && obj instanceof TraceView) {
-//            TraceView traceView = (TraceView) obj;
-//
-//            if (traceView.getTrace() instanceof Trace) {
-//                ((Trace) traceView.getTrace()).setAsBridge();    
-//            }
-//            
-//        }
+        topView.getSelectedObjects().forEach(selectedObject -> {
+            if (selectedObject instanceof TraceView) {
+                TraceView traceView  = (TraceView) selectedObject;
+                final AbstractWire wire = traceView.getTrace();
+                final Net net = wire.getNet();
+
+                // change the trace to a Bridge
+                net.changeToBridge(wire);
+            }
+        });
+
+        topView.clearSelection();
     }
 
     /**

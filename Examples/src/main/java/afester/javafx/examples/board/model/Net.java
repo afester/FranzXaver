@@ -190,7 +190,24 @@ public class Net {
     
         resetNet();
     }
-    
+
+    /**
+     * 
+     * @param wire
+     */
+    public void changeToBridge(AbstractWire trace) {
+       var from = trace.getFrom();
+       var to = trace.getTo();
+       
+       from.traceStarts.remove(trace);
+       to.traceEnds.remove(trace);
+       traceList.remove(trace);
+
+       var bridge = new Trace(from, to, this);
+       bridge.setAsBridge();
+       traceList.add(bridge);
+    }
+
     /**
      * Removes all traces and re-applies the "shortest path" algorithm to this net.
      * 

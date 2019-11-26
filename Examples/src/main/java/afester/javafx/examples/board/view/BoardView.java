@@ -170,8 +170,6 @@ public class BoardView extends Pane {
 
 //!!! Essentially, this is working, but the coordinates of the AirWire are not correct!                
 
-//           Intentionally left non-compilable
-
             change.getAddedSubList().forEach(trace -> {
                 TraceView traceView = new TraceView(trace);
                 tMap.put(trace, traceView);
@@ -433,6 +431,13 @@ public class BoardView extends Pane {
             return new Point2D(xpos, ypos);
 //        }
     }
+    
+
+    public void clearSelection() {
+        getSelectedObjects().forEach(node -> node.setSelected(this, false));
+        selectedObjectsProperty().clear();
+    }
+    
     public void setReadOnly(boolean b) {
         isReadOnly = b;    
     }

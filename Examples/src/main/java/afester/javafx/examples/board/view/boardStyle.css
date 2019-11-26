@@ -1,6 +1,6 @@
 
 BoardShape {
-   -fx-fill: #ffec80; /*#E1B576; 			/* #D08B0D; 			/* #ffec80;			/* Board color */
+   -fx-fill: #ffec80;			/* Board color */
    -fx-stroke: gray;			/* Board border color */
    -fx-stroke-width: 0.3px;		/* Board border width */
 }
@@ -10,7 +10,7 @@ BoardHandle {
    -fx-stroke: red;
    -fx-stroke-width: 0.3px;
 }
-        
+
 DimensionView Line {
    -fx-stroke: darkred;
    -fx-stroke-width: 0.3px;
@@ -43,7 +43,7 @@ HoleViewTop {
 
 HoleViewBottom {
    -fx-fill: white;
-   -fx-stroke: #C39B5D; 		/* #ECB76F; /*#F2EAD8; /*#b87333;*/
+   -fx-stroke: #C39B5D;
    -fx-stroke-width: 0.6px;
 }
 
@@ -98,7 +98,7 @@ TraceView.AirwireSelect {
 
 
 TraceView.BridgeNormal{
-	-fx-stroke: green;
+	-fx-stroke: #C39B5D;
 	-fx-stroke-width: 0.5px;
 	-fx-stroke-line-cap: round;
 }

@@ -1,9 +1,7 @@
 package afester.javafx.examples.board;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import afester.javafx.examples.board.view.BoardView;
 import javafx.geometry.Point2D;
@@ -18,9 +16,6 @@ public abstract class MouseInteractor implements Interactor {
     private Point2D pickPos;                // the position where the mouse click occurred (in BoardView coordinates)
     private List<Interactable> pickedNodes = Collections.emptyList(); // the list of objects at the mouse click position 
     private int pickIndex = 0;              // The current index in the pickedNodes list
-
-    // The currently selected nodes and their original mouse position
-    private final Map<Interactable, Point2D> selectedNodes = new HashMap<>();
 
     // The handle which is currently dragged
     private Interactable handleToDrag = null;
@@ -52,14 +47,14 @@ public abstract class MouseInteractor implements Interactor {
             // If the list of objects has changed, then reset the Z order iterator
             if (!newPickedNodes.equals(pickedNodes)) {
                 if (!e.isControlDown()) {
-                    clearSelection();
+                    bv.clearSelection();
                 }
 
                 pickedNodes = newPickedNodes;
 
                 // Calculate the initial pick index - this is the last object in the list of picked objects
                 // which is currently NOT selected
-                var selNodes = selectedNodes.keySet();
+                var selNodes = bv.getSelectedObjects();
                 pickIndex = 0;
                 for (int loopIdx = 0;  loopIdx < pickedNodes.size();  loopIdx++) {
                     if (selNodes.contains(pickedNodes.get(loopIdx))) {
@@ -101,14 +96,14 @@ public abstract class MouseInteractor implements Interactor {
 
                       // TODO: This conflicts with the multi selection mode!!!!
                       // the multi selection is resetted when the mouse button is released! 
-                      clearSelection();
+                      bv.clearSelection();
                       selectObject(selectedNode);
                   }
                } else if (e.getButton() == MouseButton.SECONDARY) {
                   rightClickObject(selectedNode);
                }
             } else if (!e.isControlDown()) {
-                clearSelection();
+                bv.clearSelection();
             }
         }
     }
@@ -124,7 +119,7 @@ public abstract class MouseInteractor implements Interactor {
             drag(handleToDrag, newObjPos); 
 	    } else if (!pickedNodes.isEmpty()) {
 
-            if (selectedNodes.isEmpty()) {
+            if (bv.getSelectedObjects().isEmpty()) {
                 final Interactable selectedNode = pickedNodes.get(pickIndex);
 
                 if (e.getButton() == MouseButton.PRIMARY) {
@@ -144,9 +139,8 @@ public abstract class MouseInteractor implements Interactor {
                 // the current position of the object is incompatible with the delta value!
                 // we always need to be able to calculate the *possible* new node position...
                 // This requires the original position of the node as well as the delta of the mouse movement.
-               selectedNodes.forEach((node, pos)  -> {
-                   // final Point2D newObjPos = pos.add(delta);
-                   drag(node, delta); // newObjPos);
+               bv.getSelectedObjects().forEach(node  -> {
+                   drag(node, delta);
                });
            }
         }
@@ -156,19 +150,11 @@ public abstract class MouseInteractor implements Interactor {
 	private void selectObject(Interactable node) {
 	    System.err.printf("Select: %s\n", node);
         node.setSelected(bv, true);
-        selectedNodes.put(node, node.getPos());
         bv.selectedObjectsProperty().add(node);     // Update selected nodes in view
         node.startDrag();
         clickObject(node);
 	}
 
-
-	private void clearSelection() {
-	    // System.err.printf("Clear selection\n");
-        selectedNodes.keySet().forEach(node -> node.setSelected(bv, false));
-        selectedNodes.clear();
-        bv.selectedObjectsProperty().clear();       // Update selected nodes in view
-	}
 
     /* Interactor specific high level functions */
 
@@ -189,9 +175,6 @@ public abstract class MouseInteractor implements Interactor {
 
     protected void endDrag(Interactable obj) {
     }
-
-//    protected void moveObject(Interactable obj, Point2D newPos) {
-//    }
 
     protected void clickObject(Interactable obj) {
     }
