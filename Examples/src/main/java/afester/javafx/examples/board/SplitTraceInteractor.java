@@ -2,7 +2,7 @@ package afester.javafx.examples.board;
 
 import java.util.List;
 
-import afester.javafx.examples.board.model.AbstractWire;
+import afester.javafx.examples.board.model.AbstractEdge;
 import afester.javafx.examples.board.view.BoardView;
 import afester.javafx.examples.board.view.TraceView;
 import javafx.geometry.Point2D;
@@ -28,7 +28,7 @@ public class SplitTraceInteractor implements Interactor {
                 Point2D newPos = bv.sceneToLocal(e.getSceneX(), e.getSceneY());
                 newPos = bv.snapToGrid(newPos, false);
 
-                AbstractWire aw = trace.getTrace();
+                AbstractEdge aw = trace.getTrace();
                 aw.splitTrace(newPos);
 
                 trace.setSelected(bv,  true);

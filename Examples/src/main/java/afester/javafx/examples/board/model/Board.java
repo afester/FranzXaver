@@ -234,7 +234,7 @@ public class Board {
                 }
 
                 // Traces are direct lines which connect two Junctions and/or Pads
-                for (AbstractWire t : net.getTraces()) {
+                for (AbstractEdge t : net.getTraces()) {
                     Node traceNode = t.getXML(doc);
                     netNode.appendChild(traceNode);
                 }

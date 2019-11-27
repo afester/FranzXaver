@@ -11,8 +11,8 @@ import javafx.scene.paint.Color;
 
 public abstract class AbstractNode {
     private Net net;
-    List<AbstractWire> traceStarts = new ArrayList<>();
-    List<AbstractWire> traceEnds = new ArrayList<>();
+    List<AbstractEdge> traceStarts = new ArrayList<>();
+    List<AbstractEdge> traceEnds = new ArrayList<>();
 
     protected int id;	// currently only required for serialization and deserialization
 
@@ -42,11 +42,11 @@ public abstract class AbstractNode {
        id = i;
     }
 
-    public void addStart(AbstractWire wire) {
+    public void addStart(AbstractEdge wire) {
         traceStarts.add(wire);
     }
 
-    public void addEnd(AbstractWire wire) {
+    public void addEnd(AbstractEdge wire) {
         traceEnds.add(wire);
     }
 
@@ -54,8 +54,8 @@ public abstract class AbstractNode {
     /**
      * @return A list of all edges which are connected to this node.
      */
-    public List<AbstractWire> getEdges() {
-        List<AbstractWire> result = new ArrayList<>();
+    public List<AbstractEdge> getEdges() {
+        List<AbstractEdge> result = new ArrayList<>();
 
         result.addAll(traceStarts);
         result.addAll(traceEnds);

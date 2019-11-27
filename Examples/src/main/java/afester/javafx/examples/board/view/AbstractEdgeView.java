@@ -2,7 +2,7 @@ package afester.javafx.examples.board.view;
 
 import afester.javafx.examples.board.AirWireHandle;
 import afester.javafx.examples.board.Interactable;
-import afester.javafx.examples.board.model.AbstractWire;
+import afester.javafx.examples.board.model.AbstractEdge;
 import afester.javafx.examples.board.model.Net;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Line;
@@ -12,14 +12,14 @@ import javafx.scene.shape.Line;
  */
 public abstract class AbstractEdgeView extends Line implements Interactable  {
 
-    public AbstractWire edge;
+    public AbstractEdge edge;
 
     /**
      * Creates a new AbstractWireView for a given AbstractWire.
      *
      * @param wire The model object for the graph edge.
      */
-    public AbstractEdgeView(AbstractWire wire) {
+    public AbstractEdgeView(AbstractEdge wire) {
         this.edge = wire;
 
         // Remember: the change listener is REALLY only called when the value CHANGES (i.e. is not equals() to the old value)

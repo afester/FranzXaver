@@ -7,7 +7,7 @@ import java.util.Map;
 
 import afester.javafx.examples.board.Interactable;
 import afester.javafx.examples.board.Interactor;
-import afester.javafx.examples.board.model.AbstractWire;
+import afester.javafx.examples.board.model.AbstractEdge;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.Part;
 import afester.javafx.examples.board.model.Net;
@@ -130,7 +130,7 @@ public class BoardView extends Pane {
 
     private void netUpdater(Net net) {
      // Handling traces
-        Map<AbstractWire, TraceView> tMap = new HashMap<>();
+        Map<AbstractEdge, TraceView> tMap = new HashMap<>();
         System.err.println("VIEW: creating Net " + net.getName());
         net.getTraces().forEach(trace -> {
             System.err.printf("  VIEW: creating Trace %s\n", trace);
@@ -151,7 +151,7 @@ public class BoardView extends Pane {
                 break;
             }
         });
-        net.getTraces().addListener((javafx.collections.ListChangeListener.Change<? extends AbstractWire> change) -> {
+        net.getTraces().addListener((javafx.collections.ListChangeListener.Change<? extends AbstractEdge> change) -> {
             change.next();
             change.getRemoved().forEach(trace -> {
                 TraceView traceView = tMap.get(trace);

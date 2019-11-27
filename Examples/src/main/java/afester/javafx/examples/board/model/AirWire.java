@@ -12,7 +12,7 @@ import javafx.geometry.Point2D;
 /**
  * An AirWire is a line between two Junctions which has not been routed yet.
  */
-public class AirWire extends AbstractWire {
+public class AirWire extends AbstractEdge {
 
     /**
      * Creates a new AirWire.
@@ -229,8 +229,10 @@ public class AirWire extends AbstractWire {
         reconnect(this.getFrom(), nearestNode);
     }
 
+
     @Override
     public String toString() {
         return String.format("AirWire[%s - %s]", getFrom(), getTo());
     }
+
 }

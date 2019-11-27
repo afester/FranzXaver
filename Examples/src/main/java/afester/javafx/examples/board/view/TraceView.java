@@ -1,8 +1,7 @@
 package afester.javafx.examples.board.view;
 
-import afester.javafx.examples.board.model.AbstractNode;
-import afester.javafx.examples.board.model.AbstractWire;
-import afester.javafx.examples.board.model.AbstractWire.AbstractWireState;
+import afester.javafx.examples.board.model.AbstractEdge;
+import afester.javafx.examples.board.model.AbstractEdge.AbstractWireState;
 import afester.javafx.examples.board.model.TraceType;
 import javafx.geometry.Point2D;
 
@@ -15,7 +14,7 @@ public class TraceView extends AbstractEdgeView {
     private Point2D originalPos = new Point2D(0, 0);
     private boolean isBottom = false;
 
-    public TraceView(AbstractWire trace, boolean isBottom) {
+    public TraceView(AbstractEdge trace, boolean isBottom) {
         super(trace);
         this.isBottom = isBottom;
 
@@ -103,7 +102,7 @@ public class TraceView extends AbstractEdgeView {
         }
     }
 
-    public AbstractWire getTrace() {
+    public AbstractEdge getTrace() {
         return edge;
     }
 
@@ -118,23 +117,16 @@ public class TraceView extends AbstractEdgeView {
     }
 
     @Override
-    public void drag(BoardView boardView, Point2D delta1) {
-        Point2D newPos = originalPos.add(delta1);
-
-        AbstractNode fromNode = edge.getFrom();
-        AbstractNode toNode = edge.getTo();
-
-        final var delta = toNode.getPosition().subtract(fromNode.getPosition());
-
-        // The start node is the reference point and can directly be set to the new position.
-        final var snappedPos = boardView.snapToGrid(newPos, false);
-        fromNode.setPosition(snappedPos);
-
-        // update dependent positions
-        final var newToPos = fromNode.getPosition().add(delta);
-        toNode.setPosition(newToPos);
+    public void startDrag() {
+        originalPos = getPos();
     }
-    
+
+    @Override
+    public void drag(BoardView boardView, Point2D delta) {
+        Point2D newPos = boardView.snapToGrid(originalPos.add(delta), false);
+        edge.move(newPos);
+    }
+
     @Override
     public String toString() {
         return String.format("TraceView[p1=(%s %s), p2=(%s %s), type=%s]", 
@@ -142,10 +134,4 @@ public class TraceView extends AbstractEdgeView {
                              this.getEnd().getX(), this.getEnd().getY(),
                              edge.getType());
     }
-
-    @Override
-    public void startDrag() {
-        originalPos = getPos();
-    }
-
 }

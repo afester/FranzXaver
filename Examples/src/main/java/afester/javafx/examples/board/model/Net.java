@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-import afester.javafx.examples.board.model.AbstractWire.AbstractWireState;
+import afester.javafx.examples.board.model.AbstractEdge.AbstractWireState;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
@@ -21,7 +21,7 @@ public class Net {
 
     private String netName;
     private ObservableList<Junction> junctionList = FXCollections.observableArrayList();    // A list of junctions - not associated to a part. Junctions can be added and removed.
-    private ObservableList<AbstractWire> traceList = FXCollections.observableArrayList();
+    private ObservableList<AbstractEdge> traceList = FXCollections.observableArrayList();
 
     public Net(String netName) {
         this.netName = netName;
@@ -60,11 +60,11 @@ public class Net {
         return result;
     }
 
-    public ObservableList<AbstractWire> getTraces() {
+    public ObservableList<AbstractEdge> getTraces() {
         return traceList;
     }
 
-    public void addTrace(AbstractWire trace) {
+    public void addTrace(AbstractEdge trace) {
         traceList.add(trace);
     }
 
@@ -74,17 +74,22 @@ public class Net {
      *
      * @param trace The trace to remove.
      */
-    public void removeTraceAndFrom(AbstractWire trace) {
+    public void removeTraceAndFrom(AbstractEdge trace) {
         AbstractNode from = trace.getFrom();
         AbstractNode to = trace.getTo();
 
-        from.traceStarts.remove(trace);
-        to.traceEnds.remove(trace);
+        from.traceStarts.remove(trace); // ?????
+        to.traceEnds.remove(trace);     // ?????
 
         to.traceEnds.addAll(from.traceEnds);
         from.traceEnds.forEach(xtrace -> {
             xtrace.to = to;
             xtrace.setEnd(to.getPosition());
+        });
+        to.traceStarts.addAll(from.traceStarts);
+        from.traceStarts.forEach(xtrace -> {
+            xtrace.from = to;
+            xtrace.setStart(to.getPosition());
         });
 
         // remove the "from" junction
@@ -94,10 +99,35 @@ public class Net {
         traceList.remove(trace);
     }
 
+    public void removeTraceAndTo(AbstractEdge trace) {
+        AbstractNode from = trace.getFrom();
+        AbstractNode to = trace.getTo();
+
+        from.traceStarts.remove(trace);
+        to.traceEnds.remove(trace);
+
+        from.traceEnds.addAll(to.traceEnds);
+        to.traceEnds.forEach(xtrace -> {
+            xtrace.to = from;
+            xtrace.setEnd(from.getPosition());
+        });
+        from.traceStarts.addAll(to.traceStarts);
+        to.traceStarts.forEach(xtrace -> {
+            xtrace.from = from;
+            xtrace.setStart(from.getPosition());
+        });
+
+        // remove the "to" junction
+        removeJunction(to);
+
+        // remove the trace itself
+        traceList.remove(trace);
+    }
+
 
     public Set<Pin> getPads() {
         final Set<Pin> result = new HashSet<>();
-        for (AbstractWire t : traceList) {
+        for (AbstractEdge t : traceList) {
             AbstractNode j1 = t.getFrom();
             if (j1 instanceof Pin) {
                 result.add((Pin) j1);
@@ -195,7 +225,7 @@ public class Net {
      * 
      * @param wire
      */
-    public void changeToBridge(AbstractWire trace) {
+    public void changeToBridge(AbstractEdge trace) {
        var from = trace.getFrom();
        var to = trace.getTo();
 
@@ -249,10 +279,10 @@ public class Net {
         // start with the given node and add all destination nodes to the result set
         AbstractNode currentNode = startWith;
         while(currentNode != null) {
-            List<AbstractWire> edges = currentNode.getEdges();
+            List<AbstractEdge> edges = currentNode.getEdges();
             edges.remove(ignore);
 
-            for(AbstractWire edge : edges) {
+            for(AbstractEdge edge : edges) {
                 AbstractNode dest = edge.getOtherNode(currentNode);
                 if (!result.contains(dest) ) {
                     result.add(dest);
@@ -319,7 +349,7 @@ public class Net {
         });
 
         // get all traces which connect to the same junction on both ends
-        List<AbstractWire> selfTraces = new ArrayList<>();
+        List<AbstractEdge> selfTraces = new ArrayList<>();
         traceList.forEach(wire -> {
             if (wire.getFrom() == wire.getTo()) {
                 selfTraces.add(wire);
@@ -375,7 +405,7 @@ public class Net {
      *
      * @param trace
      */
-    public void setSelected(boolean isSelected, AbstractWire trace) {
+    public void setSelected(boolean isSelected, AbstractEdge trace) {
         if (isSelected) {
             getTraces().forEach(segment -> segment.setState(AbstractWireState.HIGHLIGHTED));
             trace.setState(AbstractWireState.SELECTED);

@@ -13,6 +13,11 @@ public class FromHandle extends AirWireHandle {
         centerYProperty().bind(airWireView.startYProperty());
     }
 
+
+    @Override
+    public void startDrag() {
+    }
+
     @Override
     public void drag(BoardView bv, Point2D newPos) {
         final var node = getAirWire().edge.getFrom();
@@ -33,11 +38,5 @@ public class FromHandle extends AirWireHandle {
     @Override
     public String toString() {
         return String.format("FromHandle[pos=%s/%s]", getCenterX(), getCenterY());  
-    }
-
-    @Override
-    public void startDrag() {
-        // TODO Auto-generated method stub
-        
     }
 }

@@ -10,7 +10,7 @@ import javafx.geometry.Point2D;
  * A Trace is a part of a Net which has already been routed.
  * It can either be rendered as trace or as bridge. 
  */
-public class Trace extends AbstractWire {
+public class Trace extends AbstractEdge {
 
     private boolean isBridge = false;
    

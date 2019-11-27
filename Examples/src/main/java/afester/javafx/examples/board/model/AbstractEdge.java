@@ -10,12 +10,12 @@ import javafx.geometry.Point2D;
 /**
  * An AbstractWire is the basic edge in a net graph. It connects exactly two junctions.
  */
-public abstract class AbstractWire {
+public abstract class AbstractEdge {
     protected AbstractNode from;
     protected AbstractNode to;
     protected Net net;
 
-    public AbstractWire(AbstractNode from, AbstractNode to, Net net) {
+    public AbstractEdge(AbstractNode from, AbstractNode to, Net net) {
         this.from = from;
         this.to = to;
         this.net = net;
@@ -120,5 +120,50 @@ public abstract class AbstractWire {
 
 
     public void splitTrace(Point2D newPos) {
+    }
+
+
+    public void remove() {
+        System.err.println("Removing AirWire: " + this);
+        AbstractNode from = getFrom();
+        AbstractNode to = getTo();
+
+        // Pin - Pin    No deletion allowed
+        // Jun - Jun    Deletion allowed, keep one of the junctions
+        // Pin - Jun    Deletion allowed, keep the Pin (TODO: probably should not be allowed if this results in 
+        //              a real Trace being connected to the Pin!) 
+        // Jun - Pin    Deletion allowed, keep the Pin
+        if (from instanceof Junction && to instanceof Junction) {    // TODO
+            System.err.println("Junction-Junction");
+            getNet().removeTraceAndFrom(this);
+        } else if (from instanceof Junction && to instanceof Pin) {    // TODO
+            System.err.println("Junction-Pin");
+            getNet().removeTraceAndFrom(this);
+        } else if (from instanceof Pin && to instanceof Junction) {    // TODO
+            System.err.println("Pin-Junction");
+            getNet().removeTraceAndTo(this);
+        } else {
+            System.err.println("Pin-Pin => NOT ALLOWED");
+        }
+    }
+
+    
+    public void move(Point2D newPos) {
+        AbstractNode fromNode = getFrom();
+        AbstractNode toNode = getTo();
+        if (fromNode instanceof Pin || toNode instanceof Pin) {
+            // Alternatively: Move the whole part which is connected to the Pin!
+            return;
+        }
+
+        final var delta = toNode.getPosition().subtract(fromNode.getPosition());
+
+        // The start node is the reference point and can directly be set to the new position.
+        // final var snappedPos = net.b boardView.snapToGrid(newPos, false);
+        fromNode.setPosition(newPos);
+
+        // update dependent positions
+        final var newToPos = fromNode.getPosition().add(delta);
+        toNode.setPosition(newToPos);
     }
 }

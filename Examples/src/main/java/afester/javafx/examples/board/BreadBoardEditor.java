@@ -7,7 +7,7 @@ import afester.javafx.components.StatusBar;
 import afester.javafx.components.ToolbarButton;
 import afester.javafx.components.ToolbarToggleButton;
 import afester.javafx.examples.board.eagle.EagleImport;
-import afester.javafx.examples.board.model.AbstractWire;
+import afester.javafx.examples.board.model.AbstractEdge;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.BoardLoader;
 import afester.javafx.examples.board.model.Net;
@@ -451,23 +451,17 @@ public class BreadBoardEditor extends Application {
 
 
     private void deleteSegment() {
-//        Interactable selectedObject = topView.getSelectedObject();
-//        if (selectedObject instanceof TraceView) {
-//            topView.clearSelection();
-//
-//            AbstractWire trace = ((TraceView) selectedObject).getTrace();
-//            Net net  = trace.getNet();
-//            AbstractNode from = trace.getFrom();
-//            AbstractNode to = trace.getTo();
-//
-//            if (from.getEdgeCount() > 2 || to.getEdgeCount() > 2) {
-//                System.err.println("Currently only intermediate traces can be removed");
-//                return;
-//            }
-//
-//            System.err.println("Removing segment ...");
-//            net.removeTraceAndFrom(trace);
-//        }
+        topView.getSelectedObjects().forEach(selectedObject -> {
+            if (selectedObject instanceof TraceView) {
+                TraceView wire = (TraceView) selectedObject;
+                AbstractEdge trace = wire.getTrace();
+
+                // remove the segment, if possible
+                trace.remove();
+            }
+        });
+
+        topView.clearSelection();
     }
 
 
@@ -498,7 +492,7 @@ public class BreadBoardEditor extends Application {
         topView.getSelectedObjects().forEach(selectedObject -> {
             if (selectedObject instanceof TraceView) {
                 TraceView traceView  = (TraceView) selectedObject;
-                final AbstractWire wire = traceView.getTrace();
+                final AbstractEdge wire = traceView.getTrace();
                 final Net net = wire.getNet();
 
                 // change the trace to a Bridge
@@ -517,7 +511,7 @@ public class BreadBoardEditor extends Application {
         topView.getSelectedObjects().forEach(selectedObject -> {
             if (selectedObject instanceof TraceView) {
                 TraceView traceView  = (TraceView) selectedObject;
-                final AbstractWire wire = traceView.getTrace();
+                final AbstractEdge wire = traceView.getTrace();
 
                 // change the Segment to a Trace
                 wire.convertToStraightTrace();

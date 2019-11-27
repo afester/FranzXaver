@@ -14,6 +14,10 @@ public class ToHandle extends AirWireHandle {
     } 
 
     @Override
+    public void startDrag() {
+    }
+
+    @Override
     public void drag(BoardView bv, Point2D newPos) {
         final var node = getAirWire().edge.getTo();
 
@@ -33,11 +37,5 @@ public class ToHandle extends AirWireHandle {
     @Override
     public String toString() {
         return String.format("ToHandle[pos=%s/%s]", getCenterX(), getCenterY());  
-    }
-
-    @Override
-    public void startDrag() {
-        // TODO Auto-generated method stub
-        
     }
 }
