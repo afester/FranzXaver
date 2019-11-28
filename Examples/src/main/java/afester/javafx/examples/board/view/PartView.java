@@ -284,9 +284,7 @@ public class PartView extends Group implements Interactable {
     @Override
     public void drag(BoardView bv, Point2D delta) {
         Point2D newPos = originalPos.add(delta);
-
-        System.err.println("MOVE " + this + " to " + newPos);
-        newPos = bv.snapToGrid(newPos, false);
+        newPos = bv.snapToGrid(newPos);
         part.setPosition(newPos);
     }
 

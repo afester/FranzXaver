@@ -8,23 +8,38 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
 
 /**
- * An AbstractWire is the basic edge in a net graph. It connects exactly two junctions.
+ * An AbstractEdge is the basic edge in a net graph. It connects exactly two 
+ * Nodes (either Pin or Junction).
  */
 public abstract class AbstractEdge {
-    protected AbstractNode from;
-    protected AbstractNode to;
+    
+    // The "from" node of the edge
+    private ObjectProperty<AbstractNode> from = new SimpleObjectProperty<AbstractNode>();
+    public ObjectProperty<AbstractNode> fromProperty() { return from; }
+    public void setFrom(AbstractNode node) { from.setValue(node); }
+    public AbstractNode getFrom() { return from.get();  }
+
+    // The "to" node of the edge
+    private ObjectProperty<AbstractNode> to = new SimpleObjectProperty<AbstractNode>();
+    public ObjectProperty<AbstractNode> toProperty() { return to; }
+    public void setTo(AbstractNode node) { to.setValue(node); }
+    public AbstractNode getTo() { return to.get();  }
+
+    // The "state" of the edge
+    private ObjectProperty<AbstractWireState> state = new SimpleObjectProperty<AbstractWireState>(AbstractWireState.NORMAL);
+    public ObjectProperty<AbstractWireState> stateProperty() { return state; }
+    public void setState(AbstractWireState stat) { state.setValue(stat); }
+    public AbstractWireState getState() { return state.get(); }
+
     protected Net net;
 
     public AbstractEdge(AbstractNode from, AbstractNode to, Net net) {
-        this.from = from;
-        this.to = to;
+        setFrom(from);
+        setTo(to);
         this.net = net;
 
         from.addStart(this);
         to.addEnd(this);
-
-        setStart(from.getPosition());
-        setEnd(to.getPosition());
     }
 
 
@@ -37,47 +52,19 @@ public abstract class AbstractEdge {
         return net; 
     }
 
-
-// some geometric stuff - not part of the persistet model!
-
-    // The start point of the wire (TODO: can this be combined with from.getPos()????)
-    private ObjectProperty<Point2D> startPoint = new SimpleObjectProperty<Point2D>(Point2D.ZERO);
-    public ObjectProperty<Point2D> startPointProperty() { return startPoint; }
-    public void setStart(Point2D pos) { startPoint.setValue(pos); }
-    public Point2D getStart() { return startPoint.get();  }
-
-    // The end point of the wire (TODO: can this be combined with to.getPos()????)
-    private ObjectProperty<Point2D> endPoint = new SimpleObjectProperty<Point2D>();
-    public ObjectProperty<Point2D> endPointProperty() { return endPoint; }
-    public void setEnd(Point2D pos) { endPoint.setValue(pos); }
-    public Point2D getEnd() { return endPoint.get(); }
-
     // The visual state of the wire
     public enum AbstractWireState {
         NORMAL, HIGHLIGHTED, SELECTED;
     }
 
-    private ObjectProperty<AbstractWireState> state = new SimpleObjectProperty<AbstractWireState>(AbstractWireState.NORMAL);
-    public ObjectProperty<AbstractWireState> stateProperty() { return state; }
-    public void setState(AbstractWireState stat) { state.setValue(stat); }
-    public AbstractWireState getState() { return state.get(); }
-
-    public AbstractNode getFrom() {
-        return from;
-    }
-
-    public AbstractNode getTo() {
-        return to;
-    }
-
     public abstract Node getXML(Document doc);
 
     public AbstractNode getOtherNode(AbstractNode node) {
-        if (from == node) {
-            return to;
+        if (getFrom() == node) {
+            return getTo();
         }
-        if (to == node) {
-            return from;
+        if (getTo() == node) {
+            return getFrom();
         }
 
         throw new RuntimeException("Unexpected: Edge does neither go FROM nor TO the given node!");
@@ -97,18 +84,14 @@ public abstract class AbstractEdge {
      * @param newNode The new node to which the edge shall be connected.
      */
     public void reconnect(AbstractNode currentNode, AbstractNode newNode) {
-        if (from == currentNode) {
+        if (getFrom() == currentNode) {
             currentNode.traceStarts.remove(this);
             newNode.traceStarts.add(this);
-            from = newNode;
-            
-            setStart(newNode.getPosition());
-        } else if (to == currentNode) {
+            setFrom(newNode);
+        } else if (getTo() == currentNode) {
             currentNode.traceEnds.remove(this);
             newNode.traceEnds.add(this);
-            to = newNode;
-
-            setEnd(newNode.getPosition());
+            setTo(newNode);
         } else {
             throw new RuntimeException("Unexpected: Edge does neither go FROM nor TO the given node!");
         }

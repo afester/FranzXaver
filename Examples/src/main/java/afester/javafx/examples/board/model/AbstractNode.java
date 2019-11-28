@@ -19,11 +19,7 @@ public abstract class AbstractNode {
     // The position of the node
     private ObjectProperty<Point2D> position = new SimpleObjectProperty<Point2D>(Point2D.ZERO);
     public ObjectProperty<Point2D> positionProperty() { return position; }
-    public void setPosition(Point2D pos) {
-        position.setValue(pos);
-        traceStarts.forEach(trace -> trace.setStart(pos));
-        traceEnds.forEach(trace -> trace.setEnd(pos));
-    }
+    public void setPosition(Point2D pos) { position.setValue(pos); }
     public Point2D getPosition() { return position.get(); }
 
     // The color of this node

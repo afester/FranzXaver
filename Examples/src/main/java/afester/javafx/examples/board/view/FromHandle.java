@@ -28,7 +28,7 @@ public class FromHandle extends AirWireHandle {
             getAirWire().edge.reconnectFromNearestJunction(newPos);
         } else {
             if (!(node instanceof Pin)) {
-                var snappedPos = bv.snapToGrid(newPos, false);
+                var snappedPos = bv.snapToGrid(newPos);
                 node.setPosition(snappedPos);
             }
         }    

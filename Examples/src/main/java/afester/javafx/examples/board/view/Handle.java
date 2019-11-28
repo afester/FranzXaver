@@ -2,7 +2,6 @@ package afester.javafx.examples.board.view;
 
 import afester.javafx.examples.board.Interactable;
 import javafx.geometry.Point2D;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 public abstract class Handle extends Circle implements Interactable {

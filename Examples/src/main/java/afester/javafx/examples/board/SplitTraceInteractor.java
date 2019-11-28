@@ -26,7 +26,7 @@ public class SplitTraceInteractor implements Interactor {
                 TraceView trace = (TraceView) edge;
 
                 Point2D newPos = bv.sceneToLocal(e.getSceneX(), e.getSceneY());
-                newPos = bv.snapToGrid(newPos, false);
+                newPos = bv.snapToGrid(newPos);
 
                 AbstractEdge aw = trace.getTrace();
                 aw.splitTrace(newPos);

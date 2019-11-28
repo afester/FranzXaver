@@ -11,7 +11,7 @@ public class ToHandle extends AirWireHandle {
 
         centerXProperty().bind(airWireView.endXProperty());
         centerYProperty().bind(airWireView.endYProperty());
-    } 
+    }
 
     @Override
     public void startDrag() {
@@ -27,7 +27,7 @@ public class ToHandle extends AirWireHandle {
             getAirWire().edge.reconnectToNearestJunction(newPos);
         } else {
             if (!(node instanceof Pin)) {
-                var snappedPos = bv.snapToGrid(newPos, false);
+                var snappedPos = bv.snapToGrid(newPos);
                 node.setPosition(snappedPos);
             }
         }

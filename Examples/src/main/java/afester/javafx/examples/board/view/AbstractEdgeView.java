@@ -4,6 +4,7 @@ import afester.javafx.examples.board.AirWireHandle;
 import afester.javafx.examples.board.Interactable;
 import afester.javafx.examples.board.model.AbstractEdge;
 import afester.javafx.examples.board.model.Net;
+import javafx.beans.value.ChangeListener;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Line;
 
@@ -22,21 +23,29 @@ public abstract class AbstractEdgeView extends Line implements Interactable  {
     public AbstractEdgeView(AbstractEdge wire) {
         this.edge = wire;
 
-        // Remember: the change listener is REALLY only called when the value CHANGES (i.e. is not equals() to the old value)
-        wire.startPointProperty().addListener((obj, oldValue, newValue) -> {
-            System.err.println("New start point:" + newValue);
-            setStart(newValue);
-        });
-        wire.endPointProperty().addListener((obj, oldValue, newValue) -> {
-            System.err.println("New end point:" + newValue);
-            setEnd(newValue);
+        // Set initial wire positions - pad connections will be corrected later!
+        final var from = wire.getFrom();
+        final var to = wire.getTo();
+
+        // Handle the start position of the line
+        ChangeListener<Point2D> startListener = (obj, oldPos, newPos) -> setStart(newPos);
+        from.positionProperty().addListener(startListener);
+        setStart(from.getPosition());
+        wire.fromProperty().addListener((obj, oldFrom, newFrom) -> {
+            oldFrom.positionProperty().removeListener(startListener);
+            newFrom.positionProperty().addListener(startListener);
+            setStart(newFrom.getPosition());
         });
 
-        // Set initial wire positions - pad connections will be corrected later!
-        setStart(wire.getStart());
-        setEnd(wire.getEnd());
-        wire.startPointProperty().addListener((obj, oldPos, newPos) -> setStart(newPos));
-        wire.endPointProperty().addListener((obj, oldPos, newPos) -> setEnd(newPos));
+        // Handle the end position of the line
+        ChangeListener<Point2D> endListener = (obj, oldPos, newPos) -> setEnd(newPos);
+        to.positionProperty().addListener(endListener);
+        setEnd(to.getPosition());
+        wire.toProperty().addListener((obj, oldTo, newTo) -> {
+            oldTo.positionProperty().removeListener(endListener);
+            newTo.positionProperty().addListener(endListener);
+            setEnd(newTo.getPosition());
+        });
 
         // TODO: We need a thicker selectionShape (a thicker transparent line) with the same coordinates
         // so that selecting the line is easier

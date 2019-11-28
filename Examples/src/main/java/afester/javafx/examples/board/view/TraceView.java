@@ -123,7 +123,7 @@ public class TraceView extends AbstractEdgeView {
 
     @Override
     public void drag(BoardView boardView, Point2D delta) {
-        Point2D newPos = boardView.snapToGrid(originalPos.add(delta), false);
+        Point2D newPos = boardView.snapToGrid(originalPos.add(delta));
         edge.move(newPos);
     }
 

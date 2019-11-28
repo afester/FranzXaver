@@ -5,9 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -293,188 +291,188 @@ public class Board {
      * @param updatedBoard The new board
      */
     public void update(Board updatedBoard) {
-        //getNets().forEach( (k, n) -> n.dumpNet());
-        //System.err.println("==================================");
-
-        //System.err.printf("New    : %s parts and %s nets ...\n", updatedBoard.getParts().size(), updatedBoard.getNets().size());
-        //System.err.printf("Current: %s parts and %s nets ...\n", getParts().size(), getNets().size());
-
-        // verify parts - changed, added, deleted!
-        Set<String> updatedParts = new HashSet<>(updatedBoard.getParts().keySet());
-        
-        Set<String> removedParts = new HashSet<>(getParts().keySet());
-        removedParts.removeAll(updatedParts);
-
-        Set<String> addedParts = new HashSet<>(updatedBoard.getParts().keySet());
-        addedParts.removeAll(getParts().keySet());
-
-        Set<String> potentiallyModified = new HashSet<>(getParts().keySet());
-        potentiallyModified.removeAll(removedParts);
-        potentiallyModified.removeAll(addedParts);
-
-        Set<String> modifiedParts = new HashSet<>();
-
-        // System.err.printf("Potentially replaced: %s parts\n", potentiallyModified.size());
-        potentiallyModified.forEach(partName -> {
-            Part p1 = getParts().get(partName);
-            Part p2 = updatedBoard.getParts().get(partName);
-            if (p1.replacedWith(p2)) {
-                modifiedParts.add(partName);
-            }
-        });
-
-        System.err.printf("Removed  parts: %s\n", removedParts);
-        System.err.printf("Added    parts: %s\n", addedParts);
-        System.err.printf("Modified parts: %s\n", modifiedParts);
-        modifiedParts.forEach(partName -> {
-            Part partOld = getParts().get(partName);
-            Part partNew = updatedBoard.getParts().get(partName);
-
-            System.err.printf("  %s => %s\n", partOld, partNew);
-            for (Pin p : partNew.getPins()) {
-                // try to reconnect pins with the same name
-                String pinNr = p.getPadName();
-                Pin oldPad = partOld.getPin(pinNr);
-                if (oldPad != null) {
-                    p.traceStarts = oldPad.traceStarts;
-                    p.traceStarts.forEach(wire -> wire.from = p);
-    
-                    p.traceEnds = oldPad.traceEnds;
-                    p.traceEnds.forEach(wire -> wire.to = p);
-                }
-            }
-
-            parts.remove(partName);
-            parts.put(partName, partNew);
-
-            partNew.setRotation(partOld.getRotation());
-            partNew.setPosition(partOld.getPosition());
-        });
-        
-        removedParts.forEach(partName -> {
-            removePart(partName);
-        });
-
-        addedParts.forEach(partName -> {
-            Part newPart = updatedBoard.getParts().get(partName);
-            newPart.getPins().forEach(pad -> {
-                pad.traceStarts.clear();    // remove references to "new" board
-                pad.traceEnds.clear();      // remove references to "new" board
-            });
-            addPart(newPart);
-        });
-
-        // ********************* Nets *********************************
-        final Set<String> existingNetNames = getNets().keySet();
-        final Set<String> newNetNames = updatedBoard.getNets().keySet();
-        
-        Set<String> removedNets = new HashSet<>(existingNetNames);
-        removedNets.removeAll(newNetNames);
-
-        Set<String> addedNets = new HashSet<>(newNetNames);
-        addedNets.removeAll(existingNetNames);
-
-        Set<String> potentiallyModifiedNets = new HashSet<>(existingNetNames);
-        potentiallyModifiedNets.removeAll(removedNets);
-        /// potentiallyModified.removeAll(addedParts);
-
-        Set<String> modifiedNets = new HashSet<>();
-        potentiallyModifiedNets.forEach(netName -> {
-            Net oldNet = getNets().get(netName);
-            Net newNet = updatedBoard.getNets().get(netName);
-            System.err.println("    " + oldNet);
-            System.err.println(" <=>" + newNet);
-            if (!oldNet.sameAs(newNet)) {
-                modifiedNets.add(netName);
-            }
-        });
-
-        System.err.printf("Removed  nets: %s\n", removedNets);
-        System.err.printf("Added    nets: %s\n", addedNets);
-        System.err.printf("Modified nets: %s\n", modifiedNets);
-
-        removedNets.forEach(netName -> {
-            Net net = getNets().get(netName);
-            net.clear();
-            getNets().remove(netName);
-        });
-
-        modifiedNets.forEach(netName -> {
-            System.err.printf("Recreating Net %s\n", netName);
-
-            Net oldnet = getNets().get(netName);
-            oldnet.clear();
-            getNets().remove(netName);
-
-            // TODO: The following code is the same as in addedNets below! 
-            List<Pin> padList = new ArrayList<>();
-            Net newNet = updatedBoard.getNets().get(netName);
-            newNet.getPads().forEach(pad -> {
-                String partName = pad.getPart().getName();
-                Part part = getParts().get(partName);
-
-                if (part != null) {
-                    final String padName = pad.getPadName();
-                    System.err.printf("   %s, %s\n", part, padName);
-
-                    final Pin p = part.getPin(padName);
-
-                    if (p != null) {
-                        padList.add(p);
-                    } else {
-                        System.err.printf("WARNING: Pin %s not found in Part %s\n", padName, partName);
-                    }
-                } else {
-                    System.err.printf("WARNING: Part %s not found in board\n", partName);
-                }
-            });
-
-            // Create a new net and connect all pads through an AirWire (TODO: duplicate code in EagleNetImport)
-            Net net = new Net(netName);
-            Pin p1 = null;
-            for (Pin p2 : padList) {
-                if (p1 != null) {
-                    net.addTrace(new AirWire(p1, p2, net));
-                }
-                p1 = p2;
-            }
-
-            addNet(net);
-        });
-
-        addedNets.forEach(netName -> {
-            List<Pin> padList = new ArrayList<>();
-            Net newNet = updatedBoard.getNets().get(netName);
-            newNet.getPads().forEach(pad -> {
-                String partName = pad.getPart().getName();
-                Part part = getParts().get(partName);
-                if (part != null) {
-                    final String padName = pad.getPadName();
-                    final Pin p = part.getPin(padName);
-                    if (p != null) {
-                        padList.add(p);
-                    } else {
-                        System.err.printf("WARNING: Pin %s not found in Part %s\n", padName, partName);
-                    }
-                } else {
-                    System.err.printf("WARNING: Part %s not found in board\n", partName);
-                }
-            });
-
-            // Create a new net and connect all pads through an AirWire (TODO: duplicate code in EagleNetImport)
-            Net net = new Net(netName);
-            Pin p1 = null;
-            for (Pin p2 : padList) {
-                if (p1 != null) {
-                    net.addTrace(new AirWire(p1, p2, net));
-                }
-                p1 = p2;
-            }
-
-            addNet(net);
-        });
-
-        // getNets().forEach( (k, n) -> n.dumpNet());
+//        //getNets().forEach( (k, n) -> n.dumpNet());
+//        //System.err.println("==================================");
+//
+//        //System.err.printf("New    : %s parts and %s nets ...\n", updatedBoard.getParts().size(), updatedBoard.getNets().size());
+//        //System.err.printf("Current: %s parts and %s nets ...\n", getParts().size(), getNets().size());
+//
+//        // verify parts - changed, added, deleted!
+//        Set<String> updatedParts = new HashSet<>(updatedBoard.getParts().keySet());
+//        
+//        Set<String> removedParts = new HashSet<>(getParts().keySet());
+//        removedParts.removeAll(updatedParts);
+//
+//        Set<String> addedParts = new HashSet<>(updatedBoard.getParts().keySet());
+//        addedParts.removeAll(getParts().keySet());
+//
+//        Set<String> potentiallyModified = new HashSet<>(getParts().keySet());
+//        potentiallyModified.removeAll(removedParts);
+//        potentiallyModified.removeAll(addedParts);
+//
+//        Set<String> modifiedParts = new HashSet<>();
+//
+//        // System.err.printf("Potentially replaced: %s parts\n", potentiallyModified.size());
+//        potentiallyModified.forEach(partName -> {
+//            Part p1 = getParts().get(partName);
+//            Part p2 = updatedBoard.getParts().get(partName);
+//            if (p1.replacedWith(p2)) {
+//                modifiedParts.add(partName);
+//            }
+//        });
+//
+//        System.err.printf("Removed  parts: %s\n", removedParts);
+//        System.err.printf("Added    parts: %s\n", addedParts);
+//        System.err.printf("Modified parts: %s\n", modifiedParts);
+//        modifiedParts.forEach(partName -> {
+//            Part partOld = getParts().get(partName);
+//            Part partNew = updatedBoard.getParts().get(partName);
+//
+//            System.err.printf("  %s => %s\n", partOld, partNew);
+//            for (Pin p : partNew.getPins()) {
+//                // try to reconnect pins with the same name
+//                String pinNr = p.getPadName();
+//                Pin oldPad = partOld.getPin(pinNr);
+//                if (oldPad != null) {
+//                    p.traceStarts = oldPad.traceStarts;
+//                    p.traceStarts.forEach(wire -> wire.from = p);
+//    
+//                    p.traceEnds = oldPad.traceEnds;
+//                    p.traceEnds.forEach(wire -> wire.to = p);
+//                }
+//            }
+//
+//            parts.remove(partName);
+//            parts.put(partName, partNew);
+//
+//            partNew.setRotation(partOld.getRotation());
+//            partNew.setPosition(partOld.getPosition());
+//        });
+//        
+//        removedParts.forEach(partName -> {
+//            removePart(partName);
+//        });
+//
+//        addedParts.forEach(partName -> {
+//            Part newPart = updatedBoard.getParts().get(partName);
+//            newPart.getPins().forEach(pad -> {
+//                pad.traceStarts.clear();    // remove references to "new" board
+//                pad.traceEnds.clear();      // remove references to "new" board
+//            });
+//            addPart(newPart);
+//        });
+//
+//        // ********************* Nets *********************************
+//        final Set<String> existingNetNames = getNets().keySet();
+//        final Set<String> newNetNames = updatedBoard.getNets().keySet();
+//        
+//        Set<String> removedNets = new HashSet<>(existingNetNames);
+//        removedNets.removeAll(newNetNames);
+//
+//        Set<String> addedNets = new HashSet<>(newNetNames);
+//        addedNets.removeAll(existingNetNames);
+//
+//        Set<String> potentiallyModifiedNets = new HashSet<>(existingNetNames);
+//        potentiallyModifiedNets.removeAll(removedNets);
+//        /// potentiallyModified.removeAll(addedParts);
+//
+//        Set<String> modifiedNets = new HashSet<>();
+//        potentiallyModifiedNets.forEach(netName -> {
+//            Net oldNet = getNets().get(netName);
+//            Net newNet = updatedBoard.getNets().get(netName);
+//            System.err.println("    " + oldNet);
+//            System.err.println(" <=>" + newNet);
+//            if (!oldNet.sameAs(newNet)) {
+//                modifiedNets.add(netName);
+//            }
+//        });
+//
+//        System.err.printf("Removed  nets: %s\n", removedNets);
+//        System.err.printf("Added    nets: %s\n", addedNets);
+//        System.err.printf("Modified nets: %s\n", modifiedNets);
+//
+//        removedNets.forEach(netName -> {
+//            Net net = getNets().get(netName);
+//            net.clear();
+//            getNets().remove(netName);
+//        });
+//
+//        modifiedNets.forEach(netName -> {
+//            System.err.printf("Recreating Net %s\n", netName);
+//
+//            Net oldnet = getNets().get(netName);
+//            oldnet.clear();
+//            getNets().remove(netName);
+//
+//            // TODO: The following code is the same as in addedNets below! 
+//            List<Pin> padList = new ArrayList<>();
+//            Net newNet = updatedBoard.getNets().get(netName);
+//            newNet.getPads().forEach(pad -> {
+//                String partName = pad.getPart().getName();
+//                Part part = getParts().get(partName);
+//
+//                if (part != null) {
+//                    final String padName = pad.getPadName();
+//                    System.err.printf("   %s, %s\n", part, padName);
+//
+//                    final Pin p = part.getPin(padName);
+//
+//                    if (p != null) {
+//                        padList.add(p);
+//                    } else {
+//                        System.err.printf("WARNING: Pin %s not found in Part %s\n", padName, partName);
+//                    }
+//                } else {
+//                    System.err.printf("WARNING: Part %s not found in board\n", partName);
+//                }
+//            });
+//
+//            // Create a new net and connect all pads through an AirWire (TODO: duplicate code in EagleNetImport)
+//            Net net = new Net(netName);
+//            Pin p1 = null;
+//            for (Pin p2 : padList) {
+//                if (p1 != null) {
+//                    net.addTrace(new AirWire(p1, p2, net));
+//                }
+//                p1 = p2;
+//            }
+//
+//            addNet(net);
+//        });
+//
+//        addedNets.forEach(netName -> {
+//            List<Pin> padList = new ArrayList<>();
+//            Net newNet = updatedBoard.getNets().get(netName);
+//            newNet.getPads().forEach(pad -> {
+//                String partName = pad.getPart().getName();
+//                Part part = getParts().get(partName);
+//                if (part != null) {
+//                    final String padName = pad.getPadName();
+//                    final Pin p = part.getPin(padName);
+//                    if (p != null) {
+//                        padList.add(p);
+//                    } else {
+//                        System.err.printf("WARNING: Pin %s not found in Part %s\n", padName, partName);
+//                    }
+//                } else {
+//                    System.err.printf("WARNING: Part %s not found in board\n", partName);
+//                }
+//            });
+//
+//            // Create a new net and connect all pads through an AirWire (TODO: duplicate code in EagleNetImport)
+//            Net net = new Net(netName);
+//            Pin p1 = null;
+//            for (Pin p2 : padList) {
+//                if (p1 != null) {
+//                    net.addTrace(new AirWire(p1, p2, net));
+//                }
+//                p1 = p2;
+//            }
+//
+//            addNet(net);
+//        });
+//
+//        // getNets().forEach( (k, n) -> n.dumpNet());
     }
 
     /**
