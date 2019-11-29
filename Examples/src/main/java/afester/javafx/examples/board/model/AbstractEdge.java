@@ -31,8 +31,15 @@ public abstract class AbstractEdge {
     public void setState(AbstractWireState stat) { state.setValue(stat); }
     public AbstractWireState getState() { return state.get(); }
 
-    protected Net net;
+    private Net net;
 
+    /**
+     * Creates a new AbstractEdge.
+     *
+     * @param from The first node of the edge
+     * @param to The second node of the edge
+     * @param net The net which contains the edge
+     */
     public AbstractEdge(AbstractNode from, AbstractNode to, Net net) {
         setFrom(from);
         setTo(to);
@@ -59,6 +66,14 @@ public abstract class AbstractEdge {
 
     public abstract Node getXML(Document doc);
 
+    /**
+     * Returns the opposite node of the given node.
+     *  
+     * @param node The node for which to get the opposite node.
+     * @return The opposite node.
+     * 
+     * @throws RuntimeException if the given node is not connected to this edge. 
+     */
     public AbstractNode getOtherNode(AbstractNode node) {
         if (getFrom() == node) {
             return getTo();

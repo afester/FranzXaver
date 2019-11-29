@@ -9,8 +9,8 @@ import javafx.geometry.Point2D;
 public class Junction extends AbstractNode {
 
 
-    public Junction(Net net, Point2D pos) {
-        super(net, pos);
+    public Junction(Point2D pos) {
+        super(pos);
     }
     
 

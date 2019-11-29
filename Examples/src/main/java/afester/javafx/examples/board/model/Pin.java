@@ -21,7 +21,7 @@ public final class Pin extends AbstractNode {
      * @param padPos    The position of the pad (in Part coordinates!!!!)
      */
     public Pin(Part part, PartPad pad) {
-        super(null, part.globalPadPos(pad.getPos()));
+        super(part.globalPadPos(pad.getPos()));
 
         this.part = part;
         this.pad = pad;

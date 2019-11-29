@@ -61,14 +61,14 @@ public class Trace extends AbstractEdge {
 
     @Override
     public void splitTrace(Point2D pos) {
-        Junction newJunction = new Junction(net, pos);
-        net.addJunction(newJunction);
+        Junction newJunction = new Junction(pos);
+        getNet().addJunction(newJunction);
         
         AbstractNode oldDest = getTo();
         reconnect(getTo(), newJunction);
 
-        Trace newTrace = new Trace(newJunction, oldDest, net);
-        net.addTrace(newTrace);
+        Trace newTrace = new Trace(newJunction, oldDest, getNet());
+        getNet().addTrace(newTrace);
     }
 
     @Override

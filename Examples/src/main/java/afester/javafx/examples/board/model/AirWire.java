@@ -156,12 +156,12 @@ public class AirWire extends AbstractEdge {
             // ==> Pad - AirWire - (Junction1 - Trace - Junction2 - AirWire2) - Pad
             //
 
-            Junction j1 = new Junction(getNet(), pFrom.getPosition());
+            Junction j1 = new Junction(pFrom.getPosition());
             net.addJunction(j1);
     
             reconnect(pTo, j1);
 
-            Junction j2 = new Junction(getNet(), pTo.getPosition());
+            Junction j2 = new Junction(pTo.getPosition());
             net.addJunction(j2);
 
             Trace t = new Trace(j1, j2, getNet());
@@ -176,7 +176,7 @@ public class AirWire extends AbstractEdge {
             //    Junction - (Trace - Junction2) - AirWire - Pad
             //    pFrom       new     new          this      pTo
 
-            Junction j2 = new Junction(getNet(), pTo.getPosition());
+            Junction j2 = new Junction(pTo.getPosition());
             net.addJunction(j2);
 
             reconnect(pFrom, j2);
@@ -190,7 +190,7 @@ public class AirWire extends AbstractEdge {
             //    Pad - AirWire - (Junction2 - Trace) - Junction
             //    pFrom this       new         new      pTo
 
-            Junction j2 = new Junction(getNet(), pFrom.getPosition());
+            Junction j2 = new Junction(pFrom.getPosition());
             net.addJunction(j2);
 
             reconnect(pTo, j2);
@@ -210,8 +210,8 @@ public class AirWire extends AbstractEdge {
         System.err.println("reconnectToNearestJunction");
         
         // get all nodes which are reachable in the net from the otherNode IF the given airwire would not exist
-        List<AbstractNode> possibleNodes = net.getNodesWithout(getTo(), this);
-        AbstractNode nearestNode = net.getNearestNode(clickPos, possibleNodes);
+        List<AbstractNode> possibleNodes = getTo().getNodesWithout(this);
+        AbstractNode nearestNode = AbstractNode.getNearestNode(clickPos, possibleNodes);
         System.err.println("NEAREST NODE:" + nearestNode);
         // Reconnect the edge from the old node to the new nearest node
         reconnect(this.getTo(), nearestNode);
@@ -222,8 +222,8 @@ public class AirWire extends AbstractEdge {
         System.err.println("reconnectFromNearestJunction");
 
         // get all nodes which are reachable in the net from the otherNode IF the given airwire would not exist
-        List<AbstractNode> possibleNodes = net.getNodesWithout(getFrom(), this);
-        AbstractNode nearestNode = net.getNearestNode(clickPos, possibleNodes);
+        List<AbstractNode> possibleNodes = getFrom().getNodesWithout(this);
+        AbstractNode nearestNode = AbstractNode.getNearestNode(clickPos, possibleNodes);
         System.err.println("NEAREST NODE:" + nearestNode);
         // Reconnect the edge from the old node to the new nearest node
         reconnect(this.getFrom(), nearestNode);

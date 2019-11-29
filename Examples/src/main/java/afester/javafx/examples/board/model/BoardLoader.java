@@ -194,7 +194,7 @@ class NetHandler extends SubContentHandler {
             Point2D jPos = new Point2D(Double.parseDouble(attributes.getValue("x")),
                                        Double.parseDouble(attributes.getValue("y")));
 
-            Junction junction = new Junction(net, jPos);
+            Junction junction = new Junction(jPos);
             System.err.printf("  %s\n", junction);
 
             bl.nodes.put(junctionId, junction);

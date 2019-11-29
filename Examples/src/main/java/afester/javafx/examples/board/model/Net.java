@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 import java.util.stream.Collectors;
 
 import afester.javafx.examples.board.model.AbstractEdge.AbstractWireState;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 
 /**
@@ -261,40 +259,6 @@ public class Net {
     
 
 
-    /**
-     * @param startWith The start node.
-     * @param aw The edge to disregard.
-     * @return A list of nodes which are reachable from a given node, without traversing the given edge.
-     */
-    public List<AbstractNode> getNodesWithout(final AbstractNode startWith, final AirWire ignore) {
-        Set<AbstractNode> result = new HashSet<>();
-        Stack<AbstractNode> nodeStack = new Stack<>();
-
-        // dumpNet();
-
-        // start with the given node and add all destination nodes to the result set
-        AbstractNode currentNode = startWith;
-        while(currentNode != null) {
-            List<AbstractEdge> edges = currentNode.getEdges();
-            edges.remove(ignore);
-
-            for(AbstractEdge edge : edges) {
-                AbstractNode dest = edge.getOtherNode(currentNode);
-                if (!result.contains(dest) ) {
-                    result.add(dest);
-                    nodeStack.push(dest);
-                }
-            }
-            if (!nodeStack.empty()) {
-                currentNode = nodeStack.pop();
-            } else {
-                currentNode = null;
-            }
-        }
-
-        return result.stream().collect(Collectors.toList());
-    }
-
 
     private class DuplicateJunctions {
         public DuplicateJunctions(Junction j1, Junction j2) {
@@ -416,24 +380,4 @@ public class Net {
         }
     }
 
-    /**
-     * From a collection of nodes, get the one which is nearest to a given position.
-     *
-     * @param refPos The position for which to find the closes node.
-     * @param nodeList The list of nodes from which to get the nearest one.
-     * @return The node which is the nearest to this one.
-     */
-    public AbstractNode getNearestNode(Point2D refPos, List<AbstractNode> nodeList) {
-        double minDist = Double.MAX_VALUE;
-        AbstractNode result = null;
-        for (AbstractNode node: nodeList) {
-            double dist = node.getPosition().distance(refPos);
-            if (dist < minDist) {
-                result = node;
-                minDist = dist;
-            }
-        }
-
-        return result;
-    }
 }
