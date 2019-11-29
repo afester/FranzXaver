@@ -485,18 +485,11 @@ public class Board {
         Part part = getParts().get(partName);
         if (part != null) {
             part.getPins().forEach(pad -> {
-                pad.traceStarts.forEach(trace -> {
+                pad.getEdges().forEach(trace -> {
                     Net net = trace.getNet();
                     net.getTraces().remove(trace);
                 });
-                pad.traceStarts.clear();
-
-                pad.traceEnds.forEach(trace -> {
-                    Net net = trace.getNet();
-                    net.getTraces().remove(trace);
-                    
-                });
-                pad.traceEnds.clear();
+                pad.getEdges().clear();
             });
 
             parts.remove(partName);

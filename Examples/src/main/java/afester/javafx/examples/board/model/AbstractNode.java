@@ -16,8 +16,7 @@ import javafx.scene.paint.Color;
  * An AbstractNode is the basic node in a net graph. 
  */
 public abstract class AbstractNode {
-    List<AbstractEdge> traceStarts = new ArrayList<>();
-    List<AbstractEdge> traceEnds = new ArrayList<>();
+    private List<AbstractEdge> edges = new ArrayList<>();
 
     // The position of the node
     private ObjectProperty<Point2D> position = new SimpleObjectProperty<Point2D>(Point2D.ZERO);
@@ -46,12 +45,14 @@ public abstract class AbstractNode {
        id = i;
     }
 
-    public void addStart(AbstractEdge wire) {
-        traceStarts.add(wire);
-    }
 
-    public void addEnd(AbstractEdge wire) {
-        traceEnds.add(wire);
+    /**
+     * Adds an edge to this node.
+     *
+     * @param edge The new edge which is connected to this node.
+     */
+    public void addEdge(AbstractEdge edge) {
+        edges.add(edge);
     }
 
 
@@ -59,12 +60,7 @@ public abstract class AbstractNode {
      * @return A list of all edges which are connected to this node.
      */
     public List<AbstractEdge> getEdges() {
-        List<AbstractEdge> result = new ArrayList<>();
-
-        result.addAll(traceStarts);
-        result.addAll(traceEnds);
-
-        return result;
+        return edges;
     }
 
 
@@ -140,6 +136,6 @@ public abstract class AbstractNode {
      * @return The number of edges which are connected to this node.
      */
     public int getEdgeCount() {
-        return traceStarts.size() + traceEnds.size();
+        return edges.size(); // Starts.size() + traceEnds.size();
     }
 }

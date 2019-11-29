@@ -273,9 +273,13 @@ public class BreadBoardEditor extends Application {
         final ToolbarToggleButton toggleSvgToolButton = new ToolbarToggleButton("Toggle draft / SVG", "afester/javafx/examples/board/view-svg.png");
         topView.showSvgProperty().bind(toggleSvgToolButton.selectedProperty());
 
-        final ToolbarToggleButton toggleShowNetsToolButton = new ToolbarToggleButton("Show / hide nets", "afester/javafx/examples/board/view-nets.png");
-        toggleShowNetsToolButton.setSelected(true);
-        topView.showNetsProperty().bind(toggleShowNetsToolButton.selectedProperty());
+        final ToolbarToggleButton toggleShowTracesToolButton = new ToolbarToggleButton("Show / hide routes", "afester/javafx/examples/board/view-traces.png");
+        toggleShowTracesToolButton.setSelected(true);
+        topView.showTracesProperty().bind(toggleShowTracesToolButton.selectedProperty());
+
+        final ToolbarToggleButton toggleShowAirwiresToolButton = new ToolbarToggleButton("Show / hide unrouted wires", "afester/javafx/examples/board/view-airwires.png");
+        toggleShowAirwiresToolButton.setSelected(true);
+        topView.showAirwiresProperty().bind(toggleShowAirwiresToolButton.selectedProperty());
 
         final ToolbarToggleButton toggleShowDimensionsToolButton = new ToolbarToggleButton("Show / hide dimensions", "afester/javafx/examples/board/view-dimensions.png");
         toggleShowDimensionsToolButton.setSelected(true);
@@ -331,7 +335,8 @@ public class BreadBoardEditor extends Application {
                 new Separator(),
 
                 toggleSvgToolButton,
-                toggleShowNetsToolButton,
+                toggleShowTracesToolButton,
+                toggleShowAirwiresToolButton,
                 toggleShowDimensionsToolButton
             );
         return toolBar;

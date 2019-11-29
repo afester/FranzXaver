@@ -58,11 +58,17 @@ public class BoardView extends Pane {
     public boolean isShowSvg() { return showSvg.get(); }
     public void setShowSvg(boolean flag) { showSvg.set(flag); }
 
-    // A flag to indicate whether to show or hide the nets
-    private final BooleanProperty showNets = new SimpleBooleanProperty(true);
-    public BooleanProperty showNetsProperty() { return showNets; }
-    public boolean isShowNets() { return showNets.get(); }
-    public void setShowNets(boolean flag) { showNets.set(flag); }
+    // A flag to indicate whether to show or hide the traces (routed segments)
+    private final BooleanProperty showTraces = new SimpleBooleanProperty(true);
+    public BooleanProperty showTracesProperty() { return showTraces; }
+    public boolean isShowTraces() { return showTraces.get(); }
+    public void setShowTraces(boolean flag) { showTraces.set(flag); }
+
+    // A flag to indicate whether to show or hide airwires (unrouted segments)
+    private final BooleanProperty showAirwires= new SimpleBooleanProperty(true);
+    public BooleanProperty showAirwiresProperty() { return showAirwires; }
+    public boolean isShowAirwires() { return showAirwires.get(); }
+    public void setShowAirwires(boolean flag) { showAirwires.set(flag); }
 
     // A flag to indicate whether to show or hide the dimensions
     private final BooleanProperty showDimensions = new SimpleBooleanProperty(true);
@@ -101,7 +107,8 @@ public class BoardView extends Pane {
 
         // The Group objects are changed when calling setBoard. Hence we use Listeners here instad of bindings. 
         showSvgProperty().addListener((obj, oldValue, newValue) -> { partsGroup.getChildren().forEach(part -> ((PartView) part).render(newValue)); });
-        showNetsProperty().addListener((obj, oldValue, newValue) -> netsGroup.setVisible(newValue));
+        showTracesProperty().addListener((obj, oldValue, newValue) -> traceGroup.setVisible(newValue));
+        showAirwiresProperty().addListener((obj, oldValue, newValue) -> airWireGroup.setVisible(newValue));
         showDimensionsProperty().addListener((obj, oldValue, newValue) -> dimensionGroup.setVisible(newValue));
         showBoardHandlesProperty().addListener((obj, oldValue, newValue) -> boardHandlesGroup.setVisible(newValue));
 

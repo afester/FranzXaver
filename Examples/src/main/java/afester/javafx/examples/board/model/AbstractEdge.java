@@ -45,8 +45,8 @@ public abstract class AbstractEdge {
         setTo(to);
         this.net = net;
 
-        from.addStart(this);
-        to.addEnd(this);
+        from.addEdge(this);
+        to.addEdge(this);
     }
 
 
@@ -100,12 +100,12 @@ public abstract class AbstractEdge {
      */
     public void reconnect(AbstractNode currentNode, AbstractNode newNode) {
         if (getFrom() == currentNode) {
-            currentNode.traceStarts.remove(this);
-            newNode.traceStarts.add(this);
+            currentNode.getEdges().remove(this);
+            newNode.getEdges().add(this);
             setFrom(newNode);
         } else if (getTo() == currentNode) {
-            currentNode.traceEnds.remove(this);
-            newNode.traceEnds.add(this);
+            currentNode.getEdges().remove(this);
+            newNode.getEdges().add(this);
             setTo(newNode);
         } else {
             throw new RuntimeException("Unexpected: Edge does neither go FROM nor TO the given node!");

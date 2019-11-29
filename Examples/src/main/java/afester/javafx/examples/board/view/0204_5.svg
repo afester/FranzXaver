@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="15.839192"
-     inkscape:cx="-9.3329628"
-     inkscape:cy="1047.6202"
+     inkscape:zoom="22.4"
+     inkscape:cx="0.69977016"
+     inkscape:cy="1056.7348"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -130,5 +130,29 @@
        cx="2.54"
        cy="17.6"
        r="0.25" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.41111111px;line-height:1;font-family:PCBius;-inkscape-font-specification:'PCBius, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr;text-anchor:start;fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:0.26458332;"
+       x="-1.5359113"
+       y="20.06436"
+       id="partValue"
+       inkscape:label="#text849"><tspan
+         sodipodi:role="line"
+         id="tspan847"
+         x="-1.5359113"
+         y="20.06436"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.41111111px;font-family:PCBius;-inkscape-font-specification:'PCBius, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr;text-anchor:start;fill:#4d4d4d;stroke-width:0.26458332;">$Value</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.41111111px;line-height:1;font-family:PCBius;-inkscape-font-specification:'PCBius, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr;text-anchor:start;fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:0.26458332;"
+       x="-1.5359113"
+       y="16.000359"
+       id="partName"
+       inkscape:label="#text849-4"><tspan
+         sodipodi:role="line"
+         x="-1.5359113"
+         y="16.000359"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:1.41111111px;font-family:PCBius;-inkscape-font-specification:'PCBius, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr;text-anchor:start;fill:#4d4d4d;stroke-width:0.26458332;"
+         id="tspan869">$Name</tspan></text>
   </g>
 </svg>

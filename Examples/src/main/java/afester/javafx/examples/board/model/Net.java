@@ -76,16 +76,15 @@ public class Net {
         AbstractNode from = trace.getFrom();
         AbstractNode to = trace.getTo();
 
-        from.traceStarts.remove(trace); // ?????
-        to.traceEnds.remove(trace);     // ?????
+        from.getEdges().remove(trace); // ?????
+        to.getEdges().remove(trace);     // ?????
 
-        to.traceEnds.addAll(from.traceEnds);
-        from.traceEnds.forEach(xtrace -> {
-            xtrace.setTo(to);
-        });
-        to.traceStarts.addAll(from.traceStarts);
-        from.traceStarts.forEach(xtrace -> {
-            xtrace.setFrom(to); // from = to;
+        from.getEdges().forEach(xtrace -> {
+            if (xtrace.getTo() == from) {
+                xtrace.setTo(to);
+            } else {
+                xtrace.setFrom(to);
+            }
         });
 
         // remove the "from" junction
@@ -99,16 +98,15 @@ public class Net {
         AbstractNode from = trace.getFrom();
         AbstractNode to = trace.getTo();
 
-        from.traceStarts.remove(trace);
-        to.traceEnds.remove(trace);
+        from.getEdges().remove(trace);
+        to.getEdges().remove(trace);
 
-        from.traceEnds.addAll(to.traceEnds);
-        to.traceEnds.forEach(xtrace -> {
-            xtrace.setTo(from);
-        });
-        from.traceStarts.addAll(to.traceStarts);
-        to.traceStarts.forEach(xtrace -> {
-            xtrace.setFrom(from);
+        from.getEdges().forEach(xtrace -> {
+            if (xtrace.getTo() == to) {
+                xtrace.setTo(from);
+            } else {
+                xtrace.setFrom(from);
+            }
         });
 
         // remove the "to" junction
@@ -154,8 +152,7 @@ public class Net {
      */
     public void clear() {
         getPads().forEach(pad -> {
-            pad.traceEnds.clear();
-            pad.traceStarts.clear();
+            pad.getEdges().clear();
         });
         junctionList.clear();
         traceList.clear();
@@ -226,8 +223,8 @@ public class Net {
        // TODO: provide a simpler way to change the trace type - this is
        // currently required to update the view from the model:
 
-       from.traceStarts.remove(trace);
-       to.traceEnds.remove(trace);
+       from.getEdges().remove(trace);
+       to.getEdges().remove(trace);
        traceList.remove(trace);
 
        var bridge = new Trace(from, to, this);
@@ -344,8 +341,7 @@ public class Net {
 
         allNodes.forEach(node -> {
             System.err.println("   " + node);
-            node.traceStarts.forEach(trace -> System.err.println("     >> " + trace));
-            node.traceEnds.forEach(trace -> System.err.println("     << " + trace));
+            node.getEdges().forEach(trace -> System.err.println("     >> " + trace));
         });
     }
 
