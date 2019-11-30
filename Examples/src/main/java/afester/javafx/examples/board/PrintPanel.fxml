@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox styleClass="root" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/11.0.2" fx:controller="afester.javafx.examples.board.PrintControlPanel">
+<VBox styleClass="root" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/11.0.2" fx:controller="afester.javafx.examples.board.PrintPanelController">
 
 	<GridPane hgap="10" vgap="10">
 <!--		<fx:define>
@@ -50,7 +50,7 @@
 	<Button fx:id="printButton" text="Print ..." />
 
 	<stylesheets>
-		<URL value="@PrintControlPanel.css" />
+		<URL value="@PrintPanel.css" />
 	</stylesheets>
 
 </VBox>

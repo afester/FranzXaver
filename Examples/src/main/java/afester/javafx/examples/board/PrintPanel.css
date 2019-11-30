@@ -2,7 +2,7 @@
 root { 
 }
 
-/* specified by styleClass in PrintControlPanel.fxml */
+/* specified by styleClass in PrintPanel.fxml */
 .root {
 	-fx-background-color: darkgray;
 	-fx-padding: 10px;

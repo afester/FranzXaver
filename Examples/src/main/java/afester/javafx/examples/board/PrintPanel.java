@@ -41,7 +41,7 @@ public class PrintPanel extends BorderPane {
     private DrawingArea printDrawingView;
     private Group panZoomView;
 
-    private PrintControlPanel controller;
+    private PrintPanelController controller;
 
     private PageLayout layout;
     private Pane printContents; 
@@ -55,7 +55,7 @@ public class PrintPanel extends BorderPane {
         this.stage = stage;
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("PrintControlPanel.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("PrintPanel.fxml"));
             Parent root = loader.load();
             setRight(root);
 

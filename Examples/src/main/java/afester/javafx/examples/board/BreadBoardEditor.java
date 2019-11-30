@@ -12,13 +12,13 @@ import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.BoardLoader;
 import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.model.NetImport;
-import afester.javafx.examples.board.model.Trace;
 import afester.javafx.examples.board.view.BoardView;
 import afester.javafx.examples.board.view.TraceView;
 import javafx.application.Application;
 import javafx.beans.property.SimpleListProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
@@ -177,10 +177,11 @@ public class BreadBoardEditor extends Application {
             }
         });
 
+//        Node leftBar = new BomView();
+       
         HBox leftBar = new HBox();
-        leftBar.getChildren().add(new Text("L"));
         leftBar.setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(0), new Insets(0))));
-
+        leftBar.getChildren().add(new BomView());
         VBox rightBar = new VBox();
         rightBar.getChildren().addAll(editCornersToolBar, routingToolbar);
 

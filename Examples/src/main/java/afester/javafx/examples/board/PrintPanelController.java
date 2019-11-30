@@ -12,13 +12,12 @@ import javafx.fxml.Initializable;
 import javafx.print.PageOrientation;
 import javafx.print.Paper;
 import javafx.print.Printer;
-import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 
 
-public class PrintControlPanel extends Group implements Initializable {
+public class PrintPanelController implements Initializable {
 
     @FXML
     private ComboBoxFormatable<Printer> printerList;
