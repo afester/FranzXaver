@@ -33,13 +33,21 @@ import javafx.geometry.Point2D;
 
 public class Board {
 
-    final ObservableList<Point2D> boardShapePoints = FXCollections.observableArrayList();
+    // The list of corners which make up the basic shape of the board.
+    private final ObservableList<Point2D> boardShapePoints = FXCollections.observableArrayList();
+
+    // The mapping from part names to parts.
     private final ObservableMap<String, Part> parts = FXCollections.observableHashMap();
+
+    // The mapping from net names to Nets.
     private final ObservableMap<String, Net> nets = FXCollections.observableHashMap();
-    String schematicFile;
+
+    // The name of the schematic file which is the source for this Board.
+    private String schematicFile;
+
     private File boardFile;
 
-    
+
     /**
      * Creates a new empty board with a default dimension of 100mm X 160mm
      */

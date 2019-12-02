@@ -31,6 +31,8 @@ public class PartText implements PartShape {
         text.append(s);
     }
 
+    private static boolean once = true;
+
     @Override
     public Shape createNode() {
         Text textShape = new Text(pos.getX(), pos.getY(), text.toString());
@@ -38,8 +40,15 @@ public class PartText implements PartShape {
 
         // WIP: Use a CAD font - for some reason, can not be loaded through CSS
         // since it does not resolve through the system font names (even though it is installed)
-        InputStream is = getClass().getResourceAsStream("PCBius.ttf");
-        final Font f = Font.loadFont(is, size);
+        if (once) {
+            InputStream is = getClass().getResourceAsStream("PCBius.ttf");
+            Font.loadFont(is, size);
+            once = false;
+        }
+
+        final Font f = Font.font("PCBius"); // , size);//  .loadFont(is, size);
+        Font.getFamilies().forEach(System.err::println);
+        System.err.println(f);
         textShape.setFont(f);
 
         // Overwrite explicit settings through inline style (which has 

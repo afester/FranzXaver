@@ -9,8 +9,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import afester.javafx.examples.board.model.Board.IntVal;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
@@ -44,6 +46,12 @@ public class Part {
         getPins().forEach(pad -> pad.setPosition(this.globalPadPos(pad.getLocalPos())));
     }
     public double getRotation() { return rotation.getValue(); }
+
+    // A flag to indicate whether the part is currently selected
+    private final BooleanProperty isSelected = new SimpleBooleanProperty(false);
+    public BooleanProperty isSelectedProperty() { return isSelected; }
+    public boolean isSelected() { return isSelected.get(); }
+    public void setSelected(boolean flag) { isSelected.set(flag); }
 
 
     /**

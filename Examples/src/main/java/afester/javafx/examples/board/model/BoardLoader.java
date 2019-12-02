@@ -21,6 +21,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import afester.javafx.examples.board.eagle.SubContentHandler;
+import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.text.FontWeight;
 
@@ -360,8 +361,11 @@ public class BoardLoader extends DefaultHandler {
         Board result = new Board(sourceFile);
         nets.forEach(n -> result.addNet(n));
         parts.forEach(p -> result.addPart(p));
-        result.boardShapePoints.clear();
-        boardShape.forEach(p -> result.boardShapePoints.add(p));
+        
+        ObservableList<Point2D> boardCorners = result.getBoardCorners();
+        boardCorners.clear();
+        boardShape.forEach(p -> boardCorners.add(p));
+
         return result;
     }
 }

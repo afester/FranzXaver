@@ -19,6 +19,7 @@ import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 
@@ -70,6 +71,32 @@ public class PartView extends Group implements Interactable {
             setLayoutY(newValue.getY());
         });
 
+        part.isSelectedProperty().addListener((obj, oldValue, isSelected) -> {
+            if (isSelected) {
+                // TODO: This is (most likely (absolutely certainly)) a hack!
+                BoardView bv = (BoardView) getParent().getParent();
+                final double nonScaledWidth = 1 / bv.getLocalToSceneTransform().getMxx();
+
+                selectionRect.setStroke(Color.RED);
+                selectionRect.setStrokeWidth(nonScaledWidth);
+
+//          l1 = new Line(b.getMinX(), b.getMinY(),               b.getMinX()+b.getWidth(), b.getMinY()+b.getHeight());
+//          l1.setStroke(Color.BLUE);
+//          l1.setStrokeWidth(nonScaledWidth);
+//          l2 = new Line(b.getMinX(), b.getMinY()+b.getHeight(), b.getMinX()+b.getWidth(), b.getMinY());
+//          l2.setStroke(Color.BLUE);
+//          l2.setStrokeWidth(nonScaledWidth);
+//          getChildren().addAll(selectionRect); // , l1, l2);
+
+                if (isSvg) {
+                    shapeViews.setOpacity(0.4);
+                }
+            } else {
+                selectionRect.setStroke(null);
+                shapeViews.setOpacity(1.0);
+            }
+        });
+
         render(false);
     }
 
@@ -80,29 +107,30 @@ public class PartView extends Group implements Interactable {
 
     @Override
     public void setSelected(BoardView bv, boolean isSelected) {
-        if (isSelected) {
-            // TODO: This is (probably) a hack!
-            final double nonScaledWidth = 1 / bv.getLocalToSceneTransform().getMxx();
-
-            selectionRect.setStroke(Color.RED);
-            selectionRect.setStrokeWidth(nonScaledWidth);
-
-//            l1 = new Line(b.getMinX(), b.getMinY(),               b.getMinX()+b.getWidth(), b.getMinY()+b.getHeight());
-//            l1.setStroke(Color.BLUE);
-//            l1.setStrokeWidth(nonScaledWidth);
-//            l2 = new Line(b.getMinX(), b.getMinY()+b.getHeight(), b.getMinX()+b.getWidth(), b.getMinY());
-//            l2.setStroke(Color.BLUE);
-//            l2.setStrokeWidth(nonScaledWidth);
-//            getChildren().addAll(selectionRect); // , l1, l2);
-
-            if (isSvg) {
-                shapeViews.setOpacity(0.4);
-            }
-            
-         } else {
-             selectionRect.setStroke(null);
-             shapeViews.setOpacity(1.0);
-         }
+        part.setSelected(isSelected);
+//        if (isSelected) {
+//            // TODO: This is (probably) a hack!
+//            final double nonScaledWidth = 1 / bv.getLocalToSceneTransform().getMxx();
+//
+//            selectionRect.setStroke(Color.RED);
+//            selectionRect.setStrokeWidth(nonScaledWidth);
+//
+////            l1 = new Line(b.getMinX(), b.getMinY(),               b.getMinX()+b.getWidth(), b.getMinY()+b.getHeight());
+////            l1.setStroke(Color.BLUE);
+////            l1.setStrokeWidth(nonScaledWidth);
+////            l2 = new Line(b.getMinX(), b.getMinY()+b.getHeight(), b.getMinX()+b.getWidth(), b.getMinY());
+////            l2.setStroke(Color.BLUE);
+////            l2.setStrokeWidth(nonScaledWidth);
+////            getChildren().addAll(selectionRect); // , l1, l2);
+//
+//            if (isSvg) {
+//                shapeViews.setOpacity(0.4);
+//            }
+//            
+//         } else {
+//             selectionRect.setStroke(null);
+//             shapeViews.setOpacity(1.0);
+//         }
     }
     
     
@@ -154,7 +182,7 @@ public class PartView extends Group implements Interactable {
         put("DIL14",         "DIL14.svg");
     }};
 
-
+    private boolean once = true;
     /**
      * Creates the Part as a JavaFX node
      */
@@ -175,6 +203,15 @@ public class PartView extends Group implements Interactable {
             final String packageName = part.getPackage().getName();
             final String packageSvg = package2svg.get(packageName);
             if (packageSvg != null) {
+                // WIP: Use a CAD font - for some reason, can not be loaded through CSS
+                // since it does not resolve through the system font names (even though it is installed)
+                if (once) {
+                    InputStream is = getClass().getResourceAsStream("PCBius.ttf");
+                    System.err.println(is);
+                    Font.loadFont(is, 12);
+                    once = false;
+                }
+
                 InputStream svgFile = getClass().getResourceAsStream(packageSvg);
                 SvgLoader loader = new SvgLoader();
                 Group svgImage = loader.loadSvg(svgFile);

@@ -16,7 +16,6 @@ import afester.javafx.examples.board.view.BoardView;
 import afester.javafx.examples.board.view.TraceView;
 import javafx.application.Application;
 import javafx.beans.property.SimpleListProperty;
-import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -33,14 +32,8 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -178,16 +171,10 @@ public class BreadBoardEditor extends Application {
             }
         });
 
-        Node leftBar = new BomView();
+        Node leftBar = new BomView(board);
        
-//        HBox leftBar = new HBox();
-//        leftBar.setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(0), new Insets(0))));
-//        leftBar.getChildren().add(new BomView());
         VBox rightBar = new VBox();
         rightBar.getChildren().addAll(editCornersToolBar, routingToolbar);
-
-//        rightBar.getChildren().add(new Text("L"));
-//        rightBar.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(0), new Insets(0))));
 
         var centerBox = new SplitPane();
         centerBox.getItems().addAll(leftBar, tabPane);

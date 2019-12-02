@@ -150,6 +150,7 @@ public abstract class MouseInteractor implements Interactor {
 	private void selectObject(Interactable node) {
 	    System.err.printf("Select: %s\n", node);
         node.setSelected(bv, true);
+
         bv.selectedObjectsProperty().add(node);     // Update selected nodes in view
         node.startDrag();
         clickObject(node);
