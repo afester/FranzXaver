@@ -108,33 +108,8 @@ public class PartView extends Group implements Interactable {
     @Override
     public void setSelected(BoardView bv, boolean isSelected) {
         part.setSelected(isSelected);
-//        if (isSelected) {
-//            // TODO: This is (probably) a hack!
-//            final double nonScaledWidth = 1 / bv.getLocalToSceneTransform().getMxx();
-//
-//            selectionRect.setStroke(Color.RED);
-//            selectionRect.setStrokeWidth(nonScaledWidth);
-//
-////            l1 = new Line(b.getMinX(), b.getMinY(),               b.getMinX()+b.getWidth(), b.getMinY()+b.getHeight());
-////            l1.setStroke(Color.BLUE);
-////            l1.setStrokeWidth(nonScaledWidth);
-////            l2 = new Line(b.getMinX(), b.getMinY()+b.getHeight(), b.getMinX()+b.getWidth(), b.getMinY());
-////            l2.setStroke(Color.BLUE);
-////            l2.setStrokeWidth(nonScaledWidth);
-////            getChildren().addAll(selectionRect); // , l1, l2);
-//
-//            if (isSvg) {
-//                shapeViews.setOpacity(0.4);
-//            }
-//            
-//         } else {
-//             selectionRect.setStroke(null);
-//             shapeViews.setOpacity(1.0);
-//         }
     }
-    
-    
-    
+
     @SuppressWarnings("serial")
     private final Map<String, String> package2svg = new HashMap<>() {{
         // Resistors

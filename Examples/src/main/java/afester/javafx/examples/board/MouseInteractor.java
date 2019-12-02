@@ -151,7 +151,10 @@ public abstract class MouseInteractor implements Interactor {
 	    System.err.printf("Select: %s\n", node);
         node.setSelected(bv, true);
 
+        // TODO: Probably move the list of currently selected objects to the Board
+        // Then, the BoardView can monitor this list and update its view accordingly
         bv.selectedObjectsProperty().add(node);     // Update selected nodes in view
+
         node.startDrag();
         clickObject(node);
 	}
