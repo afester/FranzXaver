@@ -27,6 +27,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.ToggleGroup;
@@ -177,23 +178,28 @@ public class BreadBoardEditor extends Application {
             }
         });
 
-//        Node leftBar = new BomView();
+        Node leftBar = new BomView();
        
-        HBox leftBar = new HBox();
-        leftBar.setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(0), new Insets(0))));
-        leftBar.getChildren().add(new BomView());
+//        HBox leftBar = new HBox();
+//        leftBar.setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(0), new Insets(0))));
+//        leftBar.getChildren().add(new BomView());
         VBox rightBar = new VBox();
         rightBar.getChildren().addAll(editCornersToolBar, routingToolbar);
 
 //        rightBar.getChildren().add(new Text("L"));
 //        rightBar.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(0), new Insets(0))));
 
+        var centerBox = new SplitPane();
+        centerBox.getItems().addAll(leftBar, tabPane);
+        centerBox.setDividerPosition(0, 0.15);  // TODO
+        SplitPane.setResizableWithParent(leftBar, false);   // do not resize the BOM list
+                                                            // when resizing the window
         BorderPane mainLayout = new BorderPane();
         mainLayout.setTop(topBar);
         mainLayout.setBottom(sb);
         mainLayout.setLeft(leftBar);
         mainLayout.setRight(rightBar);
-        mainLayout.setCenter(tabPane);
+        mainLayout.setCenter(centerBox);
 
         Scene mainScene = new Scene(mainLayout, 1024, 768);
 

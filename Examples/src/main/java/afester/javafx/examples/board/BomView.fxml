@@ -5,31 +5,22 @@
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<SplitPane dividerPositions="0.5" maxHeight="1.7976931348623157E308" orientation="VERTICAL" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="afester.javafx.examples.board.BomViewController">
+<SplitPane dividerPositions="0.5" orientation="VERTICAL" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="afester.javafx.examples.board.BomViewController">
   <items>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="160.0">
+    <AnchorPane minHeight="0.0" prefWidth="160.0">
          <children>
-            <TitledPane animated="false" collapsible="false" text="Parts">
+            <TitledPane animated="false" collapsible="false" text="Parts" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="200.0">
-                     <children>
-                        <ListView fx:id="partsList" prefHeight="400.0" prefWidth="90.0" />
-                     </children>
-                  </AnchorPane>
+                  <ListView fx:id="partsList" prefWidth="90.0" />
               </content>
             </TitledPane>
          </children>
       </AnchorPane>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="160.0">
+    <AnchorPane minHeight="0.0" prefWidth="160.0">
          <children>
-            <TitledPane animated="false" collapsible="false" text="Nets">
+            <TitledPane animated="false" collapsible="false" text="Nets" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="200.0">
-                     <children>
-                        <ListView fx:id="netsList" prefHeight="400.0" prefWidth="127.0" />
-                     </children>
-                  </AnchorPane>
+                  <ListView fx:id="netsList" prefHeight="400.0" prefWidth="127.0" />
               </content>
             </TitledPane>
          </children>
