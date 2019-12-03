@@ -4,47 +4,48 @@ import java.io.IOException;
 
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.Part;
+import afester.javafx.examples.board.model.Net;
+import javafx.collections.FXCollections;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Point2D;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.VBox;
 
 public class BomView extends VBox {
 
-    public BomView(Board board) {
+    public BomView(final Board board) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("BomView.fxml"));
         try {
-            SplitPane bomView = loader.load();
-            
-            BomViewController controller = loader.getController();
+            final SplitPane bomView = loader.load();
+            final BomViewController controller = loader.getController();
 
-            board.getParts().values().forEach(part -> {
-                controller.getParts().add(part.getName()); // String.format("%s - %s", part.getName(), 
-                                                           // part.getValue()));
-            });
+            // simple sorting of the Parts by name
+            final var partList = FXCollections.observableArrayList(board.getParts().values());
+            final var sortedParts = new SortedList<Part>(partList, 
+                                (a, b) -> a.getName().compareTo(b.getName()));
+            controller.getPartsList().setItems(sortedParts);
 
-            board.getNets().values().forEach(part -> {
-                controller.getNets().add(part.getName());
-            });
+            // simple sorting of the Nets by name
+            final var netList = FXCollections.observableArrayList(board.getNets().values());
+            final var sortedNets = new SortedList<Net>(netList, 
+                                (a, b) -> a.getName().compareTo(b.getName()));
+            controller.getNetsList().setItems(sortedNets);
 
+            // monitor the selections in the list views
             controller.getPartsList().getSelectionModel().getSelectedItems().
-                    addListener((javafx.collections.ListChangeListener.Change<? extends String> change) -> {
-                change.next();
-
-                change.getAddedSubList().forEach(partName -> {
-                    Part part = board.getPart(partName);
-                    part.setSelected(true);
-                });
-
-                change.getRemoved().forEach(partName -> {
-                    Part part = board.getPart(partName);
-                    part.setSelected(false);
-                });
-                
-            });
+                    addListener((javafx.collections.ListChangeListener.Change<? extends Part> change) -> {
+                        change.next();
+                        change.getAddedSubList().forEach(part -> part.setSelected(true));
+                        change.getRemoved().forEach(part -> part.setSelected(false));
+                    });
+            controller.getNetsList().getSelectionModel().getSelectedItems().
+                    addListener((javafx.collections.ListChangeListener.Change<? extends Net> change) -> {
+                        change.next();
+                        change.getAddedSubList().forEach(net -> net.setSelected(true));
+                        change.getRemoved().forEach(net -> net.setSelected(false));
+                    });
 
             getChildren().add(bomView);
-
         } catch (IOException e) {
             e.printStackTrace();
         }

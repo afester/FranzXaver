@@ -345,16 +345,20 @@ public class Net {
         });
     }
 
-    @Override
-    public String toString() {
-        StringBuffer buffer = new StringBuffer("Junctions[");
-        getAllJunctions().forEach(e -> { buffer.append(e); buffer.append(", "); } );
-        buffer.append("]");
-        return String.format("Net[netName=%s, %s]", netName, buffer);
-    }
 
-    
-    
+    /**
+     * Selects or deselects the whole net, and marks the given trace as the 
+     * interactable object to work on
+     *
+     * @param trace
+     */
+    public void setSelected(boolean isSelected) {
+        if (isSelected) {
+            getTraces().forEach(segment -> segment.setState(AbstractWireState.HIGHLIGHTED));
+        } else {
+            getTraces().forEach(segment -> segment.setState(AbstractWireState.NORMAL) );
+        }
+    }
 
     /**
      * Selects the whole net, and marks the given trace as the interactable object to work on
@@ -362,18 +366,25 @@ public class Net {
      * @param trace
      */
     public void setSelected(boolean isSelected, AbstractEdge trace) {
-        if (isSelected) {
-            getTraces().forEach(segment -> segment.setState(AbstractWireState.HIGHLIGHTED));
-            trace.setState(AbstractWireState.SELECTED);
+        setSelected(isSelected);
 
+        // Mark the given traces as "selected"
+        if (isSelected) {
+            trace.setState(AbstractWireState.SELECTED);
             trace.getFrom().setColor(Color.DARKVIOLET);
             trace.getTo().setColor(Color.DARKVIOLET);
         } else {
-            getTraces().forEach(segment -> segment.setState(AbstractWireState.NORMAL) );
-
-            trace.getFrom().setColor(null);
             trace.getTo().setColor(null);
         }
     }
 
+
+    @Override
+    public String toString() {
+        StringBuffer buffer = new StringBuffer("Junctions[");
+        getAllJunctions().forEach(e -> { buffer.append(e); buffer.append(", "); } );
+        buffer.append("]");
+        return String.format("Net[netName=%s, %s]", netName, buffer);
+    }
 }
+
