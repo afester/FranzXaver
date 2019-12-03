@@ -1,6 +1,5 @@
 package afester.javafx.examples.board.view;
 
-import afester.javafx.examples.board.AirWireHandle;
 import afester.javafx.examples.board.model.Pin;
 import javafx.geometry.Point2D;
 

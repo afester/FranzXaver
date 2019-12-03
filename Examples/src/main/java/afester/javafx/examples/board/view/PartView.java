@@ -7,8 +7,6 @@ import java.util.Map;
 
 import afester.javafx.examples.board.model.Pin;
 import afester.javafx.examples.board.model.Part;
-import afester.javafx.examples.board.Interactable;
-import afester.javafx.examples.board.SelectionShape;
 import afester.javafx.examples.board.model.Package;
 import afester.javafx.examples.board.model.PartShape;
 import afester.javafx.svg.SvgLoader;

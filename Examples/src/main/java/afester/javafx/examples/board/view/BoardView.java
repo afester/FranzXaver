@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import afester.javafx.examples.board.Interactable;
-import afester.javafx.examples.board.Interactor;
 import afester.javafx.examples.board.model.AbstractEdge;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.Part;
@@ -199,7 +197,7 @@ public class BoardView extends Pane {
         });
     }
 
-    public void setBoard(Board board) {
+    private void setBoard(Board board) {
         getChildren().clear();
         this.board = board;
 
@@ -287,6 +285,14 @@ public class BoardView extends Pane {
 
                 pMap.put(added, partView);
             }
+        });
+
+        // NOTE: When parts are removed, they contain a duplicate listener!!!!
+        board.getParts().forEach((partName, part) -> {
+           part.isHiddenProperty().addListener((obj, oldValue, isHidden) -> {
+              PartView p = pMap.get(part);
+              p.visibleProperty().set(!isHidden);
+           });
         });
     }
     

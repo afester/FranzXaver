@@ -1,7 +1,5 @@
 package afester.javafx.examples.board.view;
 
-import afester.javafx.examples.board.AirWireHandle;
-import afester.javafx.examples.board.Interactable;
 import afester.javafx.examples.board.model.AbstractEdge;
 import afester.javafx.examples.board.model.Net;
 import javafx.beans.value.ChangeListener;

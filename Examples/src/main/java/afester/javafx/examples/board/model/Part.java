@@ -47,6 +47,12 @@ public class Part {
     }
     public double getRotation() { return rotation.getValue(); }
 
+    // A flag to indicate whether the part is currently hidden
+    private final BooleanProperty isHidden = new SimpleBooleanProperty(false);
+    public BooleanProperty isHiddenProperty() { return isHidden; }
+    public boolean isHidden() { return isHidden.get(); }
+    public void setHidden(boolean flag) { isHidden.set(flag); }
+
     // A flag to indicate whether the part is currently selected
     private final BooleanProperty isSelected = new SimpleBooleanProperty(false);
     public BooleanProperty isSelectedProperty() { return isSelected; }

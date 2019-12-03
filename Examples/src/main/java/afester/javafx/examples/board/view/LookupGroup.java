@@ -3,7 +3,6 @@ package afester.javafx.examples.board.view;
 import java.util.ArrayList;
 import java.util.List;
 
-import afester.javafx.examples.board.Interactable;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Parent;

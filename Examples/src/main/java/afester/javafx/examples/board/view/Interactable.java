@@ -1,6 +1,5 @@
-package afester.javafx.examples.board;
+package afester.javafx.examples.board.view;
 
-import afester.javafx.examples.board.view.BoardView;
 import javafx.geometry.Point2D;
 
 public interface Interactable {

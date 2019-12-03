@@ -1,8 +1,7 @@
-package afester.javafx.examples.board;
+package afester.javafx.examples.board.view;
 
 import java.util.List;
 
-import afester.javafx.examples.board.view.BoardView;
 import javafx.geometry.Point2D;
 
 public class EditShapeInteractor extends MouseInteractor {

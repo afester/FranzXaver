@@ -1,6 +1,5 @@
 package afester.javafx.examples.board.view;
 
-import afester.javafx.examples.board.Interactable;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Circle;
 

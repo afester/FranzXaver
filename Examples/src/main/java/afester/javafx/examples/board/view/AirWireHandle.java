@@ -1,7 +1,5 @@
-package afester.javafx.examples.board;
+package afester.javafx.examples.board.view;
 
-import afester.javafx.examples.board.view.AbstractEdgeView;
-import afester.javafx.examples.board.view.Handle;
 import javafx.geometry.Point2D;
 
 public abstract class AirWireHandle extends Handle {

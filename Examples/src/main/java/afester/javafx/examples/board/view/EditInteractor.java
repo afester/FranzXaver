@@ -1,10 +1,8 @@
-package afester.javafx.examples.board;
+package afester.javafx.examples.board.view;
 
 import java.util.List;
 
 import afester.javafx.examples.board.model.Part;
-import afester.javafx.examples.board.view.BoardView;
-import afester.javafx.examples.board.view.PartView;
 import javafx.geometry.Point2D;
 
 
