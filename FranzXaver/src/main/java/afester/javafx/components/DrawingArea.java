@@ -83,17 +83,17 @@ public class DrawingArea extends ScrollPane {
             }
          });
 
-
+        // The Interactor for the drawing is attached to the desk so that
+        // mouse events outside the drawing area can also be catched
+        // (e.g. to deselect all objects when clicking on the desk)
         desk.setOnMousePressed(e -> {
             if (interactor != null) {
-                System.err.println("DESK:" + e);
                 interactor.mousePressed(e);
             }
         });
 
         desk.setOnMouseDragged(e -> {
             if (interactor != null) {
-                System.err.println("DESK:" + e);
                 interactor.mouseDragged(e);
             }
 
@@ -101,7 +101,6 @@ public class DrawingArea extends ScrollPane {
 
         desk.setOnMouseReleased(e -> {
             if (interactor != null) {
-                System.err.println("DESK:" + e);
                 interactor.mouseReleased(e);
             }
         });
@@ -199,6 +198,7 @@ public class DrawingArea extends ScrollPane {
     }
 
     public void setInteractor(final Interactor interactor) {
+        System.err.println("Setting interactor: " + interactor);
         this.interactor = interactor;
     }
 

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import afester.javafx.components.Interactor;
 import afester.javafx.examples.board.model.AbstractEdge;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.Part;
@@ -32,7 +31,6 @@ public class BoardView extends Pane {
     private BoardShape boardShape;
 
     private Group boardGroup;               // The board itself, including dimensions
-    private LookupGroup boardHandlesGroup;  // The handles for the board
     private Group dimensionGroup;           // The board dimensions - a children of boardGroup
     private LookupGroup partsGroup;         // all parts (and their pads) on the board
     private LookupGroup netsGroup;          // all nets (Parent group for airWireGroup, traceGroup, bridgeGroup)
@@ -41,15 +39,8 @@ public class BoardView extends Pane {
     private Group bridgeGroup;              // and Bridges on the board
     private LookupGroup handleGroup;        // all dynamic handles (topmost layer)
 
-    private Interactor interactor = null;
     private boolean isReadOnly = false;
     private boolean isBottom;
-
-//    private final Interactor editInteractor = new EditInteractor(this);
-//    private final Interactor splitTraceInteractor = new SplitTraceInteractor(this);
-//    private final Interactor editShapeInteractor = new EditShapeInteractor(this);
-//    private final Interactor addCornerInteractor = new AddCornerInteractor(this);
-//    private final Interactor deleteCornerInteractor = new DeleteCornerInteractor(this);
 
     // The currently selected objects.
     private final ListProperty<Interactable> selectedObjects = 
@@ -106,16 +97,32 @@ public class BoardView extends Pane {
 
     public BoardView(Board board, boolean isBottom) {
         this.isBottom = isBottom;
+        this.board = board;
+
         String css = BoardView.class.getResource("boardStyle.css").toExternalForm();
         getStylesheets().add(css);
-        setBoard(board);
+        setupBoard();
 
-        // The Group objects are changed when calling setBoard. Hence we use Listeners here instad of bindings. 
+        // TODO: This could now be changed to bindings
         showSvgProperty().addListener((obj, oldValue, newValue) -> { partsGroup.getChildren().forEach(part -> ((PartView) part).render(newValue)); });
         showTracesProperty().addListener((obj, oldValue, newValue) -> traceGroup.setVisible(newValue));
         showAirwiresProperty().addListener((obj, oldValue, newValue) -> airWireGroup.setVisible(newValue));
         showDimensionsProperty().addListener((obj, oldValue, newValue) -> dimensionGroup.setVisible(newValue));
-        showBoardHandlesProperty().addListener((obj, oldValue, newValue) -> boardHandlesGroup.setVisible(newValue));
+
+        showBoardHandlesProperty().addListener((obj, oldValue, newValue) -> { //boardHandlesGroup.setVisible(newValue));
+            handleGroup.getChildren().clear();
+            if ( newValue) {
+               // Handles for each corner of the board        
+                  final List<BoardHandle> corners = new ArrayList<>();
+                  IntVal idx = new IntVal();
+                  PointTools.pointIterator(boardShape.getPoints(), (xpos, ypos) -> {
+                      BoardHandle c = new BoardHandle(xpos, ypos, getBoard(), idx.val);
+                      idx.val++;
+                      handleGroup.getChildren().add(c);
+                      corners.add(c);
+                  });
+            }
+        });
 
 //        interactor = editInteractor;
 //
@@ -206,15 +213,11 @@ public class BoardView extends Pane {
         });
     }
 
-    private void setBoard(Board board) {
+    private void setupBoard() {
         getChildren().clear();
-        this.board = board;
 
         boardGroup = new Group();
         boardGroup.setId("boardGroup");
-        boardHandlesGroup = new LookupGroup();
-        boardHandlesGroup.setId("boardHandlesGroup");
-        boardHandlesGroup.setVisible(false);
         dimensionGroup = new Group();
         dimensionGroup.setId("dimensionGroup");
 
@@ -235,10 +238,10 @@ public class BoardView extends Pane {
         handleGroup.setId("handleGroup");
 
         if (isBottom) {
-            getChildren().addAll(boardGroup, dimensionGroup, boardHandlesGroup,
+            getChildren().addAll(boardGroup, dimensionGroup,
                                  partsGroup, netsGroup, handleGroup);
         } else {
-            getChildren().addAll(boardGroup, dimensionGroup, boardHandlesGroup,
+            getChildren().addAll(boardGroup, dimensionGroup,
                                  netsGroup, partsGroup, handleGroup);
         }
 
@@ -277,6 +280,9 @@ public class BoardView extends Pane {
             PartView partView = new PartView(g, isBottom);
             partsGroup.getChildren().add(partView);
             pMap.put(g, partView);
+            if (g.isHidden()) {
+                partView.setVisible(false);
+            }
         });
         board.getParts().addListener((javafx.collections.MapChangeListener.Change<? extends String, ? extends Part> change) -> {
             if (change.wasRemoved()) {
@@ -349,20 +355,6 @@ public class BoardView extends Pane {
     private void createBoardDimensions() {
         // add the board dimensions
         System.err.println("Adding Board dimensions ...");
-
-// Handles for each corner of the board        
-        boardHandlesGroup.getChildren().clear();
-        final List<BoardHandle> corners = new ArrayList<>();
-        IntVal idx = new IntVal();
-        PointTools.pointIterator(boardShape.getPoints(), (xpos, ypos) -> {
-            BoardHandle c = new BoardHandle(xpos, ypos, getBoard(), idx.val);
-            System.err.println("BoardHanadle: " + c);
-            idx.val++;
-            boardHandlesGroup.getChildren().add(c);
-            corners.add(c);
-        });
-
-// Board dimensions
         dimensionGroup.getChildren().clear();
         PointTools.lineIterator(boardShape.getPoints(), (p1, p2) -> {
             Group dim = new DimensionView(p1, p2);
@@ -378,22 +370,8 @@ public class BoardView extends Pane {
 		return padOffset;
 	}
 
-    public void setInteractor(Interactor newInteractor) {
-        if (!isReadOnly) {
-            System.err.println("Setting " + newInteractor);
-            interactor = newInteractor;
-        } else {
-            interactor = null;
-        }
-    }
-   
-
     public LookupGroup getHandleGroup() {
         return handleGroup;
-    }
-
-    public LookupGroup getBoardHandleGroup() {
-        return boardHandlesGroup;
     }
 
     public LookupGroup getNetsGroup() {

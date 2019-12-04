@@ -71,9 +71,9 @@ public class Board {
     }
 
     public void setCornerPos(int cornerIdx, Point2D newPos) {
-        Point2D snappedPos = snapToGrid(newPos, GRID);
-        System.err.printf("setCornerPos %s: %s\n", cornerIdx, snappedPos);
-        boardShapePoints.set(cornerIdx, snappedPos);
+        // Point2D snappedPos = snapToGrid(newPos, GRID);
+        System.err.printf("setCornerPos %s: %s\n", cornerIdx, newPos);
+        boardShapePoints.set(cornerIdx, newPos);
     }
 
     public ObservableList<Point2D> getBoardCorners() {
@@ -522,5 +522,7 @@ public class Board {
         update(updatedBoard);
     }
 
-
+    public String getFileName() {
+        return boardFile.getAbsolutePath(); //.getPath();
+    }
 }

@@ -13,7 +13,7 @@ public class DeleteCornerInteractor extends MouseInteractor {
 
     @Override
     protected List<Interactable> pickObjects(Point2D mpos) {
-        return getBoardView().getBoardHandleGroup().pickAll(mpos);
+        return getBoardView().getHandleGroup().pickAll(mpos);
     }
 
     

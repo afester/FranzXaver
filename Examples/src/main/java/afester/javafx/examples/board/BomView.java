@@ -53,8 +53,12 @@ public class BomView extends VBox {
             boardView.selectedObjectsProperty().addListener((javafx.collections.ListChangeListener.Change<? extends Interactable> change) -> {
                 change.next();
                 controller.getPartsList().getSelectionModel().clearSelection();
-                change.getList().forEach(e ->
-                    controller.getPartsList().getSelectionModel().select(((PartView) e).getPart()));
+                change.getList().forEach(e -> {
+                        if (e instanceof PartView) {    // TODO
+                            controller.getPartsList().getSelectionModel().select(((PartView) e).getPart());
+                        }
+                    });
+                   
             });
             controller.getPartsList().setContextMenu(createContextMenu());
             

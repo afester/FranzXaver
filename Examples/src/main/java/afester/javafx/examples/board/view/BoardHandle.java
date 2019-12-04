@@ -42,10 +42,20 @@ public class BoardHandle extends Circle implements Interactable {
     public void startDrag() {
     }
 
+    private final static double GRID = 1.0;        
+
+    private Point2D snapToGrid(Point2D pos, double grid) {
+        return new Point2D(((int) ( pos.getX() / grid)) * grid,
+                           ((int) ( pos.getY() / grid)) * grid);
+    }
+
     @Override
     public void drag(BoardView bv, Point2D clickPos) {
         System.err.println("MOVE " + this + " to " + clickPos);
-        board.setCornerPos(cornerIdx, clickPos);
+        Point2D snappedPos = snapToGrid(clickPos, GRID);
+        board.setCornerPos(cornerIdx, snappedPos);
+        setCenterX(snappedPos.getX());
+        setCenterY(snappedPos.getY());
     }
 
     public String toString() {
