@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import afester.javafx.components.Interactor;
 import afester.javafx.examples.board.model.AbstractEdge;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.Part;
@@ -43,6 +44,12 @@ public class BoardView extends Pane {
     private Interactor interactor = null;
     private boolean isReadOnly = false;
     private boolean isBottom;
+
+//    private final Interactor editInteractor = new EditInteractor(this);
+//    private final Interactor splitTraceInteractor = new SplitTraceInteractor(this);
+//    private final Interactor editShapeInteractor = new EditShapeInteractor(this);
+//    private final Interactor addCornerInteractor = new AddCornerInteractor(this);
+//    private final Interactor deleteCornerInteractor = new DeleteCornerInteractor(this);
 
     // The currently selected objects.
     private final ListProperty<Interactable> selectedObjects = 
@@ -110,23 +117,25 @@ public class BoardView extends Pane {
         showDimensionsProperty().addListener((obj, oldValue, newValue) -> dimensionGroup.setVisible(newValue));
         showBoardHandlesProperty().addListener((obj, oldValue, newValue) -> boardHandlesGroup.setVisible(newValue));
 
-        setOnMousePressed(e -> {
-            if (interactor != null) {
-                interactor.mousePressed(e);
-            }
-        });
-
-        setOnMouseDragged(e -> {
-            if (interactor != null) {
-                interactor.mouseDragged(e);
-            }
-         });
-
-        setOnMouseReleased(e -> {
-            if (interactor != null) {
-                interactor.mouseReleased(e);
-            }
-        });
+//        interactor = editInteractor;
+//
+//        setOnMousePressed(e -> {
+//            if (interactor != null) {
+//                interactor.mousePressed(e);
+//            }
+//        });
+//
+//        setOnMouseDragged(e -> {
+//            if (interactor != null) {
+//                interactor.mouseDragged(e);
+//            }
+//         });
+//
+//        setOnMouseReleased(e -> {
+//            if (interactor != null) {
+//                interactor.mouseReleased(e);
+//            }
+//        });
 
         setManaged(false);  // !!!!!!!!!!!!
     }

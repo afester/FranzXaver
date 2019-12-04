@@ -30,6 +30,8 @@ public class DrawingArea extends ScrollPane {
     private final Insets paperBorder = new Insets(10, 10, 10, 10);
     private final Insets fitPaperMargin = new Insets(5, 5, 5, 5);
 
+    private Interactor interactor = null;
+
     private boolean panning = false;
 
     public DrawingArea() {
@@ -80,6 +82,29 @@ public class DrawingArea extends ScrollPane {
                 setPannable(false);
             }
          });
+
+
+        desk.setOnMousePressed(e -> {
+            if (interactor != null) {
+                System.err.println("DESK:" + e);
+                interactor.mousePressed(e);
+            }
+        });
+
+        desk.setOnMouseDragged(e -> {
+            if (interactor != null) {
+                System.err.println("DESK:" + e);
+                interactor.mouseDragged(e);
+            }
+
+         });
+
+        desk.setOnMouseReleased(e -> {
+            if (interactor != null) {
+                System.err.println("DESK:" + e);
+                interactor.mouseReleased(e);
+            }
+        });
 
 
 //        addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
@@ -171,6 +196,10 @@ public class DrawingArea extends ScrollPane {
 //        desk.getChildren().addAll(cr, lp1, lp2);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
+    }
+
+    public void setInteractor(final Interactor interactor) {
+        this.interactor = interactor;
     }
 
     private final  Rectangle pr = new Rectangle();

@@ -3,6 +3,7 @@ package afester.javafx.examples.board.view;
 import java.util.Collections;
 import java.util.List;
 
+import afester.javafx.components.Interactor;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;

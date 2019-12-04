@@ -3,6 +3,7 @@ package afester.javafx.examples.board;
 import java.io.File;
 
 import afester.javafx.components.DrawingArea;
+import afester.javafx.components.Interactor;
 import afester.javafx.components.StatusBar;
 import afester.javafx.components.ToolbarButton;
 import afester.javafx.components.ToolbarToggleButton;
@@ -17,7 +18,6 @@ import afester.javafx.examples.board.view.BoardView;
 import afester.javafx.examples.board.view.DeleteCornerInteractor;
 import afester.javafx.examples.board.view.EditInteractor;
 import afester.javafx.examples.board.view.EditShapeInteractor;
-import afester.javafx.examples.board.view.Interactor;
 import afester.javafx.examples.board.view.SplitTraceInteractor;
 import afester.javafx.examples.board.view.TraceView;
 import javafx.application.Application;
@@ -101,12 +101,6 @@ public class BreadBoardEditor extends Application {
     private DrawingArea topDrawingView;
     private DrawingArea bottomDrawingView;
     private PrintPanel printPanel;
-
-    private Interactor editInteractor;
-    private Interactor splitTraceInteractor;
-    private Interactor editShapeInteractor;
-    private Interactor addCornerInteractor;
-    private Interactor deleteCornerInteractor;
 
     @Override
     public void start(Stage stage){
@@ -298,23 +292,17 @@ public class BreadBoardEditor extends Application {
         toggleShowDimensionsToolButton.setSelected(true);
 //        topView.showDimensionsProperty().bind(toggleShowDimensionsToolButton.selectedProperty());
 
-        editInteractor = new EditInteractor(topView);
-        splitTraceInteractor = new SplitTraceInteractor(topView);
-        editShapeInteractor = new EditShapeInteractor(topView);
-        addCornerInteractor = new AddCornerInteractor(topView);
-        deleteCornerInteractor = new DeleteCornerInteractor(topView);
-
         selectToolButton.setDisable(true);
         selectToolButton.setOnAction(e -> {
             if (topView != null) {
-                topView.setInteractor(editInteractor);
+//                topView.setInteractor(editInteractor);
             }
         });
 
         splitTraceToolButton.setDisable(true);
         splitTraceToolButton.setOnAction(e -> {
             if (topView != null) {
-                topView.setInteractor(splitTraceInteractor);
+//                topView.setInteractor(splitTraceInteractor);
             }
         });
 
@@ -351,7 +339,7 @@ public class BreadBoardEditor extends Application {
 
     private void setShapeEditMode(Boolean newValue) {
         if (newValue) {
-            topView.setInteractor(editShapeInteractor);
+//            topView.setInteractor(editShapeInteractor);
         }
         topView.setShowBoardHandles(newValue);
         editCornersToolBar.setVisible(newValue);
@@ -365,24 +353,21 @@ public class BreadBoardEditor extends Application {
         final ToolbarToggleButton editCornerButton = new ToolbarToggleButton("Move corner", "afester/javafx/examples/board/mode-select.png");
         editCornerButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                topView.setInteractor(editShapeInteractor);
-                System.err.println("Using " + editShapeInteractor);
+//                topView.setInteractor(editShapeInteractor);
             }
         });
 
         final ToolbarToggleButton addCornerButton = new ToolbarToggleButton("Add corner", "afester/javafx/examples/board/editshape-addcorner.png");
         addCornerButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                topView.setInteractor(addCornerInteractor);
-                System.err.println("Using " + addCornerInteractor);
+//                topView.setInteractor(addCornerInteractor);
             }
         });
 
         final ToolbarToggleButton deleteCornerButton = new ToolbarToggleButton("Delete corner", "afester/javafx/examples/board/editshape-deletecorner.png");
         deleteCornerButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-                topView.setInteractor(deleteCornerInteractor);
-                System.err.println("Using " + deleteCornerInteractor);
+//                topView.setInteractor(deleteCornerInteractor);
             }
         });
 
@@ -584,6 +569,7 @@ public class BreadBoardEditor extends Application {
         bomView = new BomView(topView);
         topDrawingView.getPaper().getChildren().clear();
         topDrawingView.getPaper().getChildren().add(topView);
+        topDrawingView.setInteractor(new EditInteractor(topView));
         bottomView = null;
 
         splitPane.getItems().clear();
