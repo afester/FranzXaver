@@ -3,19 +3,38 @@
 
   <Appenders>
     <Console name="stdout" target="SYSTEM_OUT">
-      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{2} - %msg%n"/>
     </Console>
     <Console name="stderr" target="SYSTEM_ERR">
-      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{2} - %msg%n"/>
     </Console>
   </Appenders>
 
   <Loggers>
+    <Logger name="afester.javafx.examples.board.view.BoardView" level="info" additivity="false">
+      <AppenderRef ref="stderr"/>
+    </Logger>
+    <Logger name="afester.javafx.examples.board.view.PartView" level="info" additivity="false">
+      <AppenderRef ref="stderr"/>
+    </Logger>
+    <Logger name="afester.javafx.examples.board.model.BoardLoader" level="info" additivity="false">
+      <AppenderRef ref="stderr"/>
+    </Logger>
+    <Logger name="afester.javafx.examples.board.model.BoardShapeHandler" level="info" additivity="false">
+      <AppenderRef ref="stderr"/>
+    </Logger>
+    <Logger name="afester.javafx.examples.board.model.PackageHandler" level="info" additivity="false">
+      <AppenderRef ref="stderr"/>
+    </Logger>
+    <Logger name="afester.javafx.examples.board.model.NetHandler" level="info" additivity="false">
+      <AppenderRef ref="stderr"/>
+    </Logger>
+
     <Logger name="afester.javafx.svg" level="debug" additivity="false">
       <AppenderRef ref="stderr"/>
     </Logger>
 
-    <Root level="error">
+    <Root level="debug">
       <AppenderRef ref="stderr"/>
     </Root>
   </Loggers>

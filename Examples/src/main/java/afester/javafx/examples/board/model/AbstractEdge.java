@@ -3,7 +3,9 @@ package afester.javafx.examples.board.model;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
 
@@ -30,6 +32,12 @@ public abstract class AbstractEdge {
     public ObjectProperty<AbstractWireState> stateProperty() { return state; }
     public void setState(AbstractWireState stat) { state.setValue(stat); }
     public AbstractWireState getState() { return state.get(); }
+
+    // A flag to indicate whether the edge is currently hidden
+    private final BooleanProperty isHidden = new SimpleBooleanProperty(false);
+    public BooleanProperty isHiddenProperty() { return isHidden; }
+    public boolean isHidden() { return isHidden.get(); }
+    public void setHidden(boolean flag) { isHidden.set(flag); }
 
     private Net net;
 
@@ -164,4 +172,5 @@ public abstract class AbstractEdge {
         final var newToPos = fromNode.getPosition().add(delta);
         toNode.setPosition(newToPos);
     }
+
 }

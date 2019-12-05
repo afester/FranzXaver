@@ -5,6 +5,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import afester.javafx.examples.board.model.Pin;
 import afester.javafx.examples.board.model.Part;
 import afester.javafx.examples.board.model.Package;
@@ -38,6 +41,7 @@ import javafx.scene.transform.Rotate;
  *   +-selectionRect    mouseTransparent=true
  */
 public class PartView extends Group implements Interactable {
+    private final static Logger log = LogManager.getLogger();
 
     private Part part;  // reference to model
 
@@ -168,7 +172,7 @@ public class PartView extends Group implements Interactable {
         padViews.setId("partPads");
         padViews.setMouseTransparent(true);
 
-        System.err.printf("Render %s as Svg: %s\n", this, asSvg);
+        log.debug("Render {} as Svg: {}", () -> this, () -> asSvg);
 
         // render part as SVG?
         isSvg = false;

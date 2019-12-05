@@ -14,6 +14,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -25,7 +27,77 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.text.FontWeight;
 
+
+class BoardLoaderException extends RuntimeException {
+
+    private static final long serialVersionUID = 1L;
+
+    public BoardLoaderException(String msg) {
+        super(msg);
+    }
+}
+
+
+class AttributeReader {
+
+    final Attributes atts;
+
+    public AttributeReader(Attributes attributes) {
+        atts = attributes;
+    }
+
+    public String getString(String name) {
+        final var value = atts.getValue(name);
+        if (value == null) {
+            throw new BoardLoaderException("Missing value for \"" + name + "\"");
+        }
+        return value;
+    }
+
+    public String getOptionalString(String name, String defaultValue) {
+        final var value = atts.getValue(name);
+        if (value == null) {
+            return defaultValue;
+        }
+        return value;
+    }
+
+    public Double getDouble(String name) {
+        final var value = atts.getValue(name);
+        if (value == null) {
+            throw new BoardLoaderException("Missing value for \"" + name + "\"");
+        }
+        return Double.parseDouble(value);
+    }
+
+    public Double getOptionalDouble(String name, Double defaultValue) {
+        var value = atts.getValue(name);
+        if (value == null) {
+            return defaultValue;
+        }
+        return Double.parseDouble(value);
+    }
+
+    public Boolean getBoolean(String name) {
+        final var value = atts.getValue(name);
+        if (value == null) {
+            throw new BoardLoaderException("Missing value for \"" + name + "\"");
+        }
+        return Boolean.parseBoolean(value);
+    }
+
+    public Boolean getOptionalBoolean(String name, Boolean defaultValue) {
+        var value = atts.getValue(name);
+        if (value == null) {
+            return defaultValue;
+        }
+        return Boolean.parseBoolean(value);
+    }
+}
+
+
 class BoardShapeHandler extends SubContentHandler {
+    private final static Logger log = LogManager.getLogger();
 
     private BoardLoader loader;
     
@@ -36,13 +108,14 @@ class BoardShapeHandler extends SubContentHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+        final AttributeReader ar = new AttributeReader(attributes);
+
         if (localName.equals("point")) {
-            final Point2D point = new Point2D(Double.parseDouble(attributes.getValue("x")),
-                                              Double.parseDouble(attributes.getValue("y")));
-            System.err.println("  " + point);
+            final Point2D point = new Point2D(ar.getDouble("x"), ar.getDouble("y"));
+            log.debug(point);
             loader.boardShape.add(point);
         } else {
-            // unexpected element
+            log.warn("Unexpected Element:" + localName);
         }
     }
 
@@ -53,6 +126,7 @@ class BoardShapeHandler extends SubContentHandler {
 }
 
 class PackageHandler extends SubContentHandler {
+    private final static Logger log = LogManager.getLogger();
 
     private PartText currentText = null;
     private Package thePackage = null;
@@ -63,65 +137,57 @@ class PackageHandler extends SubContentHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+        final AttributeReader ar = new AttributeReader(attributes);
+
         if (localName.equals("line")) {
-            Point2D p1 = new Point2D(Double.parseDouble(attributes.getValue("x1")),
-                                     Double.parseDouble(attributes.getValue("y1")));
-            Point2D p2 = new Point2D(Double.parseDouble(attributes.getValue("x2")),
-                                     Double.parseDouble(attributes.getValue("y2")));
-            Double width = Double.parseDouble(attributes.getValue("width"));
+            final var p1 = new Point2D(ar.getDouble("x1"), ar.getDouble("y1"));
+            final var p2 = new Point2D(ar.getDouble("x2"), ar.getDouble("y2"));
+            final var width = ar.getDouble("width");
 
             PartShape shape = new PartLine(p1, p2, width);
-            System.err.println("  " + shape);
+            log.debug(shape);
             thePackage.addShape(shape);
         } else if (localName.equals("rectangle")) {
-            Point2D p1 = new Point2D(Double.parseDouble(attributes.getValue("x1")),
-                                     Double.parseDouble(attributes.getValue("y1")));
-            Point2D p2 = new Point2D(Double.parseDouble(attributes.getValue("x2")),
-                                     Double.parseDouble(attributes.getValue("y2")));
+            final var p1 = new Point2D(ar.getDouble("x1"), ar.getDouble("y1"));
+            final var p2 = new Point2D(ar.getDouble("x2"), ar.getDouble("y2"));
 
             PartShape shape = new PartRectangle(p1, p2);
-            System.err.println("  " + shape);
+            log.debug(shape);
             thePackage.addShape(shape);
         } else if (localName.equals("circle")) {
-            Point2D center = new Point2D(Double.parseDouble(attributes.getValue("x")),
-                                         Double.parseDouble(attributes.getValue("y")));
-            double radius = Double.parseDouble(attributes.getValue("radius"));
-            double width = Double.parseDouble(attributes.getValue("width"));
+            final var center = new Point2D(ar.getDouble("x"), ar.getDouble("y"));
+            final var radius = ar.getDouble("radius");
+            final var width = ar.getDouble("width");
 
             PartShape shape = new PartCircle(center, radius, width);
-            System.err.println("  " + shape);
+            log.debug(shape);
             thePackage.addShape(shape);
         } else if (localName.equals("arc")) {
+            final var center = new Point2D(ar.getDouble("cx"), ar.getDouble("cy"));
+            final var radius = ar.getDouble("radius");
+            final var start = ar.getDouble("start");
+            final var angle = ar.getDouble("angle");
+            final var width = ar.getDouble("width");
 
-            Point2D cx = new Point2D(Double.parseDouble(attributes.getValue("cx")),
-                                     Double.parseDouble(attributes.getValue("cy")));
-            Double radius = Double.parseDouble(attributes.getValue("radius"));
-            Double start = Double.parseDouble(attributes.getValue("start"));
-            Double angle = Double.parseDouble(attributes.getValue("angle"));
-            Double width = Double.parseDouble(attributes.getValue("width"));
-
-            PartShape shape = new PartArc(cx, radius, start, angle, width);
-            System.err.println("  " + shape);
+            PartShape shape = new PartArc(center, radius, start, angle, width);
+            log.debug(shape);
             thePackage.addShape(shape);
         } else if (localName.equals("text")) {
-            final var pos = new Point2D(Double.parseDouble(attributes.getValue("x")),
-                                        Double.parseDouble(attributes.getValue("y")));
-            final var size = Double.parseDouble(attributes.getValue("size"));
-            final var weight = FontWeight.valueOf(attributes.getValue("weight"));
+            final var pos = new Point2D(ar.getDouble("x"), ar.getDouble("y"));
+            final var size = ar.getDouble("size");
+            final var weight = FontWeight.valueOf(ar.getString("weight"));
             // String layer = textNode.getAttribute("layer");
 
             currentText = new PartText(pos, size, weight);
         } else if (localName.equals("pad")) {
-            final String padNumber = attributes.getValue("padName");
-            final Point2D padPos = new Point2D(Double.parseDouble(attributes.getValue("x")),
-                                               Double.parseDouble(attributes.getValue("y")));
+            final var padNumber = ar.getString("padName");
+            final var padPos = new Point2D(ar.getDouble("x"), ar.getDouble("y"));
 
             PartPad pad = new PartPad(padNumber, padPos);
-            System.err.println("  " + pad);
+            log.debug(pad);
             thePackage.addPad(pad);
         } else {
-            // unexpected element
-            System.err.println("   " + localName);
+            log.warn("Unexpected element: " + localName);
         }
 
     }
@@ -129,7 +195,7 @@ class PackageHandler extends SubContentHandler {
     @Override
     public boolean endElement(String uri, String localName, String qName) throws SAXException {
         if (localName.equals("text")) {
-            System.err.println("  " + currentText);
+            log.debug(currentText);
             thePackage.addShape(currentText);
             currentText = null;
             return false;
@@ -149,6 +215,7 @@ class PackageHandler extends SubContentHandler {
 }
 
 class PartHandler extends SubContentHandler {
+    private final static Logger log = LogManager.getLogger();
 
     private Part part;
     private BoardLoader bl;
@@ -160,14 +227,16 @@ class PartHandler extends SubContentHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+        final AttributeReader ar = new AttributeReader(attributes);
+
         if (localName.equals("pad")) {
-            final String padName = attributes.getValue("padName");
-            final String padId = attributes.getValue("id");
+            final var padName = ar.getString("padName");
+            final var padId = ar.getString("id");
 
             final Pin pin = part.getPin(padName);
             bl.nodes.put(padId, pin);
         } else {
-            System.err.println("   " + localName);
+            log.debug("   " + localName);
         }
     }
 
@@ -179,6 +248,8 @@ class PartHandler extends SubContentHandler {
 
 
 class NetHandler extends SubContentHandler {
+    private final static Logger log = LogManager.getLogger();
+
     private Net net;
     private BoardLoader bl;
 
@@ -189,47 +260,61 @@ class NetHandler extends SubContentHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-        
+        final AttributeReader ar = new AttributeReader(attributes);
+
         if (localName.equals("junction")) {
-            String junctionId = attributes.getValue("id");
-            Point2D jPos = new Point2D(Double.parseDouble(attributes.getValue("x")),
-                                       Double.parseDouble(attributes.getValue("y")));
+            final var junctionId = ar.getString("id");
+            final var jPos = new Point2D(ar.getDouble("x"),
+                                         ar.getDouble("y"));
 
             Junction junction = new Junction(jPos);
-            System.err.printf("  %s\n", junction);
+            log.debug(junction);
 
             bl.nodes.put(junctionId, junction);
             net.addJunction(junction);
         } else if (localName.equals("airwire")) {
-            String fromId = attributes.getValue("from");    // unique id
-            String toId = attributes.getValue("to");        // unique id
+            final var fromId = ar.getString("from");    // unique id
+            final var toId = ar.getString("to");        // unique id
 
             AbstractNode from = bl.nodes.get(fromId);
             AbstractNode to = bl.nodes.get(toId);
 
             AirWire aw = new AirWire(from, to, net);
-            System.err.printf("  %s\n", aw);
+            log.debug(aw);
 
+            // TODO: Hack to take care of airwires connected to hidden Parts
+            if (from instanceof Pin) {
+                final Pin p1 = (Pin) from;
+                if (p1.getPart().isHidden()) {
+                    aw.setHidden(true);
+                }
+            }
+            if (to instanceof Pin) {
+                final Pin p1 = (Pin) to;
+                if (p1.getPart().isHidden()) {
+                    aw.setHidden(true);
+                }
+            }
+            
+            
             net.addTrace(aw);
         } else if (localName.equals("trace")) {
-            String fromId = attributes.getValue("from");
-            String toId = attributes.getValue("to");
-            boolean isBridge = Boolean.parseBoolean(attributes.getValue("isBridge"));
+            final var fromId = ar.getString("from");
+            final var toId = ar.getString("to");
+            final var isBridge = ar.getBoolean("isBridge");
 
             AbstractNode from = bl.nodes.get(fromId);
             AbstractNode to = bl.nodes.get(toId);
-
-//            System.err.printf("  T : %s -> %s\n", from, to);
 
             Trace t = new Trace(from, to, net);
             if (isBridge) {
                 t.setAsBridge();
             }
-            System.err.printf("  %s\n", t);
+            log.debug(t);
 
             net.addTrace(t);
         } else {
-            System.err.println("   " + localName);
+            log.debug("   " + localName);
         }
       
     }
@@ -242,6 +327,7 @@ class NetHandler extends SubContentHandler {
 
 
 public class BoardLoader extends DefaultHandler {
+    private final static Logger log = LogManager.getLogger();
 
     private File sourceFile;
     private SubContentHandler currentHandler;
@@ -260,16 +346,16 @@ public class BoardLoader extends DefaultHandler {
 
     @Override
     public void startDocument() throws SAXException {
-        System.err.println("Loading " + sourceFile.getAbsolutePath());
+        log.info("Loading " + sourceFile.getAbsolutePath());
     }
 
 
     @Override
     public void endDocument() throws SAXException {
-        System.err.printf("Loaded %s board shape points\n", boardShape.size());
-        System.err.printf("Loaded %s Packages\n", packages.size());
-        System.err.printf("Loaded %s Parts\n", parts.size());
-        System.err.printf("Loaded %s Nets\n", nets.size());
+        log.info("Loaded {} board shape points", boardShape.size());
+        log.info("Loaded {} Packages", packages.size());
+        log.info("Loaded {} Parts", parts.size());
+        log.info("Loaded {} Nets\n", nets.size());
     }
 
 
@@ -279,37 +365,52 @@ public class BoardLoader extends DefaultHandler {
         if (currentHandler != null) {
             currentHandler.startElement(uri, localName, qName, attributes);
         } else {
+            final AttributeReader ar = new AttributeReader(attributes);
+
             if (localName.equals("boardShape")) {
-                System.err.println("boardshape");
+                log.debug("Board shape");
+
                 currentHandler = new BoardShapeHandler(this);
             } else if (localName.equals("package")) {
-                final String id = attributes.getValue("id");
-                final String name = attributes.getValue("name");
+                final var id = ar.getString("id");
+                final var name = ar.getString("name");
 
                 Package thePackage = new Package(id, name);
                 currentHandler = new PackageHandler(thePackage);
+
+                // TODO: This prints the "empty" package! 
+                // probably this should really be done in the endElement() method?
+                log.debug(thePackage); 
                 packages.put(thePackage.getId(), thePackage);
             } else if (localName.equals("part")) {
-                final String name = attributes.getValue("name");
-                final String packageRef = attributes.getValue("packageRef");
-                Double rotation = Double.parseDouble(attributes.getValue("rotation"));
-                final String value = attributes.getValue("value");
-                Point2D partPosition = new Point2D(Double.parseDouble(attributes.getValue("x")),
-                                                   Double.parseDouble(attributes.getValue("y")));
+                final var name = ar.getString("name");
+                final var value = ar.getString("value");
+                final var packageRef = ar.getString("packageRef"); 
+                final var partPosition = new Point2D(ar.getDouble("x"),
+                                                     ar.getDouble("y"));
+                final var rotation = ar.getOptionalDouble("rotation", 0.0);
+                final var isHidden = ar.getOptionalBoolean("hidden", false);
+
                 final Package thePackage = packages.get(packageRef);
 
                 Part part = new Part(name, value, thePackage);
                 part.setPosition(partPosition);
                 part.setRotation(rotation);
+                part.setHidden(isHidden);
 
-                System.err.println(part);
+                log.debug(part);
                 currentHandler = new PartHandler(this, part);
                 parts.add(part);
             } else if (localName.equals("net")) {
-                final String name = attributes.getValue("name");
-                final Net net = new Net(name);
+
+                final var name = ar.getString("name");
+                final var net = new Net(name);
 
                 currentHandler = new NetHandler(this, net);
+
+                // TODO: This prints the "empty" net! 
+                // probably this should really be done in the endElement() method?
+                log.debug(net);
                 nets.add(net);
             }
         }

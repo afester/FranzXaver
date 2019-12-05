@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import afester.javafx.examples.board.model.AbstractEdge;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.Part;
@@ -25,6 +28,7 @@ import javafx.scene.layout.Pane;
 
 
 public class BoardView extends Pane {
+    private final static Logger log = LogManager.getLogger();
 
     private Board board;
     private final Point2D padOffset = new Point2D(2.5, 2.0);
@@ -152,9 +156,10 @@ public class BoardView extends Pane {
     private void netUpdater(Net net) {
      // Handling traces
         Map<AbstractEdge, TraceView> tMap = new HashMap<>();
-        System.err.println("VIEW: creating Net " + net.getName());
+        log.info("Creating view for Net: {}", net);
         net.getTraces().forEach(trace -> {
-            System.err.printf("  VIEW: creating Trace %s\n", trace);
+            log.debug("  Creating TraceView for: {}", trace);
+
             TraceView traceView = new TraceView(trace, isBottom);
             tMap.put(trace, traceView);
 
@@ -255,9 +260,8 @@ public class BoardView extends Pane {
         });
 
 // Handling nets
-        System.err.println("Adding Nets ...");
+        log.info("Adding Nets ...");
         board.getNets().forEach((netName, net) -> {
-            System.err.println("  " + net);
             netUpdater(net);
         });
         board.getNets().addListener((javafx.collections.MapChangeListener.Change<? extends String, ? extends Net> change) -> {
@@ -274,8 +278,10 @@ public class BoardView extends Pane {
 
 // Handling parts
         Map<Part, PartView> pMap = new HashMap<>();
-        System.err.println("Adding Parts ...");
+        log.info("Adding Parts ...");
         board.getParts().forEach((k, g) -> {
+            log.info("Creating view for Part: {}", g);
+
             // Create a PartView from the model
             PartView partView = new PartView(g, isBottom);
             partsGroup.getChildren().add(partView);
@@ -309,13 +315,14 @@ public class BoardView extends Pane {
               p.visibleProperty().set(!isHidden);
            });
         });
+
     }
     
 
     private void createPlainBoard() {
         boardGroup.getChildren().clear();
 
-        System.err.println("\nCreating plain board ...");
+        log.info("Creating plain board ...");
 
 // Board shape
         boardShape = new BoardShape();
@@ -354,7 +361,7 @@ public class BoardView extends Pane {
 
     private void createBoardDimensions() {
         // add the board dimensions
-        System.err.println("Adding Board dimensions ...");
+        log.info("Adding Board dimensions ...");
         dimensionGroup.getChildren().clear();
         PointTools.lineIterator(boardShape.getPoints(), (p1, p2) -> {
             Group dim = new DimensionView(p1, p2);

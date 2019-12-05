@@ -1,5 +1,8 @@
 package afester.javafx.components;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -23,6 +26,7 @@ import javafx.scene.shape.Rectangle;
  *                            ...
  */
 public class DrawingArea extends ScrollPane {
+    private final static Logger log = LogManager.getLogger();
 
     private final Pane desk = new Pane();
     private final Pane transformationArea = new Pane();
@@ -198,7 +202,7 @@ public class DrawingArea extends ScrollPane {
     }
 
     public void setInteractor(final Interactor interactor) {
-        System.err.println("Setting interactor: " + interactor);
+        log.debug("Setting interactor: {}", interactor);
         this.interactor = interactor;
     }
 
@@ -222,7 +226,7 @@ public class DrawingArea extends ScrollPane {
             newScale = scaleFactor * SCALE_STEP;
         }
         if (newScale > 0) {
-            System.err.println("SCALE: " + newScale);
+            log.debug("SCALE: {}", newScale);
             setScale(newScale, new Point2D(e.getSceneX(), e.getSceneY()));
         }
     }
@@ -235,29 +239,29 @@ public class DrawingArea extends ScrollPane {
         Point2D paperPos = paper.sceneToLocal(centerPoint);
         Point2D deskPos = paper.localToParent(paperPos);
         Point2D oldPos = transformationArea.localToParent(deskPos);
-        System.err.println("PAPER POS:" + oldPos);
+        log.debug("PAPER POS: {}", oldPos);
 
         transformationArea.setScaleX(scaleFactor);
         transformationArea.setScaleY(scaleFactor);
 
         Point2D deskPos2 = paper.localToParent(paperPos);
-        System.err.println("PAPER POS1:" + transformationArea.localToParent(deskPos2));
+        log.debug("PAPER POS1: {}", transformationArea.localToParent(deskPos2));
 
         Point2D delta = transformationArea.localToParent(deskPos2).subtract(oldPos);
-        System.err.println("DELTA:" + delta);
+        log.debug("DELTA: {}", delta);
 
         Bounds viewBounds = getViewportBounds();
 
         double maxHdist = desk.getWidth() - viewBounds.getWidth();
         double maxVdist = desk.getHeight() - viewBounds.getHeight();
-        System.err.println("maxHdist:" + maxHdist);
-        System.err.println("maxVdist:" + maxVdist);
+        log.debug("maxHdist: {}", maxHdist);
+        log.debug("maxVdist: {}", maxVdist);
 
         double hValue = delta.getX() / maxHdist;
         double vValue = delta.getY() / maxVdist;
 
-        System.err.println("delta hValue:" + hValue);
-        System.err.println("delta vValue:" + vValue);
+        log.debug("delta hValue: {}", hValue);
+        log.debug("delta vValue: {}", vValue);
 
         setVvalue(getVvalue() + vValue);
         setHvalue(getHvalue() + hValue);
@@ -273,23 +277,23 @@ public class DrawingArea extends ScrollPane {
         Point2D paperCenter = new Point2D(paperBounds2.getMinX() + paperBounds2.getWidth()/2,
                                           paperBounds2.getMinY() + paperBounds2.getHeight()/2);
 
-        System.err.println("Paper      :" + paperBounds2);
-        System.err.println("PaperCenter:" + paperCenter);
-        System.err.println("ViewPort   :" + viewBounds);
+        log.debug("Paper      : {}", paperBounds2);
+        log.debug("PaperCenter: {}", paperCenter);
+        log.debug("ViewPort   : {}", viewBounds);
 
         Point2D viewPortOrg = paperCenter.subtract(new Point2D(viewBounds.getWidth()/2, viewBounds.getHeight()/2));
-        System.err.println("ViewPortOrg:" + viewPortOrg);
+        log.debug("ViewPortOrg:" + viewPortOrg);
 
         double maxHdist = desk.getWidth() - viewBounds.getWidth();
         double maxVdist = desk.getHeight() - viewBounds.getHeight();
-        System.err.println("maxHdist:" + maxHdist);
-        System.err.println("maxVdist:" + maxVdist);
+        log.debug("maxHdist: {}", maxHdist);
+        log.debug("maxVdist: {}", maxVdist);
 
         double hValue = viewPortOrg.getX() / maxHdist;
         double vValue = viewPortOrg.getY() / maxVdist;
 
-        System.err.println("hValue:" + hValue);
-        System.err.println("vValue:" + vValue);
+        log.debug("hValue: {}", hValue);
+        log.debug("vValue: {}", vValue);
 
         setHvalue(hValue);
         setVvalue(vValue);
@@ -303,9 +307,8 @@ public class DrawingArea extends ScrollPane {
         Bounds paperBounds = paper.getBoundsInParent();
         Bounds viewBounds = getViewportBounds();
 
-        System.err.println("Paper:" + paperBounds);
-        System.err.println("View :" + viewBounds);
-
+        log.debug("Paper: {}", paperBounds);
+        log.debug("View : {}", viewBounds);
         
         final double overallMarginW = paperBorder.getLeft() + paperBorder.getRight() + fitPaperMargin.getLeft() + fitPaperMargin.getRight();
         final double overallMarginH = paperBorder.getTop() + paperBorder.getBottom() + fitPaperMargin.getTop() + fitPaperMargin.getBottom();

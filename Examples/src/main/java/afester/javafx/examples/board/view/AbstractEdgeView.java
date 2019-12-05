@@ -45,6 +45,9 @@ public abstract class AbstractEdgeView extends Line implements Interactable  {
             setEnd(newTo.getPosition());
         });
 
+        // handle the hidden property of the edge 
+        visibleProperty().bind(wire.isHiddenProperty().not());
+
         // TODO: We need a thicker selectionShape (a thicker transparent line) with the same coordinates
         // so that selecting the line is easier
 

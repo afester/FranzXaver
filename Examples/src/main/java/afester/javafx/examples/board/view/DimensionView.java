@@ -1,5 +1,8 @@
 package afester.javafx.examples.board.view;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -61,6 +64,7 @@ class TextBox extends Group {
 }
 
 public class DimensionView extends Group {
+    private final static Logger log = LogManager.getLogger();
 
     final private static Font DIM_FONT = Font.font("Courier", 2.0);
     final private static Point2D UNIT_VEC = new Point2D(1.0, 0.0);
@@ -77,7 +81,7 @@ public class DimensionView extends Group {
      */
     public DimensionView(Point2D p1, Point2D p2) {
         final Point2D vecDir = p2.subtract(p1);                               // direction vector
-        System.err.println("DIR: " + vecDir);
+        log.debug("DIR: {}", vecDir);
         Point2D vecNorm = new Point2D(vecDir.getY(), -vecDir.getX());   // norm vector
         vecNorm = vecNorm.normalize();                                  // normalized norm vector ...
         vecNorm = vecNorm.multiply(3.0);                                // ... of length 3.0

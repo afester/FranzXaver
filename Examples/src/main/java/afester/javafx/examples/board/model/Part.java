@@ -51,7 +51,16 @@ public class Part {
     private final BooleanProperty isHidden = new SimpleBooleanProperty(false);
     public BooleanProperty isHiddenProperty() { return isHidden; }
     public boolean isHidden() { return isHidden.get(); }
-    public void setHidden(boolean flag) { isHidden.set(flag); }
+    public void setHidden(boolean flag) {
+        isHidden.set(flag);
+        pins.values().forEach(pin -> {
+            pin.getEdges().forEach(edge -> {
+                if (edge instanceof AirWire) {
+                    edge.setHidden(flag);
+                }
+            });
+        });
+    }
 
     // A flag to indicate whether the part is currently selected
     private final BooleanProperty isSelected = new SimpleBooleanProperty(false);
@@ -117,6 +126,7 @@ public class Part {
         partNode.setAttribute("x", Double.toString(getPosition().getX()));
         partNode.setAttribute("y", Double.toString(getPosition().getY()));
         partNode.setAttribute("rotation", Double.toString(getRotation()));
+        partNode.setAttribute("hidden", Boolean.toString(isHidden()));
 
         for (Pin ps : getPins()) {
             ps.setId(junctionId.val++);

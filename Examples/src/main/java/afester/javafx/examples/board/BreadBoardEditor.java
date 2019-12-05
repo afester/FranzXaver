@@ -1,11 +1,9 @@
 package afester.javafx.examples.board;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Properties;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import afester.javafx.components.DrawingArea;
 import afester.javafx.components.StatusBar;
@@ -61,6 +59,7 @@ import javafx.stage.Stage;
  */
 public class BreadBoardEditor extends Application {
 
+    public static final Logger log = LogManager.getLogger();
 
     private Stage stage;
     
@@ -108,6 +107,7 @@ public class BreadBoardEditor extends Application {
 
     @Override
     public void start(Stage stage){
+        log.info("Starting Application");
 
         // The pane is exactly the size of the center component. Its children (which is the BoardView) are clipped
         // and the view can be panned and zoomed.
@@ -390,10 +390,10 @@ public class BreadBoardEditor extends Application {
 
     private void switchTab(int newIdx) {
         if (newIdx == 0) {
-            System.err.println("Switch to TOP tab");
+            log.debug("Switch to TOP tab");
             currentDrawingView = topDrawingView;
         } else if (newIdx == 1) {
-            System.err.println("Switch to BOTTOM tab");
+            log.debug("Switch to BOTTOM tab");
 
             if (bottomView == null) {
                 Board b = topView.getBoard();
@@ -415,7 +415,7 @@ public class BreadBoardEditor extends Application {
             
             currentDrawingView = bottomDrawingView;
         } else if (newIdx == 2) {
-            System.err.println("Switch to PRINT tab");
+            log.debug("Switch to PRINT tab");
 
             if (printPanel == null) {
                 printPanel = new PrintPanel(topView.getBoard(), stage);
@@ -436,7 +436,7 @@ public class BreadBoardEditor extends Application {
 //            topView.clearSelection();
 //            Trace trace = (Trace) selectedObject;
 //            Net net = trace.getNet();
-//            System.err.println("Cleaning up " + net);
+//            log.debug("Cleaning up " + net);
 //            
 //            net.cleanup();
 //        }
@@ -644,7 +644,7 @@ public class BreadBoardEditor extends Application {
         fileChooser.setTitle("Import schematic ...");
         File result = fileChooser.showOpenDialog(stage);
         if (result != null) {
-            System.err.println("Importing " + result.getAbsolutePath());
+            log.debug("Importing " + result.getAbsolutePath());
 
             NetImport ni = new EagleImport(result);
             Board board = topView.getBoard();
@@ -661,7 +661,7 @@ public class BreadBoardEditor extends Application {
 
     @Override
     public void stop() {
-        System.err.println("Terminating ...");
+        log.info("Exitting Application");
         if (topView != null) {
             final var fileName = topView.getBoard().getFileName();
             props.setString("lastFile", fileName);
