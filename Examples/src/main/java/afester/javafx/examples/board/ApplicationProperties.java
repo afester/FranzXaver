@@ -23,6 +23,8 @@ public class ApplicationProperties {
         try {
             InputStream is = new FileInputStream("application.xml");
             result.p.loadFromXML(is);
+        }catch (FileNotFoundException e) {
+            // Ignored - no properties loaded, default values taken ...
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -34,8 +36,6 @@ public class ApplicationProperties {
         try {
             OutputStream os = new FileOutputStream("application.xml");
             p.storeToXML(os, "BreadBoardEditor");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -45,17 +45,17 @@ public class ApplicationProperties {
         p.setProperty(key, value);
     }
 
-    public String getString(String key) {
-        return p.getProperty(key);
-    }
+//    public String getString(String key) {
+//        return p.getProperty(key);
+//    }
 
     public void setDouble(String key, Double value) {
         p.setProperty(key, value.toString());
     }
-
-    public Double getDouble(String key) {
-        return Double.parseDouble(p.getProperty(key));
-    }
+//
+//    public Double getDouble(String key) {
+//        return Double.parseDouble(p.getProperty(key));
+//    }
 
     public Double getDouble(String key, Double defaultValue) {
         final var dval = p.getProperty(key);
@@ -64,6 +64,15 @@ public class ApplicationProperties {
         }
 
         return Double.parseDouble(dval);
+    }
+
+    public String getString(String key, String defaultValue) {
+        final var sval = p.getProperty(key);
+        if (sval == null) {
+            return defaultValue;
+        }
+
+        return sval;
     }
 
 //    public List<?> getList(String key) {

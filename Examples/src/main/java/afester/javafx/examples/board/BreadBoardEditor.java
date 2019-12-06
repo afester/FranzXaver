@@ -221,8 +221,10 @@ public class BreadBoardEditor extends Application {
 
         stage.show();
 
-        final var lastFile = props.getString("lastFile");
-        loadBoard(new File(lastFile));
+        final var lastFile = props.getString("lastFile", null);
+        if (lastFile != null) {
+            loadBoard(new File(lastFile));
+        }
     }
 
 
