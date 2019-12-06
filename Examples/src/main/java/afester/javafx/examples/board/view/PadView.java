@@ -4,25 +4,27 @@ import afester.javafx.examples.board.model.Pin;
 import javafx.geometry.VPos;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 /**
  * A Pad is a junction which refers to a specific pin of a Part.
  */
-public class PadViewTop extends AbstractPadView {
+public class PadView extends AbstractPadView {
 
     private Pin pad;
 
     /**
      * Creates a new PadView.
      */
-    public PadViewTop(Pin pad) {
+    public PadView(Pin pad, boolean isBottom) {
         super(pad);
         this.pad = pad;
 
-        Shape c = new Circle(pad.getLocalPos().getX(), pad.getLocalPos().getY(), 0.4); // drill*2);
+        final var c = new Circle(pad.getLocalPos().getX(), pad.getLocalPos().getY(), 0.4); // drill*2);
+        if (isBottom) {
+            c.setRadius(0.8);
+        }
 
         Text padName = new Text(pad.getLocalPos().getX(), pad.getLocalPos().getY(), this.pad.getPadName());
 

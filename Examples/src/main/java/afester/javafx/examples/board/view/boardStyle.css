@@ -1,9 +1,49 @@
 
-BoardShape {
+TopBoardView BoardShape {
    -fx-fill: #ffec80;			/* Board color */
    -fx-stroke: gray;			/* Board border color */
    -fx-stroke-width: 0.3px;		/* Board border width */
 }
+
+TopBoardView HoleView {
+   -fx-fill: white;
+}
+
+TopBoardView PadView Circle {
+   -fx-fill: #808080;
+}
+
+TopBoardView .TraceNormal{
+   -fx-stroke: #D2D1CF; /*#606060;*/
+   -fx-stroke-width: 0.8px;
+   -fx-stroke-line-cap: round;
+}
+
+
+BottomBoardView BoardShape {
+   -fx-fill: #FCF1B8;			/* Board color */
+   -fx-stroke: gray;			/* Board border color */
+   -fx-stroke-width: 0.3px;		/* Board border width */
+}
+
+BottomBoardView HoleView {
+   -fx-fill: white;
+   -fx-stroke: #EFBD73; /* #C39B5D;*/
+   -fx-stroke-width: 0.6px;
+}
+
+BottomBoardView PadView Circle {
+   -fx-fill: #606060;
+/*   -fx-stroke: #C39B5D;
+   -fx-stroke-width: 0.6px;*/
+}
+
+BottomBoardView .TraceNormal{
+	-fx-stroke: #ff0000; /*#606060;*/
+	-fx-stroke-width: 0.6px;
+	-fx-stroke-line-cap: round;
+}
+
 
 BoardHandle {
    -fx-fill: None;
@@ -35,32 +75,6 @@ ToHandle {
    -fx-fill: yellow;
    -fx-stroke: green;
    -fx-stroke-width: 0.1px;
-}
-
-HoleViewTop {
-   -fx-fill: white;
-}
-
-HoleViewBottom {
-   -fx-fill: white;
-   -fx-stroke: #C39B5D;
-   -fx-stroke-width: 0.6px;
-}
-
-PadViewTop Circle {
-   -fx-fill: #808080;
-}
-
-PadViewBottom Circle {
-   -fx-fill: #606060;
-/*   -fx-stroke: #C39B5D;
-   -fx-stroke-width: 0.6px;*/
-}
-
-TraceView.TraceNormal{
-	-fx-stroke: #D2D1CF; /*#606060;*/
-	-fx-stroke-width: 0.8px;
-	-fx-stroke-line-cap: round;
 }
 
 TraceView.TraceHighlight{

@@ -14,7 +14,6 @@ import afester.javafx.examples.board.model.Part;
 import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.tools.PointTools;
 import afester.javafx.examples.board.tools.Polygon2D;
-import javafx.scene.shape.Circle;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -27,7 +26,7 @@ import javafx.scene.Group;
 import javafx.scene.layout.Pane;
 
 
-public class BoardView extends Pane {
+public abstract class BoardView extends Pane {
     private final static Logger log = LogManager.getLogger();
 
     private Board board;
@@ -334,13 +333,7 @@ public class BoardView extends Pane {
         Group padsGroup = new Group();
         for (double ypos = padOffset.getY();  ypos < b.getHeight();  ypos += 2.54 ) {
             for (double xpos = padOffset.getX();  xpos < b.getWidth();  xpos += 2.54) {
-                Circle c = null;
-                if (isBottom) {
-                    c = new HoleViewBottom(xpos, ypos);
-                } else  {
-                    c = new HoleViewTop(xpos, ypos);
-                }
-                
+                final var c = new HoleView(xpos, ypos, isBottom);
                 padsGroup.getChildren().add(c);
             }
         }

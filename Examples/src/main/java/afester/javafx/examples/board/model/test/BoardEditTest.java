@@ -13,6 +13,7 @@ import afester.javafx.examples.board.model.BoardLoader;
 import afester.javafx.examples.board.model.Part;
 import afester.javafx.examples.board.view.BoardView;
 import afester.javafx.examples.board.view.PartView;
+import afester.javafx.examples.board.view.TopBoardView;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.transform.Rotate;
@@ -26,7 +27,7 @@ public class BoardEditTest {
     public void loadData() {
         BoardLoader bl = new BoardLoader(new File("loadTest.brd"));
         board = bl.load();
-        boardView = new BoardView(board);
+        boardView = new TopBoardView(board);
     }
 
     

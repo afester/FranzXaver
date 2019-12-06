@@ -5,11 +5,14 @@ import javafx.scene.shape.Circle;
 /**
  * A view for a single hole on the breadboard.
  */
-public class HoleViewTop extends Circle {
+public class HoleView extends Circle {
 
-    public HoleViewTop(double centerX, double centerY) {
-        // hole (frontside of board)
+    public HoleView(double centerX, double centerY, boolean isBottom) {
         super(centerX, centerY, 0.4);
+        
+        if (isBottom) {
+            setRadius(0.7);
+        }
     }
 
     @Override

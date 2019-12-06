@@ -49,10 +49,23 @@ public class ApplicationProperties {
         return p.getProperty(key);
     }
 
-//    public Number getNumber(String key) {
-//        return null;
-//    }
-//
+    public void setDouble(String key, Double value) {
+        p.setProperty(key, value.toString());
+    }
+
+    public Double getDouble(String key) {
+        return Double.parseDouble(p.getProperty(key));
+    }
+
+    public Double getDouble(String key, Double defaultValue) {
+        final var dval = p.getProperty(key);
+        if (dval == null) {
+            return defaultValue;
+        }
+
+        return Double.parseDouble(dval);
+    }
+
 //    public List<?> getList(String key) {
 //        return null;
 //    }

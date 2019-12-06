@@ -39,6 +39,8 @@
                   <Label id="javaVersion" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                   <Label text="JavaFX version:" GridPane.rowIndex="3" />
                   <Label id="javaFxVersion" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <Label text="Log4j version:" GridPane.rowIndex="4" />
+                  <Label id="log4jVersion" text="0.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                </children>
                <opaqueInsets>
                   <Insets />

@@ -231,12 +231,7 @@ public class PartView extends Group implements Interactable {
             }
 
             for (Pin ps : part.getPins()) {
-                Node s = null;
-                if (isBottom) {
-                    s = new PadViewBottom(ps);
-                } else {
-                    s = new PadViewTop(ps);
-                }
+                Node s = new PadView(ps, isBottom);
                 padViews.getChildren().add(s);
             }
         }

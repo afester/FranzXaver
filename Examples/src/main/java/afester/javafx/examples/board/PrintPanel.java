@@ -5,6 +5,8 @@ import java.io.IOException;
 import afester.javafx.components.DrawingArea;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.view.BoardView;
+import afester.javafx.examples.board.view.BottomBoardView;
+import afester.javafx.examples.board.view.TopBoardView;
 import afester.javafx.shapes.Line;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -77,10 +79,10 @@ public class PrintPanel extends BorderPane {
             e.printStackTrace();
         }
 
-        topView = new BoardView(b);
+        topView = new TopBoardView(b);
         topView.setReadOnly(true);
 
-        bottomView = new BoardView(b, true);
+        bottomView = new BottomBoardView(b);
         bottomView.setReadOnly(true);
         bottomView.getTransforms().add(Transform.scale(-1, 1));
 

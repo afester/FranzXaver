@@ -15,9 +15,14 @@ import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.BoardLoader;
 import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.model.NetImport;
+import afester.javafx.examples.board.view.AddCornerInteractor;
 import afester.javafx.examples.board.view.BoardView;
+import afester.javafx.examples.board.view.BottomBoardView;
+import afester.javafx.examples.board.view.DeleteCornerInteractor;
 import afester.javafx.examples.board.view.EditInteractor;
 import afester.javafx.examples.board.view.EditShapeInteractor;
+import afester.javafx.examples.board.view.SplitTraceInteractor;
+import afester.javafx.examples.board.view.TopBoardView;
 import afester.javafx.examples.board.view.TraceView;
 import javafx.application.Application;
 import javafx.geometry.Orientation;
@@ -61,8 +66,9 @@ public class BreadBoardEditor extends Application {
 
     public static final Logger log = LogManager.getLogger();
 
+    private Scene mainScene;
     private Stage stage;
-    
+
     private final SplitPane splitPane = new SplitPane();
     private final TabPane tabPane = new TabPane();
 
@@ -90,10 +96,13 @@ public class BreadBoardEditor extends Application {
     private final ToolbarButton openToolButton = new ToolbarButton("Open board", "afester/javafx/examples/board/file-open.png");
     private final ToolbarButton saveToolButton = new ToolbarButton("Save board", "afester/javafx/examples/board/file-save.png");
     private final ToolbarButton saveAsToolButton = new ToolbarButton("Save board as", "afester/javafx/examples/board/file-saveas.png");
+
     private final ToolbarToggleButton toggleSvgToolButton = new ToolbarToggleButton("Toggle draft / SVG", "afester/javafx/examples/board/view-svg.png");
     private final ToolbarToggleButton toggleShowTracesToolButton = new ToolbarToggleButton("Show / hide routes", "afester/javafx/examples/board/view-traces.png");
     private final ToolbarToggleButton toggleShowAirwiresToolButton = new ToolbarToggleButton("Show / hide unrouted wires", "afester/javafx/examples/board/view-airwires.png");
     private final ToolbarToggleButton toggleShowDimensionsToolButton = new ToolbarToggleButton("Show / hide dimensions", "afester/javafx/examples/board/view-dimensions.png");
+
+    // Edit mode toggles
     private final ToolbarToggleButton selectToolButton = new ToolbarToggleButton("Select", "afester/javafx/examples/board/mode-select.png");
     private final ToolbarToggleButton splitTraceToolButton = new ToolbarToggleButton("Split Trace", "afester/javafx/examples/board/mode-splittrace.png");
     private final ToolbarToggleButton editShapeToolButton = new ToolbarToggleButton("Edit shape", "afester/javafx/examples/board/mode-editshape.png");
@@ -123,8 +132,8 @@ public class BreadBoardEditor extends Application {
         printTab = new Tab("Print preview");
         printTab.setClosable(false);
 
-        tabPane.getSelectionModel().selectedIndexProperty().addListener((obj, oldIdx, newIdx) -> switchTab(newIdx.intValue()));
         tabPane.getTabs().addAll(editTab, bottomViewTab, printTab);
+        tabPane.getSelectionModel().selectedIndexProperty().addListener((obj, oldIdx, newIdx) -> switchTab(newIdx.intValue()));
 
         // Create the menu bar
 
@@ -200,15 +209,18 @@ public class BreadBoardEditor extends Application {
         mainLayout.setRight(rightBar);
         mainLayout.setCenter(splitPane);
 
-        Scene mainScene = new Scene(mainLayout, 1024, 768);
+        // load application state
+        props = ApplicationProperties.load();
+
+        final var width = props.getDouble("appWidth", 1024.0);
+        final var height = props.getDouble("appHeight", 768.0);
+        mainScene = new Scene(mainLayout, width, height);
 
         stage.setScene(mainScene);
         this.stage = stage;
 
         stage.show();
 
-        // load application state
-        props = ApplicationProperties.load();
         final var lastFile = props.getString("lastFile");
         loadBoard(new File(lastFile));
     }
@@ -289,14 +301,14 @@ public class BreadBoardEditor extends Application {
         selectToolButton.setDisable(true);
         selectToolButton.setOnAction(e -> {
             if (topView != null) {
-//                topView.setInteractor(editInteractor);
+                topDrawingView.setInteractor(new EditInteractor(topView));
             }
         });
 
         splitTraceToolButton.setDisable(true);
         splitTraceToolButton.setOnAction(e -> {
             if (topView != null) {
-//                topView.setInteractor(splitTraceInteractor);
+                topDrawingView.setInteractor(new SplitTraceInteractor(topView));
             }
         });
 
@@ -334,7 +346,6 @@ public class BreadBoardEditor extends Application {
     private void setShapeEditMode(Boolean newValue) {
         if (newValue) {
             topDrawingView.setInteractor(new EditShapeInteractor(topView));
-//            topView.setInteractor(editShapeInteractor);
         }
         topView.setShowBoardHandles(newValue);
         editCornersToolBar.setVisible(newValue);
@@ -347,24 +358,18 @@ public class BreadBoardEditor extends Application {
 
         final ToolbarToggleButton editCornerButton = new ToolbarToggleButton("Move corner", "afester/javafx/examples/board/mode-select.png");
         editCornerButton.setOnAction(e -> topDrawingView.setInteractor(new EditShapeInteractor(topView)));
-//);
-//        editCornerButton.selectedProperty().addListener((value, oldValue, newValue) -> {
-//            if (newValue) {
-////                topView.setInteractor(editShapeInteractor);
-//            }
-//        });
 
         final ToolbarToggleButton addCornerButton = new ToolbarToggleButton("Add corner", "afester/javafx/examples/board/editshape-addcorner.png");
         addCornerButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-//                topView.setInteractor(addCornerInteractor);
+                topDrawingView.setInteractor(new AddCornerInteractor(topView));
             }
         });
 
         final ToolbarToggleButton deleteCornerButton = new ToolbarToggleButton("Delete corner", "afester/javafx/examples/board/editshape-deletecorner.png");
         deleteCornerButton.selectedProperty().addListener((value, oldValue, newValue) -> {
             if (newValue) {
-//                topView.setInteractor(deleteCornerInteractor);
+                topDrawingView.setInteractor(new DeleteCornerInteractor(topView));
             }
         });
 
@@ -389,21 +394,32 @@ public class BreadBoardEditor extends Application {
 
 
     private void switchTab(int newIdx) {
+        
         if (newIdx == 0) {
             log.debug("Switch to TOP tab");
+
+            if (bottomView != null) {
+                bottomView.showSvgProperty().unbind();
+                bottomView.showTracesProperty().unbind();
+                bottomView.showAirwiresProperty().unbind();
+                bottomView.showDimensionsProperty().unbind();
+            }
+            topView.showSvgProperty().bind(toggleSvgToolButton.selectedProperty());
+            topView.showTracesProperty().bind(toggleShowTracesToolButton.selectedProperty());
+            topView.showAirwiresProperty().bind(toggleShowAirwiresToolButton.selectedProperty());
+            topView.showDimensionsProperty().bind(toggleShowDimensionsToolButton.selectedProperty());
+
             currentDrawingView = topDrawingView;
         } else if (newIdx == 1) {
             log.debug("Switch to BOTTOM tab");
 
             if (bottomView == null) {
                 Board b = topView.getBoard();
-                bottomView = new BoardView(b, true);
+                bottomView = new BottomBoardView(b);
                 // bottomView.setReadOnly(true);
 
                 bottomView.getTransforms().add(Transform.scale(-1, 1));
-    
-                //final Group g = new Group(bottomView);
-                
+
                 bottomDrawingView = new DrawingArea();
                 bottomView.setReadOnly(true);
                 bottomDrawingView.getPaper().getChildren().add(bottomView);
@@ -412,7 +428,16 @@ public class BreadBoardEditor extends Application {
                 stage.sizeToScene();    // required to properly fit the content to the window
                 bottomDrawingView.fitContentToWindow();
             }
-            
+
+            topView.showSvgProperty().unbind();
+            topView.showTracesProperty().unbind();
+            topView.showAirwiresProperty().unbind();
+            topView.showDimensionsProperty().unbind();
+            bottomView.showSvgProperty().bind(toggleSvgToolButton.selectedProperty());
+            bottomView.showTracesProperty().bind(toggleShowTracesToolButton.selectedProperty());
+            bottomView.showAirwiresProperty().bind(toggleShowAirwiresToolButton.selectedProperty());
+            bottomView.showDimensionsProperty().bind(toggleShowDimensionsToolButton.selectedProperty());
+
             currentDrawingView = bottomDrawingView;
         } else if (newIdx == 2) {
             log.debug("Switch to PRINT tab");
@@ -562,7 +587,7 @@ public class BreadBoardEditor extends Application {
     }
 
     private void setupUi(Board board) {
-        topView = new BoardView(board);
+        topView = new TopBoardView(board);
         bomView = new BomView(topView);
         topDrawingView.getPaper().getChildren().clear();
         topDrawingView.getPaper().getChildren().add(topView);
@@ -650,7 +675,7 @@ public class BreadBoardEditor extends Application {
             Board board = topView.getBoard();
             board.importSchematic(ni);
 
-            topView = new BoardView(board);
+            topView = new TopBoardView(board);
             topDrawingView.getPaper().getChildren().clear();
             topDrawingView.getPaper().getChildren().add(topView);
             topDrawingView.fitContentToWindow();
@@ -663,8 +688,11 @@ public class BreadBoardEditor extends Application {
     public void stop() {
         log.info("Exitting Application");
         if (topView != null) {
-            final var fileName = topView.getBoard().getFileName();
-            props.setString("lastFile", fileName);
+            
+            props.setDouble("appWidth", mainScene.getWidth());
+            props.setDouble("appHeight", mainScene.getHeight());
+            props.setString("lastFile", topView.getBoard().getFileName());
+
             props.save();
         }
     }
