@@ -273,14 +273,9 @@ public class Board {
     }
 
 
-//    public void load(File file) {
-//        boardFile = file;
-//
-//        BoardLoader bl = new BoardLoader(file);
-//        bl.load(this);
-//    }
-
-
+    /**
+     * @return The name of the schematic file on which this board is based.
+     */
     public String getSchematicFile() {
         return schematicFile;
     }
@@ -522,7 +517,10 @@ public class Board {
         update(updatedBoard);
     }
 
+    /**
+     * @return The absolute path name of this Board file.
+     */
     public String getFileName() {
-        return boardFile.getAbsolutePath(); //.getPath();
+        return boardFile.getAbsolutePath();
     }
 }

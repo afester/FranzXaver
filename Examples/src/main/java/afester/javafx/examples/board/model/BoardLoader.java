@@ -331,6 +331,7 @@ public class BoardLoader extends DefaultHandler {
 
     private File sourceFile;
     private SubContentHandler currentHandler;
+    private String schematicFile;
 
     Package currentPackage = null;
     final Map<String, Package> packages = new HashMap<>();
@@ -367,7 +368,10 @@ public class BoardLoader extends DefaultHandler {
         } else {
             final AttributeReader ar = new AttributeReader(attributes);
 
-            if (localName.equals("boardShape")) {
+            if (localName.equals("breadboard")) {
+                log.debug("BreadBoard");
+                schematicFile = ar.getString("schematic");
+            } else if (localName.equals("boardShape")) {
                 log.debug("Board shape");
 
                 currentHandler = new BoardShapeHandler(this);
@@ -460,6 +464,7 @@ public class BoardLoader extends DefaultHandler {
         }
 
         Board result = new Board(sourceFile);
+        result.setSchematicFile(schematicFile);
         nets.forEach(n -> result.addNet(n));
         parts.forEach(p -> result.addPart(p));
         

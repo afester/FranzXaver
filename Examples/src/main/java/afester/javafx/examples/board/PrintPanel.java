@@ -10,6 +10,8 @@ import afester.javafx.examples.board.view.TopBoardView;
 import afester.javafx.shapes.Line;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.print.PageLayout;
 import javafx.print.PageOrientation;
 import javafx.print.Paper;
@@ -23,13 +25,18 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
 
 public class PrintPanel extends BorderPane {
+
+    final Board board;
 
     // Using an intermediate Group for panning and scaling of the print preview
     // By sending the *Pane* to the printer the panning and scaling of the preview
@@ -54,6 +61,7 @@ public class PrintPanel extends BorderPane {
     private Text bottomLabel;
 
     public PrintPanel(Board b, Stage stage) {
+        this.board = b;
         this.stage = stage;
 
         try {
@@ -79,24 +87,24 @@ public class PrintPanel extends BorderPane {
             e.printStackTrace();
         }
 
-        topView = new TopBoardView(b);
+        topView = new TopBoardView(board);
         topView.setReadOnly(true);
 
-        bottomView = new BottomBoardView(b);
+        bottomView = new BottomBoardView(board);
         bottomView.setReadOnly(true);
         bottomView.getTransforms().add(Transform.scale(-1, 1));
 
         topLabel = new Text("Top view");
-        topLabel.setScaleX(0.6);
-        topLabel.setScaleY(0.6);
+        topLabel.setFont(Font.font("Arial", 6));
+
         bottomLabel = new Text("Bottom view");
-        bottomLabel.setScaleX(0.6);
-        bottomLabel.setScaleY(0.6);
+        bottomLabel.setFont(Font.font("Arial", 6));
+
         panZoomView = new Group(pageView);
         pageView.setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(0), new Insets(0))));
         printDrawingView = new DrawingArea();
         printDrawingView.getPaper().getChildren().add(panZoomView);
-        printDrawingView.setEffect(new DropShadow(2d, 10, 10, Color.GRAY));
+//        printDrawingView.setEffect(new DropShadow(2d, 10, 10, Color.GRAY));
         setCenter(printDrawingView);
 
         setupPage(controller.selectedPrinterProperty().get(), controller.selectedPaperProperty().get(), controller.getOrientation()); 
@@ -141,7 +149,7 @@ public class PrintPanel extends BorderPane {
         pageView.setScaleY(scale);
         pageView.setLayoutX(215);
         pageView.setLayoutY(140);
-        
+
 //        final double x = 400;
 //        final double y = 200;
 //        Pane p = new Pane();
@@ -223,7 +231,8 @@ public class PrintPanel extends BorderPane {
         paperHeight = pt2mm(paperHeight);
         pageView.setMinSize(paperWidth, paperHeight);
         pageView.getChildren().clear();
-//        HatchFill.createDiagonalHatch(pageView, paperWidth, paperHeight, 2, Color.DARKGRAY, 0.3);
+        pageView.setEffect(new DropShadow(2d, 3, 3, Color.GRAY));
+        // HatchFill.createDiagonalHatch(pageView, paperWidth, paperHeight, 2, Color.LIGHTGRAY, 0.3);
 
         layout = printer.createPageLayout(paper, orientation, MarginType.DEFAULT); // MarginType.HARDWARE_MINIMUM);
         System.err.println("Layout : " + layout);
@@ -233,9 +242,10 @@ public class PrintPanel extends BorderPane {
         final double bottomMargin = pt2mm(layout.getBottomMargin());
         final double printableWidth = pt2mm(layout.getPrintableWidth());
         final double printableHeight = pt2mm(layout.getPrintableHeight());
-        System.err.printf("Margin: %s %s %s %s (%s x %s)", leftMargin, topMargin, rightMargin, bottomMargin, 
+        System.err.printf("Margin: %s %s %s %s (%s x %s)\n", leftMargin, topMargin, rightMargin, bottomMargin, 
                 printableWidth, printableHeight);
 
+        // The printable area
         printContents = new Pane();
         printContents.setMinSize(printableWidth, printableHeight);
         printContents.setMaxSize(printableWidth, printableHeight);
@@ -243,8 +253,9 @@ public class PrintPanel extends BorderPane {
         // position the left top corner of the print contents so that it is aligned with the printable area
         printContents.setLayoutX(leftMargin);
         printContents.setLayoutY(topMargin);
-
-        printContents.setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(0), new Insets(0))));
+        printContents.setBackground(
+            new Background(
+                new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
         final double contentMidpoint = printableWidth / 2;
         final double boardWidth = topView.getBoard().getWidth();
@@ -256,22 +267,68 @@ public class PrintPanel extends BorderPane {
         bottomGroup.setLayoutX(contentMidpoint + boardWidth + 10);
         bottomGroup.setLayoutY(20);
 
-        topLabel.setX(contentMidpoint - 10 - boardWidth);
-        topLabel.setY(10.0);
-        bottomLabel.setX(contentMidpoint + 10);
-        bottomLabel.setY(10.0);
+        topLabel.setTextOrigin(VPos.TOP);
+        topLabel.setY(0.0);
+        topLabel.setX( (contentMidpoint - topLabel.getBoundsInLocal().getWidth()) / 2);
 
-        Line separator = new Line(contentMidpoint, 0, contentMidpoint, printableHeight);
+        bottomLabel.setTextOrigin(VPos.TOP);
+        bottomLabel.setY(0.0);
+        bottomLabel.setX( contentMidpoint + (contentMidpoint - bottomLabel.getBoundsInLocal().getWidth()) / 2);
+
+        final var header = new Rectangle(0, 0, printableWidth, bottomLabel.getBoundsInLocal().getHeight());
+        header.setStroke(null);
+        header.setFill(Color.LIGHTGRAY);
+
+//--------------- Footer
+        final var footer = new GridPane();
+        final var footerLabel1 = new GridText("Board:",                0, 0, Color.GRAY);
+        final var footerText1 = new GridText(board.getFileName(),      1, 0);
+        final var footerLabel2 = new GridText("Schematic:",            0, 1, Color.GRAY);
+        final var footerText2 = new GridText(board.getSchematicFile(), 1, 1);
+        final var footerLabel3 = new GridText("Date:",                 2, 0, Color.GRAY);
+        final var footerText3 = new GridText("10.12.2019 12:45",       3, 0);
+        footer.getChildren().addAll(footerLabel1, footerText1,
+                                    footerLabel2, footerText2,
+                                    footerLabel3, footerText3);
+        footer.setStyle("-fx-border-color: black; -fx-border-style: solid outside none none none; -fx-border-width: 0.4px 0 0 0");
+        footer.setPrefWidth(printableWidth);
+        footer.setHgap(10);
+
+        // TODO: how can we properly calculate the height of the footer so that
+        // it is aligned at the bottom?
+        /** From Node.layoutYProperty:
+         * 
+         * Defines the y coordinate of the translation that is added to this {@code Node}'s
+         * transform for the purpose of layout. The value should be computed as the
+         * offset required to adjust the position of the node from its current
+         * {@link #layoutBoundsProperty() layoutBounds minY} position (which might not be 0) to the desired location.
+         */
+/////////////////////////
+        var footerHeight = footer.getBoundsInLocal().getHeight();
+        footerHeight *= 2.2;
+        footer.setLayoutY(printableHeight - footerHeight);
+/////////////////////////
+
+        Line separator = new Line(contentMidpoint, 0, contentMidpoint, 
+                                  printableHeight - footerHeight);
         separator.getStrokeDashArray().addAll(2.0, 2.0);
         separator.setStroke(Color.BLUE);
         separator.setStrokeWidth(0.3);
 
-//        Rectangle border = new Rectangle(0, 0, printableWidth, printableHeight);
-//        border.setFill(null);
-//        border.setStroke(Color.BLACK);
-//        border.setStrokeWidth(0.4);
+//        Line footerSep = new Line(0, printableHeight - footerHeight, printableWidth,printableHeight - footerHeight);  
+//        footerSep.setStroke(Color.RED);
+//        footerSep.setStrokeWidth(0.3);
 
-        printContents.getChildren().addAll(separator, topLabel, bottomLabel, topGroup, bottomGroup); // , border);
+        Rectangle border = new Rectangle(0, 0, printableWidth, printableHeight);
+        border.setFill(null);
+        border.setStroke(Color.BLACK);
+        border.setStrokeWidth(0.4);
+
+        printContents.getChildren().addAll(header, topLabel, bottomLabel,
+                                           footer,
+                                           separator, border, 
+                                           topGroup, bottomGroup);
+
         pageView.getChildren().add(printContents);
 
         stage.sizeToScene();    // required to properly fit the content to the window

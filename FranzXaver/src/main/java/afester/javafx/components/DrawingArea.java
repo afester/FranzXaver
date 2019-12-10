@@ -67,7 +67,7 @@ public class DrawingArea extends ScrollPane {
             updatePaperBoundsRect(newValue);
         });
 
-        desk.getChildren().addAll(pr, transformationArea); // , l1, l2);
+        desk.getChildren().addAll(/*pr, */transformationArea); // , l1, l2);
 
         setContent(new Group(desk));
         setHbarPolicy(ScrollBarPolicy.ALWAYS);
