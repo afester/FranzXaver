@@ -10,6 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.paint.Color;
 
 public class BomViewController implements Initializable {
     @FXML
@@ -38,6 +39,13 @@ public class BomViewController implements Initializable {
                     super.updateItem(item, empty);
 
                     if (item != null) {
+                        if (item.isHidden()) {
+                            setTextFill(Color.GRAY);
+                        } else {
+                            setTextFill(Color.BLACK);
+                        }
+                        
+
                         if (item.getValue().isEmpty()) {
                             setText(String.format("%s", item.getName()));
                         } else {
@@ -61,7 +69,8 @@ public class BomViewController implements Initializable {
                     super.updateItem(net, empty);
 
                     if (net != null) {
-                        setText(net.getName());
+                        setText(String.format("%s (%s nodes)", net.getName(),
+                                net.getAllJunctions().size()));
                     } else {
                         setText("");
                     }
