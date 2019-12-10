@@ -1,6 +1,8 @@
 package afester.javafx.examples.board;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import afester.javafx.components.DrawingArea;
 import afester.javafx.examples.board.model.Board;
@@ -10,7 +12,6 @@ import afester.javafx.examples.board.view.TopBoardView;
 import afester.javafx.shapes.Line;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.print.PageLayout;
 import javafx.print.PageOrientation;
@@ -26,6 +27,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -119,10 +121,10 @@ public class PrintPanel extends BorderPane {
             return;
         }
 
-        // Issue: by definition, in this application, one unit in the pageView is 1 mm.
+        // Note: by definition, in this application, one unit in the pageView is 1 mm.
         // Since this also applies to the preview page, everything fits in the preview 
-        // (the size of the preview pane is directly derived from the width and height, in mm, of the
-        // page layout).
+        // (the size of the preview pane is directly derived from the width and height, 
+        // in mm, of the page layout).
 
         //******************************************************
         // However, the printing unit is "font points". Not dots or the like!
@@ -234,14 +236,14 @@ public class PrintPanel extends BorderPane {
         pageView.setEffect(new DropShadow(2d, 3, 3, Color.GRAY));
         // HatchFill.createDiagonalHatch(pageView, paperWidth, paperHeight, 2, Color.LIGHTGRAY, 0.3);
 
-        layout = printer.createPageLayout(paper, orientation, MarginType.DEFAULT); // MarginType.HARDWARE_MINIMUM);
-        System.err.println("Layout : " + layout);
+        layout = printer.createPageLayout(paper, orientation, MarginType.DEFAULT); // .HARDWARE_MINIMUM);
         final double leftMargin = pt2mm(layout.getLeftMargin());
         final double topMargin = pt2mm(layout.getTopMargin());
         final double rightMargin = pt2mm(layout.getRightMargin());
         final double bottomMargin = pt2mm(layout.getBottomMargin());
         final double printableWidth = pt2mm(layout.getPrintableWidth());
         final double printableHeight = pt2mm(layout.getPrintableHeight());
+        System.err.println("Layout : " + layout);
         System.err.printf("Margin: %s %s %s %s (%s x %s)\n", leftMargin, topMargin, rightMargin, bottomMargin, 
                 printableWidth, printableHeight);
 
@@ -249,7 +251,7 @@ public class PrintPanel extends BorderPane {
         printContents = new Pane();
         printContents.setMinSize(printableWidth, printableHeight);
         printContents.setMaxSize(printableWidth, printableHeight);
-        
+
         // position the left top corner of the print contents so that it is aligned with the printable area
         printContents.setLayoutX(leftMargin);
         printContents.setLayoutY(topMargin);
@@ -280,19 +282,33 @@ public class PrintPanel extends BorderPane {
         header.setFill(Color.LIGHTGRAY);
 
 //--------------- Footer
-        final var footer = new GridPane();
-        final var footerLabel1 = new GridText("Board:",                0, 0, Color.GRAY);
-        final var footerText1 = new GridText(board.getFileName(),      1, 0);
-        final var footerLabel2 = new GridText("Schematic:",            0, 1, Color.GRAY);
-        final var footerText2 = new GridText(board.getSchematicFile(), 1, 1);
-        final var footerLabel3 = new GridText("Date:",                 2, 0, Color.GRAY);
-        final var footerText3 = new GridText("10.12.2019 12:45",       3, 0);
-        footer.getChildren().addAll(footerLabel1, footerText1,
-                                    footerLabel2, footerText2,
-                                    footerLabel3, footerText3);
+
+        final var footer = new HBox();
+        footer.setPadding(new Insets(1));
+        // footer.setBackground(new Background(new BackgroundFill(Color.LIGHTYELLOW, new CornerRadii(0), new Insets(0))));
         footer.setStyle("-fx-border-color: black; -fx-border-style: solid outside none none none; -fx-border-width: 0.4px 0 0 0");
+        footer.setSpacing(5);   // spacing between left and right column
+
+        final var leftColumn = new GridPane();
+        leftColumn.setHgap(1);
+        //leftColumn.setGridLinesVisible(true);
+        leftColumn.getChildren().addAll(
+                new GridText("Board:",                 0, 0, Color.GRAY),
+                new GridText(board.getFileName(),      1, 0),
+                new GridText("Schematic:",             0, 1, Color.GRAY),
+                new GridText(board.getSchematicFile(), 1, 1));
+        
+        final var rightColumn = new GridPane();
+        rightColumn.setHgap(1);
+        //rightColumn.setGridLinesVisible(true);
+        final var now = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
+                                         .format(LocalDateTime.now());
+        rightColumn.getChildren().addAll(
+                new GridText("Date:", 0, 0, Color.GRAY),
+                new GridText(now,     1, 0));
+
+        footer.getChildren().addAll(leftColumn, rightColumn);
         footer.setPrefWidth(printableWidth);
-        footer.setHgap(10);
 
         // TODO: how can we properly calculate the height of the footer so that
         // it is aligned at the bottom?
@@ -305,7 +321,7 @@ public class PrintPanel extends BorderPane {
          */
 /////////////////////////
         var footerHeight = footer.getBoundsInLocal().getHeight();
-        footerHeight *= 2.2;
+        footerHeight *= 2.4;
         footer.setLayoutY(printableHeight - footerHeight);
 /////////////////////////
 
@@ -314,10 +330,6 @@ public class PrintPanel extends BorderPane {
         separator.getStrokeDashArray().addAll(2.0, 2.0);
         separator.setStroke(Color.BLUE);
         separator.setStrokeWidth(0.3);
-
-//        Line footerSep = new Line(0, printableHeight - footerHeight, printableWidth,printableHeight - footerHeight);  
-//        footerSep.setStroke(Color.RED);
-//        footerSep.setStrokeWidth(0.3);
 
         Rectangle border = new Rectangle(0, 0, printableWidth, printableHeight);
         border.setFill(null);
@@ -336,8 +348,11 @@ public class PrintPanel extends BorderPane {
         printDrawingView.centerContent();
     }
 
-    
-    private final static double PT2MM = 1.0/72 * 25.4;
+    // NOTE: 1.0/73.2 was required in order to print the complete border.
+    // With the initial 1.0/72.0, the border was clipped left and bottom.
+    // This is reproduceable with the Microsoft print to PDF printer.
+    //private final static double PT2MM = 1.0/72.0 * 25.4;
+    private final static double PT2MM = 1.0/73.2 * 25.4;
 
     private double pt2mm(double points) {
         return points * PT2MM;
