@@ -9,10 +9,9 @@ import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.view.BoardView;
 import afester.javafx.examples.board.view.BottomBoardView;
 import afester.javafx.examples.board.view.TopBoardView;
-import afester.javafx.shapes.Line;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.VPos;
 import javafx.print.PageLayout;
 import javafx.print.PageOrientation;
 import javafx.print.Paper;
@@ -25,10 +24,13 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -36,6 +38,22 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
 
+
+/**
+ * PrintPanel
+ * +--- Right: PrintPanel.fxml
+ * +--- Center: DrawingArea printDrawingView
+ *       + transformationPane (???)
+ *          + Group paper (from DrawingArea)
+ *             + Pane pageView (Size of paper, e.g. DIN A4)
+ *                + Pane printContents (Size of printable area). Clipped to printable size.
+ *                   + header
+ *                   + HBox footer
+ *                   + Line separator
+ *                   + Rectangle border
+ *                   + BoardView(Pane) topView
+ *                   + BoardView(Pane) bottomView
+ */
 public class PrintPanel extends BorderPane {
 
     final Board board;
@@ -45,17 +63,16 @@ public class PrintPanel extends BorderPane {
     // is ignored!
 
     private final Stage stage;
+    private PrintPanelController controller;
+
+    private DrawingArea printDrawingView;
 
     // The whole page
     private final Pane pageView = new Pane();
 
-    private DrawingArea printDrawingView;
-    private Group panZoomView;
-
-    private PrintPanelController controller;
-
+    // The printable area
     private PageLayout layout;
-    private Pane printContents; 
+    private BorderPane printContents; 
 
     private BoardView topView;
     private BoardView bottomView;
@@ -102,14 +119,17 @@ public class PrintPanel extends BorderPane {
         bottomLabel = new Text("Bottom view");
         bottomLabel.setFont(Font.font("Arial", 6));
 
-        panZoomView = new Group(pageView);
         pageView.setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(0), new Insets(0))));
+        pageView.setEffect(new DropShadow(2d, 3, 3, Color.GRAY));
+        // HatchFill.createDiagonalHatch(pageView, paperWidth, paperHeight, 2, Color.LIGHTGRAY, 0.3);
+
         printDrawingView = new DrawingArea();
-        printDrawingView.getPaper().getChildren().add(panZoomView);
-//        printDrawingView.setEffect(new DropShadow(2d, 10, 10, Color.GRAY));
+        printDrawingView.getPaper().getChildren().add(pageView);
         setCenter(printDrawingView);
 
-        setupPage(controller.selectedPrinterProperty().get(), controller.selectedPaperProperty().get(), controller.getOrientation()); 
+        setupPage(controller.selectedPrinterProperty().get(), 
+                  controller.selectedPaperProperty().get(), 
+                  controller.getOrientation()); 
     }
 
 
@@ -220,6 +240,7 @@ public class PrintPanel extends BorderPane {
         System.err.println("Paper  : " + paper);
         System.err.println("Orienta: " + orientation);
 
+        // setup the page to the current size and remove any child nodes
         double paperWidth = 0.0;
         double paperHeight = 0.0;
         if (orientation == PageOrientation.PORTRAIT) {
@@ -233,9 +254,8 @@ public class PrintPanel extends BorderPane {
         paperHeight = pt2mm(paperHeight);
         pageView.setMinSize(paperWidth, paperHeight);
         pageView.getChildren().clear();
-        pageView.setEffect(new DropShadow(2d, 3, 3, Color.GRAY));
-        // HatchFill.createDiagonalHatch(pageView, paperWidth, paperHeight, 2, Color.LIGHTGRAY, 0.3);
 
+        // Create a print layout to determine the margins and the printable size
         layout = printer.createPageLayout(paper, orientation, MarginType.DEFAULT); // .HARDWARE_MINIMUM);
         final double leftMargin = pt2mm(layout.getLeftMargin());
         final double topMargin = pt2mm(layout.getTopMargin());
@@ -248,41 +268,34 @@ public class PrintPanel extends BorderPane {
                 printableWidth, printableHeight);
 
         // The printable area
-        printContents = new Pane();
+        printContents = new BorderPane(); /// Pane();
         printContents.setMinSize(printableWidth, printableHeight);
         printContents.setMaxSize(printableWidth, printableHeight);
 
         // position the left top corner of the print contents so that it is aligned with the printable area
         printContents.setLayoutX(leftMargin);
         printContents.setLayoutY(topMargin);
-        printContents.setBackground(
-            new Background(
-                new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+//        printContents.setBackground(
+//            new Background(
+//                new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
+        printContents.setClip(new Rectangle(0, 0, printableWidth, printableHeight));
 
-        final double contentMidpoint = printableWidth / 2;
-        final double boardWidth = topView.getBoard().getWidth();
-        Group topGroup = new Group(topView);
-        topGroup.setLayoutX(contentMidpoint - 10 - boardWidth);
-        topGroup.setLayoutY(20);
+//        final double contentMidpoint1 = printableWidth / 2;
+//        final double boardWidth = topView.getBoard().getWidth();
 
-        Group bottomGroup = new Group(bottomView);
-        bottomGroup.setLayoutX(contentMidpoint + boardWidth + 10);
-        bottomGroup.setLayoutY(20);
+//--------------- Header
+        final var header = new HBox();
+        header.setPrefWidth(printableWidth);
+        header.setStyle("-fx-border-color: red; -fx-border-style: solid outside; -fx-border-width: 0.4px");
 
-        topLabel.setTextOrigin(VPos.TOP);
-        topLabel.setY(0.0);
-        topLabel.setX( (contentMidpoint - topLabel.getBoundsInLocal().getWidth()) / 2);
+        header.getChildren().add(topLabel);
+        header.getChildren().add(bottomLabel);
 
-        bottomLabel.setTextOrigin(VPos.TOP);
-        bottomLabel.setY(0.0);
-        bottomLabel.setX( contentMidpoint + (contentMidpoint - bottomLabel.getBoundsInLocal().getWidth()) / 2);
-
-        final var header = new Rectangle(0, 0, printableWidth, bottomLabel.getBoundsInLocal().getHeight());
-        header.setStroke(null);
-        header.setFill(Color.LIGHTGRAY);
+        //final var header = new Rectangle(0, 0, printableWidth, bottomLabel.getBoundsInLocal().getHeight());
+        //header.setStroke(null);
+        //header.setFill(Color.LIGHTGRAY);
 
 //--------------- Footer
-
         final var footer = new HBox();
         footer.setPadding(new Insets(1));
         // footer.setBackground(new Background(new BackgroundFill(Color.LIGHTYELLOW, new CornerRadii(0), new Insets(0))));
@@ -324,22 +337,52 @@ public class PrintPanel extends BorderPane {
         footerHeight *= 2.4;
         footer.setLayoutY(printableHeight - footerHeight);
 /////////////////////////
-
-        Line separator = new Line(contentMidpoint, 0, contentMidpoint, 
-                                  printableHeight - footerHeight);
-        separator.getStrokeDashArray().addAll(2.0, 2.0);
-        separator.setStroke(Color.BLUE);
-        separator.setStrokeWidth(0.3);
+//
+//        Line separator = new Line(contentMidpoint, 0, contentMidpoint, 
+//                                  printableHeight - footerHeight);
+//        separator.getStrokeDashArray().addAll(2.0, 2.0);
+//        separator.setStroke(Color.BLUE);
+//        separator.setStrokeWidth(0.3);
 
         Rectangle border = new Rectangle(0, 0, printableWidth, printableHeight);
         border.setFill(null);
         border.setStroke(Color.BLACK);
         border.setStrokeWidth(0.4);
 
-        printContents.getChildren().addAll(header, topLabel, bottomLabel,
-                                           footer,
-                                           separator, border, 
-                                           topGroup, bottomGroup);
+        GridPane x = new GridPane();
+        
+       // x.setGridLinesVisible(true);
+        
+        ColumnConstraints cc = new ColumnConstraints();
+        cc.setPercentWidth(50);
+        cc.setHgrow(Priority.ALWAYS);
+        cc.setHalignment(HPos.CENTER);
+        x.getColumnConstraints().add(cc);
+        cc = new ColumnConstraints();
+        cc.setPercentWidth(50);
+        cc.setHgrow(Priority.ALWAYS);
+        cc.setHalignment(HPos.CENTER);
+        x.getColumnConstraints().add(cc);
+
+        RowConstraints rc = new RowConstraints();
+        rc.setVgrow(Priority.NEVER);
+        x.getRowConstraints().add(rc);
+        rc = new RowConstraints();
+        rc.setVgrow(Priority.ALWAYS);
+        x.getRowConstraints().add(rc);
+        rc = new RowConstraints();
+        rc.setVgrow(Priority.NEVER);
+        x.getRowConstraints().add(rc);
+
+        // the board views need to be put into a group since they are not managed
+        // and also the bottom view is transformed to be mirrored
+        x.add(topLabel, 0, 0);
+        x.add(new Group(topView), 0, 1);
+        x.add(bottomLabel, 1, 0);
+        x.add(new Group(bottomView), 1, 1);
+        x.add(footer, 0, 2, 2, 1);
+
+        printContents.setCenter(x);
 
         pageView.getChildren().add(printContents);
 
@@ -351,6 +394,8 @@ public class PrintPanel extends BorderPane {
     // NOTE: 1.0/73.2 was required in order to print the complete border.
     // With the initial 1.0/72.0, the border was clipped left and bottom.
     // This is reproduceable with the Microsoft print to PDF printer.
+    // Also, there seems to be an offset of 1mm or so with the printable area
+    // moved to the left.
     //private final static double PT2MM = 1.0/72.0 * 25.4;
     private final static double PT2MM = 1.0/73.2 * 25.4;
 

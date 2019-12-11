@@ -134,7 +134,6 @@ public class BreadBoardEditor extends Application {
 
         tabPane.getTabs().addAll(editTab, bottomViewTab, printTab);
         tabPane.getSelectionModel().selectedIndexProperty().addListener((obj, oldIdx, newIdx) -> switchTab(newIdx.intValue()));
-
         // Create the menu bar
 
         Menu fileMenu = new Menu("File");
@@ -396,9 +395,8 @@ public class BreadBoardEditor extends Application {
 
 
     private void switchTab(int newIdx) {
-        
         if (newIdx == 0) {
-            log.debug("Switch to TOP tab");
+            log.info("Switch to TOP tab");
 
             if (bottomView != null) {
                 bottomView.showSvgProperty().unbind();
@@ -629,6 +627,7 @@ public class BreadBoardEditor extends Application {
         topView.showDimensionsProperty().bind(toggleShowDimensionsToolButton.selectedProperty());
 
         stage.sizeToScene();
+        switchTab(0);   // ???????????
         topDrawingView.fitContentToWindow();
     }
 
