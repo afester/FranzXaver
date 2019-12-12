@@ -31,6 +31,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -46,13 +47,18 @@ import javafx.stage.Stage;
  *       + transformationPane (???)
  *          + Group paper (from DrawingArea)
  *             + Pane pageView (Size of paper, e.g. DIN A4)
- *                + Pane printContents (Size of printable area). Clipped to printable size.
- *                   + header
- *                   + HBox footer
+ *                + GridPane printContents  Set to the size of printable area 
+ *                   |                      Children clipped to printable size
+ *                   |                      Specifies the overall layout of the page
+ *                   |
+ *                   + 0,0 topLabel
+ *                   + 1,0 bottomLabel
  *                   + Line separator
- *                   + Rectangle border
- *                   + BoardView(Pane) topView
- *                   + BoardView(Pane) bottomView
+ *                   + 0,1 Group
+ *                   |  + BoardView(Pane) topView
+ *                   + 1,1 Group
+ *                   |   + BoardView(Pane) bottomView
+ *                   + 0,2 HBox footer
  */
 public class PrintPanel extends BorderPane {
 
@@ -72,12 +78,12 @@ public class PrintPanel extends BorderPane {
 
     // The printable area
     private PageLayout layout;
-    private BorderPane printContents; 
+    private GridPane printContents; 
 
     private BoardView topView;
     private BoardView bottomView;
-    private Text topLabel;
-    private Text bottomLabel;
+    private Text leftText;
+    private Text rightText;
 
     public PrintPanel(Board b, Stage stage) {
         this.board = b;
@@ -113,11 +119,11 @@ public class PrintPanel extends BorderPane {
         bottomView.setReadOnly(true);
         bottomView.getTransforms().add(Transform.scale(-1, 1));
 
-        topLabel = new Text("Top view");
-        topLabel.setFont(Font.font("Arial", 6));
+        leftText = new Text("Top view");
+        leftText.setFont(Font.font("Arial", 6));
 
-        bottomLabel = new Text("Bottom view");
-        bottomLabel.setFont(Font.font("Arial", 6));
+        rightText = new Text("Bottom view");
+        rightText.setFont(Font.font("Arial", 6));
 
         pageView.setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(0), new Insets(0))));
         pageView.setEffect(new DropShadow(2d, 3, 3, Color.GRAY));
@@ -267,12 +273,15 @@ public class PrintPanel extends BorderPane {
         System.err.printf("Margin: %s %s %s %s (%s x %s)\n", leftMargin, topMargin, rightMargin, bottomMargin, 
                 printableWidth, printableHeight);
 
-        // The printable area
-        printContents = new BorderPane(); /// Pane();
+//------------ Main Layout - the printable area
+        printContents = new GridPane(); // Pane(); // new BorderPane(); /// Pane();
+        // printContents.setGridLinesVisible(true);
+
         printContents.setMinSize(printableWidth, printableHeight);
         printContents.setMaxSize(printableWidth, printableHeight);
 
-        // position the left top corner of the print contents so that it is aligned with the printable area
+        // position the left top corner of the print contents so that 
+        // it is aligned with the printable area
         printContents.setLayoutX(leftMargin);
         printContents.setLayoutY(topMargin);
 //        printContents.setBackground(
@@ -280,37 +289,51 @@ public class PrintPanel extends BorderPane {
 //                new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
         printContents.setClip(new Rectangle(0, 0, printableWidth, printableHeight));
 
-//        final double contentMidpoint1 = printableWidth / 2;
-//        final double boardWidth = topView.getBoard().getWidth();
+        // Set up the main layout
+        //    HGrow=ALWAYS/50%      HGrow=ALWAYS/50%
+        // +--------------------+--------------------+
+        // |                    |                    | VGrow=NEVER
+        // +--------------------+--------------------+
+        // |                    |                    |
+        // |                    |                    | VGrow=ALWAYS
+        // |                    |                    |
+        // +--------------------+--------------------+
+        // |                                         | VGrow=NEVER
+        // +-----------------------------------------+
+        final var cc1 = new ColumnConstraints();
+        cc1.setPercentWidth(50);
+        cc1.setHgrow(Priority.ALWAYS);
+        cc1.setHalignment(HPos.CENTER);
+        final var cc2 = new ColumnConstraints();
+        cc2.setPercentWidth(50);
+        cc2.setHgrow(Priority.ALWAYS);
+        cc2.setHalignment(HPos.CENTER);
+        printContents.getColumnConstraints().addAll(cc1, cc2);
 
-//--------------- Header
-        final var header = new HBox();
-        header.setPrefWidth(printableWidth);
-        header.setStyle("-fx-border-color: red; -fx-border-style: solid outside; -fx-border-width: 0.4px");
-
-        header.getChildren().add(topLabel);
-        header.getChildren().add(bottomLabel);
-
-        //final var header = new Rectangle(0, 0, printableWidth, bottomLabel.getBoundsInLocal().getHeight());
-        //header.setStroke(null);
-        //header.setFill(Color.LIGHTGRAY);
+        final var rc1 = new RowConstraints();
+        rc1.setVgrow(Priority.NEVER);
+        final var rc2 = new RowConstraints();
+        rc2.setVgrow(Priority.ALWAYS);
+        final var rc3 = new RowConstraints();
+        rc3.setVgrow(Priority.NEVER);
+        printContents.getRowConstraints().addAll(rc1, rc2, rc3);
 
 //--------------- Footer
         final var footer = new HBox();
         footer.setPadding(new Insets(1));
-        // footer.setBackground(new Background(new BackgroundFill(Color.LIGHTYELLOW, new CornerRadii(0), new Insets(0))));
+        // footer.setBackground(new Background(new BackgroundFill(Color.LIGHTYELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
         footer.setStyle("-fx-border-color: black; -fx-border-style: solid outside none none none; -fx-border-width: 0.4px 0 0 0");
         footer.setSpacing(5);   // spacing between left and right column
 
         final var leftColumn = new GridPane();
         leftColumn.setHgap(1);
-        //leftColumn.setGridLinesVisible(true);
+        // leftColumn.setGridLinesVisible(true);
         leftColumn.getChildren().addAll(
                 new GridText("Board:",                 0, 0, Color.GRAY),
                 new GridText(board.getFileName(),      1, 0),
                 new GridText("Schematic:",             0, 1, Color.GRAY),
                 new GridText(board.getSchematicFile(), 1, 1));
-        
+
         final var rightColumn = new GridPane();
         rightColumn.setHgap(1);
         //rightColumn.setGridLinesVisible(true);
@@ -323,67 +346,32 @@ public class PrintPanel extends BorderPane {
         footer.getChildren().addAll(leftColumn, rightColumn);
         footer.setPrefWidth(printableWidth);
 
-        // TODO: how can we properly calculate the height of the footer so that
-        // it is aligned at the bottom?
-        /** From Node.layoutYProperty:
-         * 
-         * Defines the y coordinate of the translation that is added to this {@code Node}'s
-         * transform for the purpose of layout. The value should be computed as the
-         * offset required to adjust the position of the node from its current
-         * {@link #layoutBoundsProperty() layoutBounds minY} position (which might not be 0) to the desired location.
-         */
-/////////////////////////
-        var footerHeight = footer.getBoundsInLocal().getHeight();
-        footerHeight *= 2.4;
-        footer.setLayoutY(printableHeight - footerHeight);
-/////////////////////////
-//
-//        Line separator = new Line(contentMidpoint, 0, contentMidpoint, 
-//                                  printableHeight - footerHeight);
-//        separator.getStrokeDashArray().addAll(2.0, 2.0);
-//        separator.setStroke(Color.BLUE);
-//        separator.setStrokeWidth(0.3);
-
-        Rectangle border = new Rectangle(0, 0, printableWidth, printableHeight);
-        border.setFill(null);
-        border.setStroke(Color.BLACK);
-        border.setStrokeWidth(0.4);
-
-        GridPane x = new GridPane();
-        
-       // x.setGridLinesVisible(true);
-        
-        ColumnConstraints cc = new ColumnConstraints();
-        cc.setPercentWidth(50);
-        cc.setHgrow(Priority.ALWAYS);
-        cc.setHalignment(HPos.CENTER);
-        x.getColumnConstraints().add(cc);
-        cc = new ColumnConstraints();
-        cc.setPercentWidth(50);
-        cc.setHgrow(Priority.ALWAYS);
-        cc.setHalignment(HPos.CENTER);
-        x.getColumnConstraints().add(cc);
-
-        RowConstraints rc = new RowConstraints();
-        rc.setVgrow(Priority.NEVER);
-        x.getRowConstraints().add(rc);
-        rc = new RowConstraints();
-        rc.setVgrow(Priority.ALWAYS);
-        x.getRowConstraints().add(rc);
-        rc = new RowConstraints();
-        rc.setVgrow(Priority.NEVER);
-        x.getRowConstraints().add(rc);
+//--------------- Assemble page
+        // a border around the printable area can be specified like this:
+        // printContents.setStyle("-fx-border-color: red; -fx-border-style: solid; -fx-border-width: 0.4px");
 
         // the board views need to be put into a group since they are not managed
-        // and also the bottom view is transformed to be mirrored
-        x.add(topLabel, 0, 0);
-        x.add(new Group(topView), 0, 1);
-        x.add(bottomLabel, 1, 0);
-        x.add(new Group(bottomView), 1, 1);
-        x.add(footer, 0, 2, 2, 1);
+        // and also the bottom view is transformed to be mirrored. By wrapping them
+        // in a group the coordinate system is normalized again.
 
-        printContents.setCenter(x);
+        final var topGroup = new StackPane(new Group(topView));
+        topGroup.setStyle("-fx-border-color: blue; -fx-border-style: dashed; -fx-border-width: 0 0.4px 0 0");
+        // topGroup.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
 
+        final var bottomGroup = new StackPane(new Group(bottomView));
+        // bottomGroup.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        final var leftHeader = new StackPane(leftText);
+        leftHeader.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        final var rightHeader = new StackPane(rightText);
+        rightHeader.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        printContents.add(leftHeader,  0, 0);
+        printContents.add(rightHeader, 1, 0);
+        printContents.add(topGroup,    0, 1);
+        printContents.add(bottomGroup, 1, 1);
+        printContents.add(footer,      0, 2, 2, 1);
         pageView.getChildren().add(printContents);
 
         stage.sizeToScene();    // required to properly fit the content to the window
@@ -406,5 +394,4 @@ public class PrintPanel extends BorderPane {
     public DrawingArea getDrawingArea() {
         return printDrawingView;
     }
-
 }
