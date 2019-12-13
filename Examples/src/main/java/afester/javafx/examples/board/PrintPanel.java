@@ -120,13 +120,14 @@ public class PrintPanel extends BorderPane {
         bottomView.getTransforms().add(Transform.scale(-1, 1));
 
         leftText = new Text("Top view");
-        leftText.setFont(Font.font("Arial", 6));
+        leftText.setFont(Font.font("Arial", 12));
 
         rightText = new Text("Bottom view");
-        rightText.setFont(Font.font("Arial", 6));
+        rightText.setFont(Font.font("Arial", 12));
 
         pageView.setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(0), new Insets(0))));
-        pageView.setEffect(new DropShadow(2d, 3, 3, Color.GRAY));
+        pageView.setEffect(new DropShadow(2d, 5, 5, Color.GRAY));
+
         // HatchFill.createDiagonalHatch(pageView, paperWidth, paperHeight, 2, Color.LIGHTGRAY, 0.3);
 
         printDrawingView = new DrawingArea();
@@ -167,70 +168,7 @@ public class PrintPanel extends BorderPane {
         // 1pt = 1/72.272 inch = 0,35145007748 mm (25,4/72.272)
         // 1mm = 2.84535433071pt     (72.272/25,4)
 
-        final double scale = 72.0/25.4; // factor: mm to points
-
-        // ******************************************************
-
-        final double xs = pageView.getScaleX();
-        final double ys = pageView.getScaleY();
-        pageView.setScaleX(scale);
-        pageView.setScaleY(scale);
-        pageView.setLayoutX(215);
-        pageView.setLayoutY(140);
-
-//        final double x = 400;
-//        final double y = 200;
-//        Pane p = new Pane();
-//        p.setBackground(new Background(new BackgroundFill(Color.LIGHTYELLOW, new CornerRadii(0), new Insets(0))));
-//        
-//        final double screenDPI = Screen.getPrimary().getDpi();
-//        System.err.printf("Screen resolution: %s\n", screenDPI);
-//
-//        final double scaleP = 200.0/70.5;
-//        System.err.printf("Print scale: %s\n", scaleP);
-//
-//        Circle c = new Circle(x, y, 100 * scaleP);
-//        //                          ^^^ UNIT? 
-//        c.setFill(null);
-//        c.setStroke(Color.BLUE);
-//        Line l1 = new Line(x-5, y, x+5, y);
-//        Line l2 = new Line(x, y - 5, x, y + 5);
-//        Circle c2 = new Circle(3, 3, 3);
-//        c2.setFill(null);
-//        c2.setStroke(Color.RED);
-//        
-//        final double x2 = 300;
-//        final double y2 = 50;
-//        Line l21 = new Line(x2-5, y2, x2+5, y2);
-//        l21.setStroke(Color.GREEN);
-//        Line l22 = new Line(x2, y2 - 5, x2, y2 + 5);
-//        l22.setStroke(Color.GREEN);
-//
-//        final double x3 = 500;
-//        final double y3 = 50;
-//        Line l31 = new Line(x3-5, y3, x3+5, y3);
-//        l31.setStroke(Color.GREEN);
-//        Line l32 = new Line(x3, y3 - 5, x3, y3 + 5);
-//        l32.setStroke(Color.GREEN);
-//        
-//        p.getChildren().addAll(c, c2, l1, l2, l21, l22, l31, l32);
-//
-//        System.err.printf("width: %s, height: %s\n", p.getBoundsInParent().getWidth(), p.getBoundsInParent().getHeight());
-//
-//        System.err.printf("Job resolution: %s\n", job.getJobSettings().getPrintResolution());
-
-//        double scaleX
-//            = layout.getPrintableWidth() / p.getBoundsInParent().getWidth();
-//        double scaleY
-//            = layout.getPrintableHeight() / p.getBoundsInParent().getHeight();
-//        System.err.printf("scaleX: %s, scaleY: %s\n", scaleX, scaleY);
-//        p.setScaleX(scaleX);
-//        p.setScaleX(scaleY);
-
-        boolean printed = job.printPage(layout, pageView);
-        pageView.setScaleX(xs);
-        pageView.setScaleY(ys);
-        
+        boolean printed = job.printPage(layout, printContents); // pageView);
         if (!printed) {
             System.err.println("Printing failed: " + job); // .getJobStatus());
             return;
@@ -246,6 +184,8 @@ public class PrintPanel extends BorderPane {
         System.err.println("Paper  : " + paper);
         System.err.println("Orienta: " + orientation);
 
+        final double scale = 72.0/25.4; // factor: mm to points
+
         // setup the page to the current size and remove any child nodes
         double paperWidth = 0.0;
         double paperHeight = 0.0;
@@ -258,7 +198,7 @@ public class PrintPanel extends BorderPane {
         }
         paperWidth = pt2mm(paperWidth);
         paperHeight = pt2mm(paperHeight);
-        pageView.setMinSize(paperWidth, paperHeight);
+        pageView.setMinSize(paperWidth * scale, paperHeight * scale);
         pageView.getChildren().clear();
 
         // Create a print layout to determine the margins and the printable size
@@ -274,20 +214,23 @@ public class PrintPanel extends BorderPane {
                 printableWidth, printableHeight);
 
 //------------ Main Layout - the printable area
-        printContents = new GridPane(); // Pane(); // new BorderPane(); /// Pane();
+        
+        var printableArea = new StackPane();
+        printableArea.setMinSize(printableWidth * scale, printableHeight * scale);
+        printableArea.setMaxSize(printableWidth * scale, printableHeight * scale);
+        printableArea.setLayoutX(leftMargin * scale);
+        printableArea.setLayoutY(topMargin * scale);
+        printableArea.setClip(new Rectangle(0, 0, printableWidth * scale, printableHeight * scale));
+//        printableArea.setBackground(
+//                new Background(
+//                        new BackgroundFill(Color.CYAN, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        printContents = new GridPane();
         // printContents.setGridLinesVisible(true);
-
-        printContents.setMinSize(printableWidth, printableHeight);
-        printContents.setMaxSize(printableWidth, printableHeight);
-
-        // position the left top corner of the print contents so that 
-        // it is aligned with the printable area
-        printContents.setLayoutX(leftMargin);
-        printContents.setLayoutY(topMargin);
 //        printContents.setBackground(
 //            new Background(
 //                new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
-        printContents.setClip(new Rectangle(0, 0, printableWidth, printableHeight));
+
 
         // Set up the main layout
         //    HGrow=ALWAYS/50%      HGrow=ALWAYS/50%
@@ -354,11 +297,17 @@ public class PrintPanel extends BorderPane {
         // and also the bottom view is transformed to be mirrored. By wrapping them
         // in a group the coordinate system is normalized again.
 
-        final var topGroup = new StackPane(new Group(topView));
-        topGroup.setStyle("-fx-border-color: blue; -fx-border-style: dashed; -fx-border-width: 0 0.4px 0 0");
+        final var abc = new Group(topView);
+        abc.setScaleX(scale);
+        abc.setScaleY(scale);
+        final var topGroup = new StackPane(abc);
+        topGroup.setStyle("-fx-border-style: segments(3, 3), solid;  -fx-border-color: blue, red; -fx-border-width: 0.4px, 1.0px");
         // topGroup.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
 
-        final var bottomGroup = new StackPane(new Group(bottomView));
+        final var xyz = new Group(bottomView);
+        xyz.setScaleX(scale);
+        xyz.setScaleY(scale);
+        final var bottomGroup = new StackPane(xyz);
         // bottomGroup.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
 
         final var leftHeader = new StackPane(leftText);
@@ -372,7 +321,9 @@ public class PrintPanel extends BorderPane {
         printContents.add(topGroup,    0, 1);
         printContents.add(bottomGroup, 1, 1);
         printContents.add(footer,      0, 2, 2, 1);
-        pageView.getChildren().add(printContents);
+        
+        printableArea.getChildren().add(printContents);
+        pageView.getChildren().add(printableArea); // printContents);
 
         stage.sizeToScene();    // required to properly fit the content to the window
         // getDrawingView().fitContentToWindow();

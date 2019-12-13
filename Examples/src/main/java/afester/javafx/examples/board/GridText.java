@@ -12,7 +12,7 @@ public class GridText extends Text {
         super(text);
         GridPane.setConstraints(this, column, row);
         setTextOrigin(VPos.TOP);
-        setFont(Font.font("Arial", 4));
+        setFont(Font.font("Arial", 10));
         setFill(color);
     }
 
