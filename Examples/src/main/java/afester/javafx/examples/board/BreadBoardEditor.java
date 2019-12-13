@@ -443,7 +443,7 @@ public class BreadBoardEditor extends Application {
             log.debug("Switch to PRINT tab");
 
             if (printPanel == null) {
-                printPanel = new PrintPanel(topView.getBoard(), stage);
+                printPanel = new PrintPanel(topView.getBoard(), stage, props);
                 printTab.setContent(printPanel);
 
                 stage.sizeToScene();    // required to properly fit the content to the window

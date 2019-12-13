@@ -63,6 +63,7 @@ import javafx.stage.Stage;
 public class PrintPanel extends BorderPane {
 
     final Board board;
+    final ApplicationProperties props;
 
     // Using an intermediate Group for panning and scaling of the print preview
     // By sending the *Pane* to the printer the panning and scaling of the preview
@@ -85,7 +86,8 @@ public class PrintPanel extends BorderPane {
     private Text leftText;
     private Text rightText;
 
-    public PrintPanel(Board b, Stage stage) {
+    public PrintPanel(Board b, Stage stage, ApplicationProperties props) {
+        this.props = props;
         this.board = b;
         this.stage = stage;
 
@@ -95,19 +97,31 @@ public class PrintPanel extends BorderPane {
             setRight(root);
 
             controller = loader.getController();
-            controller.selectedPrinterProperty().addListener(
-                    (obj, oldValue, newValue) -> 
-                        setupPage(newValue, controller.selectedPaperProperty().get(), controller.getOrientation())); 
+            controller.selectedPrinterProperty().addListener((obj, oldPrinter, newPrinter) -> {
+                props.setString("printer", newPrinter.getName());
+                setupPage(newPrinter, 
+                          controller.selectedPaperProperty().get(), 
+                          controller.getOrientation());
+            });
 
-            controller.selectedPaperProperty().addListener(
-                    (obj, oldValue, newValue) ->
-                        setupPage(controller.selectedPrinterProperty().get(), newValue, controller.getOrientation()));
+            controller.selectedPaperProperty().addListener((obj, oldPaper, newPaper) -> {
+                props.setString("paper", newPaper.getName());
+                setupPage(controller.selectedPrinterProperty().get(), 
+                          newPaper,
+                          controller.getOrientation());
+            });
 
-            controller.orientationProperty().addListener(
-                    (obj, oldValue, newValue) -> {
-                        setupPage(controller.selectedPrinterProperty().get(), controller.selectedPaperProperty().get(), newValue);  
+            controller.orientationProperty().addListener((obj, oldValue, newValue) -> {
+                props.setString("orientation", newValue.name());
+                setupPage(controller.selectedPrinterProperty().get(), controller.selectedPaperProperty().get(), newValue);  
             });
             controller.printButton.setOnAction(e->doPrint());
+
+            // TODO: Setting the paper size does not work yet - 
+            // when setting the printer here, the paper property is already
+            // modified!!!
+            controller.setPrinter(props.getString("printer", null));
+            controller.setPaper(props.getString("paper", null));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -291,7 +305,9 @@ public class PrintPanel extends BorderPane {
 
 //--------------- Assemble page
         // a border around the printable area can be specified like this:
-        // printContents.setStyle("-fx-border-color: red; -fx-border-style: solid; -fx-border-width: 0.4px");
+        printContents.setStyle("-fx-border-style: solid inside; " +
+                               "-fx-border-color: darkgray; " +
+                               "-fx-border-width: 1");
 
         // the board views need to be put into a group since they are not managed
         // and also the bottom view is transformed to be mirrored. By wrapping them
@@ -301,7 +317,9 @@ public class PrintPanel extends BorderPane {
         abc.setScaleX(scale);
         abc.setScaleY(scale);
         final var topGroup = new StackPane(abc);
-        topGroup.setStyle("-fx-border-style: segments(3, 3), solid;  -fx-border-color: blue, red; -fx-border-width: 0.4px, 1.0px");
+        topGroup.setStyle("-fx-border-style: segments(3, 3);  " +
+                          "-fx-border-color: transparent blue transparent transparent; " +
+                          "-fx-border-width: 0 0.4px 0 0");
         // topGroup.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
 
         final var xyz = new Group(bottomView);
@@ -335,8 +353,7 @@ public class PrintPanel extends BorderPane {
     // This is reproduceable with the Microsoft print to PDF printer.
     // Also, there seems to be an offset of 1mm or so with the printable area
     // moved to the left.
-    //private final static double PT2MM = 1.0/72.0 * 25.4;
-    private final static double PT2MM = 1.0/73.2 * 25.4;
+    private final static double PT2MM = 1.0/72.0 * 25.4;
 
     private double pt2mm(double points) {
         return points * PT2MM;

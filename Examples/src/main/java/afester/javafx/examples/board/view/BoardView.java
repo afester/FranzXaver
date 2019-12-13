@@ -21,9 +21,14 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 
 
 public abstract class BoardView extends Pane {
@@ -104,7 +109,11 @@ public abstract class BoardView extends Pane {
 
         String css = BoardView.class.getResource("boardStyle.css").toExternalForm();
         getStylesheets().add(css);
+        
+        setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(0), 
+                new Insets(20))));
         setupBoard();
+        setStyle("-fx-border-style: solid; -fx-border-color: red;");
 
         // TODO: This could now be changed to bindings
         showSvgProperty().addListener((obj, oldValue, newValue) -> { partsGroup.getChildren().forEach(part -> ((PartView) part).render(newValue)); });

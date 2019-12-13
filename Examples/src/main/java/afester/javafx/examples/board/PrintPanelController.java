@@ -1,6 +1,8 @@
 package afester.javafx.examples.board;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import afester.javafx.components.ComboBoxFormatable;
@@ -40,9 +42,35 @@ public class PrintPanelController implements Initializable {
     public ReadOnlyObjectProperty<Printer> selectedPrinterProperty() {
         return printerList.getSelectionModel().selectedItemProperty();
     }
+    public void setPrinter(String printerName) {
+        if (printerName == null) {
+            printerList.getSelectionModel().select(0);
+        } else {
+            Printer printer = printerMap.get(printerName);
+            if (printer != null) {
+                printerList.getSelectionModel().select(printer);
+            }
+        }
+    }
+    public String getPrinter() {
+        return printerList.getSelectionModel().getSelectedItem().getName();
+    }
 
     public ReadOnlyObjectProperty<Paper> selectedPaperProperty() {
         return paperSizes.getSelectionModel().selectedItemProperty();
+    }
+    public int getPaper() {
+        return paperSizes.getSelectionModel().getSelectedIndex();
+    }
+    public void setPaper(String paperName) {
+        if (paperName == null) {
+            paperSizes.getSelectionModel().select(0);
+        } else {
+            Paper paper = paperMap.get(paperName);
+            if (paper != null) {
+                paperSizes.getSelectionModel().select(paper);
+            }
+        }
     }
 
     private ObjectProperty<PageOrientation> orientation = new SimpleObjectProperty<>(PageOrientation.LANDSCAPE);
@@ -51,6 +79,8 @@ public class PrintPanelController implements Initializable {
         return orientation;
     }
 
+    final private Map<String, Printer> printerMap = new HashMap<>();
+    final private Map<String, Paper> paperMap = new HashMap<>();
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
@@ -62,14 +92,17 @@ public class PrintPanelController implements Initializable {
                                                    Math.round(paper.getHeight() * f)));
 
         // populate the list of printers
-        printerList.getItems().addAll(Printer.getAllPrinters());
+        Printer.getAllPrinters().forEach(e -> printerMap.put(e.getName(), e));
+        printerList.getItems().addAll(printerMap.values());
 
         selectedPrinterProperty().addListener((obj, oldValue, printer) -> {
             System.err.println("Update printer specific properties");
 
             // populate the available paper sizes
             paperSizes.getItems().clear();
-            printer.getPrinterAttributes().getSupportedPapers().forEach(paper -> paperSizes.getItems().add(paper));
+            paperMap.clear();
+            printer.getPrinterAttributes().getSupportedPapers().forEach(paper -> paperMap.put(paper.getName(), paper));
+            paperSizes.getItems().addAll(paperMap.values());
             paperSizes.getSelectionModel().select(0);
         });
 
@@ -81,11 +114,5 @@ public class PrintPanelController implements Initializable {
                 orientation.set(PageOrientation.PORTRAIT);
             }
         });
-
-        // printerList.getSelectionModel().select(0);
-        // paperSizes.getSelectionModel().select(0);
-        printerList.getSelectionModel().select(2); // DEBUG
-        paperSizes.getSelectionModel().select(1); // DEBUG
     }
-
 }
