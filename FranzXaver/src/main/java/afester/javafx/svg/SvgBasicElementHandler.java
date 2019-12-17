@@ -35,6 +35,7 @@ import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Affine;
 
+import org.apache.batik.anim.dom.SVGOMAnimateElement;
 import org.apache.batik.anim.dom.SVGOMAnimatedPathData;
 import org.apache.batik.anim.dom.SVGOMAnimatedPathData.BaseSVGPathSegList;
 import org.apache.batik.anim.dom.SVGOMCircleElement;
@@ -568,4 +569,15 @@ public class SvgBasicElementHandler {
 
         return new Stop(offset, stopColor);
     }
+
+	public void handleElement(SVGOMAnimateElement e) {
+		String animatedAttr = e.getAttribute("attributeName");
+		String values = e.getAttribute("values");
+		String times = e.getAttribute("times");
+		String duration = e.getAttribute("dur");
+		String begin = e.getAttribute("begin");
+		String repeat = e.getAttribute("repeatCount");
+		logger.debug(String.format("Animate: attr=%s, values=%s, times=%s, duration=%s, begin=%s, repeat=%s",
+				animatedAttr, values, times, duration, begin, repeat)); 
+	}
 }

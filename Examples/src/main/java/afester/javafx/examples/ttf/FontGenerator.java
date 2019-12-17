@@ -808,7 +808,7 @@ public class FontGenerator extends Application {
 
         int overallSize = 0;
         try (PrintStream out = new PrintStream(new FileOutputStream(fileName))) {
-
+		out.printf("/* Font: %s %s pt */\n\n", currentFont.getName(), currentFont.getSize());
         	out.printf("#include <stdlib.h>\n"
         			  +"#include \"ILI9481.h\"\n"
         			  +"#include \"avr/pgmspace.h\"\n\n");

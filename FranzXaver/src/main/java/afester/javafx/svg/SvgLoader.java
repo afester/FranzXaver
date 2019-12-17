@@ -19,6 +19,7 @@ package afester.javafx.svg;
 import javafx.scene.Group;
 
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
+import org.apache.batik.anim.dom.SVGOMAnimateElement;
 import org.apache.batik.anim.dom.SVGOMCircleElement;
 import org.apache.batik.anim.dom.SVGOMDefsElement;
 import org.apache.batik.anim.dom.SVGOMDocument;
@@ -99,6 +100,7 @@ public class SvgLoader {
         elementMap.put("linearGradient", e -> bh.handleElement((SVGOMLinearGradientElement) e));
         elementMap.put("radialGradient", e -> bh.handleElement((SVGOMRadialGradientElement) e));
         elementMap.put("stop", e -> { } );
+        elementMap.put("animate", e -> bh.handleElement((SVGOMAnimateElement) e));
 
         /*
          * <title>

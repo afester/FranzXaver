@@ -126,19 +126,28 @@ public class RenderTest extends Application {
     }
 
     private void createCircleImage() {
-        img = new WritableImage(400, 400);
+        img = new WritableImage(480, 320);
         PixelWriter pw = img.getPixelWriter();
         gpw = pw;
 
-        final Random rnd = new Random();
-        setStroke(null);
-        for (int r = 150; r > 30; r -= 10) {
-            setFill(new Color(rnd.nextFloat(), rnd.nextFloat(), rnd.nextFloat(), 1.0));
-            renderCircle(200, 200, r);
-        }
-        //setFill(Color.GREEN);
-        //
-        //renderCircle(200, 200, 40);
+//        final Random rnd = new Random();
+//        setStroke(null);
+//        for (int r = 150; r > 30; r -= 10) {
+//            setFill(new Color(rnd.nextFloat(), rnd.nextFloat(), rnd.nextFloat(), 1.0));
+//            renderCircle(200, 200, r);
+//        }
+
+      setStroke(null);
+      int red = 255;
+      for (int r = 80; r > 10; r -= 5, red -= 16) {
+    	  // float red = (float) (r - 10) / 80.0F;     // 0..1
+    	  //System.err.printf("%s\n", red * 255);
+          setFill(new Color(red / 255.0, 0.0, red / 255.0, 1.0));
+          renderCircle(240, 160, r);
+      }
+
+//        setFill(Color.GREEN);
+//        renderCircle(200, 200, 40);
     }
 
     private Color strokeColor = Color.BLACK;
@@ -292,10 +301,7 @@ public class RenderTest extends Application {
         if (fillColor != null) {
             Color oldColor = strokeColor;
             strokeColor = fillColor;
-            renderLine(x0 + radius, y0, x0, y0);
-            renderLine(x0 - radius, y0, x0, y0);
-            renderLine(x0, y0 + radius, x0, y0);
-            renderLine(x0, y0 - radius, x0, y0);
+            renderLine(x0 - radius, y0, x0 + radius, y0);
             strokeColor = oldColor;
         }
 
@@ -319,14 +325,10 @@ public class RenderTest extends Application {
             if (fillColor != null) {
                 Color oldColor = strokeColor;
                 strokeColor = fillColor;
-                renderLine(x0 + x, y0 - y, x0, y0 - y);
-                renderLine(x0 + y, y0 - x, x0, y0 - x);
-                renderLine(x0 + y, y0 + x, x0, y0 + x);
-                renderLine(x0 + x, y0 + y, x0, y0 + y);
-                renderLine(x0 - x, y0 + y, x0, y0 + y);
-                renderLine(x0 - y, y0 + x, x0, y0 + x);
-                renderLine(x0 - y, y0 - x, x0, y0 - x);
-                renderLine(x0 - x, y0 - y, x0, y0 - y);
+                renderLine(x0 + x, y0 - y, x0 - x, y0 - y);
+                renderLine(x0 + y, y0 - x, x0 - y, y0 - x);
+                renderLine(x0 + y, y0 + x, x0 - y, y0 + x);
+                renderLine(x0 + x, y0 + y, x0 - x, y0 + y);
                 strokeColor = oldColor;
             }
 
@@ -335,6 +337,7 @@ public class RenderTest extends Application {
                 setPixel(x0 + y, y0 - x); // 2
                 setPixel(x0 + y, y0 + x); // 3
                 setPixel(x0 + x, y0 + y); // 4
+
                 setPixel(x0 - x, y0 + y); // 5
                 setPixel(x0 - y, y0 + x); // 6
                 setPixel(x0 - y, y0 - x); // 7
