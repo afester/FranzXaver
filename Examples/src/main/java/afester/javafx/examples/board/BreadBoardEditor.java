@@ -162,7 +162,9 @@ public class BreadBoardEditor extends Application {
         viewItem1.setOnAction(e -> currentDrawingView.centerContent());
         MenuItem viewItem2 = new MenuItem("Fit to Window");
         viewItem2.setOnAction(e -> currentDrawingView.fitContentToWindow());
-        viewMenu.getItems().addAll(viewItem1, viewItem2);
+        MenuItem colorSettings = new MenuItem("Color Settings ...");
+        colorSettings.setOnAction(e -> setupColors());
+        viewMenu.getItems().addAll(viewItem1, viewItem2, colorSettings);
 
         Menu editMenu = new Menu("Edit");
         MenuItem editItem1 = new MenuItem("Select");
@@ -227,7 +229,13 @@ public class BreadBoardEditor extends Application {
     }
 
 
-    private ToolBar createRoutingToolbar() {
+    private void setupColors() {
+    	ColorSettings cs = new ColorSettings();
+    	cs.show();
+	}
+
+
+	private ToolBar createRoutingToolbar() {
         // Create the toolbar
 
         final ToggleGroup junctionModeToggleGroup = new ToggleGroup();
