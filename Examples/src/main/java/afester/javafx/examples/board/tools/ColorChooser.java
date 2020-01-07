@@ -1,6 +1,5 @@
 package afester.javafx.examples.board.tools;
 
-import afester.javafx.examples.board.view.BoardView;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.DoubleProperty;
@@ -28,10 +27,19 @@ import javafx.scene.paint.Stop;
  */
 public class ColorChooser extends VBox {
 
-    private final ObjectProperty<Color> currentColorProperty = 
-        new SimpleObjectProperty<>(Color.WHITE);
-    private final ObjectProperty<Color> customColorProperty = 
-        new SimpleObjectProperty<>(Color.TRANSPARENT);
+    // Property: Current color
+    private final ObjectProperty<Color> currentColorProperty = new SimpleObjectProperty<>(Color.WHITE);
+    public void setCurrentColor(Color currentColor) { 
+        this.currentColorProperty.set(currentColor); 
+        updateValues();
+    }
+    Color getCurrentColor() { return currentColorProperty.get(); }
+
+    // Property: Custom Color (the currently selected color)
+    private final ObjectProperty<Color> customColorProperty = new SimpleObjectProperty<>(Color.TRANSPARENT);
+    public final ObjectProperty<Color> customColorProperty() { return customColorProperty; }
+    public void setCustomColor(Color color) { customColorProperty.set(color); }
+    public Color getCustomColor() { return customColorProperty.get(); }
 
     private Pane colorRect;
     private final Pane colorBar;
@@ -53,7 +61,7 @@ public class ColorChooser extends VBox {
     };
 
     public ColorChooser() {
-        String css = BoardView.class.getResource("boardStyle.css").toExternalForm();
+        String css = getClass().getResource("colorChooser.css").toExternalForm();
         getStylesheets().add(css);
 
         getStyleClass().add("my-custom-color");
@@ -214,24 +222,4 @@ public class ColorChooser extends VBox {
         return new LinearGradient(0f, 0f, 1f, 0f, true, CycleMethod.NO_CYCLE, stops);
     }
 
-    public void setCurrentColor(Color currentColor) {
-        this.currentColorProperty.set(currentColor);
-        updateValues();
-    }
-
-    Color getCurrentColor() {
-        return currentColorProperty.get();
-    }
-
-    final ObjectProperty<Color> customColorProperty() {
-        return customColorProperty;
-    }
-
-    void setCustomColor(Color color) {
-        customColorProperty.set(color);
-    }
-
-    Color getCustomColor() {
-        return customColorProperty.get();
-    }
 }

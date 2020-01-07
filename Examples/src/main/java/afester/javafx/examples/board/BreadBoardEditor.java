@@ -1,6 +1,10 @@
 package afester.javafx.examples.board;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,6 +29,12 @@ import afester.javafx.examples.board.view.SplitTraceInteractor;
 import afester.javafx.examples.board.view.TopBoardView;
 import afester.javafx.examples.board.view.TraceView;
 import javafx.application.Application;
+import javafx.css.CssParser;
+import javafx.css.Declaration;
+import javafx.css.Rule;
+import javafx.css.Selector;
+import javafx.css.Stylesheet;
+import javafx.css.converter.ColorConverter;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -42,9 +52,11 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 /**
  * Scene
@@ -228,10 +240,80 @@ public class BreadBoardEditor extends Application {
         }
     }
 
+    
+    private Rule getRule(Stylesheet styleSheet, String selectorString) {
+        final Selector sel = Selector.createSelector(selectorString);
+
+        List<Rule> result = new ArrayList<>(); // HACK
+        result.add(null);
+        styleSheet.getRules().forEach(rule -> {
+            rule.getSelectors().forEach(selector -> {
+                if (selector.equals(sel)) {
+                    result.set(0, rule);
+                }
+            });
+        });
+
+        return result.get(0);
+    }
+
+    private Color getColor(Stylesheet styleSheet, String selectorString, String property) {
+        var strokeDecl = Color.TRANSPARENT;
+
+        Rule rule = getRule(styleSheet, selectorString);
+        if (rule != null) {
+            strokeDecl = rule.getDeclarations()
+                    .stream()
+                    .filter(d -> d.getProperty().equals(property))
+                    .findFirst()
+                    .map(d -> ColorConverter.getInstance().convert(d.getParsedValue(), null))
+                    .get();
+        }
+
+        return strokeDecl;
+    }
 
     private void setupColors() {
-    	ColorSettings cs = new ColorSettings();
-    	cs.show();
+        
+        if (bottomView != null) {
+            final var cssFile = BoardView.class.getResource("boardStyle.css");
+            final var parser = new CssParser();
+            try {
+                var styleSheet = parser.parse(cssFile);
+
+            	ColorSettings cs = new ColorSettings(
+                    new Pair<>(ColorClass.TRACE, getColor(styleSheet, "BottomBoardView .TraceNormal",   "-fx-stroke")),
+                    new Pair<>(ColorClass.PAD, getColor(styleSheet,   "BottomBoardView PadView Circle", "-fx-fill")));
+        
+            	cs.setOnColorChanged((key, value) -> {
+            	   switch(key) {
+                        case PAD:
+                            break;
+
+                        case TRACE:
+                            System.err.println("Change TRACE to " + value);
+                            Rule r = getRule(styleSheet, "BottomBoardView .TraceNormal");
+                            Optional<Declaration> strokeDecl = r.getDeclarations()
+                                    .stream()
+                                    .filter(d -> d.getProperty().equals("-fx-stroke"))
+                                    .findFirst();
+                            strokeDecl.ifPresent(e -> {
+                                styleSheet.getRules().remove(r);
+                                // System.err.println(strokeDecl);
+                            });
+                            break;
+
+                        default:
+                            break;
+            	       
+            	   }
+            	});
+
+            	cs.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 	}
 
 
