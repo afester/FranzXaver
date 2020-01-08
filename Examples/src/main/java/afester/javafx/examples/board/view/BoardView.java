@@ -14,6 +14,7 @@ import afester.javafx.examples.board.model.Part;
 import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.tools.PointTools;
 import afester.javafx.examples.board.tools.Polygon2D;
+import afester.javafx.examples.board.tools.css.Handler;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -109,11 +110,18 @@ public abstract class BoardView extends Pane {
 
         String css = BoardView.class.getResource("boardStyle.css").toExternalForm();
         getStylesheets().add(css);
-        
+
+        Handler.registerContent("dynamicCSS", 
+                "BottomBoardView .TraceNormal{\r\n" + 
+                "   -fx-stroke: #ff0000; /*#606060;*/\r\n" + 
+                "   -fx-stroke-width: 0.8px;\r\n" + 
+                "   -fx-stroke-line-cap: round;\r\n" + 
+                "}");
+        getStylesheets().add("css:dynamicCSS");
+
         setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(0), 
                 new Insets(20))));
         setupBoard();
-        setStyle("-fx-border-style: solid; -fx-border-color: red;");
 
         // TODO: This could now be changed to bindings
         showSvgProperty().addListener((obj, oldValue, newValue) -> { partsGroup.getChildren().forEach(part -> ((PartView) part).render(newValue)); });

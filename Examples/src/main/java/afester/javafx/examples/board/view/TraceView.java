@@ -17,7 +17,7 @@ public class TraceView extends AbstractEdgeView {
     public TraceView(AbstractEdge trace, boolean isBottom) {
         super(trace);
         this.isBottom = isBottom;
-
+ 
         update(AbstractWireState.NORMAL);
         trace.stateProperty().addListener((obj, oldState, newState) -> {
             update(newState);

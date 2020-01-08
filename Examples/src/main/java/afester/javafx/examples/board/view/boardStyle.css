@@ -44,11 +44,11 @@ BottomBoardView PadView Circle {
    -fx-stroke-width: 0.6px;*/
 }
 
-BottomBoardView .TraceNormal{
+/*BottomBoardView .TraceNormal{
 	-fx-stroke: #ff0000; /*#606060;*/
 	-fx-stroke-width: 0.6px;
 	-fx-stroke-line-cap: round;
-}
+}*/
 
 
 BoardHandle {

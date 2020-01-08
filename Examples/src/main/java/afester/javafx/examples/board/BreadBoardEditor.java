@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +20,7 @@ import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.BoardLoader;
 import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.model.NetImport;
+import afester.javafx.examples.board.tools.css.Handler;
 import afester.javafx.examples.board.view.AddCornerInteractor;
 import afester.javafx.examples.board.view.BoardView;
 import afester.javafx.examples.board.view.BottomBoardView;
@@ -241,83 +243,126 @@ public class BreadBoardEditor extends Application {
     }
 
     
-    private Rule getRule(Stylesheet styleSheet, String selectorString) {
-        final Selector sel = Selector.createSelector(selectorString);
+//    private Rule getRule(Stylesheet styleSheet, String selectorString) {
+//        final Selector sel = Selector.createSelector(selectorString);
+//
+//        List<Rule> result = new ArrayList<>(); // HACK
+//        result.add(null);
+//        styleSheet.getRules().forEach(rule -> {
+//            rule.getSelectors().forEach(selector -> {
+//                if (selector.equals(sel)) {
+//                    result.set(0, rule);
+//                }
+//            });
+//        });
+//
+//        return result.get(0);
+//    }
+//
+//    private Color getColor(Stylesheet styleSheet, String selectorString, String property) {
+//        var strokeDecl = Color.TRANSPARENT;
+//
+//        Rule rule = getRule(styleSheet, selectorString);
+//        if (rule != null) {
+//            strokeDecl = rule.getDeclarations()
+//                    .stream()
+//                    .filter(d -> d.getProperty().equals(property))
+//                    .findFirst()
+//                    .map(d -> ColorConverter.getInstance().convert(d.getParsedValue(), null))
+//                    .get();
+//        }
+//
+//        return strokeDecl;
+//    }
 
-        List<Rule> result = new ArrayList<>(); // HACK
-        result.add(null);
-        styleSheet.getRules().forEach(rule -> {
-            rule.getSelectors().forEach(selector -> {
-                if (selector.equals(sel)) {
-                    result.set(0, rule);
-                }
-            });
-        });
-
-        return result.get(0);
-    }
-
-    private Color getColor(Stylesheet styleSheet, String selectorString, String property) {
-        var strokeDecl = Color.TRANSPARENT;
-
-        Rule rule = getRule(styleSheet, selectorString);
-        if (rule != null) {
-            strokeDecl = rule.getDeclarations()
-                    .stream()
-                    .filter(d -> d.getProperty().equals(property))
-                    .findFirst()
-                    .map(d -> ColorConverter.getInstance().convert(d.getParsedValue(), null))
-                    .get();
-        }
-
-        return strokeDecl;
-    }
 
     private void setupColors() {
-        
+
         if (bottomView != null) {
-            final var cssFile = BoardView.class.getResource("boardStyle.css");
-            final var parser = new CssParser();
-            try {
-                var styleSheet = parser.parse(cssFile);
+            // bottomView.applyCss();
+            
+            System.err.println("Refreshing style sheet ...");
+            bottomView.getStylesheets().clear(); // remove("css:dynamicCSS");
+            //bottomView.applyCss();
 
-            	ColorSettings cs = new ColorSettings(
-                    new Pair<>(ColorClass.TRACE, getColor(styleSheet, "BottomBoardView .TraceNormal",   "-fx-stroke")),
-                    new Pair<>(ColorClass.PAD, getColor(styleSheet,   "BottomBoardView PadView Circle", "-fx-fill")));
-        
-            	cs.setOnColorChanged((key, value) -> {
-            	   switch(key) {
-                        case PAD:
-                            break;
+            
+            Handler.registerContent("dynamicCSS", 
+                    "BottomBoardView .TraceNormal{\r\n" + 
+                    "   -fx-stroke: #00ff00;\r\n" + 
+                    "   -fx-stroke-width: 0.8px;\r\n" + 
+                    "   -fx-stroke-line-cap: round;\r\n" + 
+                    "}");
+            bottomView.getStylesheets().add("css:dynamicCSS");
+            //bottomView.applyCss();
 
-                        case TRACE:
-                            System.err.println("Change TRACE to " + value);
-                            Rule r = getRule(styleSheet, "BottomBoardView .TraceNormal");
-                            Optional<Declaration> strokeDecl = r.getDeclarations()
-                                    .stream()
-                                    .filter(d -> d.getProperty().equals("-fx-stroke"))
-                                    .findFirst();
-                            strokeDecl.ifPresent(e -> {
-                                styleSheet.getRules().remove(r);
-                                // System.err.println(strokeDecl);
-                            });
-                            break;
-
-                        default:
-                            break;
-            	       
-            	   }
-            	});
-
-            	cs.show();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            final var cssFile = BoardView.class.getResource("boardStyle.css");
+//            final var parser = new CssParser();
+//            try {
+//                var styleSheet = parser.parse(cssFile);
+//
+//            	ColorSettings cs = new ColorSettings(
+//                    new Pair<>(ColorClass.TRACE, getColor(styleSheet, "BottomBoardView .TraceNormal",   "-fx-stroke")),
+//                    new Pair<>(ColorClass.PAD, getColor(styleSheet,   "BottomBoardView PadView Circle", "-fx-fill")));
+//        
+//            	cs.setOnColorChanged((key, value) -> {
+//            	   switch(key) {
+//                        case PAD:
+//                            break;
+//
+//                        case TRACE:
+//                            System.err.println("Change TRACE to " + value);
+//                            Rule r = getRule(styleSheet, "BottomBoardView .TraceNormal");
+//                            Optional<Declaration> strokeDecl = r.getDeclarations()
+//                                    .stream()
+//                                    .filter(d -> d.getProperty().equals("-fx-stroke"))
+//                                    .findFirst();
+//                            
+//                            strokeDecl.ifPresent(e -> {
+//                                System.err.println("------\n" + strokeDecl.get());
+//                                System.err.println("------\n" + strokeDecl.get().getParsedValue().getValue());
+//                                // System.err.println("------\n" + styleSheet);
+//                                dumpStylesheet(styleSheet);
+//                                styleSheet.getRules().remove(r);
+//                                //System.err.println("------\n" + styleSheet);
+//                                
+//                                dumpStylesheet(styleSheet);
+//                                
+//                                // System.err.println(strokeDecl);
+//                            });
+//                            break;
+//
+//                        default:
+//                            break;
+//            	       
+//            	   }
+//            	});
+//
+//            	cs.show();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
         }
 	}
 
 
-	private ToolBar createRoutingToolbar() {
+//	private void dumpStylesheet(Stylesheet styleSheet) {
+//	    styleSheet.getRules().forEach(rule -> {
+//	        var selector = rule.getSelectors().stream()
+//	                           .map(sel -> sel.toString())
+//	                           .collect(Collectors.joining(", "));
+//	        System.err.println(selector + "{");
+//	        rule.getDeclarations().forEach(decl -> {
+//	            System.err.printf("    %s: %s;\n", 
+//	                        decl.getProperty(),
+//	                        decl.getParsedValue().
+//	                        decl.getParsedValue().get
+//	        });
+//	        System.err.println("}\n\n");
+//	    });
+//    }
+
+
+    private ToolBar createRoutingToolbar() {
         // Create the toolbar
 
         final ToggleGroup junctionModeToggleGroup = new ToggleGroup();
