@@ -4,6 +4,7 @@ import afester.javafx.examples.board.model.AbstractEdge;
 import afester.javafx.examples.board.model.AbstractEdge.AbstractWireState;
 import afester.javafx.examples.board.model.TraceType;
 import javafx.geometry.Point2D;
+import javafx.scene.shape.StrokeLineCap;
 
 
 /**
@@ -22,6 +23,9 @@ public class TraceView extends AbstractEdgeView {
         trace.stateProperty().addListener((obj, oldState, newState) -> {
             update(newState);
         });
+
+        setStrokeLineCap(StrokeLineCap.ROUND);
+        setStrokeMiterLimit(1.0);
     }
 
     private void update(AbstractWireState newState) {

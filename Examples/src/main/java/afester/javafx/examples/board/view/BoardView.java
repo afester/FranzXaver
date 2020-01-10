@@ -8,13 +8,13 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import afester.javafx.examples.board.ApplicationProperties;
 import afester.javafx.examples.board.model.AbstractEdge;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.Part;
 import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.tools.PointTools;
 import afester.javafx.examples.board.tools.Polygon2D;
-import afester.javafx.examples.board.tools.css.Handler;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -44,7 +44,7 @@ public abstract class BoardView extends Pane {
     private LookupGroup partsGroup;         // all parts (and their pads) on the board
     private LookupGroup netsGroup;          // all nets (Parent group for airWireGroup, traceGroup, bridgeGroup)
     private Group airWireGroup;             // all AirWires,
-    private Group traceGroup;               //     Traces,
+    private TraceGroup traceGroup;          //     Traces,
     private Group bridgeGroup;              // and Bridges on the board
     private LookupGroup handleGroup;        // all dynamic handles (topmost layer)
 
@@ -99,25 +99,12 @@ public abstract class BoardView extends Pane {
      *
      * @param board The board for which to create the new view.
      */
-    public BoardView(Board board) {
-        this(board, false);
-    }
-
-
-    public BoardView(Board board, boolean isBottom) {
+    public BoardView(Board board, ApplicationProperties props, boolean isBottom) {
         this.isBottom = isBottom;
         this.board = board;
 
         String css = BoardView.class.getResource("boardStyle.css").toExternalForm();
         getStylesheets().add(css);
-
-        Handler.registerContent("dynamicCSS", 
-                "BottomBoardView .TraceNormal{\r\n" + 
-                "   -fx-stroke: #ff0000; /*#606060;*/\r\n" + 
-                "   -fx-stroke-width: 0.8px;\r\n" + 
-                "   -fx-stroke-line-cap: round;\r\n" + 
-                "}");
-        getStylesheets().add("css:dynamicCSS");
 
         setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(0), 
                 new Insets(20))));
@@ -129,9 +116,13 @@ public abstract class BoardView extends Pane {
         showAirwiresProperty().addListener((obj, oldValue, newValue) -> airWireGroup.setVisible(newValue));
         showDimensionsProperty().addListener((obj, oldValue, newValue) -> dimensionGroup.setVisible(newValue));
 
-        showBoardHandlesProperty().addListener((obj, oldValue, newValue) -> { //boardHandlesGroup.setVisible(newValue));
+        // TODO: different for top and bottom!
+        traceGroup.colorProperty().bind(props.bottomTraceColorProperty());
+        traceGroup.widthProperty().bind(props.bottomTraceWidthProperty());
+
+        showBoardHandlesProperty().addListener((obj, oldValue, newValue) -> {
             handleGroup.getChildren().clear();
-            if ( newValue) {
+            if (newValue) {
                // Handles for each corner of the board        
                   final List<BoardHandle> corners = new ArrayList<>();
                   IntVal idx = new IntVal();
@@ -143,26 +134,6 @@ public abstract class BoardView extends Pane {
                   });
             }
         });
-
-//        interactor = editInteractor;
-//
-//        setOnMousePressed(e -> {
-//            if (interactor != null) {
-//                interactor.mousePressed(e);
-//            }
-//        });
-//
-//        setOnMouseDragged(e -> {
-//            if (interactor != null) {
-//                interactor.mouseDragged(e);
-//            }
-//         });
-//
-//        setOnMouseReleased(e -> {
-//            if (interactor != null) {
-//                interactor.mouseReleased(e);
-//            }
-//        });
 
         setManaged(false);  // !!!!!!!!!!!!
     }
@@ -249,7 +220,7 @@ public abstract class BoardView extends Pane {
 
         airWireGroup = new Group();
         airWireGroup.setId("airWireGroup");
-        traceGroup = new Group();
+        traceGroup = new TraceGroup();
         traceGroup.setId("traceGroup");
         bridgeGroup = new Group();
         bridgeGroup.setId("bridgeGroup");

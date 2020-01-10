@@ -1,11 +1,6 @@
 package afester.javafx.examples.board;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,7 +15,6 @@ import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.BoardLoader;
 import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.model.NetImport;
-import afester.javafx.examples.board.tools.css.Handler;
 import afester.javafx.examples.board.view.AddCornerInteractor;
 import afester.javafx.examples.board.view.BoardView;
 import afester.javafx.examples.board.view.BottomBoardView;
@@ -31,12 +25,6 @@ import afester.javafx.examples.board.view.SplitTraceInteractor;
 import afester.javafx.examples.board.view.TopBoardView;
 import afester.javafx.examples.board.view.TraceView;
 import javafx.application.Application;
-import javafx.css.CssParser;
-import javafx.css.Declaration;
-import javafx.css.Rule;
-import javafx.css.Selector;
-import javafx.css.Stylesheet;
-import javafx.css.converter.ColorConverter;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -242,126 +230,49 @@ public class BreadBoardEditor extends Application {
         }
     }
 
-    
-//    private Rule getRule(Stylesheet styleSheet, String selectorString) {
-//        final Selector sel = Selector.createSelector(selectorString);
-//
-//        List<Rule> result = new ArrayList<>(); // HACK
-//        result.add(null);
-//        styleSheet.getRules().forEach(rule -> {
-//            rule.getSelectors().forEach(selector -> {
-//                if (selector.equals(sel)) {
-//                    result.set(0, rule);
-//                }
-//            });
-//        });
-//
-//        return result.get(0);
-//    }
-//
-//    private Color getColor(Stylesheet styleSheet, String selectorString, String property) {
-//        var strokeDecl = Color.TRANSPARENT;
-//
-//        Rule rule = getRule(styleSheet, selectorString);
-//        if (rule != null) {
-//            strokeDecl = rule.getDeclarations()
-//                    .stream()
-//                    .filter(d -> d.getProperty().equals(property))
-//                    .findFirst()
-//                    .map(d -> ColorConverter.getInstance().convert(d.getParsedValue(), null))
-//                    .get();
-//        }
-//
-//        return strokeDecl;
-//    }
-
 
     private void setupColors() {
 
         if (bottomView != null) {
-            // bottomView.applyCss();
-            
-            System.err.println("Refreshing style sheet ...");
-            bottomView.getStylesheets().clear(); // remove("css:dynamicCSS");
-            //bottomView.applyCss();
+            ColorSettings cs = new ColorSettings(
+                    new Pair<>(ColorClass.TRACE, props.getBottomTraceColor()),
+                    new Pair<>(ColorClass.PAD, Color.GREEN));
 
-            
-            Handler.registerContent("dynamicCSS", 
-                    "BottomBoardView .TraceNormal{\r\n" + 
-                    "   -fx-stroke: #00ff00;\r\n" + 
-                    "   -fx-stroke-width: 0.8px;\r\n" + 
-                    "   -fx-stroke-line-cap: round;\r\n" + 
-                    "}");
-            bottomView.getStylesheets().add("css:dynamicCSS");
-            //bottomView.applyCss();
+            cs.setOnColorChanged((key, value) -> {
+                switch (key) {
+                case PAD:
+                    break;
 
-//            final var cssFile = BoardView.class.getResource("boardStyle.css");
-//            final var parser = new CssParser();
-//            try {
-//                var styleSheet = parser.parse(cssFile);
-//
-//            	ColorSettings cs = new ColorSettings(
-//                    new Pair<>(ColorClass.TRACE, getColor(styleSheet, "BottomBoardView .TraceNormal",   "-fx-stroke")),
-//                    new Pair<>(ColorClass.PAD, getColor(styleSheet,   "BottomBoardView PadView Circle", "-fx-fill")));
-//        
-//            	cs.setOnColorChanged((key, value) -> {
-//            	   switch(key) {
-//                        case PAD:
-//                            break;
-//
-//                        case TRACE:
-//                            System.err.println("Change TRACE to " + value);
-//                            Rule r = getRule(styleSheet, "BottomBoardView .TraceNormal");
-//                            Optional<Declaration> strokeDecl = r.getDeclarations()
-//                                    .stream()
-//                                    .filter(d -> d.getProperty().equals("-fx-stroke"))
-//                                    .findFirst();
-//                            
-//                            strokeDecl.ifPresent(e -> {
-//                                System.err.println("------\n" + strokeDecl.get());
-//                                System.err.println("------\n" + strokeDecl.get().getParsedValue().getValue());
-//                                // System.err.println("------\n" + styleSheet);
-//                                dumpStylesheet(styleSheet);
-//                                styleSheet.getRules().remove(r);
-//                                //System.err.println("------\n" + styleSheet);
-//                                
-//                                dumpStylesheet(styleSheet);
-//                                
-//                                // System.err.println(strokeDecl);
-//                            });
-//                            break;
-//
-//                        default:
-//                            break;
-//            	       
-//            	   }
-//            	});
-//
-//            	cs.show();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
+                case TRACE:
+                    props.setBottomTraceColor(value);
+                    break;
+
+                default:
+                    break;
+
+                }
+            });
+
+            cs.setOnWidthChanged((key, value) -> {
+                switch (key) {
+                case PAD:
+                    break;
+
+                case TRACE:
+                    props.setbottomTraceWidth(value);
+                    break;
+
+                default:
+                    break;
+
+                }
+            });
+
+            cs.show();
         }
-	}
+    }
 
-
-//	private void dumpStylesheet(Stylesheet styleSheet) {
-//	    styleSheet.getRules().forEach(rule -> {
-//	        var selector = rule.getSelectors().stream()
-//	                           .map(sel -> sel.toString())
-//	                           .collect(Collectors.joining(", "));
-//	        System.err.println(selector + "{");
-//	        rule.getDeclarations().forEach(decl -> {
-//	            System.err.printf("    %s: %s;\n", 
-//	                        decl.getProperty(),
-//	                        decl.getParsedValue().
-//	                        decl.getParsedValue().get
-//	        });
-//	        System.err.println("}\n\n");
-//	    });
-//    }
-
-
+    
     private ToolBar createRoutingToolbar() {
         // Create the toolbar
 
@@ -550,7 +461,7 @@ public class BreadBoardEditor extends Application {
 
             if (bottomView == null) {
                 Board b = topView.getBoard();
-                bottomView = new BottomBoardView(b);
+                bottomView = new BottomBoardView(b, props);
                 // bottomView.setReadOnly(true);
 
                 bottomView.getTransforms().add(Transform.scale(-1, 1));
@@ -722,7 +633,7 @@ public class BreadBoardEditor extends Application {
     }
 
     private void setupUi(Board board) {
-        topView = new TopBoardView(board);
+        topView = new TopBoardView(board, props);
         bomView = new BomView(topView);
         topDrawingView.getPaper().getChildren().clear();
         topDrawingView.getPaper().getChildren().add(topView);
@@ -811,7 +722,7 @@ public class BreadBoardEditor extends Application {
             Board board = topView.getBoard();
             board.importSchematic(ni);
 
-            topView = new TopBoardView(board);
+            topView = new TopBoardView(board, props);
             topDrawingView.getPaper().getChildren().clear();
             topDrawingView.getPaper().getChildren().add(topView);
             topDrawingView.fitContentToWindow();

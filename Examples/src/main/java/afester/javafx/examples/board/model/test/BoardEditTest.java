@@ -8,6 +8,7 @@ import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 
+import afester.javafx.examples.board.ApplicationProperties;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.BoardLoader;
 import afester.javafx.examples.board.model.Part;
@@ -27,7 +28,7 @@ public class BoardEditTest {
     public void loadData() {
         BoardLoader bl = new BoardLoader(new File("loadTest.brd"));
         board = bl.load();
-        boardView = new TopBoardView(board);
+        boardView = new TopBoardView(board, ApplicationProperties.load());
     }
 
     

@@ -126,10 +126,10 @@ public class PrintPanel extends BorderPane {
             e.printStackTrace();
         }
 
-        topView = new TopBoardView(board);
+        topView = new TopBoardView(board, props);
         topView.setReadOnly(true);
 
-        bottomView = new BottomBoardView(board);
+        bottomView = new BottomBoardView(board, props);
         bottomView.setReadOnly(true);
         bottomView.getTransforms().add(Transform.scale(-1, 1));
 
