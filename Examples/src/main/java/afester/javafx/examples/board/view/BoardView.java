@@ -141,7 +141,7 @@ public abstract class BoardView extends Pane {
 
 
     private void netUpdater(Net net) {
-     // Handling traces
+        // Handling traces
         Map<AbstractEdge, TraceView> tMap = new HashMap<>();
         log.info("Creating view for Net: {}", net);
         net.getTraces().forEach(trace -> {
@@ -151,13 +151,16 @@ public abstract class BoardView extends Pane {
             tMap.put(trace, traceView);
 
             switch(trace.getType()) {
-            case AIRWIRE: airWireGroup.getChildren().add(traceView);
+            case AIRWIRE: 
+                airWireGroup.getChildren().add(traceView.theLine);
                 break;
 
-            case BRIDGE:  bridgeGroup.getChildren().add(traceView);
+            case BRIDGE:  
+                bridgeGroup.getChildren().add(traceView.theLine);
                 break;
 
-            case TRACE: traceGroup.getChildren().add(traceView);
+            case TRACE: 
+                traceGroup.addTrace(traceView);
                 break;
 
             default:
@@ -169,12 +172,15 @@ public abstract class BoardView extends Pane {
             change.getRemoved().forEach(trace -> {
                 TraceView traceView = tMap.get(trace);
                 switch(trace.getType()) {
-                case AIRWIRE: airWireGroup.getChildren().remove(traceView);
+                case AIRWIRE: airWireGroup.getChildren().remove(traceView.theLine);
                     break;
-                case BRIDGE:  bridgeGroup.getChildren().remove(traceView);
+
+                case BRIDGE:  bridgeGroup.getChildren().remove(traceView.theLine);
                     break;
-                case TRACE: traceGroup.getChildren().remove(traceView);
+
+                case TRACE: traceGroup.removeTrace(traceView);
                     break;
+
                 default:
                     break;
                 }
@@ -189,13 +195,13 @@ public abstract class BoardView extends Pane {
                 System.err.println("ADDING TRACE VIEW: " + traceView);
 
                 switch(trace.getType()) {
-                case AIRWIRE: airWireGroup.getChildren().add(traceView);
+                case AIRWIRE: airWireGroup.getChildren().add(traceView.theLine);
                     break;
 
-                case BRIDGE:  bridgeGroup.getChildren().add(traceView);
+                case BRIDGE:  bridgeGroup.getChildren().add(traceView.theLine);
                     break;
 
-                case TRACE: traceGroup.getChildren().add(traceView);
+                case TRACE: traceGroup.addTrace(traceView);
                     break;
 
                 default:
@@ -382,6 +388,7 @@ public abstract class BoardView extends Pane {
         List<Interactable> result = partsGroup.pickAll(mpos);
         result.addAll(netsGroup.pickAll(mpos));
 
+        System.err.println("getPartsAndNets:" + result);
         return result;
     }
 

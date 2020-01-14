@@ -44,12 +44,6 @@ BottomBoardView PadView Circle {
    -fx-stroke-width: 0.6px;*/
 }
 
-/*BottomBoardView .TraceNormal{
-	-fx-stroke: #ff0000; /*#606060;*/
-	-fx-stroke-width: 0.6px;
-	-fx-stroke-line-cap: round;
-}*/
-
 
 BoardHandle {
    -fx-fill: None;
@@ -83,20 +77,7 @@ ToHandle {
    -fx-stroke-width: 0.1px;
 }
 
-TraceView.TraceHighlight{
-	-fx-stroke: red;
-	-fx-stroke-width: 0.8px;
-	-fx-opacity: 0.5;
-	-fx-stroke-line-cap: round;
-}
-
-TraceView.TraceSelect {
-	-fx-stroke: red;
-	-fx-stroke-width: 0.8px;
-	-fx-stroke-line-cap: round;
-}
-
-
+/*
 TraceView.AirwireNormal{
 	-fx-stroke: orange;
 	-fx-stroke-width: 0.3px;
@@ -108,7 +89,7 @@ TraceView.AirwireHighlight{
 	-fx-opacity: 0.5;
 	-fx-stroke-width: 0.3px;
 	-fx-stroke-line-cap: round;
-}
+}*/
 
 TraceView.AirwireSelect {
 	-fx-stroke: red;

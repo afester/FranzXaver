@@ -8,8 +8,13 @@ public class FromHandle extends AirWireHandle {
     public FromHandle(AbstractEdgeView airWireView) {
         super(airWireView, airWireView.getStart());
 
-        centerXProperty().bind(airWireView.startXProperty());
-        centerYProperty().bind(airWireView.startYProperty());
+        // TODO: Make this easier to wire!
+        setCenterX(airWireView.getStart().getX());
+        setCenterY(airWireView.getStart().getY());
+        airWireView.startProperty().addListener((obj, oldValue, newValue) -> {
+            setCenterX(newValue.getX());
+            setCenterY(newValue.getY());
+        });
     }
 
 

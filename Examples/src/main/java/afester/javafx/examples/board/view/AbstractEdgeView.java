@@ -2,16 +2,45 @@ package afester.javafx.examples.board.view;
 
 import afester.javafx.examples.board.model.AbstractEdge;
 import afester.javafx.examples.board.model.Net;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Point2D;
+import javafx.scene.Group;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
 /**
  * A JavaFX shape to visualize the edge of a graph.
+ * Note that the edge might consist of more than one shape, which might 
+ * need to be added to different groups to allow a consistent visualization.
+ * Hence the AbstraceEdgeView itself is NOT a Node - it is a collection of
+ * Nodes which can be added to any other parent as required. 
  */
-public abstract class AbstractEdgeView extends Line implements Interactable  {
+public abstract class AbstractEdgeView /*extends Group /*extends Line */ implements Interactable  {
 
     public AbstractEdge edge;
+
+    // The start position of this edge.
+    private final ObjectProperty<Point2D> start = new SimpleObjectProperty<Point2D>(new Point2D(0, 0));
+    public ObjectProperty<Point2D> startProperty() { return start; }
+    public Point2D getStart() { return start.get(); }
+    public void setStart(Point2D pos) { start.set(pos); }
+
+    // The end position of this edge.
+    private final ObjectProperty<Point2D> end = new SimpleObjectProperty<Point2D>();
+    public ObjectProperty<Point2D> endProperty() { return end; }
+    public Point2D getEnd() { return end.get(); }
+    public void setEnd(Point2D pos) { end.set(pos); }
+
+    // A flag to determine if this edge is visible or not.
+    private final BooleanProperty visible = new SimpleBooleanProperty(true);
+    public BooleanProperty visibleProperty() { return visible; }
+    public boolean isVisible() { return visible.get(); }
+    public void setVisible(boolean flag) { visible.set(flag); }
 
     /**
      * Creates a new AbstractWireView for a given AbstractWire.
@@ -26,23 +55,17 @@ public abstract class AbstractEdgeView extends Line implements Interactable  {
         final var to = wire.getTo();
 
         // Handle the start position of the line
-        ChangeListener<Point2D> startListener = (obj, oldPos, newPos) -> setStart(newPos);
-        from.positionProperty().addListener(startListener);
-        setStart(from.getPosition());
+        start.bind(from.positionProperty());
         wire.fromProperty().addListener((obj, oldFrom, newFrom) -> {
-            oldFrom.positionProperty().removeListener(startListener);
-            newFrom.positionProperty().addListener(startListener);
-            setStart(newFrom.getPosition());
+            start.unbind();
+            start.bind(newFrom.positionProperty());
         });
 
         // Handle the end position of the line
-        ChangeListener<Point2D> endListener = (obj, oldPos, newPos) -> setEnd(newPos);
-        to.positionProperty().addListener(endListener);
-        setEnd(to.getPosition());
+        end.bind(to.positionProperty());
         wire.toProperty().addListener((obj, oldTo, newTo) -> {
-            oldTo.positionProperty().removeListener(endListener);
-            newTo.positionProperty().addListener(endListener);
-            setEnd(newTo.getPosition());
+            end.unbind();
+            end.bind(newTo.positionProperty());
         });
 
         // handle the hidden property of the edge 
@@ -52,40 +75,6 @@ public abstract class AbstractEdgeView extends Line implements Interactable  {
         // so that selecting the line is easier
 
         createContextMenu();
-    }
-
-    /**
-     * @return The start point of this edge as a Point2D object.
-     */
-    public Point2D getStart() {
-        return new Point2D(getStartX(), getStartY());
-    }
-
-    /**
-     * Sets the start point of this edge from a Point2D object.
-     *
-     * @param p The new start point.
-     */
-    public void setStart(Point2D p) {
-        setStartX(p.getX());
-        setStartY(p.getY());
-    }
-
-    /**
-     * @return The end point of this edge as a Point2D object.
-     */
-    public Point2D getEnd() {
-        return new Point2D(getEndX(), getEndY());
-    }
-
-    /**
-     * Sets the end point of this edge from a Point2D object.
-     *
-     * @param p The new end point.
-     */
-    public void setEnd(Point2D p) {
-        setEndX(p.getX());
-        setEndY(p.getY());
     }
 
 
@@ -99,11 +88,6 @@ public abstract class AbstractEdgeView extends Line implements Interactable  {
 //    	});
 //    	contextMenu.getItems().addAll(item1);
     }
-
-//	@Override
-//	public Point2D getPos() {
-//		return new Point2D(getLayoutX(), getLayoutY());
-//	}
 
     @Override
     public String getRepr() {

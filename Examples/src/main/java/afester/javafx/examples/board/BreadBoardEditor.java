@@ -235,15 +235,19 @@ public class BreadBoardEditor extends Application {
 
         if (bottomView != null) {
             ColorSettings cs = new ColorSettings(
-                    new Pair<>(ColorClass.TRACE, props.getBottomTraceColor()),
-                    new Pair<>(ColorClass.PAD, Color.GREEN));
+                    new Pair<>(ColorClass.TOPBOARD, Color.DARKRED),
+                    new Pair<>(ColorClass.TOPTRACE, Color.BLUE),
+                    new Pair<>(ColorClass.TOPPAD, Color.GREEN),
+                    new Pair<>(ColorClass.BOTTOMBOARD, Color.DARKRED),
+                    new Pair<>(ColorClass.BOTTOMTRACE, props.getBottomTraceColor()),
+                    new Pair<>(ColorClass.BOTTOMPAD, Color.GREEN));
 
             cs.setOnColorChanged((key, value) -> {
                 switch (key) {
-                case PAD:
+                case BOTTOMPAD:
                     break;
 
-                case TRACE:
+                case BOTTOMTRACE:
                     props.setBottomTraceColor(value);
                     break;
 
@@ -255,11 +259,11 @@ public class BreadBoardEditor extends Application {
 
             cs.setOnWidthChanged((key, value) -> {
                 switch (key) {
-                case PAD:
+                case BOTTOMPAD:
                     break;
 
-                case TRACE:
-                    props.setbottomTraceWidth(value);
+                case BOTTOMTRACE:
+                    props.setBottomTraceWidth(value);
                     break;
 
                 default:

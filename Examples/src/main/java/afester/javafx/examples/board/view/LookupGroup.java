@@ -21,12 +21,20 @@ public class LookupGroup extends Group {
         return result;
     }
     
-    
 
 
     private void collectInteractablesRec(Point2D mpos, Parent parent, List<Interactable> result) {
         parent.getChildrenUnmodifiable().forEach(child -> {
-            if (child instanceof Interactable) {
+            if (child instanceof TraceGroup) {  // TODO: Hack!
+                TraceGroup tg = (TraceGroup) child;
+                for (TraceView traceView: tg.getTraceViews()) {
+                    final Point2D pos = traceView.sceneToLocal(mpos);
+                    if (traceView.contains(pos)) {
+                        result.add(traceView);
+                    }
+                }
+            }
+            else if (child instanceof Interactable) {
                 final Point2D pos = child.sceneToLocal(mpos);
                 if (child.contains(pos)) {
                     result.add((Interactable) child);

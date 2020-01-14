@@ -4,32 +4,97 @@ import afester.javafx.examples.board.model.AbstractEdge;
 import afester.javafx.examples.board.model.AbstractEdge.AbstractWireState;
 import afester.javafx.examples.board.model.TraceType;
 import javafx.geometry.Point2D;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.StrokeLineCap;
 
 
 /**
  * A Trace can either be rendered as an Airwire, Trace or Bridge. 
  */
-public class TraceView extends AbstractEdgeView {
+public class TraceView extends AbstractEdgeView implements Interactable {
 
     private Point2D originalPos = new Point2D(0, 0);
     private boolean isBottom = false;
 
+    public final Line theLine = new Line();
+    public final Line theLine2 = new Line();
+    
+    // The select line is used to determine the selection area.
+    // It is NOT part of the scene graph!
+    private final Line selectLine = new Line(); 
+                    
+
     public TraceView(AbstractEdge trace, boolean isBottom) {
         super(trace);
         this.isBottom = isBottom;
- 
+
+        // fixed properties of the lines
+        theLine.setStrokeLineCap(StrokeLineCap.ROUND);
+        theLine2.setStrokeLineCap(StrokeLineCap.ROUND);
+        selectLine.setStrokeWidth(1.5);
+        selectLine.setStroke(Color.CYAN);
+
+        setStrokeWidth(1.0);
+        setStroke(Color.LIGHTGRAY);
+
+        updateStart(startProperty().getValue());
+        startProperty().addListener((obj, oldValue, newValue) -> {
+            updateStart(newValue);
+        });
+
+        updateEnd(endProperty().getValue());
+        endProperty().addListener((obj, oldValue, newValue) -> {
+            updateEnd(newValue);
+        });
+
         update(AbstractWireState.NORMAL);
         trace.stateProperty().addListener((obj, oldState, newState) -> {
             update(newState);
         });
 
-        setStrokeLineCap(StrokeLineCap.ROUND);
-        setStrokeMiterLimit(1.0);
+        theLine.visibleProperty().bind(visibleProperty());
+        theLine2.visibleProperty().bind(visibleProperty());
+    }
+
+    private void updateStart(Point2D pos) {
+        theLine.setStartX(pos.getX());
+        theLine.setStartY(pos.getY());
+        theLine2.setStartX(pos.getX());
+        theLine2.setStartY(pos.getY());
+        selectLine.setStartX(pos.getX());
+        selectLine.setStartY(pos.getY());
+    }
+
+    private void updateEnd(Point2D pos) {
+        theLine.setEndX(pos.getX()); 
+        theLine.setEndY(pos.getY());
+        theLine2.setEndX(pos.getX()); 
+        theLine2.setEndY(pos.getY());
+        selectLine.setEndX(pos.getX());
+        selectLine.setEndY(pos.getY());
+    }
+
+
+    public void setStroke(Color newValue) {
+        theLine.setStroke(newValue);
+        var lightColor = newValue.deriveColor(0.0, 1.0, 1.5, 1.0);
+        theLine2.setStroke(lightColor);
+    }
+
+
+    public void setStrokeWidth(double newValue) {
+        theLine.setStrokeWidth(newValue);
+        theLine2.setStrokeWidth(newValue/10);
+    }
+
+
+    public void setOpacity(double newValue) {
+        theLine.setOpacity(newValue);
+        theLine2.setOpacity(newValue);
     }
 
     private void update(AbstractWireState newState) {
-        getStyleClass().clear();
         switch(getTrace().getType()) {
             case AIRWIRE: setAirwireVisual(newState);
                           break;
@@ -45,18 +110,28 @@ public class TraceView extends AbstractEdgeView {
         }
     }
 
+    // TODO: Add a class to specify the style, like 
+    // - Color
+    // - Width
+    // - Opacity
+    // - Stroke dash array
     private void setTraceVisual(AbstractWireState newState) {
         switch(newState) {
             case NORMAL:
-                getStyleClass().add("TraceNormal");
+                setStroke(Color.BLACK);
+                setStrokeWidth(0.5);
                 break;
-    
+
             case HIGHLIGHTED:
-                getStyleClass().add("TraceHighlight");
+                setStroke(Color.RED);
+                setStrokeWidth(0.8);
+                setOpacity(0.5);
                 break;
-    
+
             case SELECTED:
-                getStyleClass().add("TraceSelect");
+                setStroke(Color.RED);
+                setStrokeWidth(0.8);
+                setOpacity(1.0);
                 break;
     
             default:
@@ -68,18 +143,18 @@ public class TraceView extends AbstractEdgeView {
         switch(newState) {
             case NORMAL:
                 if (isBottom) {
-                    getStyleClass().add("BridgeNormalBottom");
+//1                    getStyleClass().add("BridgeNormalBottom");
                 } else {
-                    getStyleClass().add("BridgeNormal");
+//1                    getStyleClass().add("BridgeNormal");
                 }
                 break;
     
             case HIGHLIGHTED:
-                getStyleClass().add("BridgeHighlight");
+//1                getStyleClass().add("BridgeHighlight");
                 break;
     
             case SELECTED:
-                getStyleClass().add("BridgeSelect");
+//1                getStyleClass().add("BridgeSelect");
                 break;
     
             default:
@@ -90,15 +165,17 @@ public class TraceView extends AbstractEdgeView {
     private void setAirwireVisual(AbstractWireState newState) {
         switch(newState) {
             case NORMAL:
-                getStyleClass().add("AirwireNormal");
+                setStroke(Color.ORANGE);
+                setStrokeWidth(0.3);
+//1                getStyleClass().add("AirwireNormal");
                 break;
 
             case HIGHLIGHTED:
-                getStyleClass().add("AirwireHighlight");
+//1                getStyleClass().add("AirwireHighlight");
                 break;
 
             case SELECTED:
-                getStyleClass().add("AirwireSelect");
+//1                getStyleClass().add("AirwireSelect");
                 break;
 
             default:
@@ -137,5 +214,13 @@ public class TraceView extends AbstractEdgeView {
                              this.getStart().getX(), this.getStart().getY(), 
                              this.getEnd().getX(), this.getEnd().getY(),
                              edge.getType());
+    }
+
+    public Point2D sceneToLocal(Point2D mpos) {
+        return theLine.sceneToLocal(mpos);
+    }
+
+    public boolean contains(Point2D pos) {
+        return selectLine.contains(pos);
     }
 }
