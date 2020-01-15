@@ -50,14 +50,14 @@ public class TraceGroup extends Group {
 
     public void addTrace(TraceView traceView) {
         traceViews.add(traceView);
-        layer1.getChildren().addAll(traceView.theLine);
-        layer2.getChildren().addAll(traceView.theLine2);
+        layer1.getChildren().addAll(traceView.theLine); // , traceView.gradientLine);
+//        layer2.getChildren().addAll(traceView.theLine2);
     }
 
     public void removeTrace(TraceView traceView) {
         traceViews.remove(traceView);
         layer1.getChildren().remove(traceView.theLine);
-        layer2.getChildren().remove(traceView.theLine2);
+ //       layer2.getChildren().remove(traceView.theLine2);
     }
     
     public List<TraceView> getTraceViews() {

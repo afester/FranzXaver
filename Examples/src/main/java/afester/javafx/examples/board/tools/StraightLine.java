@@ -52,6 +52,9 @@ public class StraightLine {
         return new Point2D(Xs, Ys);
     }
 
+    public double getLength() {
+        return start.distance(end);
+    }
     /**
      * @return A direction vector for this straight line.
      */
@@ -75,6 +78,14 @@ public class StraightLine {
     }
 
     /**
+     * @return A normalized norm vector for this line.
+     */
+    public Point2D getNormalizedNormVector() {
+        var normVector = getNormVector();
+        return normVector.normalize();
+    }
+
+    /**
      * @param point A point which shall be part of the result line.
      * @return A StraightLine which is orthogonal to this StraightLine.
      */
@@ -93,6 +104,15 @@ public class StraightLine {
         return intersection(ortho);
     }
 
+    /**
+     * @return The mid point of this Straight line which is exactly between the
+     *         two end points.
+     */
+    public Point2D getMidpoint() {
+        return new Point2D((end.getX() + start.getX())/2.0,
+                           (end.getY() + start.getY())/2.0);
+    }
+    
     /**
      * @return A StraightLine which is parallel to this line but goes through the given point. 
      */

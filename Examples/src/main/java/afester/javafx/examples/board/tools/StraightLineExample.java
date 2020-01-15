@@ -25,7 +25,7 @@ public class StraightLineExample extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("JavaFX nearest path example");
+        primaryStage.setTitle("JavaFX straight line example");
 
         BorderPane mainLayout = new BorderPane();
 
