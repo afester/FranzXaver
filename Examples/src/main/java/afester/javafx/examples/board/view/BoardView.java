@@ -48,6 +48,7 @@ public abstract class BoardView extends Pane {
     private Group bridgeGroup;              // and Bridges on the board
     private LookupGroup handleGroup;        // all dynamic handles (topmost layer)
 
+    private ApplicationProperties props;
     private boolean isReadOnly = false;
     private boolean isBottom;
 
@@ -102,6 +103,7 @@ public abstract class BoardView extends Pane {
     public BoardView(Board board, ApplicationProperties props, boolean isBottom) {
         this.isBottom = isBottom;
         this.board = board;
+        this.props = props;
 
         String css = BoardView.class.getResource("boardStyle.css").toExternalForm();
         getStylesheets().add(css);
@@ -112,13 +114,14 @@ public abstract class BoardView extends Pane {
 
         // TODO: This could now be changed to bindings
         showSvgProperty().addListener((obj, oldValue, newValue) -> { partsGroup.getChildren().forEach(part -> ((PartView) part).render(newValue)); });
-        showTracesProperty().addListener((obj, oldValue, newValue) -> traceGroup.setVisible(newValue));
-        showAirwiresProperty().addListener((obj, oldValue, newValue) -> airWireGroup.setVisible(newValue));
-        showDimensionsProperty().addListener((obj, oldValue, newValue) -> dimensionGroup.setVisible(newValue));
+        
+        traceGroup.visibleProperty().bind(showTracesProperty()); // .addListener((obj, oldValue, newValue) -> traceGroup.setVisible(newValue));
+        airWireGroup.visibleProperty().bind(showAirwiresProperty());//  showAirwiresProperty().addListener((obj, oldValue, newValue) -> airWireGroup.setVisible(newValue));
+        dimensionGroup.visibleProperty().bind(showDimensionsProperty());    // showDimensionsProperty().addListener((obj, oldValue, newValue) -> dimensionGroup.setVisible(newValue));
 
         // TODO: different for top and bottom!
-        traceGroup.colorProperty().bind(props.bottomTraceColorProperty());
-        traceGroup.widthProperty().bind(props.bottomTraceWidthProperty());
+        traceGroup.colorProperty().bind(props.getTopTraceNormalStyle().colorProperty());
+        traceGroup.widthProperty().bind(props.getTopTraceNormalStyle().widthProperty());
 
         showBoardHandlesProperty().addListener((obj, oldValue, newValue) -> {
             handleGroup.getChildren().clear();
@@ -147,7 +150,7 @@ public abstract class BoardView extends Pane {
         net.getTraces().forEach(trace -> {
             log.debug("  Creating TraceView for: {}", trace);
 
-            TraceView traceView = new TraceView(trace, isBottom);
+            TraceView traceView = new TraceView(trace, isBottom, props);
             tMap.put(trace, traceView);
 
             switch(trace.getType()) {
@@ -190,7 +193,7 @@ public abstract class BoardView extends Pane {
 //!!! Essentially, this is working, but the coordinates of the AirWire are not correct!                
 
             change.getAddedSubList().forEach(trace -> {
-                TraceView traceView = new TraceView(trace, isBottom);
+                TraceView traceView = new TraceView(trace, isBottom, props);
                 tMap.put(trace, traceView);
                 System.err.println("ADDING TRACE VIEW: " + traceView);
 

@@ -42,7 +42,6 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -233,47 +232,37 @@ public class BreadBoardEditor extends Application {
 
     private void setupColors() {
 
-        if (bottomView != null) {
-            ColorSettings cs = new ColorSettings(
-                    new Pair<>(ColorClass.TOPBOARD, Color.DARKRED),
-                    new Pair<>(ColorClass.TOPTRACE, Color.BLUE),
-                    new Pair<>(ColorClass.TOPPAD, Color.GREEN),
-                    new Pair<>(ColorClass.BOTTOMBOARD, Color.DARKRED),
-                    new Pair<>(ColorClass.BOTTOMTRACE, props.getBottomTraceColor()),
-                    new Pair<>(ColorClass.BOTTOMPAD, Color.GREEN));
+        ColorSettings cs = new ColorSettings(
+                new Pair<>(StyleSelector.TOPBOARD,                              props.getTopBoardStyle()),
+                new Pair<>(StyleSelector.TOPPAD,                                props.getTopBoardStyle()),
 
-            cs.setOnColorChanged((key, value) -> {
-                switch (key) {
-                case BOTTOMPAD:
-                    break;
+                new Pair<>(StyleSelector.TOPTRACE_NORMAL,      props.getTopTraceNormalStyle()),
+                new Pair<>(StyleSelector.TOPTRACE_HIGHLIGHTED, props.getTopTraceHighlightedStyle()),
+                new Pair<>(StyleSelector.TOPTRACE_SELECTED,    props.getTopTraceSelectedStyle()),
 
-                case BOTTOMTRACE:
-                    props.setBottomTraceColor(value);
-                    break;
+                new Pair<>(StyleSelector.TOPAIRWIRE_NORMAL,                     props.getTopBoardStyle()),
+                new Pair<>(StyleSelector.TOPAIRWIRE_HIGHLIGHTED,                props.getTopBoardStyle()),
+                new Pair<>(StyleSelector.TOPAIRWIRE_SELECTED,                   props.getTopBoardStyle()),
 
-                default:
-                    break;
+                new Pair<>(StyleSelector.TOPBRIDGE_NORMAL,                      props.getTopBoardStyle()),
+                new Pair<>(StyleSelector.TOPBRIDGE_HIGHLIGHTED,                 props.getTopBoardStyle()),
+                new Pair<>(StyleSelector.TOPBRIDGE_SELECTED,                    props.getTopBoardStyle()),
 
-                }
-            });
+                new Pair<>(StyleSelector.BOTTOMBOARD,                           props.getTopBoardStyle()),
+                new Pair<>(StyleSelector.BOTTOMPAD,                             props.getTopBoardStyle()),
 
-            cs.setOnWidthChanged((key, value) -> {
-                switch (key) {
-                case BOTTOMPAD:
-                    break;
+                new Pair<>(StyleSelector.BOTTOMTRACE_NORMAL,                    props.getTopBoardStyle()),
+                new Pair<>(StyleSelector.BOTTOMTRACE_HIGHLIGHTED,               props.getTopBoardStyle()),
+                new Pair<>(StyleSelector.BOTTOMTRACE_SELECTED,                  props.getTopBoardStyle()),
 
-                case BOTTOMTRACE:
-                    props.setBottomTraceWidth(value);
-                    break;
+                new Pair<>(StyleSelector.BOTTOMAIRWIRE_NORMAL,                  props.getTopBoardStyle()),
+                new Pair<>(StyleSelector.BOTTOMAIRWIRE_HIGHLIGHTED,             props.getTopBoardStyle()),
+                new Pair<>(StyleSelector.BOTTOMAIRWIRE_SELECTED,                props.getTopBoardStyle()),
 
-                default:
-                    break;
-
-                }
-            });
-
-            cs.show();
-        }
+                new Pair<>(StyleSelector.BOTTOMBRIDGE_NORMAL,                   props.getTopBoardStyle()),
+                new Pair<>(StyleSelector.BOTTOMBRIDGE_HIGHLIGHTED,              props.getTopBoardStyle()),
+                new Pair<>(StyleSelector.BOTTOMBRIDGE_SELECTED,                 props.getTopBoardStyle()));
+        cs.show();
     }
 
     
@@ -471,7 +460,7 @@ public class BreadBoardEditor extends Application {
                 bottomView.getTransforms().add(Transform.scale(-1, 1));
 
                 bottomDrawingView = new DrawingArea();
-                bottomView.setReadOnly(true);
+                // bottomView.setReadOnly(true);
                 bottomDrawingView.getPaper().getChildren().add(bottomView);
                 bottomViewTab.setContent(bottomDrawingView);
 

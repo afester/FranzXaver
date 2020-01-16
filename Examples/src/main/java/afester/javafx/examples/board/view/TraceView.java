@@ -1,5 +1,6 @@
 package afester.javafx.examples.board.view;
 
+import afester.javafx.examples.board.ApplicationProperties;
 import afester.javafx.examples.board.model.AbstractEdge;
 import afester.javafx.examples.board.model.AbstractEdge.AbstractWireState;
 import afester.javafx.examples.board.model.TraceType;
@@ -27,11 +28,16 @@ public class TraceView extends AbstractEdgeView implements Interactable {
     // The select line is used to determine the selection area.
     // It is NOT part of the scene graph!
     private final Line selectLine = new Line(); 
-                    
 
-    public TraceView(AbstractEdge trace, boolean isBottom) {
+    public Line gradientLine;
+    private final ApplicationProperties props;
+    
+
+    public TraceView(AbstractEdge trace, boolean isBottom, 
+                     ApplicationProperties props) {
         super(trace);
         this.isBottom = isBottom;
+        this.props = props;
 
         // POC: Calculate the gradient line
         StraightLine l = new StraightLine(getStart(), getEnd());
@@ -48,9 +54,9 @@ public class TraceView extends AbstractEdgeView implements Interactable {
         theLine2.setStrokeLineCap(StrokeLineCap.ROUND);
         selectLine.setStrokeWidth(1.5);
         selectLine.setStroke(Color.CYAN);
-
-        setStrokeWidth(1.0);
-        setStroke(Color.LIGHTGRAY);
+//
+//        setStrokeWidth(1.0);
+//        setStroke(Color.LIGHTGRAY);
 
         updateStart(startProperty().getValue());
         startProperty().addListener((obj, oldValue, newValue) -> {
@@ -71,7 +77,6 @@ public class TraceView extends AbstractEdgeView implements Interactable {
         theLine2.visibleProperty().bind(visibleProperty());
         
     }
-    public Line gradientLine;
     
     private void updateStart(Point2D pos) {
         theLine.setStartX(pos.getX());
@@ -115,7 +120,7 @@ public class TraceView extends AbstractEdgeView implements Interactable {
     }
 
 
-    public void setOpacity(double newValue) {
+    private void setOpacity(double newValue) {
         theLine.setOpacity(newValue);
         theLine2.setOpacity(newValue);
     }
@@ -136,28 +141,37 @@ public class TraceView extends AbstractEdgeView implements Interactable {
         }
     }
 
-    // TODO: Add a class to specify the style, like 
-    // - Color
-    // - Width
-    // - Opacity
-    // - Stroke dash array
+    
+    private void updateStyle(ShapeStyle style) {
+        setStroke(style.getColor());
+        setStrokeWidth(style.getWidth());
+        setOpacity(style.getOpacity());
+    }
+
     private void setTraceVisual(AbstractWireState newState) {
         switch(newState) {
             case NORMAL:
-                setStroke(Color.BLACK);
-                setStrokeWidth(0.5);
+                if (isBottom) {
+                    // updateStyle(props.getTraceNormalStyle());
+                } else {
+                    updateStyle(props.getTopTraceNormalStyle());
+                }
                 break;
 
             case HIGHLIGHTED:
-                setStroke(Color.RED);
-                setStrokeWidth(0.8);
-                setOpacity(0.5);
+                if (isBottom) {
+                    
+                } else {
+                    updateStyle(props.getTopTraceHighlightedStyle());
+                }
                 break;
 
             case SELECTED:
-                setStroke(Color.RED);
-                setStrokeWidth(0.8);
-                setOpacity(1.0);
+                if (isBottom) {
+                    
+                } else {
+                    updateStyle(props.getTopTraceSelectedStyle());
+                }
                 break;
     
             default:
@@ -191,8 +205,8 @@ public class TraceView extends AbstractEdgeView implements Interactable {
     private void setAirwireVisual(AbstractWireState newState) {
         switch(newState) {
             case NORMAL:
-                setStroke(Color.ORANGE);
-                setStrokeWidth(0.3);
+//                setStroke(Color.ORANGE);
+//                setStrokeWidth(0.3);
 //1                getStyleClass().add("AirwireNormal");
                 break;
 
