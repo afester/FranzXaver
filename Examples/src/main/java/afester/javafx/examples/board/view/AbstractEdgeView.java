@@ -20,7 +20,7 @@ import javafx.scene.shape.Line;
  * Hence the AbstraceEdgeView itself is NOT a Node - it is a collection of
  * Nodes which can be added to any other parent as required. 
  */
-public abstract class AbstractEdgeView /*extends Group /*extends Line */ implements Interactable  {
+public abstract class AbstractEdgeView extends Line implements Interactable  {
 
     public AbstractEdge edge;
 
@@ -36,11 +36,11 @@ public abstract class AbstractEdgeView /*extends Group /*extends Line */ impleme
     public Point2D getEnd() { return end.get(); }
     public void setEnd(Point2D pos) { end.set(pos); }
 
-    // A flag to determine if this edge is visible or not.
-    private final BooleanProperty visible = new SimpleBooleanProperty(true);
-    public BooleanProperty visibleProperty() { return visible; }
-    public boolean isVisible() { return visible.get(); }
-    public void setVisible(boolean flag) { visible.set(flag); }
+//    // A flag to determine if this edge is visible or not.
+//    private final BooleanProperty visible = new SimpleBooleanProperty(true);
+//    public BooleanProperty visibleProperty() { return visible; }
+//    public boolean isVisible() { return visible.get(); }
+//    public void setVisible(boolean flag) { visible.set(flag); }
 
     /**
      * Creates a new AbstractWireView for a given AbstractWire.

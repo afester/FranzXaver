@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import afester.javafx.examples.board.view.ShapeStyle;
@@ -16,8 +18,38 @@ public class ApplicationProperties {
     // the actual storage
     private final Properties p = new Properties();
 
+    private final Map<StyleSelector, ShapeStyle> styleMap = new HashMap<>();
+
     private ApplicationProperties() {
-        
+        styleMap.put(StyleSelector.TOPBOARD, new ShapeStyle());
+        styleMap.put(StyleSelector.TOPPAD,   new ShapeStyle());
+
+        styleMap.put(StyleSelector.TOPTRACE_NORMAL,      new ShapeStyle());
+        styleMap.put(StyleSelector.TOPTRACE_HIGHLIGHTED, new ShapeStyle());
+        styleMap.put(StyleSelector.TOPTRACE_SELECTED,    new ShapeStyle());
+
+        styleMap.put(StyleSelector.TOPAIRWIRE_NORMAL,      new ShapeStyle());
+        styleMap.put(StyleSelector.TOPAIRWIRE_HIGHLIGHTED, new ShapeStyle());
+        styleMap.put(StyleSelector.TOPAIRWIRE_SELECTED,    new ShapeStyle());
+
+        styleMap.put(StyleSelector.TOPBRIDGE_NORMAL,       new ShapeStyle());
+        styleMap.put(StyleSelector.TOPBRIDGE_HIGHLIGHTED,  new ShapeStyle());
+        styleMap.put(StyleSelector.TOPBRIDGE_SELECTED,     new ShapeStyle());
+
+        styleMap.put(StyleSelector.BOTTOMBOARD,            new ShapeStyle());
+        styleMap.put(StyleSelector.BOTTOMPAD,              new ShapeStyle());
+
+        styleMap.put(StyleSelector.BOTTOMTRACE_NORMAL,     new ShapeStyle());
+        styleMap.put(StyleSelector.BOTTOMTRACE_HIGHLIGHTED,new ShapeStyle());
+        styleMap.put(StyleSelector.BOTTOMTRACE_SELECTED,   new ShapeStyle());
+
+        styleMap.put(StyleSelector.BOTTOMAIRWIRE_NORMAL,      new ShapeStyle());
+        styleMap.put(StyleSelector.BOTTOMAIRWIRE_HIGHLIGHTED, new ShapeStyle());
+        styleMap.put(StyleSelector.BOTTOMAIRWIRE_SELECTED,    new ShapeStyle());
+
+        styleMap.put(StyleSelector.BOTTOMBRIDGE_NORMAL,       new ShapeStyle());
+        styleMap.put(StyleSelector.BOTTOMBRIDGE_HIGHLIGHTED,  new ShapeStyle());
+        styleMap.put(StyleSelector.BOTTOMBRIDGE_SELECTED,     new ShapeStyle());
     }
 
     public static ApplicationProperties load() {
@@ -26,6 +58,17 @@ public class ApplicationProperties {
         try {
             InputStream is = new FileInputStream("application.xml");
             result.p.loadFromXML(is);
+
+            result.styleMap.forEach( (key, value) -> {
+                var propBaseName = key.name();
+                var color = result.getColor(propBaseName + ".color", Color.BLACK);
+                var width = result.getDouble(propBaseName + ".width", 0.5);
+                var opacity = result.getDouble(propBaseName + ".opacity", 1.0);
+
+                value.setColor(color);
+                value.setWidth(width);
+                value.setOpacity(opacity);
+            });
 
             //result.setBottomTraceColor(result.getColor("bottomTraceColor", Color.RED));
             //result.setBottomTraceWidth(result.getDouble("bottomTraceWidth", 1.0));
@@ -40,8 +83,13 @@ public class ApplicationProperties {
 
     public void save() {
         try {
-            //setColor("bottomTraceColor", getBottomTraceColor());
-            //setDouble("bottomTraceWidth", getBottomTraceWidth());
+            
+            styleMap.forEach((key, value) -> {
+                var propBaseName = key.name();
+                setColor(propBaseName + ".color", value.getColor());
+                setDouble(propBaseName + ".width", value.getWidth());
+                setDouble(propBaseName + ".opacity", value.getOpacity());
+            });
 
             OutputStream os = new FileOutputStream("application.xml");
             p.storeToXML(os, "BreadBoardEditor");
@@ -91,36 +139,12 @@ public class ApplicationProperties {
         return Color.valueOf(cval);
     }
 
-//    public List<?> getList(String key) {
-//        return null;
-//    }
+    public ShapeStyle getStyle(StyleSelector key) {
+        return styleMap.get(key);
+    }
 
 
-//    // The color of the trace on the bottom of the board
-//    private final ObjectProperty<Color> bottomTraceColor = new SimpleObjectProperty<Color>(Color.RED);
-//    public ObjectProperty<Color> bottomTraceColorProperty() { return bottomTraceColor; }
-//    public Color getBottomTraceColor() { return bottomTraceColor.get(); }
-//    public void setBottomTraceColor(Color color) { bottomTraceColor.set(color); }
-//
-//    // The width of the traces (in mm)
-//    private final DoubleProperty bottomTraceWidth = new SimpleDoubleProperty(1.0);
-//    public DoubleProperty bottomTraceWidthProperty() { return bottomTraceWidth; }
-//    public Double getBottomTraceWidth() { return bottomTraceWidth.get(); }
-//    public void setBottomTraceWidth(Double newWidth) { bottomTraceWidth.set(newWidth); }
-
-    // The style of the top board view
-    private final ShapeStyle topBoardStyle = new ShapeStyle();
-    public ShapeStyle getTopBoardStyle() { return topBoardStyle; }
-
-    // The style of a normal trace
-    private final ShapeStyle topTraceNormalStyle = new ShapeStyle();
-    public ShapeStyle getTopTraceNormalStyle() { return topTraceNormalStyle; }
-
-    // The style of a highlighted normal trace
-    private final ShapeStyle topTraceHighlightedStyle = new ShapeStyle();
-    public ShapeStyle getTopTraceHighlightedStyle() { return topTraceHighlightedStyle; }
-    
-    // The style of a selected normal trace
-    private final ShapeStyle topTraceSelectedStyle = new ShapeStyle();
-    public ShapeStyle getTopTraceSelectedStyle() { return topTraceSelectedStyle; }
+    public Map<StyleSelector, ShapeStyle> getStyles() {
+        return styleMap;
+    }
 }

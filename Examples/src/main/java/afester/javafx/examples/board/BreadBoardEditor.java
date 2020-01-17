@@ -232,36 +232,36 @@ public class BreadBoardEditor extends Application {
 
     private void setupColors() {
 
-        ColorSettings cs = new ColorSettings(
-                new Pair<>(StyleSelector.TOPBOARD,                              props.getTopBoardStyle()),
-                new Pair<>(StyleSelector.TOPPAD,                                props.getTopBoardStyle()),
-
-                new Pair<>(StyleSelector.TOPTRACE_NORMAL,      props.getTopTraceNormalStyle()),
-                new Pair<>(StyleSelector.TOPTRACE_HIGHLIGHTED, props.getTopTraceHighlightedStyle()),
-                new Pair<>(StyleSelector.TOPTRACE_SELECTED,    props.getTopTraceSelectedStyle()),
-
-                new Pair<>(StyleSelector.TOPAIRWIRE_NORMAL,                     props.getTopBoardStyle()),
-                new Pair<>(StyleSelector.TOPAIRWIRE_HIGHLIGHTED,                props.getTopBoardStyle()),
-                new Pair<>(StyleSelector.TOPAIRWIRE_SELECTED,                   props.getTopBoardStyle()),
-
-                new Pair<>(StyleSelector.TOPBRIDGE_NORMAL,                      props.getTopBoardStyle()),
-                new Pair<>(StyleSelector.TOPBRIDGE_HIGHLIGHTED,                 props.getTopBoardStyle()),
-                new Pair<>(StyleSelector.TOPBRIDGE_SELECTED,                    props.getTopBoardStyle()),
-
-                new Pair<>(StyleSelector.BOTTOMBOARD,                           props.getTopBoardStyle()),
-                new Pair<>(StyleSelector.BOTTOMPAD,                             props.getTopBoardStyle()),
-
-                new Pair<>(StyleSelector.BOTTOMTRACE_NORMAL,                    props.getTopBoardStyle()),
-                new Pair<>(StyleSelector.BOTTOMTRACE_HIGHLIGHTED,               props.getTopBoardStyle()),
-                new Pair<>(StyleSelector.BOTTOMTRACE_SELECTED,                  props.getTopBoardStyle()),
-
-                new Pair<>(StyleSelector.BOTTOMAIRWIRE_NORMAL,                  props.getTopBoardStyle()),
-                new Pair<>(StyleSelector.BOTTOMAIRWIRE_HIGHLIGHTED,             props.getTopBoardStyle()),
-                new Pair<>(StyleSelector.BOTTOMAIRWIRE_SELECTED,                props.getTopBoardStyle()),
-
-                new Pair<>(StyleSelector.BOTTOMBRIDGE_NORMAL,                   props.getTopBoardStyle()),
-                new Pair<>(StyleSelector.BOTTOMBRIDGE_HIGHLIGHTED,              props.getTopBoardStyle()),
-                new Pair<>(StyleSelector.BOTTOMBRIDGE_SELECTED,                 props.getTopBoardStyle()));
+        ColorSettings cs = new ColorSettings(props);
+//                new Pair<>(StyleSelector.TOPBOARD,                              props.getTopBoardStyle()),
+//                new Pair<>(StyleSelector.TOPPAD,                                props.getTopBoardStyle()),
+//
+//                new Pair<>(StyleSelector.TOPTRACE_NORMAL,      props.getTopTraceNormalStyle()),
+//                new Pair<>(StyleSelector.TOPTRACE_HIGHLIGHTED, props.getTopTraceHighlightedStyle()),
+//                new Pair<>(StyleSelector.TOPTRACE_SELECTED,    props.getTopTraceSelectedStyle()),
+//
+//                new Pair<>(StyleSelector.TOPAIRWIRE_NORMAL,                     props.getTopBoardStyle()),
+//                new Pair<>(StyleSelector.TOPAIRWIRE_HIGHLIGHTED,                props.getTopBoardStyle()),
+//                new Pair<>(StyleSelector.TOPAIRWIRE_SELECTED,                   props.getTopBoardStyle()),
+//
+//                new Pair<>(StyleSelector.TOPBRIDGE_NORMAL,                      props.getTopBoardStyle()),
+//                new Pair<>(StyleSelector.TOPBRIDGE_HIGHLIGHTED,                 props.getTopBoardStyle()),
+//                new Pair<>(StyleSelector.TOPBRIDGE_SELECTED,                    props.getTopBoardStyle()),
+//
+//                new Pair<>(StyleSelector.BOTTOMBOARD,                           props.getTopBoardStyle()),
+//                new Pair<>(StyleSelector.BOTTOMPAD,                             props.getTopBoardStyle()),
+//
+//                new Pair<>(StyleSelector.BOTTOMTRACE_NORMAL,                    props.getTopBoardStyle()),
+//                new Pair<>(StyleSelector.BOTTOMTRACE_HIGHLIGHTED,               props.getTopBoardStyle()),
+//                new Pair<>(StyleSelector.BOTTOMTRACE_SELECTED,                  props.getTopBoardStyle()),
+//
+//                new Pair<>(StyleSelector.BOTTOMAIRWIRE_NORMAL,                  props.getTopBoardStyle()),
+//                new Pair<>(StyleSelector.BOTTOMAIRWIRE_HIGHLIGHTED,             props.getTopBoardStyle()),
+//                new Pair<>(StyleSelector.BOTTOMAIRWIRE_SELECTED,                props.getTopBoardStyle()),
+//
+//                new Pair<>(StyleSelector.BOTTOMBRIDGE_NORMAL,                   props.getTopBoardStyle()),
+//                new Pair<>(StyleSelector.BOTTOMBRIDGE_HIGHLIGHTED,              props.getTopBoardStyle()),
+//                new Pair<>(StyleSelector.BOTTOMBRIDGE_SELECTED,                 props.getTopBoardStyle()));
         cs.show();
     }
 

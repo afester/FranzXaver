@@ -1,6 +1,7 @@
 package afester.javafx.examples.board.view;
 
 import afester.javafx.examples.board.ApplicationProperties;
+import afester.javafx.examples.board.StyleSelector;
 import afester.javafx.examples.board.model.AbstractEdge;
 import afester.javafx.examples.board.model.AbstractEdge.AbstractWireState;
 import afester.javafx.examples.board.model.TraceType;
@@ -9,6 +10,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Paint;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.StrokeLineCap;
@@ -21,9 +23,6 @@ public class TraceView extends AbstractEdgeView implements Interactable {
 
     private Point2D originalPos = new Point2D(0, 0);
     private boolean isBottom = false;
-
-    public final Line theLine = new Line();
-    public final Line theLine2 = new Line();
     
     // The select line is used to determine the selection area.
     // It is NOT part of the scene graph!
@@ -50,13 +49,9 @@ public class TraceView extends AbstractEdgeView implements Interactable {
         gradientLine.setStrokeWidth(0.3);
 
         // fixed properties of the lines
-        theLine.setStrokeLineCap(StrokeLineCap.ROUND);
-        theLine2.setStrokeLineCap(StrokeLineCap.ROUND);
+        setStrokeLineCap(StrokeLineCap.ROUND);
         selectLine.setStrokeWidth(1.5);
         selectLine.setStroke(Color.CYAN);
-//
-//        setStrokeWidth(1.0);
-//        setStroke(Color.LIGHTGRAY);
 
         updateStart(startProperty().getValue());
         startProperty().addListener((obj, oldValue, newValue) -> {
@@ -73,33 +68,25 @@ public class TraceView extends AbstractEdgeView implements Interactable {
             update(newState);
         });
 
-        theLine.visibleProperty().bind(visibleProperty());
-        theLine2.visibleProperty().bind(visibleProperty());
-        
     }
     
     private void updateStart(Point2D pos) {
-        theLine.setStartX(pos.getX());
-        theLine.setStartY(pos.getY());
-        theLine2.setStartX(pos.getX());
-        theLine2.setStartY(pos.getY());
+        setStartX(pos.getX());
+        setStartY(pos.getY());
         selectLine.setStartX(pos.getX());
         selectLine.setStartY(pos.getY());
     }
 
     private void updateEnd(Point2D pos) {
-        theLine.setEndX(pos.getX()); 
-        theLine.setEndY(pos.getY());
-        theLine2.setEndX(pos.getX()); 
-        theLine2.setEndY(pos.getY());
+        setEndX(pos.getX());
+        setEndY(pos.getY());
         selectLine.setEndX(pos.getX());
         selectLine.setEndY(pos.getY());
     }
 
 
-    public void setStroke(Color newValue) {
-//        theLine.setStroke(newValue);
-        
+
+    public void setShapeStroke(Color newValue) {
         var lightColor = newValue.deriveColor(0.0, 1.0, 1.2, 1.0);
         
         var stops = new Stop[] { new Stop(0, newValue), 
@@ -108,22 +95,9 @@ public class TraceView extends AbstractEdgeView implements Interactable {
         var lg1 = new LinearGradient(gradientLine.getStartX(), gradientLine.getStartY(),
                             gradientLine.getEndX(), gradientLine.getEndY(), 
         false, CycleMethod.NO_CYCLE, stops);
-        theLine.setStroke(lg1);
-
-        theLine2.setStroke(lightColor);
+        setStroke(lg1);
     }
 
-
-    public void setStrokeWidth(double newValue) {
-        theLine.setStrokeWidth(newValue);
-        theLine2.setStrokeWidth(newValue/10);
-    }
-
-
-    private void setOpacity(double newValue) {
-        theLine.setOpacity(newValue);
-        theLine2.setOpacity(newValue);
-    }
 
     private void update(AbstractWireState newState) {
         switch(getTrace().getType()) {
@@ -143,7 +117,7 @@ public class TraceView extends AbstractEdgeView implements Interactable {
 
     
     private void updateStyle(ShapeStyle style) {
-        setStroke(style.getColor());
+        setShapeStroke(style.getColor());
         setStrokeWidth(style.getWidth());
         setOpacity(style.getOpacity());
     }
@@ -154,7 +128,7 @@ public class TraceView extends AbstractEdgeView implements Interactable {
                 if (isBottom) {
                     // updateStyle(props.getTraceNormalStyle());
                 } else {
-                    updateStyle(props.getTopTraceNormalStyle());
+                    updateStyle(props.getStyle(StyleSelector.TOPTRACE_NORMAL));
                 }
                 break;
 
@@ -162,7 +136,8 @@ public class TraceView extends AbstractEdgeView implements Interactable {
                 if (isBottom) {
                     
                 } else {
-                    updateStyle(props.getTopTraceHighlightedStyle());
+                    updateStyle(props.getStyle(StyleSelector.TOPTRACE_HIGHLIGHTED));
+
                 }
                 break;
 
@@ -170,7 +145,7 @@ public class TraceView extends AbstractEdgeView implements Interactable {
                 if (isBottom) {
                     
                 } else {
-                    updateStyle(props.getTopTraceSelectedStyle());
+                    updateStyle(props.getStyle(StyleSelector.TOPTRACE_SELECTED));
                 }
                 break;
     
@@ -256,10 +231,7 @@ public class TraceView extends AbstractEdgeView implements Interactable {
                              edge.getType());
     }
 
-    public Point2D sceneToLocal(Point2D mpos) {
-        return theLine.sceneToLocal(mpos);
-    }
-
+    @Override
     public boolean contains(Point2D pos) {
         return selectLine.contains(pos);
     }
