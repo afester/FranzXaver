@@ -6,14 +6,13 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Shape;
 
 
 /**
  * A ColorGroup contains the visualization of all shapes which share the same 
  * style.
  */
-public class ColorGroup extends Group {
+public class StyleGroup extends Group {
 
     // The color of the shapes
     private final ObjectProperty<Color> color = new SimpleObjectProperty<Color>(Color.BLACK);
@@ -27,7 +26,7 @@ public class ColorGroup extends Group {
     public Double getWidth() { return width.get(); }
     public void setWidth(Double newWidth) { width.set(newWidth); }
 
-    public ColorGroup() {
+    public StyleGroup() {
 
         color.addListener((obj, oldValue, newValue) -> {
             getChildrenUnmodifiable().forEach(child -> {

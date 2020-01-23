@@ -25,6 +25,8 @@ import afester.javafx.examples.board.view.SplitTraceInteractor;
 import afester.javafx.examples.board.view.TopBoardView;
 import afester.javafx.examples.board.view.TraceView;
 import javafx.application.Application;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -37,15 +39,17 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Pair;
+
 
 /**
  * Scene
@@ -71,7 +75,9 @@ public class BreadBoardEditor extends Application {
     private Stage stage;
 
     private final SplitPane splitPane = new SplitPane();
+    private final SplitPane logSplitPane = new SplitPane();
     private final TabPane tabPane = new TabPane();
+    private final TextArea logOutput = new TextArea();
 
     private BomView bomView;
     private BoardView topView;
@@ -615,8 +621,40 @@ public class BreadBoardEditor extends Application {
 
 
     private void synchronizeSchematic() {
-        Board board = topView.getBoard();
-        board.synchronizeSchematic();
+        
+        // TODO: we need to block the UI while this task is running.
+        var syncService = new Service<Void>() {
+
+            @Override
+            protected Task<Void> createTask() {
+                return new Task<Void>() {
+
+                    @Override
+                    protected Void call() throws Exception {
+                        // This method is executed on the background thread.
+                        // we must NOT call JavaFX methods directly from here!
+
+//                        Board board = topView.getBoard();
+//                        updateMessage("Synchronizing " + board.getFileName() + "\n");
+//                        board.synchronizeSchematic(log -> updateMessage(log));
+//                        updateMessage("Board synchronized.\n");
+                        for (int i = 0;  i < 100;  i++) {
+                            updateMessage(i + ". call\n");
+                            Thread.sleep(1);
+                        }
+                        return null;
+                    }
+                };
+            }
+        };
+
+        syncService.start();
+
+        // Track the message of the sync Service.
+        // TODO: How to properly remove the listener when finished?
+        syncService.messageProperty().addListener((obj, oldVal, newVal) -> {
+            logOutput.appendText(newVal);
+        });
     }
 
 
@@ -633,9 +671,15 @@ public class BreadBoardEditor extends Application {
         topDrawingView.setInteractor(new EditInteractor(topView));
         bottomView = null;
 
+        logOutput.setEditable(false);
+        logOutput.setFont(Font.font("Courier New",  12));
+        logSplitPane.setOrientation(Orientation.VERTICAL);
+        logSplitPane.setDividerPosition(0, props.getDouble("verticalSplitter", 0.9));
+        logSplitPane.getItems().addAll(tabPane, logOutput);
+
         splitPane.getItems().clear();
-        splitPane.getItems().addAll(bomView, tabPane);
-        splitPane.setDividerPosition(0, 0.15);  // TODO
+        splitPane.getItems().addAll(bomView, logSplitPane);
+        splitPane.setDividerPosition(0, props.getDouble("leftSplitter", 0.15));
         SplitPane.setResizableWithParent(bomView, false);   // do not resize the BOM list
 
         reconnectTraceModeToolButton.setDisable(false);
@@ -692,6 +736,7 @@ public class BreadBoardEditor extends Application {
     private void saveBoard() {
         Board board = topView.getBoard();
         board.save();
+        logOutput.appendText("Saved " + board.getFileName() + "\n");
     }
 
     private void saveBoardAs() {
@@ -701,6 +746,7 @@ public class BreadBoardEditor extends Application {
         if (result != null) {
             Board board = topView.getBoard();
             board.saveAs(result);
+            logOutput.appendText("Saved " + board.getFileName() + "\n");
         }
     }
 
@@ -709,7 +755,7 @@ public class BreadBoardEditor extends Application {
         fileChooser.setTitle("Import schematic ...");
         File result = fileChooser.showOpenDialog(stage);
         if (result != null) {
-            log.debug("Importing " + result.getAbsolutePath());
+            logOutput.appendText("Importing " + result.getAbsolutePath() + "\n");
 
             NetImport ni = new EagleImport(result);
             Board board = topView.getBoard();
@@ -732,6 +778,8 @@ public class BreadBoardEditor extends Application {
             props.setDouble("appWidth", mainScene.getWidth());
             props.setDouble("appHeight", mainScene.getHeight());
             props.setString("lastFile", topView.getBoard().getFileName());
+            props.setDouble("leftSplitter", splitPane.getDividerPositions()[0]);
+            props.setDouble("verticalSplitter", logSplitPane.getDividerPositions()[0]);
 
             props.save();
         }

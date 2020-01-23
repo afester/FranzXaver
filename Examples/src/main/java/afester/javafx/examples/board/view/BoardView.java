@@ -44,9 +44,9 @@ public abstract class BoardView extends Pane {
     private Group dimensionGroup;           // The board dimensions - a children of boardGroup
     private LookupGroup partsGroup;         // all parts (and their pads) on the board
     private LookupGroup netsGroup;          // all nets (Parent group for airWireGroup, traceGroup, bridgeGroup)
-    private Group airWireGroup;             // all AirWires,
-    private ColorGroup traceGroup;          //     Traces,
-    private Group bridgeGroup;              // and Bridges on the board
+    private StyleGroup airWireGroup;        // all AirWires,
+    private StyleGroup traceGroup;          //     Traces,
+    private StyleGroup bridgeGroup;         // and Bridges on the board
     private LookupGroup handleGroup;        // all dynamic handles (topmost layer)
 
     private ApplicationProperties props;
@@ -113,9 +113,7 @@ public abstract class BoardView extends Pane {
                 new Insets(20))));
         setupBoard();
 
-        // TODO: This could now be changed to bindings
         showSvgProperty().addListener((obj, oldValue, newValue) -> { partsGroup.getChildren().forEach(part -> ((PartView) part).render(newValue)); });
-        
         traceGroup.visibleProperty().bind(showTracesProperty());
         airWireGroup.visibleProperty().bind(showAirwiresProperty());
         dimensionGroup.visibleProperty().bind(showDimensionsProperty());
@@ -123,13 +121,17 @@ public abstract class BoardView extends Pane {
         if (isBottom) {
             traceGroup.colorProperty().bind(props.getStyle(StyleSelector.BOTTOMTRACE_NORMAL).colorProperty());
             traceGroup.widthProperty().bind(props.getStyle(StyleSelector.BOTTOMTRACE_NORMAL).widthProperty());
-//            airWireGroup.colorProperty().bind(props.getStyle(StyleSelector.BOTTOMAIRWIRE_NORMAL).colorProperty());
-//            airWireGroup.widthProperty().bind(props.getStyle(StyleSelector.BOTTOMAIRWIRE_NORMAL).widthProperty());
+            airWireGroup.colorProperty().bind(props.getStyle(StyleSelector.BOTTOMAIRWIRE_NORMAL).colorProperty());
+            airWireGroup.widthProperty().bind(props.getStyle(StyleSelector.BOTTOMAIRWIRE_NORMAL).widthProperty());
+            bridgeGroup.colorProperty().bind(props.getStyle(StyleSelector.BOTTOMBRIDGE_NORMAL).colorProperty());
+            bridgeGroup.widthProperty().bind(props.getStyle(StyleSelector.BOTTOMBRIDGE_NORMAL).widthProperty());
         } else {
             traceGroup.colorProperty().bind(props.getStyle(StyleSelector.TOPTRACE_NORMAL).colorProperty());
             traceGroup.widthProperty().bind(props.getStyle(StyleSelector.TOPTRACE_NORMAL).widthProperty());
-//            airWireGroup.colorProperty().bind(props.getStyle(StyleSelector.TOPAIRWIRE_NORMAL).colorProperty());
-//            airWireGroup.widthProperty().bind(props.getStyle(StyleSelector.TOPAIRWIRE_NORMAL).widthProperty());
+            airWireGroup.colorProperty().bind(props.getStyle(StyleSelector.TOPAIRWIRE_NORMAL).colorProperty());
+            airWireGroup.widthProperty().bind(props.getStyle(StyleSelector.TOPAIRWIRE_NORMAL).widthProperty());
+            bridgeGroup.colorProperty().bind(props.getStyle(StyleSelector.TOPBRIDGE_NORMAL).colorProperty());
+            bridgeGroup.widthProperty().bind(props.getStyle(StyleSelector.TOPBRIDGE_NORMAL).widthProperty());
         }
 
         showBoardHandlesProperty().addListener((obj, oldValue, newValue) -> {
@@ -236,11 +238,11 @@ public abstract class BoardView extends Pane {
         netsGroup = new LookupGroup();
         netsGroup.setId("netsGroup");
 
-        airWireGroup = new Group();
+        airWireGroup = new StyleGroup();
         airWireGroup.setId("airWireGroup");
-        traceGroup = new ColorGroup();
+        traceGroup = new StyleGroup();
         traceGroup.setId("traceGroup");
-        bridgeGroup = new Group();
+        bridgeGroup = new StyleGroup();
         bridgeGroup.setId("bridgeGroup");
         netsGroup.getChildren().addAll(airWireGroup, traceGroup, bridgeGroup);
 

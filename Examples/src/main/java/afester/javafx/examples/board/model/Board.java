@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -293,40 +294,46 @@ public class Board {
      *
      * @param updatedBoard The new board
      */
-    public void update(Board updatedBoard) {
+    public void update(Board updatedBoard, Consumer<String> log) {
+        log.accept("Comparing boards ...\n");
+
 //        //getNets().forEach( (k, n) -> n.dumpNet());
 //        //System.err.println("==================================");
-//
-//        //System.err.printf("New    : %s parts and %s nets ...\n", updatedBoard.getParts().size(), updatedBoard.getNets().size());
-//        //System.err.printf("Current: %s parts and %s nets ...\n", getParts().size(), getNets().size());
-//
-//        // verify parts - changed, added, deleted!
-//        Set<String> updatedParts = new HashSet<>(updatedBoard.getParts().keySet());
-//        
-//        Set<String> removedParts = new HashSet<>(getParts().keySet());
-//        removedParts.removeAll(updatedParts);
-//
-//        Set<String> addedParts = new HashSet<>(updatedBoard.getParts().keySet());
-//        addedParts.removeAll(getParts().keySet());
-//
-//        Set<String> potentiallyModified = new HashSet<>(getParts().keySet());
-//        potentiallyModified.removeAll(removedParts);
-//        potentiallyModified.removeAll(addedParts);
-//
-//        Set<String> modifiedParts = new HashSet<>();
-//
-//        // System.err.printf("Potentially replaced: %s parts\n", potentiallyModified.size());
-//        potentiallyModified.forEach(partName -> {
-//            Part p1 = getParts().get(partName);
-//            Part p2 = updatedBoard.getParts().get(partName);
-//            if (p1.replacedWith(p2)) {
-//                modifiedParts.add(partName);
-//            }
-//        });
-//
-//        System.err.printf("Removed  parts: %s\n", removedParts);
-//        System.err.printf("Added    parts: %s\n", addedParts);
-//        System.err.printf("Modified parts: %s\n", modifiedParts);
+
+        log.accept(String.format("New    : %s parts and %s nets ...\n", updatedBoard.getParts().size(), updatedBoard.getNets().size()));
+        log.accept(String.format("Current: %s parts and %s nets ...\n", getParts().size(), getNets().size()));
+
+        // verify parts - changed, added, deleted!
+        Set<String> updatedParts = new HashSet<>(updatedBoard.getParts().keySet());
+        
+        Set<String> removedParts = new HashSet<>(getParts().keySet());
+        removedParts.removeAll(updatedParts);
+
+        Set<String> addedParts = new HashSet<>(updatedBoard.getParts().keySet());
+        addedParts.removeAll(getParts().keySet());
+
+        Set<String> potentiallyModified = new HashSet<>(getParts().keySet());
+        potentiallyModified.removeAll(removedParts);
+        potentiallyModified.removeAll(addedParts);
+
+        final var modifiedParts = new HashSet<>();
+        potentiallyModified.forEach(partName -> {
+            Part p1 = getParts().get(partName);
+            Part p2 = updatedBoard.getParts().get(partName);
+            
+            log.accept(String.format("%-5s: \"%s\" \"%s\"\n",  partName, p1.getValue(), p1.getPackage().getName()));
+            log.accept(String.format("       \"%s\" \"%s\"\n\n", p2.getValue(), p2.getPackage().getName()));
+
+            if (p1.replacedWith(p2)) {
+                log.accept("    => MODIFIED\n");
+                modifiedParts.add(partName);
+            }
+        });
+
+        log.accept(String.format("Removed  parts: %s\n", removedParts));
+        log.accept(String.format("Added    parts: %s\n", addedParts));
+        log.accept(String.format("Modified parts: %s\n", modifiedParts));
+
 //        modifiedParts.forEach(partName -> {
 //            Part partOld = getParts().get(partName);
 //            Part partNew = updatedBoard.getParts().get(partName);
@@ -508,13 +515,11 @@ public class Board {
         ni.importFile(this);
     }
 
-    public void synchronizeSchematic() {
-        System.err.println("Synchronizing " + schematicFile);
-
+    public void synchronizeSchematic(Consumer<String> log) {
         Board updatedBoard = new Board();
         NetImport ni = new EagleImport(new File(schematicFile));
         ni.importFile(updatedBoard);
-        update(updatedBoard);
+        update(updatedBoard, log);
     }
 
     /**
