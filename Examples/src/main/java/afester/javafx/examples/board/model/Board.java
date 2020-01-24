@@ -27,6 +27,7 @@ import org.w3c.dom.Node;
 
 import afester.javafx.examples.board.eagle.EagleImport;
 import afester.javafx.examples.board.tools.PointTools;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -153,8 +154,8 @@ public class Board {
         }
     }
 
-    public void addPart(Part pkg) {
-        parts.put(pkg.getName(), pkg);
+    public void addPart(Part part) {
+        parts.put(part.getName(), part);
     }
 
     public Part getPart(String ref) {
@@ -300,8 +301,10 @@ public class Board {
 //        //getNets().forEach( (k, n) -> n.dumpNet());
 //        //System.err.println("==================================");
 
-        log.accept(String.format("New    : %s parts and %s nets ...\n", updatedBoard.getParts().size(), updatedBoard.getNets().size()));
-        log.accept(String.format("Current: %s parts and %s nets ...\n", getParts().size(), getNets().size()));
+        log.accept(String.format("Current Board: %s parts and %s nets\n", 
+                                 getParts().size(), getNets().size()));
+        log.accept(String.format("Updated Board: %s parts and %s nets\n", 
+                                 updatedBoard.getParts().size(), updatedBoard.getNets().size()));
 
         // verify parts - changed, added, deleted!
         Set<String> updatedParts = new HashSet<>(updatedBoard.getParts().keySet());
@@ -321,86 +324,103 @@ public class Board {
             Part p1 = getParts().get(partName);
             Part p2 = updatedBoard.getParts().get(partName);
             
-            log.accept(String.format("%-5s: \"%s\" \"%s\"\n",  partName, p1.getValue(), p1.getPackage().getName()));
-            log.accept(String.format("       \"%s\" \"%s\"\n\n", p2.getValue(), p2.getPackage().getName()));
-
+            //log.accept(String.format("%-5s: \"%s\" \"%s\"\n",  partName, p1.getValue(), p1.getPackage().getName()));
+            //log.accept(String.format("       \"%s\" \"%s\"\n", p2.getValue(), p2.getPackage().getName()));
             if (p1.replacedWith(p2)) {
-                log.accept("    => MODIFIED\n");
+                //log.accept("    => MODIFIED\n");
                 modifiedParts.add(partName);
             }
         });
 
-        log.accept(String.format("Removed  parts: %s\n", removedParts));
+        log.accept(String.format("\nRemoved  parts: %s\n", removedParts));
         log.accept(String.format("Added    parts: %s\n", addedParts));
         log.accept(String.format("Modified parts: %s\n", modifiedParts));
 
-//        modifiedParts.forEach(partName -> {
-//            Part partOld = getParts().get(partName);
-//            Part partNew = updatedBoard.getParts().get(partName);
-//
-//            System.err.printf("  %s => %s\n", partOld, partNew);
-//            for (Pin p : partNew.getPins()) {
-//                // try to reconnect pins with the same name
-//                String pinNr = p.getPadName();
-//                Pin oldPad = partOld.getPin(pinNr);
-//                if (oldPad != null) {
-//                    p.traceStarts = oldPad.traceStarts;
-//                    p.traceStarts.forEach(wire -> wire.from = p);
-//    
-//                    p.traceEnds = oldPad.traceEnds;
-//                    p.traceEnds.forEach(wire -> wire.to = p);
-//                }
-//            }
-//
-//            parts.remove(partName);
-//            parts.put(partName, partNew);
-//
-//            partNew.setRotation(partOld.getRotation());
-//            partNew.setPosition(partOld.getPosition());
-//        });
-//        
-//        removedParts.forEach(partName -> {
-//            removePart(partName);
-//        });
-//
-//        addedParts.forEach(partName -> {
-//            Part newPart = updatedBoard.getParts().get(partName);
-//            newPart.getPins().forEach(pad -> {
-//                pad.traceStarts.clear();    // remove references to "new" board
-//                pad.traceEnds.clear();      // remove references to "new" board
-//            });
-//            addPart(newPart);
-//        });
-//
-//        // ********************* Nets *********************************
-//        final Set<String> existingNetNames = getNets().keySet();
-//        final Set<String> newNetNames = updatedBoard.getNets().keySet();
-//        
-//        Set<String> removedNets = new HashSet<>(existingNetNames);
-//        removedNets.removeAll(newNetNames);
-//
-//        Set<String> addedNets = new HashSet<>(newNetNames);
-//        addedNets.removeAll(existingNetNames);
-//
-//        Set<String> potentiallyModifiedNets = new HashSet<>(existingNetNames);
-//        potentiallyModifiedNets.removeAll(removedNets);
-//        /// potentiallyModified.removeAll(addedParts);
-//
-//        Set<String> modifiedNets = new HashSet<>();
-//        potentiallyModifiedNets.forEach(netName -> {
-//            Net oldNet = getNets().get(netName);
-//            Net newNet = updatedBoard.getNets().get(netName);
+        modifiedParts.forEach(partName -> {
+            Part partOld = getParts().get(partName);
+            Part partNew = updatedBoard.getParts().get(partName);
+
+            for (Pin p : partNew.getPins()) {
+                // try to reconnect pins with the same name
+                String pinNr = p.getPadName();
+                Pin oldPad = partOld.getPin(pinNr);
+                log.accept(String.format("  %s => %s\n", oldPad, p));
+                if (oldPad != null) {
+                    oldPad.getEdges().forEach(e -> {
+                        log.accept(String.format("  Adding %s to %s\n", e, p));
+
+                        // TODO: Need to set "from" and "To" of the Edge!!!!
+                        p.addEdge(e); 
+                    });
+                }
+            }
+
+            log.accept(String.format("     Removing %s\n", partOld));
+            // HUGE ISSUE: We are not on the Application Thread here,
+            // but the listener which listens to the model changes
+            // MUST be executed in the Application Thread!
+            // However, the listener is executed synchronously which means 
+            // that it also executes in the background thread!
+            Platform.runLater(new Runnable() {
+                private final Part po = partOld;
+                private final Part pn = partNew;
+
+                @Override
+                public void run() {
+                    // removePart(po);
+                    parts.remove(po.getName());
+
+                    addPart(pn);
+                    pn.setRotation(partOld.getRotation());
+                    pn.setPosition(partOld.getPosition());
+                }
+            });
+        });
+
+        removedParts.forEach(partName -> {
+            removePart(partName);
+        });
+
+        addedParts.forEach(partName -> {
+            Part newPart = updatedBoard.getParts().get(partName);
+            newPart.getPins().forEach(pad -> {
+                // TODO!!!!
+                //pad.traceStarts.clear();    // remove references to "new" board
+                //pad.traceEnds.clear();      // remove references to "new" board
+            });
+
+            addPart(newPart);
+        });
+
+        // ********************* Nets *********************************
+        final Set<String> existingNetNames = getNets().keySet();
+        final Set<String> newNetNames = updatedBoard.getNets().keySet();
+        
+        Set<String> removedNets = new HashSet<>(existingNetNames);
+        removedNets.removeAll(newNetNames);
+
+        Set<String> addedNets = new HashSet<>(newNetNames);
+        addedNets.removeAll(existingNetNames);
+
+        Set<String> potentiallyModifiedNets = new HashSet<>(existingNetNames);
+        potentiallyModifiedNets.removeAll(removedNets);
+        /// potentiallyModified.removeAll(addedParts);
+
+        Set<String> modifiedNets = new HashSet<>();
+        potentiallyModifiedNets.forEach(netName -> {
+            Net oldNet = getNets().get(netName);
+            Net newNet = updatedBoard.getNets().get(netName);
 //            System.err.println("    " + oldNet);
 //            System.err.println(" <=>" + newNet);
-//            if (!oldNet.sameAs(newNet)) {
-//                modifiedNets.add(netName);
-//            }
-//        });
-//
-//        System.err.printf("Removed  nets: %s\n", removedNets);
-//        System.err.printf("Added    nets: %s\n", addedNets);
-//        System.err.printf("Modified nets: %s\n", modifiedNets);
-//
+            if (!oldNet.sameAs(newNet)) {
+                modifiedNets.add(netName);
+            }
+        });
+
+        log.accept(String.format("\nRemoved  nets: %s\n", removedNets));
+        log.accept(String.format("Added    nets: %s\n", addedNets));
+        log.accept(String.format("Modified nets: %s\n", modifiedNets));
+
 //        removedNets.forEach(netName -> {
 //            Net net = getNets().get(netName);
 //            net.clear();
@@ -494,16 +514,20 @@ public class Board {
     private void removePart(String partName) {
         Part part = getParts().get(partName);
         if (part != null) {
-            part.getPins().forEach(pad -> {
-                pad.getEdges().forEach(trace -> {
-                    Net net = trace.getNet();
-                    net.getTraces().remove(trace);
-                });
-                pad.getEdges().clear();
-            });
-
-            parts.remove(partName);
+            removePart(part);
         }
+    }
+
+    private void removePart(Part part) {
+        part.getPins().forEach(pad -> {
+            pad.getEdges().forEach(trace -> {
+                Net net = trace.getNet();
+                net.getTraces().remove(trace);
+            });
+            pad.getEdges().clear();
+        });
+
+        parts.remove(part.getName());
     }
 
     public double getWidth() {

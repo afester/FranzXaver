@@ -139,11 +139,10 @@ public class Part {
 
 
     protected boolean replacedWith(Part p2) {
-        System.err.println(Thread.currentThread().getName());
         // This is a first trivial attempt to decide whether the package for the part has changed:
-        return !(getPackage().getName().equals(p2.getPackage().getName()) || 
-                getValue().equals(p2.getValue()) || 
-                getName().equals(p2.getName()));
+        return !(getPackage().getName().equals(p2.getPackage().getName()) && 
+                 getValue().equals(p2.getValue()) &&
+                 getName().equals(p2.getName()));
     }
 
 

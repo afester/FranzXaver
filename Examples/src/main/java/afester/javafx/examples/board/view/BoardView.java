@@ -300,6 +300,7 @@ public abstract class BoardView extends Pane {
         board.getParts().addListener((javafx.collections.MapChangeListener.Change<? extends String, ? extends Part> change) -> {
             if (change.wasRemoved()) {
                 Part removed = change.getValueRemoved();
+                
                 PartView partView = pMap.remove(removed);
                 if (partView != null) {
                     partsGroup.getChildren().remove(partView);

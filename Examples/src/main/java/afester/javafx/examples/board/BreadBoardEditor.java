@@ -25,6 +25,7 @@ import afester.javafx.examples.board.view.SplitTraceInteractor;
 import afester.javafx.examples.board.view.TopBoardView;
 import afester.javafx.examples.board.view.TraceView;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.geometry.Orientation;
@@ -628,20 +629,67 @@ public class BreadBoardEditor extends Application {
             @Override
             protected Task<Void> createTask() {
                 return new Task<Void>() {
+//                    private int i = 0;
+
+                    /**
+                     * Append the given string to the end of the log TextArea.
+                     *
+                     * @param s The string to append.
+                     */
+                    private void appendLog(String s) {
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                logOutput.appendText(s);
+                            }
+                        });
+                    }
 
                     @Override
                     protected Void call() throws Exception {
                         // This method is executed on the background thread.
                         // we must NOT call JavaFX methods directly from here!
 
-//                        Board board = topView.getBoard();
-//                        updateMessage("Synchronizing " + board.getFileName() + "\n");
-//                        board.synchronizeSchematic(log -> updateMessage(log));
-//                        updateMessage("Board synchronized.\n");
-                        for (int i = 0;  i < 100;  i++) {
-                            updateMessage(i + ". call\n");
-                            Thread.sleep(1);
-                        }
+                        // This would use the last value of "i" only because
+                        // internally the same anonymous class instance is used
+//                        for (i = 0;  i < 100;  i++) {
+//                            Platform.runLater(() -> {
+//                                logOutput.appendText(i + ". call\n");
+//                            });
+//                        }
+
+//                          for (i = 0;  i < 100;  i++) {
+//                              Platform.runLater(new Runnable() {
+//                                // NOTE: We are referencing the variable "i" here.
+//                                // When we do this here, the access occurs on the 
+//                                // background thread and thus is in sequence with 
+//                                // the for-loop:
+//                                private final String s = i + ". call";
+//                                // the private instance variable "s" is now part of the
+//                                // current Runnable instance and independent
+//                                // of the background thread.
+//
+//                                @Override
+//                                public void run() {
+//                                    // This method is executed on the Application Thread.
+//                                    // We could still reference the "i" variable here,
+//                                    // but it wil have been modified meanwhile!!!!
+//                                    // Hence we must use the instance variable 
+//                                    // from the current Runnable object.
+//                                    logOutput.appendText(s + "\n");
+//                                }
+//                              });
+//                          }
+
+//                    for (i = 0;  i < 100;  i++) {
+//                        appendLog(i + ". call");
+//                    }
+
+                        Board board = topView.getBoard();
+                        appendLog("Synchronizing " + board.getFileName() + "\n");
+                        board.synchronizeSchematic(log -> appendLog(log));
+                        appendLog("Board synchronized." + "\n");
+
                         return null;
                     }
                 };
@@ -649,12 +697,12 @@ public class BreadBoardEditor extends Application {
         };
 
         syncService.start();
-
-        // Track the message of the sync Service.
-        // TODO: How to properly remove the listener when finished?
-        syncService.messageProperty().addListener((obj, oldVal, newVal) -> {
-            logOutput.appendText(newVal);
-        });
+//
+//        // Track the message of the sync Service.
+//        // TODO: How to properly remove the listener when finished?
+//        syncService.messageProperty().addListener((obj, oldVal, newVal) -> {
+//            logOutput.appendText(newVal);
+//        });
     }
 
 
