@@ -51,7 +51,7 @@ public abstract class AbstractNode {
      *
      * @param edge The new edge which is connected to this node.
      */
-    public void addEdge1(AbstractEdge edge) {
+    public void addEdge(AbstractEdge edge) {
         edges.add(edge);
     }
 

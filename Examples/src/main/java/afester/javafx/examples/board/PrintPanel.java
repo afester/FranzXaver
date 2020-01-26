@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import afester.javafx.components.DrawingArea;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.view.BoardView;
@@ -33,7 +36,9 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Transform;
@@ -61,7 +66,8 @@ import javafx.stage.Stage;
  *                   + 0,2 HBox footer
  */
 public class PrintPanel extends BorderPane {
-
+    private static final Logger log = LogManager.getLogger();
+ 
     final Board board;
     final ApplicationProperties props;
 
@@ -339,16 +345,83 @@ public class PrintPanel extends BorderPane {
         printContents.add(topGroup,    0, 1);
         printContents.add(bottomGroup, 1, 1);
         printContents.add(footer,      0, 2, 2, 1);
-        
+
+//        convertToGray(printContents);
+//        printContents.getChildren().forEach(adjustColor);
+//        ColorAdjust grayscale = new ColorAdjust();
+//        grayscale.setSaturation(-1);
+//        printContents.setEffect(grayscale);
+
         printableArea.getChildren().add(printContents);
-        pageView.getChildren().add(printableArea); // printContents);
+        pageView.getChildren().add(printableArea);
+
 
         stage.sizeToScene();    // required to properly fit the content to the window
         // getDrawingView().fitContentToWindow();
         printDrawingView.centerContent();
     }
 
-    // NOTE: 1.0/73.2 was required in order to print the complete border.
+    private String format(double val) {
+        String in = Integer.toHexString((int) Math.round(val * 255));
+        return in.length() == 1 ? "0" + in : in;
+    }
+
+    private String toHexString(Color value) {
+        return "#" + (format(value.getRed()) + format(value.getGreen()) + format(value.getBlue()) + format(value.getOpacity()))
+                .toUpperCase();
+    }
+
+    private void convertToGray(Parent root) {
+    	root.getChildrenUnmodifiable().forEach(node -> {
+        	//log.debug("Convert:" + node);
+
+    		// convert node
+    		if (node instanceof Shape) {
+            	//log.debug("  Convert1:" + node);
+
+    			Shape shape = (Shape) node;
+            	String style = shape.getStyle();
+
+    			Paint fill = shape.getFill();
+    			if (fill != null && fill instanceof Color) {
+    				Color color = (Color) fill;
+                	log.debug("  FILL:" + color);
+
+    				if (!style.isEmpty()) {
+    					style +=  ";";
+    				}
+    				style += " -fx-fill: " + toHexString(color.grayscale());
+
+    				// this does not work because the scene is styled by a style sheet!
+    				// shape.setFill(color.grayscale());
+    			}
+    			Paint stroke = shape.getStroke();
+    			if (stroke != null && stroke instanceof Color) {
+                	//log.debug("  STROKE:" + node);
+    				Color color = (Color) stroke;
+                	log.debug("  STROKE:" + color);
+    				
+    				if (!style.isEmpty()) {
+    					style +=  ";";
+    				}
+    				style += " -fx-stroke: " + toHexString(color.grayscale());
+
+    				// this does not work because the scene is styled by a style sheet!
+    				// shape.setStroke(color.grayscale());
+    			}
+    			
+    			log.debug("  style:" + style);
+    			shape.setStyle(style);
+    		}
+
+    		// traverse child nodes
+    		if (node instanceof Parent) {
+    			convertToGray((Parent) node);
+    		}
+    	});
+	}
+
+	// NOTE: 1.0/73.2 was required in order to print the complete border.
     // With the initial 1.0/72.0, the border was clipped left and bottom.
     // This is reproduceable with the Microsoft print to PDF printer.
     // Also, there seems to be an offset of 1mm or so with the printable area

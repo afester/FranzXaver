@@ -109,9 +109,10 @@ public abstract class BoardView extends Pane {
         String css = BoardView.class.getResource("boardStyle.css").toExternalForm();
         getStylesheets().add(css);
 
-        setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(0), 
-                new Insets(20))));
+//        setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(0), 
+//                new Insets(20))));
         setupBoard();
+//        setStyle("-fx-border-style: solid; -fx-border-color: red;");
 
         showSvgProperty().addListener((obj, oldValue, newValue) -> { partsGroup.getChildren().forEach(part -> ((PartView) part).render(newValue)); });
         traceGroup.visibleProperty().bind(showTracesProperty());
