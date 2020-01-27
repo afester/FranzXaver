@@ -687,7 +687,11 @@ public class BreadBoardEditor extends Application {
 
                         Board board = topView.getBoard();
                         appendLog("Synchronizing " + board.getFileName() + "\n");
+                        try {
                         board.synchronizeSchematic(log -> appendLog(log));
+                        } catch(Exception e) {
+                            e.printStackTrace();
+                        }
                         appendLog("Board synchronized." + "\n");
 
                         return null;

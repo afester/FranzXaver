@@ -65,13 +65,13 @@ public abstract class AbstractNode {
 
 
     /**
-     * From a collection of nodes, get the one which is nearest to a given position.
+     * From a collection of nodes, get the one which is closest to a given position.
      *
      * @param refPos The position for which to find the closes node.
      * @param nodeList The list of nodes from which to get the nearest one.
      * @return The node which is the nearest to this one.
      */
-    public static AbstractNode getNearestNode(Point2D refPos, List<AbstractNode> nodeList) {
+    public static AbstractNode getClosestNode(Point2D refPos, List<AbstractNode> nodeList) {
         double minDist = Double.MAX_VALUE;
         AbstractNode result = null;
         for (AbstractNode node: nodeList) {
@@ -92,8 +92,8 @@ public abstract class AbstractNode {
      * @param nodeList The list of nodes from which to get the nearest one.
      * @return The node which is the nearest to this one.
      */
-    public AbstractNode getNearestNode(List<AbstractNode> nodeList) {
-        return getNearestNode(getPosition(), nodeList);
+    public AbstractNode getClosestNode(List<AbstractNode> nodeList) {
+        return getClosestNode(getPosition(), nodeList);
     }
 
 
@@ -103,7 +103,7 @@ public abstract class AbstractNode {
      * @return A list of nodes which are reachable from a given node, 
      *         without traversing the given edge.
      */
-    public List<AbstractNode> getNodesWithout(final AirWire ignore) {
+    public List<AbstractNode> getNodesWithout(final AbstractEdge ignore) {
         Set<AbstractNode> result = new HashSet<>();
         Stack<AbstractNode> nodeStack = new Stack<>();
 
@@ -136,6 +136,6 @@ public abstract class AbstractNode {
      * @return The number of edges which are connected to this node.
      */
     public int getEdgeCount() {
-        return edges.size(); // Starts.size() + traceEnds.size();
+        return edges.size();
     }
 }

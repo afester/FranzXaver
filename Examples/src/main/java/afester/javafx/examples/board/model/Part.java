@@ -55,7 +55,7 @@ public class Part {
         isHidden.set(flag);
         pins.values().forEach(pin -> {
             pin.getEdges().forEach(edge -> {
-                if (edge instanceof AirWire) {
+                if (edge instanceof Trace) {
                     edge.setHidden(flag);
                 }
             });

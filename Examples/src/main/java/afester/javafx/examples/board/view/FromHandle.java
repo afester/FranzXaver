@@ -29,7 +29,7 @@ public class FromHandle extends AirWireHandle {
         if (bv.isReconnectMode()) {
             // TODO: Fix API; this should be 
             // node.reconnectNearest(newPos);
-            getAirWire().edge.reconnectFromNearestJunction(newPos);
+            getAirWire().edge.reconnectFromClosestJunction(newPos);
         } else {
             if (!(node instanceof Pin)) {
                 var snappedPos = bv.snapToGrid(newPos);

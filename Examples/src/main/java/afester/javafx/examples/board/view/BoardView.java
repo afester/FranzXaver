@@ -16,6 +16,7 @@ import afester.javafx.examples.board.model.Part;
 import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.tools.PointTools;
 import afester.javafx.examples.board.tools.Polygon2D;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -23,14 +24,9 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 
 
 public abstract class BoardView extends Pane {
@@ -187,13 +183,31 @@ public abstract class BoardView extends Pane {
             change.getRemoved().forEach(trace -> {
                 TraceView traceView = tMap.get(trace);
                 switch(trace.getType()) {
-                case AIRWIRE: airWireGroup.getChildren().remove(traceView);
+                case AIRWIRE: 
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            airWireGroup.getChildren().remove(traceView);                            
+                        }
+                    });
                     break;
 
-                case BRIDGE:  bridgeGroup.getChildren().remove(traceView);
+                case BRIDGE:  
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            bridgeGroup.getChildren().remove(traceView);                            
+                        }
+                    });
                     break;
 
-                case TRACE: traceGroup.getChildren().remove(traceView);
+                case TRACE: 
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            traceGroup.getChildren().remove(traceView);                            
+                        }
+                    });
                     break;
 
                 default:
@@ -304,16 +318,27 @@ public abstract class BoardView extends Pane {
                 
                 PartView partView = pMap.remove(removed);
                 if (partView != null) {
-                    partsGroup.getChildren().remove(partView);
+                    // NOTE: We might be in a background thread here!
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            partsGroup.getChildren().remove(partView);                            
+                        }
+                    });
                 }
             }
 
             if (change.wasAdded()) {
                 Part added = change.getValueAdded();
                 PartView partView = new PartView(added, isBottom);
-                partsGroup.getChildren().add(partView);
-
                 pMap.put(added, partView);
+
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        partsGroup.getChildren().add(partView);
+                    }
+                });
             }
         });
 

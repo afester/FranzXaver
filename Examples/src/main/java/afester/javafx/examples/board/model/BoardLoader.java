@@ -279,7 +279,7 @@ class NetHandler extends SubContentHandler {
             AbstractNode from = bl.nodes.get(fromId);
             AbstractNode to = bl.nodes.get(toId);
 
-            AirWire aw = new AirWire(from, to, net);
+            Trace aw = new Trace(from, to, net, TraceType.AIRWIRE);
             log.debug(aw);
 
             // TODO: Hack to take care of airwires connected to hidden Parts
@@ -306,7 +306,7 @@ class NetHandler extends SubContentHandler {
             AbstractNode from = bl.nodes.get(fromId);
             AbstractNode to = bl.nodes.get(toId);
 
-            Trace t = new Trace(from, to, net);
+            Trace t = new Trace(from, to, net, TraceType.TRACE);
             if (isBridge) {
                 t.setAsBridge();
             }

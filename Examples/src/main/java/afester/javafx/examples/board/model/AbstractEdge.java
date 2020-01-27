@@ -94,10 +94,10 @@ public abstract class AbstractEdge {
     }
 
 
-    public abstract void reconnectToNearestJunction(Point2D clickPos);
+    public abstract void reconnectToClosestJunction(Point2D clickPos);
 
 
-    public abstract void reconnectFromNearestJunction(Point2D clickPos);
+    public abstract void reconnectFromClosestJunction(Point2D clickPos);
 
 
     /**

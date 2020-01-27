@@ -227,8 +227,8 @@ public class Net {
        to.getEdges().remove(trace);
        traceList.remove(trace);
 
-       var bridge = new Trace(from, to, this);
-       bridge.setAsBridge();
+       var bridge = new Trace(from, to, this, TraceType.BRIDGE);
+       // bridge.setAsBridge();
        traceList.add(bridge);
     }
 
@@ -247,7 +247,7 @@ public class Net {
         sortedPads.stream()
                   .reduce((p1, p2) -> {
             System.err.println("ADDING:" + p1 + "=>" + p2);
-            addTrace(new AirWire(p1, p2, this));
+            addTrace(new Trace(p1, p2, this, TraceType.AIRWIRE));
             return p2;
         });
 

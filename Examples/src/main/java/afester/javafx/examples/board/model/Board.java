@@ -27,7 +27,6 @@ import org.w3c.dom.Node;
 
 import afester.javafx.examples.board.eagle.EagleImport;
 import afester.javafx.examples.board.tools.PointTools;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -338,43 +337,52 @@ public class Board {
 
         modifiedParts.forEach(partName -> {
             Part partOld = getParts().get(partName);
-            Part partNew = updatedBoard.getParts().get(partName);
+            Part updPart = updatedBoard.getParts().get(partName);
+            Part partNew = new Part(updPart.getName(), updPart.getValue(), updPart.getPackage());
 
-            for (Pin p : partNew.getPins()) {
+            // removePart(partOld);
+            parts.remove(partOld.getName());
+
+            addPart(partNew);
+            partNew.setRotation(partOld.getRotation());
+            partNew.setPosition(partOld.getPosition());
+
+            for (Pin newPin : partNew.getPins()) {
                 // try to reconnect pins with the same name
-                String pinNr = p.getPadName();
-                Pin oldPad = partOld.getPin(pinNr);
-                log.accept(String.format("  %s => %s\n", oldPad, p));
-                if (oldPad != null) {
-                    oldPad.getEdges().forEach(e -> {
-                        log.accept(String.format("  Adding %s to %s\n", e, p));
+                String pinNr = newPin.getPadName();
+                Pin oldPin = partOld.getPin(pinNr);
 
-                        // TODO: Need to set "from" and "To" of the Edge!!!!
-                        p.addEdge(e); 
+                log.accept(String.format("  %s => %s\n", oldPin, newPin));
+
+                if (oldPin != null) {
+                    oldPin.getEdges().forEach(e -> {
+                        log.accept(String.format("  Adding %s to %s\n", e, newPin));
+
+                        // e.reconnect(oldPin, newPin);  // throws CME
+                        newPin.addEdge(e);
+                        if (e.getFrom() == oldPin) {
+                            e.fromProperty().setValue(newPin);
+                        } else  if (e.getTo() == oldPin) {
+                            e.toProperty().setValue(newPin);
+                        } else {
+                            log.accept("ERROR: pin is neither FROM nor TO!");
+                        }
                     });
+
                 }
             }
 
+
             log.accept(String.format("     Removing %s\n", partOld));
-            // HUGE ISSUE: We are not on the Application Thread here,
+            // Note: We are not (necessarily) on the Application Thread here,
             // but the listener which listens to the model changes
             // MUST be executed in the Application Thread!
             // However, the listener is executed synchronously which means 
             // that it also executes in the background thread!
-            Platform.runLater(new Runnable() {
-                private final Part po = partOld;
-                private final Part pn = partNew;
+            // We do not want to introduce a dependency to the view layer here,
+            // hence the view needs to take care that the JavaFX API calls
+            // are executed on the application thread.
 
-                @Override
-                public void run() {
-                    // removePart(po);
-                    parts.remove(po.getName());
-
-                    addPart(pn);
-                    pn.setRotation(partOld.getRotation());
-                    pn.setPosition(partOld.getPosition());
-                }
-            });
         });
 
         removedParts.forEach(partName -> {

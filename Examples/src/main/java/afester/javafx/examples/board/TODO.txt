@@ -7,6 +7,9 @@ Missing features
   different Interactors.
 
 Bugs
+* Synchronize schematic - replace Parts, properly update the UI!!
+* Delete segments => sometimes deletes too many or the wrong segment!
+
 * Zoom should zoom the desk, not the paper - consequently the scroll bars should then be resized as well
 * Dimension text not properly positioned if styled through the CSS
 * Installed font PCBius not available through its name even though it is installed

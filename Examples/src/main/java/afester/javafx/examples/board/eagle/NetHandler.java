@@ -7,8 +7,9 @@ import java.util.Map;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-import afester.javafx.examples.board.model.AirWire;
 import afester.javafx.examples.board.model.Pin;
+import afester.javafx.examples.board.model.Trace;
+import afester.javafx.examples.board.model.TraceType;
 import afester.javafx.examples.board.model.Part;
 
 class NetHandler extends SubContentHandler {
@@ -52,7 +53,7 @@ class NetHandler extends SubContentHandler {
             for (Pin p2 : padList) {
                 if (p1 != null) {
                     // TODO: can we simply add the Pads to the net here and afterwards to a "Reset Net" to create the actual AirWires??
-                    sheetHandler.currentNet.addTrace(new AirWire(p1, p2, sheetHandler.currentNet));
+                    sheetHandler.currentNet.addTrace(new Trace(p1, p2, sheetHandler.currentNet, TraceType.AIRWIRE));
                 }
                 p1 = p2;
             }
