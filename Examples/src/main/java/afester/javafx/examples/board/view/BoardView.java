@@ -120,15 +120,19 @@ public abstract class BoardView extends Pane {
             traceGroup.widthProperty().bind(props.getStyle(StyleSelector.BOTTOMTRACE_NORMAL).widthProperty());
             airWireGroup.colorProperty().bind(props.getStyle(StyleSelector.BOTTOMAIRWIRE_NORMAL).colorProperty());
             airWireGroup.widthProperty().bind(props.getStyle(StyleSelector.BOTTOMAIRWIRE_NORMAL).widthProperty());
+
             bridgeGroup.colorProperty().bind(props.getStyle(StyleSelector.BOTTOMBRIDGE_NORMAL).colorProperty());
             bridgeGroup.widthProperty().bind(props.getStyle(StyleSelector.BOTTOMBRIDGE_NORMAL).widthProperty());
+            bridgeGroup.lineStyleProperty().bind(props.getStyle(StyleSelector.BOTTOMBRIDGE_NORMAL).lineStyleProperty());
         } else {
             traceGroup.colorProperty().bind(props.getStyle(StyleSelector.TOPTRACE_NORMAL).colorProperty());
             traceGroup.widthProperty().bind(props.getStyle(StyleSelector.TOPTRACE_NORMAL).widthProperty());
             airWireGroup.colorProperty().bind(props.getStyle(StyleSelector.TOPAIRWIRE_NORMAL).colorProperty());
             airWireGroup.widthProperty().bind(props.getStyle(StyleSelector.TOPAIRWIRE_NORMAL).widthProperty());
+            
             bridgeGroup.colorProperty().bind(props.getStyle(StyleSelector.TOPBRIDGE_NORMAL).colorProperty());
             bridgeGroup.widthProperty().bind(props.getStyle(StyleSelector.TOPBRIDGE_NORMAL).widthProperty());
+            bridgeGroup.lineStyleProperty().bind(props.getStyle(StyleSelector.TOPBRIDGE_NORMAL).lineStyleProperty());
         }
 
         showBoardHandlesProperty().addListener((obj, oldValue, newValue) -> {
@@ -184,12 +188,8 @@ public abstract class BoardView extends Pane {
                 TraceView traceView = tMap.get(trace);
                 switch(trace.getType()) {
                 case AIRWIRE: 
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            airWireGroup.getChildren().remove(traceView);                            
-                        }
-                    });
+                    Platform.runLater(
+                            () -> airWireGroup.getChildren().remove(traceView));                            
                     break;
 
                 case BRIDGE:  
@@ -224,17 +224,16 @@ public abstract class BoardView extends Pane {
                 System.err.println("ADDING TRACE VIEW: " + traceView);
 
                 switch(trace.getType()) {
-                case AIRWIRE: airWireGroup.getChildren().add(traceView);
-                    break;
+                    case AIRWIRE: airWireGroup.getChildren().add(traceView);
+                                  break;
 
-                case BRIDGE:  bridgeGroup.getChildren().add(traceView);
-                    break;
+                    case BRIDGE:  bridgeGroup.getChildren().add(traceView);
+                                  break;
 
-                case TRACE: traceGroup.getChildren().add(traceView);
-                    break;
+                    case TRACE: traceGroup.getChildren().add(traceView);
+                                break;
 
-                default:
-                    break;
+                    default: break;
                 }  
             });
         });

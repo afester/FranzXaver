@@ -114,11 +114,13 @@ public class TraceView extends AbstractEdgeView implements Interactable {
         }
     }
 
-    
+
     private void updateStyle(ShapeStyle style) {
+        System.err.printf("TRACE: %s: %s\n", getType(), style);
         setShapeStroke(style.getColor());
         setStrokeWidth(style.getWidth());
         setOpacity(style.getOpacity());
+        getStrokeDashArray().setAll(style.getLineStyle().getDashArray()); 
     }
 
     private void setTraceVisual(AbstractWireState newState) {
@@ -157,18 +159,26 @@ public class TraceView extends AbstractEdgeView implements Interactable {
         switch(newState) {
             case NORMAL:
                 if (isBottom) {
-//1                    getStyleClass().add("BridgeNormalBottom");
+                    updateStyle(props.getStyle(StyleSelector.BOTTOMBRIDGE_NORMAL));
                 } else {
-//1                    getStyleClass().add("BridgeNormal");
+                    updateStyle(props.getStyle(StyleSelector.TOPBRIDGE_NORMAL));
                 }
                 break;
     
             case HIGHLIGHTED:
-//1                getStyleClass().add("BridgeHighlight");
+                if (isBottom) {
+                    updateStyle(props.getStyle(StyleSelector.BOTTOMBRIDGE_HIGHLIGHTED));
+                } else {
+                    updateStyle(props.getStyle(StyleSelector.TOPBRIDGE_HIGHLIGHTED));
+                }
                 break;
     
             case SELECTED:
-//1                getStyleClass().add("BridgeSelect");
+                if (isBottom) {
+                    updateStyle(props.getStyle(StyleSelector.BOTTOMBRIDGE_SELECTED));
+                } else {
+                    updateStyle(props.getStyle(StyleSelector.TOPBRIDGE_SELECTED));
+                }
                 break;
     
             default:

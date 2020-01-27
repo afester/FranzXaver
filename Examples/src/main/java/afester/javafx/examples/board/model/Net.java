@@ -228,7 +228,6 @@ public class Net {
        traceList.remove(trace);
 
        var bridge = new Trace(from, to, this, TraceType.BRIDGE);
-       // bridge.setAsBridge();
        traceList.add(bridge);
     }
 

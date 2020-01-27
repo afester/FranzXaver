@@ -1,5 +1,6 @@
 package afester.javafx.examples.board.view;
 
+import afester.javafx.shapes.LineDash;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -26,6 +27,12 @@ public class StyleGroup extends Group {
     public Double getWidth() { return width.get(); }
     public void setWidth(Double newWidth) { width.set(newWidth); }
 
+    // Line style
+    private final ObjectProperty<LineDash> lineStyle = new SimpleObjectProperty<LineDash>(LineDash.SOLID);
+    public ObjectProperty<LineDash> lineStyleProperty() { return lineStyle; }
+    public LineDash getLineStyle() { return lineStyle.get(); }
+    public void setLineStyle(LineDash newValue) { lineStyle.set(newValue); }
+
     public StyleGroup() {
 
         color.addListener((obj, oldValue, newValue) -> {
@@ -39,6 +46,13 @@ public class StyleGroup extends Group {
             getChildrenUnmodifiable().forEach(child -> {
                 TraceView s = (TraceView) child;
                 s.setStrokeWidth(newValue.doubleValue());
+            });
+         });
+
+        lineStyle.addListener((obj, oldValue, newValue) -> {
+            getChildrenUnmodifiable().forEach(child -> {
+                TraceView s = (TraceView) child;
+                s.getStrokeDashArray().addAll(newValue.getDashArray());
             });
          });
     }

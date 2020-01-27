@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import afester.javafx.examples.board.view.ShapeStyle;
+import afester.javafx.shapes.LineDash;
 import javafx.scene.paint.Color;
 
 public class ApplicationProperties {
@@ -64,10 +65,18 @@ public class ApplicationProperties {
                 var color = result.getColor(propBaseName + ".color", Color.BLACK);
                 var width = result.getDouble(propBaseName + ".width", 0.5);
                 var opacity = result.getDouble(propBaseName + ".opacity", 1.0);
+                var lineStyle = LineDash.SOLID;
+                try {
+                    lineStyle = LineDash.valueOf(
+                            result.getString(propBaseName + ".linestyle", LineDash.SOLID.name()));
+                }
+                catch(IllegalArgumentException iae) {
+                }
 
                 value.setColor(color);
                 value.setWidth(width);
                 value.setOpacity(opacity);
+                value.setLineStyle(lineStyle);
             });
 
             //result.setBottomTraceColor(result.getColor("bottomTraceColor", Color.RED));
@@ -89,6 +98,7 @@ public class ApplicationProperties {
                 setColor(propBaseName + ".color", value.getColor());
                 setDouble(propBaseName + ".width", value.getWidth());
                 setDouble(propBaseName + ".opacity", value.getOpacity());
+                setString(propBaseName + ".linestyle", value.getLineStyle().name());
             });
 
             OutputStream os = new FileOutputStream("application.xml");
