@@ -1,40 +1,56 @@
 package afester.javafx.examples.board.view;
 
 import afester.javafx.shapes.LineDash;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.paint.Color;
 
 public class ShapeStyle {
+    private final Color color;
+    private final Double width;
+    private final LineDash lineStyle;
+    private final Double opacity;
 
-    // Color
-    private final ObjectProperty<Color> color = new SimpleObjectProperty<Color>(Color.RED);
-    public ObjectProperty<Color> colorProperty() { return color; }
-    public Color getColor() { return color.get(); }
-    public void setColor(Color newValue) { color.set(newValue); }
+    public ShapeStyle() {
+        this(Color.BLACK, 1.0, LineDash.SOLID, 1.0);
+    }
 
-    // Width
-    private final DoubleProperty width = new SimpleDoubleProperty(1.0);
-    public DoubleProperty widthProperty() { return width; }
-    public Double getWidth() { return width.get(); }
-    public void setWidth(Double newValue) { width.set(newValue); }
+    public ShapeStyle(Color color, double width, LineDash lineStyle, double opacity) {
+        this.color = color;
+        this.width = width;
+        this.lineStyle = lineStyle;
+        this.opacity = opacity;
+    }
 
-    // Line style
-    private final ObjectProperty<LineDash> lineStyle = new SimpleObjectProperty<LineDash>(LineDash.SOLID);
-    public ObjectProperty<LineDash> lineStyleProperty() { return lineStyle; }
-    public LineDash getLineStyle() { return lineStyle.get(); }
-    public void setLineStyle(LineDash newValue) { lineStyle.set(newValue); }
+    public Color getColor() {
+        return color;
+    }
 
-    // Opacity
-    private final DoubleProperty opacity = new SimpleDoubleProperty(1.0);
-    public DoubleProperty opacityProperty() { return opacity; }
-    public Double getOpacity() { return opacity.get(); }
-    public void setOpacity(Double newValue) { opacity.set(newValue); }
-    
+    public double getWidth() {
+        return width;
+    }
+
+    public LineDash getLineStyle() {
+        return lineStyle;
+    }
+
+    public double getOpacity() {
+        return opacity;
+    }
+
+    public ShapeStyle modifiedWidth(double newWidth) {
+        return new ShapeStyle(color, newWidth, lineStyle, opacity);
+    }
+
+    public ShapeStyle modifiedColor(Color newColor) {
+        return new ShapeStyle(newColor, width, lineStyle, opacity);
+    }
+
+    public ShapeStyle modifiedLineStyle(LineDash newVal) {
+        return new ShapeStyle(color, width, newVal, opacity);
+    }
+
     @Override
     public String toString() {
-        return String.format("ShapeStyle[color:%s, width=%s, lineStyle:%s, opacity:%s]", getColor(), getWidth(), getLineStyle(), getOpacity());
+        return String.format("ShapeStyle[color:%s, width=%s, lineStyle:%s, opacity:%s]", getColor(), getWidth(),
+                getLineStyle(), getOpacity());
     }
 }

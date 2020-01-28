@@ -12,6 +12,8 @@ import java.util.Properties;
 
 import afester.javafx.examples.board.view.ShapeStyle;
 import afester.javafx.shapes.LineDash;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.paint.Color;
 
 public class ApplicationProperties {
@@ -19,38 +21,12 @@ public class ApplicationProperties {
     // the actual storage
     private final Properties p = new Properties();
 
-    private final Map<StyleSelector, ShapeStyle> styleMap = new HashMap<>();
+    private final Map<StyleSelector, ObjectProperty<ShapeStyle>> styleMap = new HashMap<>();
 
     private ApplicationProperties() {
-        styleMap.put(StyleSelector.TOPBOARD, new ShapeStyle());
-        styleMap.put(StyleSelector.TOPPAD,   new ShapeStyle());
-
-        styleMap.put(StyleSelector.TOPTRACE_NORMAL,      new ShapeStyle());
-        styleMap.put(StyleSelector.TOPTRACE_HIGHLIGHTED, new ShapeStyle());
-        styleMap.put(StyleSelector.TOPTRACE_SELECTED,    new ShapeStyle());
-
-        styleMap.put(StyleSelector.TOPAIRWIRE_NORMAL,      new ShapeStyle());
-        styleMap.put(StyleSelector.TOPAIRWIRE_HIGHLIGHTED, new ShapeStyle());
-        styleMap.put(StyleSelector.TOPAIRWIRE_SELECTED,    new ShapeStyle());
-
-        styleMap.put(StyleSelector.TOPBRIDGE_NORMAL,       new ShapeStyle());
-        styleMap.put(StyleSelector.TOPBRIDGE_HIGHLIGHTED,  new ShapeStyle());
-        styleMap.put(StyleSelector.TOPBRIDGE_SELECTED,     new ShapeStyle());
-
-        styleMap.put(StyleSelector.BOTTOMBOARD,            new ShapeStyle());
-        styleMap.put(StyleSelector.BOTTOMPAD,              new ShapeStyle());
-
-        styleMap.put(StyleSelector.BOTTOMTRACE_NORMAL,     new ShapeStyle());
-        styleMap.put(StyleSelector.BOTTOMTRACE_HIGHLIGHTED,new ShapeStyle());
-        styleMap.put(StyleSelector.BOTTOMTRACE_SELECTED,   new ShapeStyle());
-
-        styleMap.put(StyleSelector.BOTTOMAIRWIRE_NORMAL,      new ShapeStyle());
-        styleMap.put(StyleSelector.BOTTOMAIRWIRE_HIGHLIGHTED, new ShapeStyle());
-        styleMap.put(StyleSelector.BOTTOMAIRWIRE_SELECTED,    new ShapeStyle());
-
-        styleMap.put(StyleSelector.BOTTOMBRIDGE_NORMAL,       new ShapeStyle());
-        styleMap.put(StyleSelector.BOTTOMBRIDGE_HIGHLIGHTED,  new ShapeStyle());
-        styleMap.put(StyleSelector.BOTTOMBRIDGE_SELECTED,     new ShapeStyle());
+        for (StyleSelector sel : StyleSelector.values()) {
+            styleMap.put(sel, new SimpleObjectProperty<ShapeStyle>(new ShapeStyle()));
+        }
     }
 
     public static ApplicationProperties load() {
@@ -60,7 +36,7 @@ public class ApplicationProperties {
             InputStream is = new FileInputStream("application.xml");
             result.p.loadFromXML(is);
 
-            result.styleMap.forEach( (key, value) -> {
+            result.styleMap.forEach((key, value) -> {
                 var propBaseName = key.name();
                 var color = result.getColor(propBaseName + ".color", Color.BLACK);
                 var width = result.getDouble(propBaseName + ".width", 0.5);
@@ -73,10 +49,11 @@ public class ApplicationProperties {
                 catch(IllegalArgumentException iae) {
                 }
 
-                value.setColor(color);
-                value.setWidth(width);
-                value.setOpacity(opacity);
-                value.setLineStyle(lineStyle);
+                value.set(new ShapeStyle(color, width, lineStyle, opacity));
+//                value.setColor(color);
+//                value.setWidth(width);
+//                value.setOpacity(opacity);
+//                value.setLineStyle(lineStyle);
             });
 
             //result.setBottomTraceColor(result.getColor("bottomTraceColor", Color.RED));
@@ -95,10 +72,10 @@ public class ApplicationProperties {
             
             styleMap.forEach((key, value) -> {
                 var propBaseName = key.name();
-                setColor(propBaseName + ".color", value.getColor());
-                setDouble(propBaseName + ".width", value.getWidth());
-                setDouble(propBaseName + ".opacity", value.getOpacity());
-                setString(propBaseName + ".linestyle", value.getLineStyle().name());
+                setColor(propBaseName + ".color", value.get().getColor());
+                setDouble(propBaseName + ".width", value.get().getWidth());
+                setDouble(propBaseName + ".opacity", value.get().getOpacity());
+                setString(propBaseName + ".linestyle", value.get().getLineStyle().name());
             });
 
             OutputStream os = new FileOutputStream("application.xml");
@@ -149,12 +126,12 @@ public class ApplicationProperties {
         return Color.valueOf(cval);
     }
 
-    public ShapeStyle getStyle(StyleSelector key) {
+    public ObjectProperty<ShapeStyle> getStyle(StyleSelector key) {
         return styleMap.get(key);
     }
 
 
-    public Map<StyleSelector, ShapeStyle> getStyles() {
+    public Map<StyleSelector, ObjectProperty<ShapeStyle>> getStyles() {
         return styleMap;
     }
 }

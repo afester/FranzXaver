@@ -7,6 +7,8 @@ import afester.javafx.examples.board.tools.ColorChooser;
 import afester.javafx.examples.board.view.ShapeStyle;
 import afester.javafx.shapes.Line;
 import afester.javafx.shapes.LineDash;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
@@ -21,10 +23,16 @@ import javafx.stage.Modality;
 
 public class ColorSettings extends Dialog<Void> {
 
-	private final ListView<Map.Entry<StyleSelector, ShapeStyle>> componentList = new ListView<>();
+	private final ListView<Map.Entry<StyleSelector, ObjectProperty<ShapeStyle>>> componentList = new ListView<>();
 	private final ColorChooser colorChooser = new ColorChooser();
 	private final Slider widthSlider = new Slider(0, 3, 1.0);
 	private final ComboBox<LineDash> lineStyle; 
+
+    // The current style as specified by this dialog
+    private final ObjectProperty<ShapeStyle> shapeStyle = new SimpleObjectProperty<>(new ShapeStyle());
+    public ObjectProperty<ShapeStyle> shapeStyleProperty() { return shapeStyle; }
+    public ShapeStyle getShapeStyle() { return shapeStyle.get(); }
+    public void setShapeStyle (ShapeStyle newStyle) { shapeStyle.set(newStyle); }
 
     public ColorSettings(ApplicationProperties props) {
 	    initModality(Modality.NONE);
@@ -36,7 +44,7 @@ public class ColorSettings extends Dialog<Void> {
             return new ListCell<>() {
 
                 @Override
-                protected void updateItem(Map.Entry<StyleSelector, ShapeStyle> item, boolean empty) {
+                protected void updateItem(Map.Entry<StyleSelector, ObjectProperty<ShapeStyle>> item, boolean empty) {
                     // calling super here is very important - don't skip this!
                     super.updateItem(item, empty);
 
@@ -64,28 +72,39 @@ public class ColorSettings extends Dialog<Void> {
 
 		    // remove old bindings
 		    if (oldValue != null) {
-    		    ShapeStyle oldProp = oldValue.getValue();
-                oldProp.colorProperty().unbind();
-                oldProp.widthProperty().unbind();
-                oldProp.lineStyleProperty().unbind();
+    		    ObjectProperty<ShapeStyle> oldProp = oldValue.getValue();
+    		    oldProp.unbind();
 		    }
 
             // bind properties of the selected style to the controls
-		    ShapeStyle newProp = newValue.getValue();
-		    colorChooser.setCustomColor(newProp.getColor()); // initial value
-		    widthSlider.setValue(newProp.getWidth());        // initial value
-		    lineStyle.setValue(LineDash.SOLID);              // initial value
-	        newProp.colorProperty().bind(colorChooser.customColorProperty());
-	        newProp.widthProperty().bind(widthSlider.valueProperty());
-	        newProp.lineStyleProperty().bind(lineStyle.getSelectionModel().selectedItemProperty());
+		    ObjectProperty<ShapeStyle> newProp = newValue.getValue(); // prop to update
+            shapeStyle.set(newProp.get());// initial value!?!
+		    newProp.bind(shapeStyle);
 		});
 		componentList.getSelectionModel().select(0);
+
+		shapeStyle.addListener((obj, oldVal, newVal) -> {
+		   colorChooser.customColorProperty().set(newVal.getColor());
+		   widthSlider.setValue(newVal.getWidth());
+		   lineStyle.getSelectionModel().select(newVal.getLineStyle());
+		});
+
+		colorChooser.customColorProperty().addListener((obj, oldVal, newVal) -> {
+		    setShapeStyle(getShapeStyle().modifiedColor(newVal));
+		});
+
+		lineStyle.getSelectionModel().selectedItemProperty().addListener((obj, oldVal, newVal) -> {
+		    setShapeStyle(getShapeStyle().modifiedLineStyle(newVal));
+		});
 
 		// Width
         widthSlider.setShowTickMarks(true);
         widthSlider.setShowTickLabels(true);
         widthSlider.setMajorTickUnit(0.25f);
         widthSlider.setBlockIncrement(0.1f);
+        widthSlider.valueProperty().addListener((obj, oldVal, newVal) -> {
+            setShapeStyle(getShapeStyle().modifiedWidth(newVal.doubleValue()));
+        });
 
 		final var rightColumn = new VBox();
 		rightColumn.getChildren().addAll(colorChooser, widthSlider, lineStyle);

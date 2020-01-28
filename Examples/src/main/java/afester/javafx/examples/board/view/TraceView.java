@@ -6,6 +6,7 @@ import afester.javafx.examples.board.model.AbstractEdge;
 import afester.javafx.examples.board.model.AbstractEdge.AbstractWireState;
 import afester.javafx.examples.board.model.TraceType;
 import afester.javafx.examples.board.tools.StraightLine;
+import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -115,12 +116,12 @@ public class TraceView extends AbstractEdgeView implements Interactable {
     }
 
 
-    private void updateStyle(ShapeStyle style) {
+    private void updateStyle(ObjectProperty<ShapeStyle> style) {
         System.err.printf("TRACE: %s: %s\n", getType(), style);
-        setShapeStroke(style.getColor());
-        setStrokeWidth(style.getWidth());
-        setOpacity(style.getOpacity());
-        getStrokeDashArray().setAll(style.getLineStyle().getDashArray()); 
+        setShapeStroke(style.get().getColor());
+        setStrokeWidth(style.get().getWidth());
+        setOpacity(style.get().getOpacity());
+        getStrokeDashArray().setAll(style.get().getLineStyle().getDashArray()); 
     }
 
     private void setTraceVisual(AbstractWireState newState) {

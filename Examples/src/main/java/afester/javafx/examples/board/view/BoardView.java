@@ -116,23 +116,13 @@ public abstract class BoardView extends Pane {
         dimensionGroup.visibleProperty().bind(showDimensionsProperty());
 
         if (isBottom) {
-            traceGroup.colorProperty().bind(props.getStyle(StyleSelector.BOTTOMTRACE_NORMAL).colorProperty());
-            traceGroup.widthProperty().bind(props.getStyle(StyleSelector.BOTTOMTRACE_NORMAL).widthProperty());
-            airWireGroup.colorProperty().bind(props.getStyle(StyleSelector.BOTTOMAIRWIRE_NORMAL).colorProperty());
-            airWireGroup.widthProperty().bind(props.getStyle(StyleSelector.BOTTOMAIRWIRE_NORMAL).widthProperty());
-
-            bridgeGroup.colorProperty().bind(props.getStyle(StyleSelector.BOTTOMBRIDGE_NORMAL).colorProperty());
-            bridgeGroup.widthProperty().bind(props.getStyle(StyleSelector.BOTTOMBRIDGE_NORMAL).widthProperty());
-            bridgeGroup.lineStyleProperty().bind(props.getStyle(StyleSelector.BOTTOMBRIDGE_NORMAL).lineStyleProperty());
+            traceGroup.shapeStyleProperty().bind(props.getStyle(StyleSelector.BOTTOMTRACE_NORMAL));
+            airWireGroup.shapeStyleProperty().bind(props.getStyle(StyleSelector.BOTTOMAIRWIRE_NORMAL));
+            bridgeGroup.shapeStyleProperty().bind(props.getStyle(StyleSelector.BOTTOMBRIDGE_NORMAL));
         } else {
-            traceGroup.colorProperty().bind(props.getStyle(StyleSelector.TOPTRACE_NORMAL).colorProperty());
-            traceGroup.widthProperty().bind(props.getStyle(StyleSelector.TOPTRACE_NORMAL).widthProperty());
-            airWireGroup.colorProperty().bind(props.getStyle(StyleSelector.TOPAIRWIRE_NORMAL).colorProperty());
-            airWireGroup.widthProperty().bind(props.getStyle(StyleSelector.TOPAIRWIRE_NORMAL).widthProperty());
-            
-            bridgeGroup.colorProperty().bind(props.getStyle(StyleSelector.TOPBRIDGE_NORMAL).colorProperty());
-            bridgeGroup.widthProperty().bind(props.getStyle(StyleSelector.TOPBRIDGE_NORMAL).widthProperty());
-            bridgeGroup.lineStyleProperty().bind(props.getStyle(StyleSelector.TOPBRIDGE_NORMAL).lineStyleProperty());
+            traceGroup.shapeStyleProperty().bind(props.getStyle(StyleSelector.TOPTRACE_NORMAL));
+            airWireGroup.shapeStyleProperty().bind(props.getStyle(StyleSelector.TOPAIRWIRE_NORMAL));
+            bridgeGroup.shapeStyleProperty().bind(props.getStyle(StyleSelector.TOPBRIDGE_NORMAL));
         }
 
         showBoardHandlesProperty().addListener((obj, oldValue, newValue) -> {
