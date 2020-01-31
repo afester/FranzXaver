@@ -239,12 +239,12 @@ public class BreadBoardEditor extends Application {
 
     private void setupColors() {
 
-        ColorSettings cs = new ColorSettings(props);
+        StyleDialog cs = new StyleDialog(props);
         cs.show();
 
-        cs.shapeStyleProperty().addListener((obj, oldVal, newVal) -> {
-           System.err.println("STYLE:" + newVal); 
-        });
+//        cs.shapeStyleProperty().addListener((obj, oldVal, newVal) -> {
+//           System.err.println("STYLE:" + newVal); 
+//        });
     }
 
     
