@@ -354,9 +354,10 @@ public abstract class BoardView extends Pane {
 
 // Holes / Pads (this is a rectangle!)
         Bounds b = boardShape.getBoundsInParent();
+
         Group padsGroup = new Group();
-        for (double ypos = padOffset.getY();  ypos < b.getHeight();  ypos += 2.54 ) {
-            for (double xpos = padOffset.getX();  xpos < b.getWidth();  xpos += 2.54) {
+        for (double ypos = b.getMinY() + padOffset.getY();  ypos < b.getMinY() + b.getHeight();  ypos += 2.54 ) {
+            for (double xpos = b.getMinX() + padOffset.getX();  xpos < b.getMinX() + b.getWidth();  xpos += 2.54) {
                 final var c = new HoleView(xpos, ypos, isBottom);
                 padsGroup.getChildren().add(c);
             }
