@@ -5,8 +5,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javafx.geometry.Point2D;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Shape;
 
 public class PartLine implements PartShape {
 
@@ -20,11 +18,17 @@ public class PartLine implements PartShape {
         this.width = width;
     }
 
-    @Override
-    public Shape createNode() {
-        Shape line = new Line(p1.getX(), p1.getY(), p2.getX(), p2.getY());
-        line.setStrokeWidth(width);
-        return line;
+    
+    public Point2D getStart() {
+        return p1;
+    }
+
+    public Point2D getEnd() {
+        return p2;
+    }
+
+    public Double getWidth() {
+        return width;
     }
 
     @Override
@@ -40,8 +44,15 @@ public class PartLine implements PartShape {
         return result;
     }
 
+
+    @Override
+    public final ShapeType getType() {
+        return ShapeType.SHAPETYPE_LINE;
+    }
+
     @Override
     public String toString() {
-        return String.format("PartLine[%s %s width=%s]", p1, p2, width);
+        return String.format("%s[%s %s width=%s]", 
+                             PartLine.class.getName(), p1, p2, width);
     }
 }

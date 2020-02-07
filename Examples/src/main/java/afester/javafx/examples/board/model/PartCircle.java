@@ -5,8 +5,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javafx.geometry.Point2D;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Shape;
+
 
 public class PartCircle implements PartShape {
 
@@ -20,12 +19,16 @@ public class PartCircle implements PartShape {
         this.width = width;
     }
 
-    @Override
-    public Shape createNode() {
-        Shape circle = new Circle(center.getX(), center.getY(), radius);
-        circle.setStrokeWidth(width);
+    public Point2D getCenter() {
+        return center;
+    }
 
-        return circle;
+    public double getRadius() {
+        return radius;
+    }
+
+    public double getWidth() {
+        return width;
     }
 
     @Override
@@ -42,8 +45,13 @@ public class PartCircle implements PartShape {
 
 
     @Override
-    public String toString() {
-        return String.format("PartCircle[center=%s radius=%s width=%s]", center, radius, width);
+    public final ShapeType getType() {
+        return ShapeType.SHAPETYPE_CIRCLE;
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s[center=%s radius=%s width=%s]", 
+                             PartCircle.class.getName(), center, radius, width);
+    }
 }

@@ -1,17 +1,12 @@
 package afester.javafx.examples.board.model;
 
-import java.io.InputStream;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javafx.geometry.Point2D;
-import javafx.geometry.VPos;
-import javafx.scene.shape.Shape;
-import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
+
 
 public class PartText implements PartShape {
 
@@ -31,22 +26,20 @@ public class PartText implements PartShape {
         text.append(s);
     }
 
-    @Override
-    public Shape createNode() {
-        Text textShape = new Text(pos.getX(), pos.getY(), text.toString());
-        textShape.setTextOrigin(VPos.BOTTOM); // .BASELINE);
+    public Point2D getPos() {
+        return pos;
+    }
 
-        // WIP: Use a CAD font - for some reason, can not be loaded through CSS
-        // since it does not resolve through the system font names (even though it is installed)
-        InputStream is = getClass().getResourceAsStream("PCBius.ttf");
-        final Font f = Font.loadFont(is, size);
-        textShape.setFont(f);
+    public Double getSize() {
+        return size;
+    }
 
-        // Overwrite explicit settings through inline style (which has 
-        // the highest precedence):
-        textShape.setStyle(String.format("-fx-font-size:%s; -fx-font-weight: %s", size, weight.getWeight()));
+    public FontWeight getWeight() {
+        return weight;
+    }
 
-        return textShape;
+    public String getText() {
+        return text.toString();
     }
 
     @Override
@@ -60,11 +53,17 @@ public class PartText implements PartShape {
 
         return result;
     }
-    
+
+
+    @Override
+    public final ShapeType getType() {
+        return ShapeType.SHAPETYPE_TEXT;
+    }
     
     @Override
     public String toString() {
-        return String.format("PartText[pos=%s, size=%s, text=\"%s\"]", pos, size, text);
+        return String.format("%s[pos=%s, size=%s, text=\"%s\"]", 
+                             PartText.class.getName(), pos, size, text);
     }
 
 }

@@ -10,16 +10,27 @@ import org.apache.logging.log4j.Logger;
 
 import afester.javafx.examples.board.model.Pin;
 import afester.javafx.examples.board.model.Part;
+import afester.javafx.examples.board.model.PartArc;
+import afester.javafx.examples.board.model.PartCircle;
+import afester.javafx.examples.board.model.PartLine;
+import afester.javafx.examples.board.model.PartRectangle;
 import afester.javafx.examples.board.model.Package;
 import afester.javafx.examples.board.model.PartShape;
+import afester.javafx.examples.board.model.PartText;
 import afester.javafx.svg.SvgLoader;
 import afester.javafx.svg.SvgTextBox;
 import javafx.geometry.Point2D;
+import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Arc;
+import javafx.scene.shape.ArcType;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
+import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
@@ -215,19 +226,35 @@ public class PartView extends Group implements Interactable {
 
             Package pkg = part.getPackage();
             for (PartShape ps : pkg.getShapes()) {
-                Node s = ps.createNode();
+                Node s = null;
+                switch(ps.getType()) {
+                    case SHAPETYPE_CIRCLE :
+                        s = createNode((PartCircle) ps);
+                        break;
 
-                // Replace name and value placeholders
-                if (s instanceof Text) {    // TODO: Hack
-                    Text t = (Text) s;
-                    if (t.getText().equals(">NAME")) {  // TODO: Eagle specific!!!
-                        t.setText(part.getName());
-                    } if (t.getText().equals(">VALUE")) {   // TODO: Eagle specific!
-                        t.setText(part.getValue());
-                    }
+                    case SHAPETYPE_RECTANGLE :
+                        s = createNode((PartRectangle) ps);
+                        break;
+
+                    case SHAPETYPE_TEXT :
+                        s = createNode((PartText) ps);
+                        break;
+
+                    case SHAPETYPE_ARC:
+                        s = createNode((PartArc) ps);
+                        break;
+
+                    case SHAPETYPE_LINE:
+                        s = createNode((PartLine) ps);
+                        break;
+
+                    case SHAPETYPE_PAD:
+//                        s = createNode((PartPad) ps);
+                        break;
                 }
-
-                shapeViews.getChildren().add(s);
+                if (s != null) {
+                    shapeViews.getChildren().add(s);
+                }
             }
 
             for (Pin ps : part.getPins()) {
@@ -255,6 +282,87 @@ public class PartView extends Group implements Interactable {
         getChildren().add(selectionRect);
     }
 
+    private Node createNode(PartLine ps) {
+        var p1 = ps.getStart();
+        var p2 = ps.getEnd();
+        var width = ps.getWidth();
+
+        Shape line = new Line(p1.getX(), p1.getY(), p2.getX(), p2.getY());
+        line.setStrokeWidth(width);
+        return line;
+    }
+
+    private Node createNode(PartArc ps) {
+        var center = ps.getCenter();
+        var radius = ps.getRadius();
+        var startAngle = ps.getStartAngle();
+        var angle = ps.getAngle();
+        var width = ps.getWidth();
+
+        Arc arc = new Arc(center.getX(), center.getY(), radius, radius, startAngle, angle);
+        arc.setType(ArcType.OPEN);
+        arc.setFill(null);
+        arc.setStrokeWidth(width);
+        arc.setStroke(Color.GRAY);
+        arc.setStrokeLineCap(StrokeLineCap.ROUND);
+        return arc;
+    }
+
+    private Node createNode(PartRectangle ps) {
+        var p1 = ps.getP1();
+        var p2 = ps.getP2();
+            
+        final double width = Math.abs(p2.getX() - p1.getX());
+        final double height = Math.abs(p2.getY() - p1.getY());
+        final double x = Math.min(p1.getX(), p2.getX());
+        final double y = Math.min(p1.getY(), p2.getY());
+
+        Shape rect = new Rectangle(x, y, width, height);
+
+        return rect;
+    }
+
+    private Node createNode(PartCircle ps) {
+        var center = ps.getCenter();
+        var radius = ps.getRadius();
+        var width = ps.getWidth();
+
+        Shape circle = new Circle(center.getX(), center.getY(), radius);
+        circle.setStrokeWidth(width);
+
+        return circle;
+    }
+
+    private Node createNode(PartText ps) {
+        final var pos = ps.getPos();
+        final var size = ps.getSize();
+        final var weight = ps.getWeight();
+        final var text = ps.getText();
+
+        Text textShape = new Text(pos.getX(), pos.getY(), text);
+        textShape.setTextOrigin(VPos.BOTTOM); // .BASELINE);
+
+        // WIP: Use a CAD font - for some reason, can not be loaded through CSS
+        // since it does not resolve through the system font names (even though it is
+        // installed)
+//      InputStream is = getClass().getResourceAsStream("PCBius.ttf");
+//      final Font f = Font.loadFont(is, size);
+//      textShape.setFont(f);
+
+        // Overwrite explicit settings through inline style (which has
+        // the highest precedence):
+        textShape.setStyle(String.format("-fx-font-size:%s; -fx-font-weight: %s", size, weight));
+
+        // Replace name and value placeholders
+        if (textShape.getText().equals(">NAME")) { // TODO: Eagle specific!!!
+            textShape.setText(part.getName());
+        }
+        if (textShape.getText().equals(">VALUE")) { // TODO: Eagle specific!
+            textShape.setText(part.getValue());
+        }
+
+        return textShape;
+    }
 
     @Override
     public String getTypeSelector() {

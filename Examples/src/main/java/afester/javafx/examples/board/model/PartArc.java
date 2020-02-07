@@ -5,20 +5,18 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javafx.geometry.Point2D;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Arc;
-import javafx.scene.shape.ArcType;
-import javafx.scene.shape.Shape;
-import javafx.scene.shape.StrokeLineCap;
+
 
 public class PartArc implements PartShape {
+
 
     private Point2D center;
     private Double radius;
     private Double angle;
     private Double startAngle;
     private Double width;
-    
+
+
 
     public PartArc(Point2D center, Double radius, Double startAngle, Double angle, Double width) {
         this.center = center;
@@ -28,17 +26,36 @@ public class PartArc implements PartShape {
         this.width = width;
     }
 
-
-    @Override
-    public Shape createNode() {
-        Arc arc = new Arc(center.getX(), center.getY(), radius, radius, startAngle, angle);
-        arc.setType(ArcType.OPEN);
-        arc.setFill(null);
-        arc.setStrokeWidth(width);
-        arc.setStroke(Color.GRAY);
-        arc.setStrokeLineCap(StrokeLineCap.ROUND);
-        return arc;
+    
+    public Point2D getCenter() {
+        return center;
     }
+
+
+
+    public Double getRadius() {
+        return radius;
+    }
+
+
+
+    public Double getAngle() {
+        return angle;
+    }
+
+
+
+    public Double getStartAngle() {
+        return startAngle;
+    }
+
+
+
+    public Double getWidth() {
+        return width;
+    }
+
+    
 
     @Override
     public Node getXML(Document doc) {
@@ -55,7 +72,14 @@ public class PartArc implements PartShape {
     }
 
     @Override
-    public String toString() {
-        return String.format("PartArc[center=%s radius=%s start=%s angle=%s]", center, radius, startAngle, angle); 
+    public final ShapeType getType() {
+        return ShapeType.SHAPETYPE_ARC;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s[center=%s radius=%s start=%s angle=%s]", 
+                             PartArc.class.getName(), center, radius, startAngle, angle); 
+    }
+
 }

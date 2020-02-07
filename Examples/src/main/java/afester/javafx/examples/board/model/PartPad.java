@@ -5,7 +5,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javafx.geometry.Point2D;
-import javafx.scene.shape.Shape;
 
 
 public class PartPad implements PartShape {
@@ -29,15 +28,6 @@ public class PartPad implements PartShape {
     }
 
     @Override
-    public Shape createNode() {
-        return null;    // TODO ...
-//        Shape line = new Line(p1.getX(), p1.getY(), p2.getX(), p2.getY());
-//        line.setStrokeWidth(width);
-//        return line;
-    }
-
-
-    @Override
     public Node getXML(Document doc) {
         Element result = doc.createElement("pad");
         result.setAttribute("x", Double.toString(pos.getX()));
@@ -48,8 +38,15 @@ public class PartPad implements PartShape {
         return result;
     }
 
+
+    @Override
+    public final ShapeType getType() {
+        return ShapeType.SHAPETYPE_PAD;
+    }
+
     @Override
     public String toString() {
-        return String.format("PartPad[name=\"%s\" pos=%s]", name, pos);
+        return String.format("%s[name=\"%s\" pos=%s]", 
+                             PartPad.class.getName(), name, pos);
     }
 }

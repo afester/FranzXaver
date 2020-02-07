@@ -5,8 +5,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javafx.geometry.Point2D;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 
 
 public class PartRectangle implements PartShape {
@@ -19,17 +17,16 @@ public class PartRectangle implements PartShape {
         this.p2 = p2;
     }
 
-    @Override
-    public Shape createNode() {
-        final double width = Math.abs(p2.getX() - p1.getX());
-        final double height = Math.abs(p2.getY() - p1.getY());
-        final double x = Math.min(p1.getX(), p2.getX());
-        final double y = Math.min(p1.getY(), p2.getY());
 
-        Shape rect = new Rectangle(x, y, width, height);
-
-        return rect;
+    public Point2D getP1() {
+        return p1;
     }
+
+
+    public Point2D getP2() {
+        return p2;
+    }
+
 
     @Override
     public Node getXML(Document doc) {
@@ -43,8 +40,15 @@ public class PartRectangle implements PartShape {
         return result;
     }
 
+
+    @Override
+    public final ShapeType getType() {
+        return ShapeType.SHAPETYPE_RECTANGLE;
+    }
+
     @Override
     public String toString() {
-        return String.format("PartRectangle[%s %s]", p1, p2);
+        return String.format("%s[%s %s]", 
+                             PartRectangle.class.getName(), p1, p2);
     }
 }
