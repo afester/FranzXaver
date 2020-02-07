@@ -13,7 +13,7 @@ import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.BoardLoader;
 import afester.javafx.examples.board.model.NetImport;
 import afester.javafx.examples.board.model.Part;
-import afester.javafx.examples.board.model.PartShape;
+import afester.javafx.examples.board.model.ShapeModel;
 
 public class BoardTest {
 
@@ -77,7 +77,7 @@ public class BoardTest {
         assertEquals("D1", part.getName());
         assertEquals("1N4148", part.getValue());
 
-        List<PartShape> shapes = part.getPackage().getShapes();
+        List<ShapeModel> shapes = part.getPackage().getShapes();
         assertEquals(22,  shapes.size());
     }
 

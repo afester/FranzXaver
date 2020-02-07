@@ -10,13 +10,13 @@ import org.apache.logging.log4j.Logger;
 
 import afester.javafx.examples.board.model.Pin;
 import afester.javafx.examples.board.model.Part;
-import afester.javafx.examples.board.model.PartArc;
-import afester.javafx.examples.board.model.PartCircle;
-import afester.javafx.examples.board.model.PartLine;
-import afester.javafx.examples.board.model.PartRectangle;
+import afester.javafx.examples.board.model.ShapeArc;
+import afester.javafx.examples.board.model.ShapeCircle;
+import afester.javafx.examples.board.model.ShapeLine;
+import afester.javafx.examples.board.model.ShapeRectangle;
 import afester.javafx.examples.board.model.Package;
-import afester.javafx.examples.board.model.PartShape;
-import afester.javafx.examples.board.model.PartText;
+import afester.javafx.examples.board.model.ShapeModel;
+import afester.javafx.examples.board.model.ShapeText;
 import afester.javafx.svg.SvgLoader;
 import afester.javafx.svg.SvgTextBox;
 import javafx.geometry.Point2D;
@@ -225,27 +225,27 @@ public class PartView extends Group implements Interactable {
         if (!isSvg) {
 
             Package pkg = part.getPackage();
-            for (PartShape ps : pkg.getShapes()) {
+            for (ShapeModel ps : pkg.getShapes()) {
                 Node s = null;
                 switch(ps.getType()) {
                     case SHAPETYPE_CIRCLE :
-                        s = createNode((PartCircle) ps);
+                        s = createNode((ShapeCircle) ps);
                         break;
 
                     case SHAPETYPE_RECTANGLE :
-                        s = createNode((PartRectangle) ps);
+                        s = createNode((ShapeRectangle) ps);
                         break;
 
                     case SHAPETYPE_TEXT :
-                        s = createNode((PartText) ps);
+                        s = createNode((ShapeText) ps);
                         break;
 
                     case SHAPETYPE_ARC:
-                        s = createNode((PartArc) ps);
+                        s = createNode((ShapeArc) ps);
                         break;
 
                     case SHAPETYPE_LINE:
-                        s = createNode((PartLine) ps);
+                        s = createNode((ShapeLine) ps);
                         break;
 
                     case SHAPETYPE_PAD:
@@ -282,7 +282,7 @@ public class PartView extends Group implements Interactable {
         getChildren().add(selectionRect);
     }
 
-    private Node createNode(PartLine ps) {
+    private Node createNode(ShapeLine ps) {
         var p1 = ps.getStart();
         var p2 = ps.getEnd();
         var width = ps.getWidth();
@@ -292,7 +292,7 @@ public class PartView extends Group implements Interactable {
         return line;
     }
 
-    private Node createNode(PartArc ps) {
+    private Node createNode(ShapeArc ps) {
         var center = ps.getCenter();
         var radius = ps.getRadius();
         var startAngle = ps.getStartAngle();
@@ -308,7 +308,7 @@ public class PartView extends Group implements Interactable {
         return arc;
     }
 
-    private Node createNode(PartRectangle ps) {
+    private Node createNode(ShapeRectangle ps) {
         var p1 = ps.getP1();
         var p2 = ps.getP2();
             
@@ -322,7 +322,7 @@ public class PartView extends Group implements Interactable {
         return rect;
     }
 
-    private Node createNode(PartCircle ps) {
+    private Node createNode(ShapeCircle ps) {
         var center = ps.getCenter();
         var radius = ps.getRadius();
         var width = ps.getWidth();
@@ -333,7 +333,7 @@ public class PartView extends Group implements Interactable {
         return circle;
     }
 
-    private Node createNode(PartText ps) {
+    private Node createNode(ShapeText ps) {
         final var pos = ps.getPos();
         final var size = ps.getSize();
         final var weight = ps.getWeight();

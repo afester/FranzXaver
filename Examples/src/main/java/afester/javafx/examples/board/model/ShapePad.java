@@ -7,12 +7,12 @@ import org.w3c.dom.Node;
 import javafx.geometry.Point2D;
 
 
-public class PartPad implements PartShape {
+public class ShapePad implements ShapeModel {
 
     private String name;
     private Point2D pos;    // local position!
 
-    public PartPad(String name, Point2D pos) {
+    public ShapePad(String name, Point2D pos) {
         this.name = name;
         this.pos = pos;
     }
@@ -47,6 +47,6 @@ public class PartPad implements PartShape {
     @Override
     public String toString() {
         return String.format("%s[name=\"%s\" pos=%s]", 
-                             PartPad.class.getName(), name, pos);
+                             ShapePad.class.getName(), name, pos);
     }
 }

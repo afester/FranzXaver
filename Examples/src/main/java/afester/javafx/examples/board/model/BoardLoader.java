@@ -128,7 +128,7 @@ class BoardShapeHandler extends SubContentHandler {
 class PackageHandler extends SubContentHandler {
     private final static Logger log = LogManager.getLogger();
 
-    private PartText currentText = null;
+    private ShapeText currentText = null;
     private Package thePackage = null;
 
     public PackageHandler(Package pkg) {
@@ -144,14 +144,14 @@ class PackageHandler extends SubContentHandler {
             final var p2 = new Point2D(ar.getDouble("x2"), ar.getDouble("y2"));
             final var width = ar.getDouble("width");
 
-            PartShape shape = new PartLine(p1, p2, width);
+            ShapeModel shape = new ShapeLine(p1, p2, width);
             log.debug(shape);
             thePackage.addShape(shape);
         } else if (localName.equals("rectangle")) {
             final var p1 = new Point2D(ar.getDouble("x1"), ar.getDouble("y1"));
             final var p2 = new Point2D(ar.getDouble("x2"), ar.getDouble("y2"));
 
-            PartShape shape = new PartRectangle(p1, p2);
+            ShapeModel shape = new ShapeRectangle(p1, p2);
             log.debug(shape);
             thePackage.addShape(shape);
         } else if (localName.equals("circle")) {
@@ -159,7 +159,7 @@ class PackageHandler extends SubContentHandler {
             final var radius = ar.getDouble("radius");
             final var width = ar.getDouble("width");
 
-            PartShape shape = new PartCircle(center, radius, width);
+            ShapeModel shape = new ShapeCircle(center, radius, width);
             log.debug(shape);
             thePackage.addShape(shape);
         } else if (localName.equals("arc")) {
@@ -169,7 +169,7 @@ class PackageHandler extends SubContentHandler {
             final var angle = ar.getDouble("angle");
             final var width = ar.getDouble("width");
 
-            PartShape shape = new PartArc(center, radius, start, angle, width);
+            ShapeModel shape = new ShapeArc(center, radius, start, angle, width);
             log.debug(shape);
             thePackage.addShape(shape);
         } else if (localName.equals("text")) {
@@ -178,12 +178,12 @@ class PackageHandler extends SubContentHandler {
             final var weight = FontWeight.valueOf(ar.getString("weight"));
             // String layer = textNode.getAttribute("layer");
 
-            currentText = new PartText(pos, size, weight);
+            currentText = new ShapeText(pos, size, weight);
         } else if (localName.equals("pad")) {
             final var padNumber = ar.getString("padName");
             final var padPos = new Point2D(ar.getDouble("x"), ar.getDouble("y"));
 
-            PartPad pad = new PartPad(padNumber, padPos);
+            ShapePad pad = new ShapePad(padNumber, padPos);
             log.debug(pad);
             thePackage.addPad(pad);
         } else {

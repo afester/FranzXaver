@@ -6,14 +6,16 @@ import org.w3c.dom.Node;
 
 import javafx.geometry.Point2D;
 
-
-public class PartCircle implements PartShape {
+/**
+ * The model for a generic circle with a center, a radius and a width.
+ */
+public class ShapeCircle implements ShapeModel {
 
     private Point2D center;
     private double radius;
     private double width;
 
-    public PartCircle(Point2D center, double radius, double width) {
+    public ShapeCircle(Point2D center, double radius, double width) {
         this.center = center;
         this.radius = radius;
         this.width = width;
@@ -52,6 +54,6 @@ public class PartCircle implements PartShape {
     @Override
     public String toString() {
         return String.format("%s[center=%s radius=%s width=%s]", 
-                             PartCircle.class.getName(), center, radius, width);
+                             ShapeCircle.class.getName(), center, radius, width);
     }
 }

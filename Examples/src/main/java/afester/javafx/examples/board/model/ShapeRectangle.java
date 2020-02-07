@@ -7,12 +7,12 @@ import org.w3c.dom.Node;
 import javafx.geometry.Point2D;
 
 
-public class PartRectangle implements PartShape {
+public class ShapeRectangle implements ShapeModel {
 
     private Point2D p1;
     private Point2D p2;
 
-    public PartRectangle(Point2D p1, Point2D p2) {
+    public ShapeRectangle(Point2D p1, Point2D p2) {
         this.p1 = p1;
         this.p2 = p2;
     }
@@ -49,6 +49,6 @@ public class PartRectangle implements PartShape {
     @Override
     public String toString() {
         return String.format("%s[%s %s]", 
-                             PartRectangle.class.getName(), p1, p2);
+                             ShapeRectangle.class.getName(), p1, p2);
     }
 }

@@ -8,14 +8,14 @@ import javafx.geometry.Point2D;
 import javafx.scene.text.FontWeight;
 
 
-public class PartText implements PartShape {
+public class ShapeText implements ShapeModel {
 
     private final Point2D pos;
     private final Double size;          // text height in mm
     private final FontWeight weight;    // text weight
     private final StringBuffer text;
 
-    public PartText(Point2D textPos, Double size, FontWeight weight) {
+    public ShapeText(Point2D textPos, Double size, FontWeight weight) {
         this.pos = textPos;
         this.text = new StringBuffer();
         this.size = size;
@@ -63,7 +63,7 @@ public class PartText implements PartShape {
     @Override
     public String toString() {
         return String.format("%s[pos=%s, size=%s, text=\"%s\"]", 
-                             PartText.class.getName(), pos, size, text);
+                             ShapeText.class.getName(), pos, size, text);
     }
 
 }

@@ -6,18 +6,17 @@ import org.w3c.dom.Node;
 
 import javafx.geometry.Point2D;
 
-public class PartLine implements PartShape {
+public class ShapeLine implements ShapeModel {
 
     private Point2D p1;
     private Point2D p2;
     private Double width;
 
-    public PartLine(Point2D p1, Point2D p2, Double width) {
+    public ShapeLine(Point2D p1, Point2D p2, Double width) {
         this.p1 = p1;
         this.p2 = p2;
         this.width = width;
     }
-
     
     public Point2D getStart() {
         return p1;
@@ -53,6 +52,6 @@ public class PartLine implements PartShape {
     @Override
     public String toString() {
         return String.format("%s[%s %s width=%s]", 
-                             PartLine.class.getName(), p1, p2, width);
+                             ShapeLine.class.getName(), p1, p2, width);
     }
 }

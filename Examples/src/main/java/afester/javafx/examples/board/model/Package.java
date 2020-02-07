@@ -14,33 +14,33 @@ public class Package {
 
     private final String name;
     private final String id;
-    private final Map<String, PartPad> pads = new HashMap<>();  // pad shapes
-    private final List<PartShape> shapes = new ArrayList<>();   // normal shapes
+    private final Map<String, ShapePad> pads = new HashMap<>();  // pad shapes
+    private final List<ShapeModel> shapes = new ArrayList<>();   // normal shapes
 
     public Package(String id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public void addPad(PartPad pad) {
+    public void addPad(ShapePad pad) {
         final String key = pad.getName();
         pads.put(key, pad);
     }
 
 
-    public PartPad getPad(String padName) {
+    public ShapePad getPad(String padName) {
         return pads.get(padName);
     }
 
-    public void addShape(PartShape shape) {
+    public void addShape(ShapeModel shape) {
         shapes.add(shape);
     }
 
-    public List<PartShape> getShapes() {
+    public List<ShapeModel> getShapes() {
         return shapes;
     }
 
-    public Collection<PartPad> getPads() {
+    public Collection<ShapePad> getPads() {
         return pads.values();
     }
 

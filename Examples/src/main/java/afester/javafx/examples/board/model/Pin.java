@@ -11,7 +11,7 @@ import javafx.geometry.Point2D;
 public final class Pin extends AbstractNode {
 
     private final Part part;
-    private final PartPad pad;
+    private final ShapePad pad;
 
     /**
      * Creates a new Pin.
@@ -20,7 +20,7 @@ public final class Pin extends AbstractNode {
      * @param padName   The (physical) pad number of this pad
      * @param padPos    The position of the pad (in Part coordinates!!!!)
      */
-    public Pin(Part part, PartPad pad) {
+    public Pin(Part part, ShapePad pad) {
         super(part.globalPadPos(pad.getPos()));
 
         this.part = part;

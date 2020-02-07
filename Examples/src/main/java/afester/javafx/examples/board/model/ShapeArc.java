@@ -7,8 +7,7 @@ import org.w3c.dom.Node;
 import javafx.geometry.Point2D;
 
 
-public class PartArc implements PartShape {
-
+public class ShapeArc implements ShapeModel {
 
     private Point2D center;
     private Double radius;
@@ -16,9 +15,7 @@ public class PartArc implements PartShape {
     private Double startAngle;
     private Double width;
 
-
-
-    public PartArc(Point2D center, Double radius, Double startAngle, Double angle, Double width) {
+    public ShapeArc(Point2D center, Double radius, Double startAngle, Double angle, Double width) {
         this.center = center;
         this.radius = radius;
         this.startAngle = startAngle;
@@ -26,36 +23,25 @@ public class PartArc implements PartShape {
         this.width = width;
     }
 
-    
     public Point2D getCenter() {
         return center;
     }
-
-
 
     public Double getRadius() {
         return radius;
     }
 
-
-
     public Double getAngle() {
         return angle;
     }
-
-
 
     public Double getStartAngle() {
         return startAngle;
     }
 
-
-
     public Double getWidth() {
         return width;
     }
-
-    
 
     @Override
     public Node getXML(Document doc) {
@@ -79,7 +65,7 @@ public class PartArc implements PartShape {
     @Override
     public String toString() {
         return String.format("%s[center=%s radius=%s start=%s angle=%s]", 
-                             PartArc.class.getName(), center, radius, startAngle, angle); 
+                             ShapeArc.class.getName(), center, radius, startAngle, angle); 
     }
 
 }
