@@ -345,9 +345,9 @@ public class PartView extends Group implements Interactable {
         // WIP: Use a CAD font - for some reason, can not be loaded through CSS
         // since it does not resolve through the system font names (even though it is
         // installed)
-//      InputStream is = getClass().getResourceAsStream("PCBius.ttf");
-//      final Font f = Font.loadFont(is, size);
-//      textShape.setFont(f);
+        InputStream is = getClass().getResourceAsStream("PCBius.ttf");
+        final Font f = Font.loadFont(is, size);
+        textShape.setFont(f);
 
         // Overwrite explicit settings through inline style (which has
         // the highest precedence):

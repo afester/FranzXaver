@@ -33,7 +33,8 @@ public abstract class BoardView extends Pane {
     private final static Logger log = LogManager.getLogger();
 
     private Board board;
-    private final Point2D padOffset = new Point2D(2.5, 2.0);
+    private final Point2D padOffset = Point2D.ZERO; // new Point2D(2.5, 2.0);
+    private Point2D refPoint = Point2D.ZERO; // The coordinates of the upper left pad/hole
     private BoardShape boardShape;
 
     private Group boardGroup;               // The board itself, including dimensions
@@ -270,6 +271,7 @@ public abstract class BoardView extends Pane {
             createBoardDimensions();
         });
 
+
 // Handling nets
         log.info("Adding Nets ...");
         board.getNets().forEach((netName, net) -> {
@@ -338,7 +340,6 @@ public abstract class BoardView extends Pane {
               p.visibleProperty().set(!isHidden);
            });
         });
-
     }
     
 
@@ -354,10 +355,12 @@ public abstract class BoardView extends Pane {
 
 // Holes / Pads (this is a rectangle!)
         Bounds b = boardShape.getBoundsInParent();
-
+        refPoint = new Point2D(b.getMinX() + padOffset.getX(),
+                               b.getMinY() + padOffset.getY());
+        System.err.println("REF POINT1:" + refPoint);
         Group padsGroup = new Group();
-        for (double ypos = b.getMinY() + padOffset.getY();  ypos < b.getMinY() + b.getHeight();  ypos += 2.54 ) {
-            for (double xpos = b.getMinX() + padOffset.getX();  xpos < b.getMinX() + b.getWidth();  xpos += 2.54) {
+        for (double ypos = refPoint.getY();  ypos < b.getMinY() + b.getHeight();  ypos += 2.54 ) {
+            for (double xpos = refPoint.getX();  xpos < b.getMinX() + b.getWidth();  xpos += 2.54) {
                 final var c = new HoleView(xpos, ypos, isBottom);
                 padsGroup.getChildren().add(c);
             }
@@ -429,16 +432,10 @@ public abstract class BoardView extends Pane {
                                                // required to properly position the Eagle parts ...
 
     public Point2D snapToGrid(Point2D pos){
-        double xpos = pos.getX();
-        double ypos = pos.getY();
-
-        xpos = (int) ( (xpos - getPadOffset().getX()) / GRID);
-        ypos = (int) ( (ypos - getPadOffset().getY()) / GRID);
-
-        xpos = xpos * GRID + getPadOffset().getX();
-        ypos = ypos * GRID + getPadOffset().getY();
-
-        return new Point2D(xpos, ypos);
+        var snappedPos = pos.subtract(refPoint).subtract(getPadOffset()).multiply(1/GRID);
+        snappedPos = new Point2D((int) snappedPos.getX(), (int) snappedPos.getY());
+        snappedPos = snappedPos.multiply(GRID).add(getPadOffset()).add(refPoint);
+        return snappedPos;
     }
 
 
