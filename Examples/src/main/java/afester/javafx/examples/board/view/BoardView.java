@@ -111,7 +111,10 @@ public abstract class BoardView extends Pane {
         setupBoard();
 //        setStyle("-fx-border-style: solid; -fx-border-color: red;");
 
-        showSvgProperty().addListener((obj, oldValue, newValue) -> { partsGroup.getChildren().forEach(part -> ((PartView) part).render(newValue)); });
+        showSvgProperty().addListener(newValue -> { 
+        	final var isShowSvg = ((BooleanProperty) newValue).getValue();
+        	partsGroup.getChildren().forEach(part -> ((PartView) part).render(isShowSvg)); 
+        });
         traceGroup.visibleProperty().bind(showTracesProperty());
         airWireGroup.visibleProperty().bind(showAirwiresProperty());
         dimensionGroup.visibleProperty().bind(showDimensionsProperty());
@@ -126,9 +129,11 @@ public abstract class BoardView extends Pane {
             bridgeGroup.shapeStyleProperty().bind(props.getStyle(StyleSelector.TOPBRIDGE_NORMAL));
         }
 
-        showBoardHandlesProperty().addListener((obj, oldValue, newValue) -> {
+        showBoardHandlesProperty().addListener(newValue -> {
+        	final var isShowHandles = ((BooleanProperty) newValue).getValue();
+
             handleGroup.getChildren().clear();
-            if (newValue) {
+            if (isShowHandles) {
                // Handles for each corner of the board        
                   final List<BoardHandle> corners = new ArrayList<>();
                   IntVal idx = new IntVal();
