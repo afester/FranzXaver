@@ -279,7 +279,7 @@ class NetHandler extends SubContentHandler {
             AbstractNode from = bl.nodes.get(fromId);
             AbstractNode to = bl.nodes.get(toId);
 
-            Trace aw = new Trace(from, to, net, TraceType.AIRWIRE);
+            Trace aw = new Trace(TraceType.AIRWIRE);
             log.debug(aw);
 
             // TODO: Hack to take care of airwires connected to hidden Parts
@@ -296,8 +296,7 @@ class NetHandler extends SubContentHandler {
                 }
             }
             
-            
-            net.addTrace(aw);
+            net.addTrace(aw, from, to);
         } else if (localName.equals("trace")) {
             final var fromId = ar.getString("from");
             final var toId = ar.getString("to");
@@ -306,13 +305,15 @@ class NetHandler extends SubContentHandler {
             AbstractNode from = bl.nodes.get(fromId);
             AbstractNode to = bl.nodes.get(toId);
 
-            Trace t = new Trace(from, to, net, TraceType.TRACE);
+            Trace t;
             if (isBridge) {
-                t.setAsBridge();
+                t = new Trace(TraceType.BRIDGE);
+            } else {
+                t = new Trace(TraceType.TRACE);
             }
             log.debug(t);
 
-            net.addTrace(t);
+            net.addTrace(t, from, to);
         } else {
             log.debug("   " + localName);
         }

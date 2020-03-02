@@ -53,7 +53,7 @@ class NetHandler extends SubContentHandler {
             for (Pin p2 : padList) {
                 if (p1 != null) {
                     // TODO: can we simply add the Pads to the net here and afterwards to a "Reset Net" to create the actual AirWires??
-                    sheetHandler.currentNet.addTrace(new Trace(p1, p2, sheetHandler.currentNet, TraceType.AIRWIRE));
+                    sheetHandler.currentNet.addTrace(new Trace(TraceType.AIRWIRE), p1, p2);
                 }
                 p1 = p2;
             }

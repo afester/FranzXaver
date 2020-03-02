@@ -39,29 +39,18 @@ public abstract class AbstractEdge {
     public boolean isHidden() { return isHidden.get(); }
     public void setHidden(boolean flag) { isHidden.set(flag); }
 
-    private Net net;
+    Net net;
 
     /**
-     * Creates a new AbstractEdge.
-     *
-     * @param from The first node of the edge
-     * @param to The second node of the edge
-     * @param net The net which contains the edge
+     * Creates a new, unconnected edge.
      */
-    public AbstractEdge(AbstractNode from, AbstractNode to, Net net) {
-        setFrom(from);
-        setTo(to);
-        this.net = net;
-
-        from.addEdge(this);
-        to.addEdge(this);
+    public AbstractEdge() {
     }
 
 
-    abstract public TraceType getType();
-
     /**
-     * @return The Net this AbstractWire is part of.
+     * @return The Net this AbstractEdge is part of. Returns null if the
+     * edge is not yet part of a Net.
      */
     public Net getNet() {
         return net; 
@@ -153,7 +142,6 @@ public abstract class AbstractEdge {
         }
     }
 
-    
     public void move(Point2D newPos) {
         AbstractNode fromNode = getFrom();
         AbstractNode toNode = getTo();

@@ -4,6 +4,7 @@ import afester.javafx.examples.board.ApplicationProperties;
 import afester.javafx.examples.board.StyleSelector;
 import afester.javafx.examples.board.model.AbstractEdge;
 import afester.javafx.examples.board.model.AbstractEdge.AbstractWireState;
+import afester.javafx.examples.board.model.Trace;
 import afester.javafx.examples.board.model.TraceType;
 import afester.javafx.examples.board.tools.StraightLine;
 import javafx.beans.property.ObjectProperty;
@@ -208,12 +209,12 @@ public class TraceView extends AbstractEdgeView implements Interactable {
         }
     }
 
-    public AbstractEdge getTrace() {
-        return edge;
+    public Trace getTrace() {
+        return (Trace) edge;
     }
 
     public TraceType getType() {
-        return edge.getType();
+        return getTrace().getType();
     }
 
     @Override
@@ -238,7 +239,7 @@ public class TraceView extends AbstractEdgeView implements Interactable {
         return String.format("TraceView[p1=(%s %s), p2=(%s %s), type=%s]", 
                              this.getStart().getX(), this.getStart().getY(), 
                              this.getEnd().getX(), this.getEnd().getY(),
-                             edge.getType());
+                             getTrace().getType());
     }
 
     @Override

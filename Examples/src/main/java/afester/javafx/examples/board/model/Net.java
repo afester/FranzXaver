@@ -19,7 +19,7 @@ public class Net {
 
     private String netName;
     private ObservableList<Junction> junctionList = FXCollections.observableArrayList();    // A list of junctions - not associated to a part. Junctions can be added and removed.
-    private ObservableList<AbstractEdge> traceList = FXCollections.observableArrayList();
+    private ObservableList<Trace> traceList = FXCollections.observableArrayList();
 
     public Net(String netName) {
         this.netName = netName;
@@ -58,12 +58,24 @@ public class Net {
         return result;
     }
 
-    public ObservableList<AbstractEdge> getTraces() {
+    public ObservableList<Trace> getTraces() {
         return traceList;
     }
 
-    public void addTrace(AbstractEdge trace) {
-        traceList.add(trace);
+//    public void addTrace(Trace trace) {
+//        traceList.add(trace);
+//    }
+
+
+    public void addTrace(Trace edge, AbstractNode from, AbstractNode to) {
+        edge.setFrom(from);
+        edge.setTo(to);
+        edge.net = this;
+
+        from.addEdge(edge);
+        to.addEdge(edge);
+
+        traceList.add(edge);
     }
 
     /**
@@ -76,13 +88,19 @@ public class Net {
         AbstractNode from = trace.getFrom();
         AbstractNode to = trace.getTo();
 
+        System.err.println("FROM:" + from);
+        System.err.println("TO:" + to);
+
         from.getEdges().remove(trace); // ?????
         to.getEdges().remove(trace);     // ?????
 
         from.getEdges().forEach(xtrace -> {
+            System.err.println("Reconnect:" + xtrace);
             if (xtrace.getTo() == from) {
+                System.err.println("TO case");
                 xtrace.setTo(to);
             } else {
+                System.err.println("FROM case");
                 xtrace.setFrom(to);
             }
         });
@@ -227,8 +245,9 @@ public class Net {
        to.getEdges().remove(trace);
        traceList.remove(trace);
 
-       var bridge = new Trace(from, to, this, TraceType.BRIDGE);
-       traceList.add(bridge);
+       var bridge = new Trace(TraceType.BRIDGE);
+       addTrace(bridge, from, to);
+       // traceList.add(bridge);
     }
 
 
@@ -246,7 +265,7 @@ public class Net {
         sortedPads.stream()
                   .reduce((p1, p2) -> {
             System.err.println("ADDING:" + p1 + "=>" + p2);
-            addTrace(new Trace(p1, p2, this, TraceType.AIRWIRE));
+            addTrace(new Trace(TraceType.AIRWIRE), p1, p2);
             return p2;
         });
 

@@ -10,9 +10,9 @@ import org.apache.logging.log4j.Logger;
 
 import afester.javafx.examples.board.ApplicationProperties;
 import afester.javafx.examples.board.StyleSelector;
-import afester.javafx.examples.board.model.AbstractEdge;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.Part;
+import afester.javafx.examples.board.model.Trace;
 import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.tools.PointTools;
 import afester.javafx.examples.board.tools.Polygon2D;
@@ -148,7 +148,7 @@ public abstract class BoardView extends Pane {
 
     private void netUpdater(Net net) {
         // Handling traces
-        Map<AbstractEdge, TraceView> tMap = new HashMap<>();
+        Map<Trace, TraceView> tMap = new HashMap<>();
         log.info("Creating view for Net: {}", net);
         net.getTraces().forEach(trace -> {
             log.debug("  Creating TraceView for: {}", trace);
@@ -173,39 +173,32 @@ public abstract class BoardView extends Pane {
                 break;
             }
         });
-        net.getTraces().addListener((javafx.collections.ListChangeListener.Change<? extends AbstractEdge> change) -> {
+        
+
+        net.getTraces().addListener((javafx.collections.ListChangeListener.Change<? extends Trace> change) -> {
             change.next();
+
+            System.err.println("CHANGE: " + change);
+
             change.getRemoved().forEach(trace -> {
                 TraceView traceView = tMap.get(trace);
                 switch(trace.getType()) {
                 case AIRWIRE: 
-                    Platform.runLater(
-                            () -> airWireGroup.getChildren().remove(traceView));                            
+                    runOnFXThread(() -> airWireGroup.getChildren().remove(traceView));                            
                     break;
 
                 case BRIDGE:  
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            bridgeGroup.getChildren().remove(traceView);                            
-                        }
-                    });
+                    runOnFXThread(() -> bridgeGroup.getChildren().remove(traceView));                            
                     break;
 
-                case TRACE: 
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            traceGroup.getChildren().remove(traceView);                            
-                        }
-                    });
+                case TRACE:
+                    runOnFXThread(() -> traceGroup.getChildren().remove(traceView));                            
                     break;
 
                 default:
                     break;
                 }
             });
-
 
 //!!! Essentially, this is working, but the coordinates of the AirWire are not correct!                
 
@@ -215,16 +208,20 @@ public abstract class BoardView extends Pane {
                 System.err.println("ADDING TRACE VIEW: " + traceView);
 
                 switch(trace.getType()) {
-                    case AIRWIRE: airWireGroup.getChildren().add(traceView);
-                                  break;
+                    case AIRWIRE: 
+                        runOnFXThread(() -> airWireGroup.getChildren().add(traceView));
+                        break;
 
-                    case BRIDGE:  bridgeGroup.getChildren().add(traceView);
-                                  break;
+                    case BRIDGE:
+                        runOnFXThread(() -> bridgeGroup.getChildren().add(traceView));
+                        break;
 
-                    case TRACE: traceGroup.getChildren().add(traceView);
-                                break;
+                    case TRACE: 
+                        runOnFXThread(() -> traceGroup.getChildren().add(traceView));
+                        break;
 
-                    default: break;
+                    default: 
+                        break;
                 }  
             });
         });
@@ -264,6 +261,9 @@ public abstract class BoardView extends Pane {
 
         createPlainBoard();
         createBoardDimensions();
+
+        
+
         board.getBoardCorners().addListener((javafx.collections.ListChangeListener.Change<? extends Point2D> change) -> {
             // When the board shape changes, we simply recreate the whole board
             // This might be too heavy, but it at least works and ensures that the whole board shape is consistent
@@ -277,6 +277,8 @@ public abstract class BoardView extends Pane {
         board.getNets().forEach((netName, net) -> {
             netUpdater(net);
         });
+        
+
         board.getNets().addListener((javafx.collections.MapChangeListener.Change<? extends String, ? extends Net> change) -> {
             if (change.wasRemoved()) {
                 // not yet implemented - but the complete net can be removed from the model!
@@ -306,29 +308,23 @@ public abstract class BoardView extends Pane {
         board.getParts().addListener((javafx.collections.MapChangeListener.Change<? extends String, ? extends Part> change) -> {
             if (change.wasRemoved()) {
                 Part removed = change.getValueRemoved();
-                
+
                 PartView partView = pMap.remove(removed);
                 if (partView != null) {
-                    // NOTE: We might be in a background thread here!
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            partsGroup.getChildren().remove(partView);                            
-                        }
-                    });
+                    runOnFXThread(() -> partsGroup.getChildren().remove(partView));                            
                 }
             }
 
             if (change.wasAdded()) {
                 Part added = change.getValueAdded();
+
                 PartView partView = new PartView(added, isBottom);
                 pMap.put(added, partView);
 
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        partsGroup.getChildren().add(partView);
-                    }
+                System.err.println("Adding: " + partView);
+                runOnFXThread(() -> {
+                    System.err.println("NOW ADDING" + partView);
+                    partsGroup.getChildren().add(partView);
                 });
             }
         });
@@ -342,6 +338,26 @@ public abstract class BoardView extends Pane {
         });
     }
     
+
+    private void runOnFXThread(Runnable code) {
+        if (Platform.isFxApplicationThread()) {
+            System.err.println("   ... ON FX Thread");
+            code.run();
+        } else {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        System.err.println("   ... LATER ....");
+                        code.run();
+                    }catch (Throwable e) {
+                        e.printStackTrace();
+                        throw e;
+                    }
+                }
+            });
+        }
+    }
 
     private void createPlainBoard() {
         boardGroup.getChildren().clear();

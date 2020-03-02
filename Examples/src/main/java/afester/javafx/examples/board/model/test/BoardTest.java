@@ -19,7 +19,7 @@ public class BoardTest {
 
     @Test
     public void test() {
-        BoardLoader bl = new BoardLoader(new File("large.brd"));
+        BoardLoader bl = new BoardLoader(new File("largeNewFormat.brd"));
         Board board = bl.load();
 
         assertEquals(69, board.getParts().size());

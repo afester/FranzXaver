@@ -16,22 +16,17 @@ public class Trace extends AbstractEdge {
 
     private TraceType traceType;
    
-    public Trace(AbstractNode from, AbstractNode to, Net net, TraceType type) {
-        super(from, to, net);
+
+    /**
+     * Creates a new Trace of the specified type.
+     *
+     * @param type
+     */
+    public Trace(TraceType type) {
         this.traceType = type;
     }
 
-    public void setAsBridge() {
-        traceType = TraceType.BRIDGE;
-    }
-
-    
-    public boolean isBridge() {
-        return traceType == TraceType.BRIDGE;
-    }
-
-
-    @Override
+//    @Override
     public TraceType getType() {
         return traceType;
     }
@@ -48,7 +43,11 @@ public class Trace extends AbstractEdge {
             traceNode = doc.createElement("trace");
             traceNode.setAttribute("from", Integer.toString(getFrom().id));
             traceNode.setAttribute("to",   Integer.toString(getTo().id));
-            traceNode.setAttribute("isBridge",  Boolean.toString(isBridge()));
+            if (traceType == TraceType.BRIDGE) {
+                traceNode.setAttribute("isBridge",  Boolean.TRUE.toString());
+            } else {
+                traceNode.setAttribute("isBridge",  Boolean.FALSE.toString());
+            }
         }
 
         return traceNode;
@@ -62,8 +61,10 @@ public class Trace extends AbstractEdge {
         AbstractNode oldDest = getTo();
         reconnect(getTo(), newJunction);
 
-        Trace newTrace = new Trace(newJunction, oldDest, getNet(), TraceType.TRACE);
-        getNet().addTrace(newTrace);
+        Trace newTrace = new Trace(TraceType.TRACE);
+        getNet().addTrace(newTrace, newJunction, oldDest);
+//        Trace newTrace = new Trace(newJunction, oldDest, getNet(), TraceType.TRACE);
+//        getNet().addTrace(newTrace);
     }
 
     /**
@@ -123,11 +124,16 @@ public class Trace extends AbstractEdge {
             Junction j2 = new Junction(pTo.getPosition());
             net.addJunction(j2);
 
-            Trace t = new Trace(j1, j2, getNet(), TraceType.TRACE);
-            net.addTrace(t);
+            
+            Trace t = new Trace(TraceType.TRACE);
+            net.addTrace(t, j1, j2);
+//            Trace t = new Trace(j1, j2, getNet(), TraceType.TRACE);
+//            net.addTrace(t);
     
-            Trace aw2 = new Trace(j2, pTo, getNet(), TraceType.AIRWIRE);
-            net.addTrace(aw2);
+            Trace aw2 = new Trace(TraceType.AIRWIRE);
+            net.addTrace(aw2, j2, pTo);
+//            Trace aw2 = new Trace(j2, pTo, getNet(), TraceType.AIRWIRE);
+//            net.addTrace(aw2);
         } else if (pFrom instanceof Junction && pTo instanceof Pin) {
             System.err.println("JUNCTION/PAD");
 
@@ -140,8 +146,10 @@ public class Trace extends AbstractEdge {
 
             reconnect(pFrom, j2);
 
-            Trace t = new Trace(pFrom, j2, getNet(), TraceType.TRACE);
-            net.addTrace(t);
+            Trace t = new Trace(TraceType.TRACE);
+            net.addTrace(t, pFrom, j2);
+//            Trace t = new Trace(pFrom, j2, getNet(), TraceType.TRACE);
+//            net.addTrace(t);
         } else if (pFrom instanceof Pin && pTo instanceof Junction) {
             System.err.println("PAD/JUNCTION");
 
@@ -154,8 +162,10 @@ public class Trace extends AbstractEdge {
 
             reconnect(pTo, j2);
 
-            Trace t = new Trace(j2, pTo, getNet(), TraceType.TRACE);
-            net.addTrace(t);
+            Trace t = new Trace(TraceType.TRACE);
+            net.addTrace(t, j2, pTo);
+//            Trace t = new Trace(j2, pTo, getNet(), TraceType.TRACE);
+//            net.addTrace(t);
         }
     }
 
