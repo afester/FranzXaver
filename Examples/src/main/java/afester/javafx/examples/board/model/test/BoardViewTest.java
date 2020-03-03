@@ -1,6 +1,7 @@
 package afester.javafx.examples.board.model.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -122,7 +123,7 @@ public class BoardViewTest {
 
 
     @Test
-    public void testRemoveTrace() {
+    public void testRemoveTraceAndFrom() {
         final var part1 = createPart("P1", "100k", 10, 10);
         final var part2 = createPart("P2", "10k", 20, 20);
 
@@ -144,9 +145,90 @@ public class BoardViewTest {
         net.addTrace(trace2, junction, to);
 
         final Group traceGroup = (Group) boardView.lookup("#traceGroup");
+
         assertEquals(2, traceGroup.getChildren().size());
+        assertEquals(1, net.getJunctions().size());
 
         net.removeTraceAndFrom(trace2);
+
         assertEquals(1, traceGroup.getChildren().size());
+        assertEquals(0, net.getJunctions().size());
+
+        assertSame(from, trace1.getFrom());
+        assertSame(to,   trace1.getTo());
+    }
+
+    @Test
+    public void testRemoveTraceAndTo() {
+        final var part1 = createPart("P1", "100k", 10, 10);
+        final var part2 = createPart("P2", "10k", 20, 20);
+
+        board.addPart(part1);
+        board.addPart(part2);
+
+        final var net = new Net("N$1");
+        board.addNet(net);
+
+        final var junction = new Junction(new Point2D(15, 15));
+        net.addJunction(junction);
+
+        final var from = part1.getPin("1");
+        final var to = part2.getPin("2");
+
+        final var trace1 = new Trace(TraceType.TRACE);
+        final var trace2 = new Trace(TraceType.TRACE);
+        net.addTrace(trace1, from, junction);
+        net.addTrace(trace2, junction, to);
+
+        final Group traceGroup = (Group) boardView.lookup("#traceGroup");
+
+        assertEquals(2, traceGroup.getChildren().size());
+        assertEquals(1, net.getJunctions().size());
+
+        net.removeTraceAndTo(trace1);
+
+        assertEquals(1, traceGroup.getChildren().size());
+        assertEquals(0, net.getJunctions().size());
+
+        assertSame(from, trace2.getFrom());
+        assertSame(to,   trace2.getTo());
+    }
+    
+
+    @Test
+    public void testChangeTraceType() {
+        final var part1 = createPart("P1", "100k", 10, 10);
+        final var part2 = createPart("P2", "10k", 20, 20);
+
+        board.addPart(part1);
+        board.addPart(part2);
+
+        final var net = new Net("N$1");
+        board.addNet(net);
+
+        final var junction = new Junction(new Point2D(15, 15));
+        net.addJunction(junction);
+
+        final var from = part1.getPin("1");
+        final var to = part2.getPin("2");
+
+        final var trace1 = new Trace(TraceType.TRACE);
+        final var trace2 = new Trace(TraceType.TRACE);
+        net.addTrace(trace1, from, junction);
+        net.addTrace(trace2, junction, to);
+
+        final Group traceGroup = (Group) boardView.lookup("#traceGroup");
+        final Group bridgeGroup = (Group) boardView.lookup("#bridgeGroup");
+        final Group airwireGroup = (Group) boardView.lookup("#airWireGroup");
+        assertEquals(2, traceGroup.getChildren().size());
+        assertEquals(0, bridgeGroup.getChildren().size());
+        assertEquals(0, airwireGroup.getChildren().size());
+
+        trace1.setTraceType(TraceType.AIRWIRE);
+        trace2.setTraceType(TraceType.BRIDGE);
+
+        assertEquals(0, traceGroup.getChildren().size());
+        assertEquals(1, bridgeGroup.getChildren().size());
+        assertEquals(1, airwireGroup.getChildren().size());
     }
 }

@@ -101,7 +101,7 @@ public class TraceView extends AbstractEdgeView implements Interactable {
 
 
     private void update(AbstractWireState newState) {
-        switch(getTrace().getType()) {
+        switch(getTrace().getTraceType()) {
             case AIRWIRE: setAirwireVisual(newState);
                           break;
     
@@ -214,7 +214,7 @@ public class TraceView extends AbstractEdgeView implements Interactable {
     }
 
     public TraceType getType() {
-        return getTrace().getType();
+        return getTrace().getTraceType();
     }
 
     @Override
@@ -239,7 +239,7 @@ public class TraceView extends AbstractEdgeView implements Interactable {
         return String.format("TraceView[p1=(%s %s), p2=(%s %s), type=%s]", 
                              this.getStart().getX(), this.getStart().getY(), 
                              this.getEnd().getX(), this.getEnd().getY(),
-                             getTrace().getType());
+                             getTrace().getTraceType());
     }
 
     @Override

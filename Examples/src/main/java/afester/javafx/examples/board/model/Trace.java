@@ -6,6 +6,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
 
 /**
@@ -14,8 +16,11 @@ import javafx.geometry.Point2D;
  */
 public class Trace extends AbstractEdge {
 
-    private TraceType traceType;
-   
+    // The type of this trace.
+    private ObjectProperty<TraceType> traceType = new SimpleObjectProperty<>(TraceType.AIRWIRE);
+    public ObjectProperty<TraceType> traceTypeProperty() { return traceType; }
+    public void setTraceType(TraceType type) { traceType.setValue(type); }
+    public TraceType getTraceType() { return traceType.getValue(); }
 
     /**
      * Creates a new Trace of the specified type.
@@ -23,19 +28,14 @@ public class Trace extends AbstractEdge {
      * @param type
      */
     public Trace(TraceType type) {
-        this.traceType = type;
+        setTraceType(type);
     }
 
-//    @Override
-    public TraceType getType() {
-        return traceType;
-    }
-    
 
     @Override
     public Node getXML(Document doc)  {
         Element traceNode;
-        if (traceType == TraceType.AIRWIRE) {
+        if (getTraceType() == TraceType.AIRWIRE) {
             traceNode = doc.createElement("airwire");
             traceNode.setAttribute("from", Integer.toString(getFrom().id));
             traceNode.setAttribute("to", Integer.toString(getTo().id));
@@ -43,7 +43,7 @@ public class Trace extends AbstractEdge {
             traceNode = doc.createElement("trace");
             traceNode.setAttribute("from", Integer.toString(getFrom().id));
             traceNode.setAttribute("to",   Integer.toString(getTo().id));
-            if (traceType == TraceType.BRIDGE) {
+            if (getTraceType() == TraceType.BRIDGE) {
                 traceNode.setAttribute("isBridge",  Boolean.TRUE.toString());
             } else {
                 traceNode.setAttribute("isBridge",  Boolean.FALSE.toString());

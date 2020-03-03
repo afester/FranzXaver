@@ -15,6 +15,8 @@ import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.BoardLoader;
 import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.model.NetImport;
+import afester.javafx.examples.board.model.Trace;
+import afester.javafx.examples.board.model.TraceType;
 import afester.javafx.examples.board.view.AddCornerInteractor;
 import afester.javafx.examples.board.view.BoardView;
 import afester.javafx.examples.board.view.BottomBoardView;
@@ -531,11 +533,12 @@ public class BreadBoardEditor extends Application {
         topView.getSelectedObjects().forEach(selectedObject -> {
             if (selectedObject instanceof TraceView) {
                 TraceView traceView  = (TraceView) selectedObject;
-                final AbstractEdge wire = traceView.getTrace();
-                final Net net = wire.getNet();
+                final Trace wire = traceView.getTrace();
+                wire.setTraceType(TraceType.BRIDGE);
 
-                // change the trace to a Bridge
-                net.changeToBridge(wire);
+//                final Net net = wire.getNet();
+//                // change the trace to a Bridge
+//                net.changeToBridge(wire);
             }
         });
 
@@ -544,7 +547,6 @@ public class BreadBoardEditor extends Application {
 
 
     /**
-     * Converts the currently selected trace into a bridge wire.
      */
     private void toTrace() {
         topView.getSelectedObjects().forEach(selectedObject -> {

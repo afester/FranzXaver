@@ -13,6 +13,7 @@ import afester.javafx.examples.board.StyleSelector;
 import afester.javafx.examples.board.model.Board;
 import afester.javafx.examples.board.model.Part;
 import afester.javafx.examples.board.model.Trace;
+import afester.javafx.examples.board.model.TraceType;
 import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.tools.PointTools;
 import afester.javafx.examples.board.tools.Polygon2D;
@@ -150,6 +151,45 @@ public abstract class BoardView extends Pane {
     }
 
 
+    private void removeTraceView(TraceView tv, TraceType tt) {
+        switch(tt) {
+            case AIRWIRE: 
+                runOnFXThread(() -> airWireGroup.getChildren().remove(tv));                            
+                break;
+    
+            case BRIDGE:  
+                runOnFXThread(() -> bridgeGroup.getChildren().remove(tv));                            
+                break;
+    
+            case TRACE:
+                runOnFXThread(() -> traceGroup.getChildren().remove(tv));                            
+                break;
+    
+            default:
+                break;
+        }
+    }
+
+
+    private void addTraceView(TraceView tv, TraceType tt) {
+        switch(tt) {
+            case AIRWIRE: 
+                runOnFXThread(() -> airWireGroup.getChildren().add(tv));
+                break;
+    
+            case BRIDGE:
+                runOnFXThread(() -> bridgeGroup.getChildren().add(tv));
+                break;
+    
+            case TRACE: 
+                runOnFXThread(() -> traceGroup.getChildren().add(tv));
+                break;
+    
+            default: 
+                break;
+        }
+
+    }
 
     private void netUpdater(Net net) {
         // Handling traces
@@ -161,24 +201,18 @@ public abstract class BoardView extends Pane {
             TraceView traceView = new TraceView(trace, isBottom, props);
             tMap.put(trace, traceView);
 
-            switch(trace.getType()) {
-            case AIRWIRE: 
-                airWireGroup.getChildren().add(traceView);
-                break;
+            addTraceView(traceView, traceView.getType());
 
-            case BRIDGE:  
-                bridgeGroup.getChildren().add(traceView);
-                break;
+            trace.traceTypeProperty().addListener((obj, oldType, newType) -> {
+                TraceView tv = tMap.get(trace);
+                System.err.printf("TV: %s  OLD: %s  NEW: %s\n", tv, oldType, newType);
 
-            case TRACE: 
-                traceGroup.getChildren().add(traceView);
-                break;
-
-            default:
-                break;
-            }
+                removeTraceView(tv, oldType);
+                addTraceView(tv, newType);
+            });
+            
         });
-        
+
 
         net.getTraces().addListener((javafx.collections.ListChangeListener.Change<? extends Trace> change) -> {
             change.next();
@@ -187,22 +221,8 @@ public abstract class BoardView extends Pane {
 
             change.getRemoved().forEach(trace -> {
                 TraceView traceView = tMap.get(trace);
-                switch(trace.getType()) {
-                case AIRWIRE: 
-                    runOnFXThread(() -> airWireGroup.getChildren().remove(traceView));                            
-                    break;
 
-                case BRIDGE:  
-                    runOnFXThread(() -> bridgeGroup.getChildren().remove(traceView));                            
-                    break;
-
-                case TRACE:
-                    runOnFXThread(() -> traceGroup.getChildren().remove(traceView));                            
-                    break;
-
-                default:
-                    break;
-                }
+                removeTraceView(traceView, traceView.getType());
             });
 
 //!!! Essentially, this is working, but the coordinates of the AirWire are not correct!                
@@ -212,22 +232,15 @@ public abstract class BoardView extends Pane {
                 tMap.put(trace, traceView);
                 System.err.println("ADDING TRACE VIEW: " + traceView);
 
-                switch(trace.getType()) {
-                    case AIRWIRE: 
-                        runOnFXThread(() -> airWireGroup.getChildren().add(traceView));
-                        break;
+                addTraceView(traceView, traceView.getType());
 
-                    case BRIDGE:
-                        runOnFXThread(() -> bridgeGroup.getChildren().add(traceView));
-                        break;
+                trace.traceTypeProperty().addListener((obj, oldType, newType) -> {
+                    TraceView tv = tMap.get(trace);
+                    System.err.printf("TV: %s  OLD: %s  NEW: %s\n", tv, oldType, newType);
 
-                    case TRACE: 
-                        runOnFXThread(() -> traceGroup.getChildren().add(traceView));
-                        break;
-
-                    default: 
-                        break;
-                }  
+                    removeTraceView(tv, oldType);
+                    addTraceView(tv, newType);
+                });
             });
         });
     }

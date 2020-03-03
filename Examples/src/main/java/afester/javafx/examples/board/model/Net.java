@@ -21,6 +21,11 @@ public class Net {
     private ObservableList<Junction> junctionList = FXCollections.observableArrayList();    // A list of junctions - not associated to a part. Junctions can be added and removed.
     private ObservableList<Trace> traceList = FXCollections.observableArrayList();
 
+    /**
+     * Creates a new Net.
+     *
+     * @param netName The name of the Net.
+     */
     public Net(String netName) {
         this.netName = netName;
     }
@@ -58,25 +63,31 @@ public class Net {
         return result;
     }
 
+    /**
+     * Adds a new trace to this Net.
+     *
+     * @param trace The trace to add.
+     * @param from The "from" connection of the Trace.
+     * @param to The "to" connection of the Trace.
+     */
+    public void addTrace(Trace trace, AbstractNode from, AbstractNode to) {
+        trace.setFrom(from);
+        trace.setTo(to);
+        trace.net = this;
+
+        from.addEdge(trace);
+        to.addEdge(trace);
+
+        traceList.add(trace);
+    }
+
+    /**
+     * @return The list of all Traces.
+     */
     public ObservableList<Trace> getTraces() {
         return traceList;
     }
 
-//    public void addTrace(Trace trace) {
-//        traceList.add(trace);
-//    }
-
-
-    public void addTrace(Trace edge, AbstractNode from, AbstractNode to) {
-        edge.setFrom(from);
-        edge.setTo(to);
-        edge.net = this;
-
-        from.addEdge(edge);
-        to.addEdge(edge);
-
-        traceList.add(edge);
-    }
 
     /**
      * Removes a trace from this net. Also, the "from" junction is removed
@@ -88,19 +99,13 @@ public class Net {
         AbstractNode from = trace.getFrom();
         AbstractNode to = trace.getTo();
 
-        System.err.println("FROM:" + from);
-        System.err.println("TO:" + to);
-
-        from.getEdges().remove(trace); // ?????
-        to.getEdges().remove(trace);     // ?????
+        from.getEdges().remove(trace);
+        to.getEdges().remove(trace);
 
         from.getEdges().forEach(xtrace -> {
-            System.err.println("Reconnect:" + xtrace);
             if (xtrace.getTo() == from) {
-                System.err.println("TO case");
                 xtrace.setTo(to);
             } else {
-                System.err.println("FROM case");
                 xtrace.setFrom(to);
             }
         });
@@ -112,6 +117,12 @@ public class Net {
         traceList.remove(trace);
     }
 
+    /**
+     * Removes a trace from this net. Also, the "to" junction is removed
+     * and all traces which ended in the from junction will now end at the "to" junction.
+     *
+     * @param trace The trace to remove.
+     */
     public void removeTraceAndTo(AbstractEdge trace) {
         AbstractNode from = trace.getFrom();
         AbstractNode to = trace.getTo();
@@ -119,7 +130,7 @@ public class Net {
         from.getEdges().remove(trace);
         to.getEdges().remove(trace);
 
-        from.getEdges().forEach(xtrace -> {
+        to.getEdges().forEach(xtrace -> {
             if (xtrace.getTo() == to) {
                 xtrace.setTo(from);
             } else {
@@ -150,7 +161,7 @@ public class Net {
         }
         return result;
     }
-    
+
     public boolean sameAs(Net n2) {
         Set<String> thisPads = getPads().stream()
                                         .map(e -> e.getPadId())
@@ -192,7 +203,7 @@ public class Net {
             double minDist = Double.MAX_VALUE;
             int nearestIdx = -1;
             Pin nearest = null;
-            for (int idx = idx2+1;  idx < result.size();  idx++) {
+            for (int idx = idx2 + 1;  idx < result.size();  idx++) {
                 Pin p = result.get(idx);
                 double dist = P0.getPosition().distance(p.getPosition());
                 if (dist < minDist) {
@@ -203,8 +214,8 @@ public class Net {
             }
 
             // swap the next point with the nearest one.
-            Pin tmp = result.get(idx2+1);
-            result.set(idx2+1, nearest);
+            Pin tmp = result.get(idx2 + 1);
+            result.set(idx2 + 1, nearest);
             result.set(nearestIdx, tmp);
         }
 
@@ -230,26 +241,6 @@ public class Net {
         resetNet();
     }
 
-    /**
-     * 
-     * @param wire
-     */
-    public void changeToBridge(AbstractEdge trace) {
-       var from = trace.getFrom();
-       var to = trace.getTo();
-
-       // TODO: provide a simpler way to change the trace type - this is
-       // currently required to update the view from the model:
-
-       from.getEdges().remove(trace);
-       to.getEdges().remove(trace);
-       traceList.remove(trace);
-
-       var bridge = new Trace(TraceType.BRIDGE);
-       addTrace(bridge, from, to);
-       // traceList.add(bridge);
-    }
-
 
     /**
      * Removes all traces and re-applies the "shortest path" algorithm to this net.
@@ -272,8 +263,6 @@ public class Net {
         // dumpNet();
     }
     
-
-
 
     private class DuplicateJunctions {
         public DuplicateJunctions(Junction j1, Junction j2) {
