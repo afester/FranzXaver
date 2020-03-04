@@ -217,8 +217,6 @@ public abstract class BoardView extends Pane {
         net.getTraces().addListener((javafx.collections.ListChangeListener.Change<? extends Trace> change) -> {
             change.next();
 
-            System.err.println("CHANGE: " + change);
-
             change.getRemoved().forEach(trace -> {
                 TraceView traceView = tMap.get(trace);
 
@@ -236,8 +234,6 @@ public abstract class BoardView extends Pane {
 
                 trace.traceTypeProperty().addListener((obj, oldType, newType) -> {
                     TraceView tv = tMap.get(trace);
-                    System.err.printf("TV: %s  OLD: %s  NEW: %s\n", tv, oldType, newType);
-
                     removeTraceView(tv, oldType);
                     addTraceView(tv, newType);
                 });
@@ -280,15 +276,12 @@ public abstract class BoardView extends Pane {
         createPlainBoard();
         createBoardDimensions();
 
-        
-
         board.getBoardCorners().addListener((javafx.collections.ListChangeListener.Change<? extends Point2D> change) -> {
             // When the board shape changes, we simply recreate the whole board
             // This might be too heavy, but it at least works and ensures that the whole board shape is consistent
             createPlainBoard();
             createBoardDimensions();
         });
-
 
 // Handling nets
         log.info("Adding Nets ...");
@@ -338,12 +331,7 @@ public abstract class BoardView extends Pane {
 
                 PartView partView = new PartView(added, isBottom);
                 pMap.put(added, partView);
-
-                System.err.println("Adding: " + partView);
-                runOnFXThread(() -> {
-                    System.err.println("NOW ADDING" + partView);
-                    partsGroup.getChildren().add(partView);
-                });
+                runOnFXThread(() -> partsGroup.getChildren().add(partView));
             }
         });
 
@@ -359,21 +347,9 @@ public abstract class BoardView extends Pane {
 
     private void runOnFXThread(Runnable code) {
         if (Platform.isFxApplicationThread()) {
-            System.err.println("   ... ON FX Thread");
             code.run();
         } else {
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        System.err.println("   ... LATER ....");
-                        code.run();
-                    }catch (Throwable e) {
-                        e.printStackTrace();
-                        throw e;
-                    }
-                }
-            });
+            Platform.runLater(code);
         }
     }
 

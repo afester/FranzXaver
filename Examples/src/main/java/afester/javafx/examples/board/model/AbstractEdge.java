@@ -114,10 +114,6 @@ public abstract class AbstractEdge {
     }
 
 
-    public void splitTrace(Point2D newPos) {
-    }
-
-
     public void remove() {
         System.err.println("Removing AirWire: " + this);
         AbstractNode from = getFrom();

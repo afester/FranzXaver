@@ -6,6 +6,7 @@ import static org.junit.Assert.assertSame;
 import java.io.File;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import afester.javafx.examples.board.ApplicationProperties;
@@ -20,6 +21,8 @@ import javafx.scene.Group;
 import javafx.scene.transform.Rotate;
 
 public class BoardEditTest {
+    @Rule
+    public JavaFXThreadingRule jfxRule = new JavaFXThreadingRule();
 
     private Board board;
     private BoardView boardView;

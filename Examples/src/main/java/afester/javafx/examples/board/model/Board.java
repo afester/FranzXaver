@@ -340,38 +340,7 @@ public class Board {
             Part updPart = updatedBoard.getParts().get(partName);
             Part partNew = new Part(updPart.getName(), updPart.getValue(), updPart.getPackage());
 
-            // removePart(partOld);
-            parts.remove(partOld.getName());
-
-            addPart(partNew);
-            partNew.setRotation(partOld.getRotation());
-            partNew.setPosition(partOld.getPosition());
-
-            for (Pin newPin : partNew.getPins()) {
-                // try to reconnect pins with the same name
-                String pinNr = newPin.getPadName();
-                Pin oldPin = partOld.getPin(pinNr);
-
-                log.accept(String.format("  %s => %s\n", oldPin, newPin));
-
-                if (oldPin != null) {
-                    oldPin.getEdges().forEach(e -> {
-                        log.accept(String.format("  Adding %s to %s\n", e, newPin));
-
-                        // e.reconnect(oldPin, newPin);  // throws CME
-                        newPin.addEdge(e);
-                        if (e.getFrom() == oldPin) {
-                            e.fromProperty().setValue(newPin);
-                        } else  if (e.getTo() == oldPin) {
-                            e.toProperty().setValue(newPin);
-                        } else {
-                            log.accept("ERROR: pin is neither FROM nor TO!");
-                        }
-                    });
-
-                }
-            }
-
+            replacePart(log, partOld, partNew);
 
             log.accept(String.format("     Removing %s\n", partOld));
             // Note: We are not (necessarily) on the Application Thread here,
@@ -382,7 +351,6 @@ public class Board {
             // We do not want to introduce a dependency to the view layer here,
             // hence the view needs to take care that the JavaFX API calls
             // are executed on the application thread.
-
         });
 
         removedParts.forEach(partName -> {
@@ -511,6 +479,47 @@ public class Board {
 //        });
 //
 //        // getNets().forEach( (k, n) -> n.dumpNet());
+    }
+
+    
+    /**
+     * Replaces one part with another part. Identical pins will be reconnected
+     * accordingly.
+     *
+     * @param log A consumer for logging output.
+     * @param partOld The part to replace.
+     * @param partNew The new part which replaces the old part.
+     */
+    public void replacePart(Consumer<String> log, Part partOld, Part partNew) {
+        parts.remove(partOld.getName());
+
+        addPart(partNew);
+        partNew.setRotation(partOld.getRotation());
+        partNew.setPosition(partOld.getPosition());
+
+        for (Pin newPin : partNew.getPins()) {
+            // try to reconnect pins with the same name
+            String pinNr = newPin.getPadName();
+            Pin oldPin = partOld.getPin(pinNr);
+
+            log.accept(String.format("  %s => %s\n", oldPin, newPin));
+
+            if (oldPin != null) {
+                oldPin.getEdges().forEach(e -> {
+                    log.accept(String.format("  Adding %s to %s\n", e, newPin));
+
+                    // e.reconnect(oldPin, newPin);  // throws CME
+                    newPin.addEdge(e);
+                    if (e.getFrom() == oldPin) {
+                        e.fromProperty().setValue(newPin);
+                    } else  if (e.getTo() == oldPin) {
+                        e.toProperty().setValue(newPin);
+                    } else {
+                        log.accept("ERROR: pin is neither FROM nor TO!");
+                    }
+                });
+            }
+        }
     }
 
     /**

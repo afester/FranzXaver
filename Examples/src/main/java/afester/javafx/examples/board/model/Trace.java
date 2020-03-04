@@ -2,6 +2,8 @@ package afester.javafx.examples.board.model;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -15,6 +17,7 @@ import javafx.geometry.Point2D;
  * a Trace or a Bridge. 
  */
 public class Trace extends AbstractEdge {
+    private static final Logger log = LogManager.getLogger();
 
     // The type of this trace.
     private ObjectProperty<TraceType> traceType = new SimpleObjectProperty<>(TraceType.AIRWIRE);
@@ -53,7 +56,13 @@ public class Trace extends AbstractEdge {
         return traceNode;
     }
 
-    @Override
+
+    /**
+     * Creates a new Junction at a specified position and splits this trace
+     * into two traces which are connected by the new junction.
+     * 
+     * @param pos The position for the new junction.
+     */
     public void splitTrace(Point2D pos) {
         Junction newJunction = new Junction(pos);
         getNet().addJunction(newJunction);
@@ -63,8 +72,6 @@ public class Trace extends AbstractEdge {
 
         Trace newTrace = new Trace(TraceType.TRACE);
         getNet().addTrace(newTrace, newJunction, oldDest);
-//        Trace newTrace = new Trace(newJunction, oldDest, getNet(), TraceType.TRACE);
-//        getNet().addTrace(newTrace);
     }
 
     /**
@@ -169,28 +176,29 @@ public class Trace extends AbstractEdge {
         }
     }
 
+    
     @Override
     public void reconnectToClosestJunction(Point2D clickPos) {
-        System.err.println("reconnectToNearestJunction");
-        
-        // get all nodes which are reachable in the net from the otherNode IF the given airwire would not exist
+        // get all nodes which are reachable in the net from the "to" node 
+        // IF the current trace would not exist
         List<AbstractNode> possibleNodes = getTo().getNodesWithout(this);
-        AbstractNode nearestNode = AbstractNode.getClosestNode(clickPos, possibleNodes);
-        System.err.println("NEAREST NODE:" + nearestNode);
-        // Reconnect the edge from the old node to the new nearest node
-        reconnect(this.getTo(), nearestNode);
+        AbstractNode closestNode = AbstractNode.getClosestNode(clickPos, possibleNodes);
+        log.debug(() -> "Closest Node:" + closestNode);
+
+        // Reconnect the edge from the old node to the new node
+        reconnect(this.getTo(), closestNode);
     }
 
+    
     @Override
     public void reconnectFromClosestJunction(Point2D clickPos) {
-        System.err.println("reconnectFromNearestJunction");
-
         // get all nodes which are reachable in the net from the otherNode IF the given airwire would not exist
         List<AbstractNode> possibleNodes = getFrom().getNodesWithout(this);
-        AbstractNode nearestNode = AbstractNode.getClosestNode(clickPos, possibleNodes);
-        System.err.println("NEAREST NODE:" + nearestNode);
+        AbstractNode closestNode = AbstractNode.getClosestNode(clickPos, possibleNodes);
+        log.debug(() -> "Closest Node:" + closestNode);
+
         // Reconnect the edge from the old node to the new nearest node
-        reconnect(this.getFrom(), nearestNode);
+        reconnect(this.getFrom(), closestNode);
     }
 
 

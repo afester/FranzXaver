@@ -3,7 +3,7 @@ package afester.javafx.examples.board.view;
 import java.util.List;
 
 import afester.javafx.components.Interactor;
-import afester.javafx.examples.board.model.AbstractEdge;
+import afester.javafx.examples.board.model.Trace;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseEvent;
 
@@ -22,15 +22,15 @@ public class SplitTraceInteractor implements Interactor {
         if (!edges.isEmpty()) {
             Interactable edge = edges.get(0);
             if (edge instanceof TraceView) {
-                TraceView trace = (TraceView) edge;
+                TraceView traceView = (TraceView) edge;
 
                 Point2D newPos = bv.sceneToLocal(e.getSceneX(), e.getSceneY());
                 newPos = bv.snapToGrid(newPos);
 
-                AbstractEdge aw = trace.getTrace();
-                aw.splitTrace(newPos);
+                Trace trace = traceView.getTrace();
+                trace.splitTrace(newPos);
 
-                trace.setSelected(bv,  true);
+                traceView.setSelected(bv,  true);
             }
         }
     }

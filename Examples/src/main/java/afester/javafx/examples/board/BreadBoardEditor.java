@@ -72,7 +72,7 @@ import javafx.stage.Stage;
  */
 public class BreadBoardEditor extends Application {
 
-    public static final Logger log = LogManager.getLogger();
+    private static final Logger log = LogManager.getLogger();
 
     private Scene mainScene;
     private Stage stage;
@@ -702,6 +702,7 @@ public class BreadBoardEditor extends Application {
 
         logOutput.setEditable(false);
         logOutput.setFont(Font.font("Courier New",  12));
+        logSplitPane.getItems().clear();
         logSplitPane.setOrientation(Orientation.VERTICAL);
         logSplitPane.setDividerPosition(0, props.getDouble("verticalSplitter", 0.9));
         logSplitPane.getItems().addAll(tabPane, logOutput);

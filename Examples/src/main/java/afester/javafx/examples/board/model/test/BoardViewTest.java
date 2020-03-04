@@ -18,6 +18,7 @@ import afester.javafx.examples.board.model.TraceType;
 import afester.javafx.examples.board.model.Package;
 
 import afester.javafx.examples.board.view.BoardView;
+import afester.javafx.examples.board.view.PartView;
 import afester.javafx.examples.board.view.TopBoardView;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -230,5 +231,74 @@ public class BoardViewTest {
         assertEquals(0, traceGroup.getChildren().size());
         assertEquals(1, bridgeGroup.getChildren().size());
         assertEquals(1, airwireGroup.getChildren().size());
+    }
+    
+
+    @Test
+    public void testSplitTrace() {
+        final var part1 = createPart("P1", "100k", 10, 10);
+        final var part2 = createPart("P2", "10k", 20, 20);
+
+        board.addPart(part1);
+        board.addPart(part2);
+
+        final var net = new Net("N$1");
+        board.addNet(net);
+
+        final var from = part1.getPin("1");
+        final var to = part2.getPin("2");
+
+        final var trace = new Trace(TraceType.TRACE);
+        net.addTrace(trace, from, to);
+
+        assertEquals(0, net.getJunctions().size());
+
+        final Group traceGroup = (Group) boardView.lookup("#traceGroup");
+        assertEquals(1, traceGroup.getChildren().size());
+
+        trace.splitTrace(new Point2D(15, 15));
+        assertEquals(2, traceGroup.getChildren().size());
+        assertEquals(1, net.getJunctions().size());
+    }
+
+
+    @Test
+    public void testReplacePart() {
+        final var part1 = createPart("P1", "100k", 10, 10);
+        final var part2 = createPart("P2", "10k", 20, 20);
+
+        board.addPart(part1);
+        board.addPart(part2);
+
+        final var net = new Net("N$1");
+        board.addNet(net);
+
+        final var from = part1.getPin("1");
+        final var to = part2.getPin("2");
+
+        final var trace = new Trace(TraceType.TRACE);
+        net.addTrace(trace, from, to);
+
+        // Check view
+        final Group traceGroup = (Group) boardView.lookup("#traceGroup");
+        final Group partGroup = (Group) boardView.lookup("#partsGroup");
+        
+        assertEquals(0, net.getJunctions().size());
+        assertEquals(1, traceGroup.getChildren().size());
+        assertEquals(2, partGroup.getChildren().size());
+        
+        final var partNew = createPart("P2", "20k", 20, 20);
+
+        board.replacePart(s -> System.err.println(s), part2, partNew);
+        
+        assertEquals(0, net.getJunctions().size());
+        assertEquals(1, traceGroup.getChildren().size());
+        assertEquals(2, partGroup.getChildren().size());
+        
+        final var p1 = ((PartView) partGroup.getChildren().get(0)).getPart();
+        final var p2 = ((PartView) partGroup.getChildren().get(1)).getPart();
+
+        assertEquals("100k", p1.getValue());
+        assertEquals("20k", p2.getValue());
     }
 }
