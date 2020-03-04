@@ -31,6 +31,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.geometry.Orientation;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
@@ -47,6 +48,8 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Transform;
@@ -82,6 +85,7 @@ public class BreadBoardEditor extends Application {
     private final TabPane tabPane = new TabPane();
     private final TextArea logOutput = new TextArea();
 
+    private StackPane leftGroup = new StackPane();
     private BomView bomView;
     private BoardView topView;
     private BoardView bottomView;
@@ -214,6 +218,16 @@ public class BreadBoardEditor extends Application {
         VBox rightBar = new VBox();
         rightBar.getChildren().addAll(editCornersToolBar, routingToolbar);
 
+        logOutput.setEditable(false);
+        logOutput.setFont(Font.font("Courier New",  12));
+        logSplitPane.getItems().clear();
+        logSplitPane.setOrientation(Orientation.VERTICAL);
+        logSplitPane.getItems().addAll(tabPane, logOutput);
+
+        SplitPane.setResizableWithParent(leftGroup, false);   // do not resize the BOM list
+        splitPane.getItems().clear();
+        splitPane.getItems().addAll(leftGroup, logSplitPane);
+
         BorderPane mainLayout = new BorderPane();
         mainLayout.setTop(topBar);
         mainLayout.setBottom(sb);
@@ -222,6 +236,9 @@ public class BreadBoardEditor extends Application {
 
         // load application state
         props = ApplicationProperties.load();
+
+        logSplitPane.setDividerPosition(0, props.getDouble("verticalSplitter", 0.9));
+        splitPane.setDividerPosition(0, props.getDouble("leftSplitter", 0.15));
 
         final var width = props.getDouble("appWidth", 1024.0);
         final var height = props.getDouble("appHeight", 768.0);
@@ -232,10 +249,10 @@ public class BreadBoardEditor extends Application {
 
         stage.show();
 
-        final var lastFile = props.getString("lastFile", null);
-        if (lastFile != null) {
-            loadBoard(new File(lastFile));
-        }
+//        final var lastFile = props.getString("lastFile", null);
+//        if (lastFile != null) {
+//            loadBoard(new File(lastFile));
+//        }
     }
 
 
@@ -694,24 +711,17 @@ public class BreadBoardEditor extends Application {
 
     private void setupUi(Board board) {
         topView = new TopBoardView(board, props);
-        bomView = new BomView(topView);
+
         topDrawingView.getPaper().getChildren().clear();
         topDrawingView.getPaper().getChildren().add(topView);
         topDrawingView.setInteractor(new EditInteractor(topView));
+
         bottomView = null;
 
-        logOutput.setEditable(false);
-        logOutput.setFont(Font.font("Courier New",  12));
-        logSplitPane.getItems().clear();
-        logSplitPane.setOrientation(Orientation.VERTICAL);
-        logSplitPane.setDividerPosition(0, props.getDouble("verticalSplitter", 0.9));
-        logSplitPane.getItems().addAll(tabPane, logOutput);
-
-        splitPane.getItems().clear();
-        splitPane.getItems().addAll(bomView, logSplitPane);
-        splitPane.setDividerPosition(0, props.getDouble("leftSplitter", 0.15));
-        SplitPane.setResizableWithParent(bomView, false);   // do not resize the BOM list
-
+        bomView = new BomView(topView);
+        leftGroup.getChildren().clear();
+        leftGroup.getChildren().add(bomView);
+        
         reconnectTraceModeToolButton.setDisable(false);
         moveJunctionToolButton.setDisable(false);
         shortestPathButton.setDisable(false);
