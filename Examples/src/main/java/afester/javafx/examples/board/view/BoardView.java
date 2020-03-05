@@ -1,5 +1,6 @@
 package afester.javafx.examples.board.view;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +29,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Font;
 
 
 public abstract class BoardView extends Pane {
@@ -112,10 +114,13 @@ public abstract class BoardView extends Pane {
         setupBoard();
 //        setStyle("-fx-border-style: solid; -fx-border-color: red;");
 
-        showSvgProperty().addListener(newValue -> { 
-        	final var isShowSvg = ((BooleanProperty) newValue).getValue();
-        	partsGroup.getChildren().forEach(part -> ((PartView) part).render(isShowSvg)); 
-        });
+        // NOTE: An InvalidationListener is called IMMEDIATELY when
+        // binding two properties, even if they already have the same value!
+        // The change listener is NOT called during bind() when the properties
+        // already have the same value, only if they have different values!
+        //showSvgProperty().addListener(newValue -> {
+        showSvgProperty().addListener((obj, oldValue, newValue) ->
+            partsGroup.getChildren().forEach(part -> ((PartView) part).render(newValue)) );
         traceGroup.visibleProperty().bind(showTracesProperty());
         airWireGroup.visibleProperty().bind(showAirwiresProperty());
         dimensionGroup.visibleProperty().bind(showDimensionsProperty());
@@ -194,9 +199,9 @@ public abstract class BoardView extends Pane {
     private void netUpdater(Net net) {
         // Handling traces
         Map<Trace, TraceView> tMap = new HashMap<>();
-        log.info("Creating view for Net: {}", net);
+        log.info("  {}", net);
         net.getTraces().forEach(trace -> {
-            log.debug("  Creating TraceView for: {}", trace);
+            log.debug("    {}", trace);
 
             TraceView traceView = new TraceView(trace, isBottom, props);
             tMap.put(trace, traceView);
@@ -284,11 +289,13 @@ public abstract class BoardView extends Pane {
         });
 
 // Handling nets
-        log.info("Adding Nets ...");
+        var startTime = System.currentTimeMillis();
+        log.info("Adding Nets:");
         board.getNets().forEach((netName, net) -> {
             netUpdater(net);
         });
-        
+        log.info("Added {} Nets in {} ms", board.getNets().size(), 
+                 System.currentTimeMillis() - startTime);
 
         board.getNets().addListener((javafx.collections.MapChangeListener.Change<? extends String, ? extends Net> change) -> {
             if (change.wasRemoved()) {
@@ -303,19 +310,24 @@ public abstract class BoardView extends Pane {
         });
 
 // Handling parts
+        startTime = System.currentTimeMillis();
         Map<Part, PartView> pMap = new HashMap<>();
-        log.info("Adding Parts ...");
+        log.info("Adding Parts:");
         board.getParts().forEach((k, g) -> {
-            log.info("Creating view for Part: {}", g);
+            log.info("  {}", g);
 
             // Create a PartView from the model
             PartView partView = new PartView(g, isBottom);
             partsGroup.getChildren().add(partView);
             pMap.put(g, partView);
+
             if (g.isHidden()) {
                 partView.setVisible(false);
             }
         });
+        log.info("Added {} Parts in {} ms", board.getParts().size(), 
+                 System.currentTimeMillis() - startTime);
+
         board.getParts().addListener((javafx.collections.MapChangeListener.Change<? extends String, ? extends Part> change) -> {
             if (change.wasRemoved()) {
                 Part removed = change.getValueRemoved();
@@ -367,7 +379,6 @@ public abstract class BoardView extends Pane {
         Bounds b = boardShape.getBoundsInParent();
         refPoint = new Point2D(b.getMinX() + padOffset.getX(),
                                b.getMinY() + padOffset.getY());
-        System.err.println("REF POINT1:" + refPoint);
         Group padsGroup = new Group();
         for (double ypos = refPoint.getY();  ypos < b.getMinY() + b.getHeight();  ypos += 2.54 ) {
             for (double xpos = refPoint.getX();  xpos < b.getMinX() + b.getWidth();  xpos += 2.54) {
@@ -392,10 +403,11 @@ public abstract class BoardView extends Pane {
 
     private void createBoardDimensions() {
         // add the board dimensions
-        log.info("Adding Board dimensions ...");
+        log.info("Adding Board dimensions:");
         dimensionGroup.getChildren().clear();
         PointTools.lineIterator(boardShape.getPoints(), (p1, p2) -> {
             Group dim = new DimensionView(p1, p2);
+            log.info("  {}", dim);
             dimensionGroup.getChildren().add(dim);
         });
     }

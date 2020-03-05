@@ -1,6 +1,7 @@
 package afester.javafx.examples.board;
 
 import java.io.File;
+import java.io.InputStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,7 +32,6 @@ import javafx.application.Platform;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.geometry.Orientation;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
@@ -48,7 +48,6 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -249,6 +248,9 @@ public class BreadBoardEditor extends Application {
 
         stage.show();
 
+        InputStream is = getClass().getResourceAsStream("PCBius.ttf");
+        Font.loadFont(is, 0);
+
 //        final var lastFile = props.getString("lastFile", null);
 //        if (lastFile != null) {
 //            loadBoard(new File(lastFile));
@@ -444,6 +446,7 @@ public class BreadBoardEditor extends Application {
                 bottomView.showAirwiresProperty().unbind();
                 bottomView.showDimensionsProperty().unbind();
             }
+
             topView.showSvgProperty().bind(toggleSvgToolButton.selectedProperty());
             topView.showTracesProperty().bind(toggleShowTracesToolButton.selectedProperty());
             topView.showAirwiresProperty().bind(toggleShowAirwiresToolButton.selectedProperty());
@@ -710,6 +713,9 @@ public class BreadBoardEditor extends Application {
     }
 
     private void setupUi(Board board) {
+        final long startTime = System.currentTimeMillis();
+
+        log.info("Setting up UI ...");
         topView = new TopBoardView(board, props);
 
         topDrawingView.getPaper().getChildren().clear();
@@ -721,7 +727,7 @@ public class BreadBoardEditor extends Application {
         bomView = new BomView(topView);
         leftGroup.getChildren().clear();
         leftGroup.getChildren().add(bomView);
-        
+
         reconnectTraceModeToolButton.setDisable(false);
         moveJunctionToolButton.setDisable(false);
         shortestPathButton.setDisable(false);
@@ -744,14 +750,11 @@ public class BreadBoardEditor extends Application {
         splitTraceToolButton.setDisable(false);
         editShapeToolButton.setDisable(false);
 
-        topView.showSvgProperty().bind(toggleSvgToolButton.selectedProperty());
-        topView.showTracesProperty().bind(toggleShowTracesToolButton.selectedProperty());
-        topView.showAirwiresProperty().bind(toggleShowAirwiresToolButton.selectedProperty());
-        topView.showDimensionsProperty().bind(toggleShowDimensionsToolButton.selectedProperty());
-
         stage.sizeToScene();
         switchTab(0);   // ???????????
         topDrawingView.fitContentToWindow();
+
+        log.info(() -> String.format("UI setup done in %s ms.\n", System.currentTimeMillis() - startTime));
     }
 
 

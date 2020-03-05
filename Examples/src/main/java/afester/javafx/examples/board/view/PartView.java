@@ -14,7 +14,6 @@ import afester.javafx.examples.board.model.ShapeArc;
 import afester.javafx.examples.board.model.ShapeCircle;
 import afester.javafx.examples.board.model.ShapeLine;
 import afester.javafx.examples.board.model.ShapeRectangle;
-import afester.javafx.examples.board.model.Package;
 import afester.javafx.examples.board.model.ShapeModel;
 import afester.javafx.examples.board.model.ShapeText;
 import afester.javafx.svg.SvgLoader;
@@ -175,6 +174,7 @@ public class PartView extends Group implements Interactable {
      * Creates the Part as a JavaFX node
      */
     public void render(Boolean asSvg) {
+
         getChildren().clear();
         shapeViews = new Group();
         shapeViews.setId("partShapes");
@@ -222,9 +222,9 @@ public class PartView extends Group implements Interactable {
             }
         }
 
+        // Either no SVG rendering OR no SVG image for the package available
         if (!isSvg) {
-
-            Package pkg = part.getPackage();
+            final var pkg = part.getPackage();
             for (ShapeModel ps : pkg.getShapes()) {
                 Node s = null;
                 switch(ps.getType()) {
@@ -262,6 +262,7 @@ public class PartView extends Group implements Interactable {
                 padViews.getChildren().add(s);
             }
         }
+
 
         getChildren().add(shapeViews);
         getChildren().add(padViews);
@@ -345,8 +346,7 @@ public class PartView extends Group implements Interactable {
         // WIP: Use a CAD font - for some reason, can not be loaded through CSS
         // since it does not resolve through the system font names (even though it is
         // installed)
-        InputStream is = getClass().getResourceAsStream("PCBius.ttf");
-        final Font f = Font.loadFont(is, size);
+        Font f = Font.font("PCBius", size);
         textShape.setFont(f);
 
         // Overwrite explicit settings through inline style (which has

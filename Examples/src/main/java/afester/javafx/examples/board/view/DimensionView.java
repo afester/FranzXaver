@@ -68,6 +68,7 @@ public class DimensionView extends Group {
 
     final private static Font DIM_FONT = Font.font("Courier", 2.0);
     final private static Point2D UNIT_VEC = new Point2D(1.0, 0.0);
+    final private Double length;
 
     /**
      * Creates a new dimension line for the given points.
@@ -81,7 +82,6 @@ public class DimensionView extends Group {
      */
     public DimensionView(Point2D p1, Point2D p2) {
         final Point2D vecDir = p2.subtract(p1);                               // direction vector
-        log.debug("DIR: {}", vecDir);
         Point2D vecNorm = new Point2D(vecDir.getY(), -vecDir.getX());   // norm vector
         vecNorm = vecNorm.normalize();                                  // normalized norm vector ...
         vecNorm = vecNorm.multiply(3.0);                                // ... of length 3.0
@@ -107,7 +107,7 @@ public class DimensionView extends Group {
         //   / * angle
         //   ----->
 
-        Double length = p1.distance(p2);
+        length = p1.distance(p2);
 
 /////////////////////////
 
@@ -167,4 +167,8 @@ public class DimensionView extends Group {
         getChildren().addAll(tb); // , c4); // , c2);
     }
 
+    @Override
+    public String toString() {
+        return String.format("DimensionView[length=%s]", length);
+    }
 }

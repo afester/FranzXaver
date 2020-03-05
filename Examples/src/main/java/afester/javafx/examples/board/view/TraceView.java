@@ -118,7 +118,6 @@ public class TraceView extends AbstractEdgeView implements Interactable {
 
 
     private void updateStyle(ObjectProperty<ShapeStyle> style) {
-        System.err.printf("TRACE: %s: %s\n", getType(), style);
         setShapeStroke(style.get().getColor());
         setStrokeWidth(style.get().getWidth());
         setOpacity(style.get().getOpacity());

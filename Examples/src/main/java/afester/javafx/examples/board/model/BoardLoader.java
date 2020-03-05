@@ -78,6 +78,22 @@ class AttributeReader {
         return Double.parseDouble(value);
     }
 
+    public Integer getInteger(String name) {
+        final var value = atts.getValue(name);
+        if (value == null) {
+            throw new BoardLoaderException("Missing value for \"" + name + "\"");
+        }
+        return Integer.parseInt(value);
+    }
+
+    public Integer getOptionalInteger(String name, Integer defaultValue) {
+        var value = atts.getValue(name);
+        if (value == null) {
+            return defaultValue;
+        }
+        return Integer.parseInt(value);
+    }
+
     public Boolean getBoolean(String name) {
         final var value = atts.getValue(name);
         if (value == null) {
@@ -340,24 +356,42 @@ public class BoardLoader extends DefaultHandler {
     final List<Part> parts = new ArrayList<>();
     final List<Net> nets = new ArrayList<>();
     final Map<String, AbstractNode> nodes = new HashMap<>();
+    
+    private long startTime = 0;
+//    private int pkgCount = 0; 
+//    private int partCount = 0;
+//    private int netCount = 0;
 
     public BoardLoader(File file) {
         sourceFile = file;
     }
 
 
+    // Report progress - note that the XML loader is NOT really the bottleneck!
+    // Loading the XML document takes approx. 100 ms for a larger board
+    // with approx. 160 Packages/Parts/Nets, while creating the View takes 
+    // 5,5 seconds!
+//    private void reportProgress() {
+//        int overallCount = pkgCount + partCount + netCount; 
+//        int currentCount = nets.size() + parts.size() + packages.size();
+//        System.err.printf("%s/%s\n", currentCount, overallCount);
+//    }
+
     @Override
     public void startDocument() throws SAXException {
         log.info("Loading " + sourceFile.getAbsolutePath());
+        startTime = System.currentTimeMillis();
     }
 
 
     @Override
     public void endDocument() throws SAXException {
-        log.info("Loaded {} board shape points", boardShape.size());
-        log.info("Loaded {} Packages", packages.size());
-        log.info("Loaded {} Parts", parts.size());
-        log.info("Loaded {} Nets\n", nets.size());
+        long endTime = System.currentTimeMillis();
+        log.info("Loaded board in {} ms:", endTime - startTime);
+        log.info("    {} board shape points", boardShape.size());
+        log.info("    {} Packages", packages.size());
+        log.info("    {} Parts", parts.size());
+        log.info("    {} Nets\n", nets.size());
     }
 
 
@@ -372,6 +406,9 @@ public class BoardLoader extends DefaultHandler {
             if (localName.equals("breadboard")) {
                 log.debug("BreadBoard");
                 schematicFile = ar.getString("schematic");
+//                pkgCount = ar.getOptionalInteger("packageCount", 10);
+//                partCount = ar.getOptionalInteger("partCount", 10);
+//                netCount = ar.getOptionalInteger("netCount", 10);
             } else if (localName.equals("boardShape")) {
                 log.debug("Board shape");
 
@@ -387,6 +424,8 @@ public class BoardLoader extends DefaultHandler {
                 // probably this should really be done in the endElement() method?
                 log.debug(thePackage); 
                 packages.put(thePackage.getId(), thePackage);
+                
+//                reportProgress();
             } else if (localName.equals("part")) {
                 final var name = ar.getString("name");
                 final var value = ar.getString("value");
@@ -406,6 +445,8 @@ public class BoardLoader extends DefaultHandler {
                 log.debug(part);
                 currentHandler = new PartHandler(this, part);
                 parts.add(part);
+
+//                reportProgress();
             } else if (localName.equals("net")) {
 
                 final var name = ar.getString("name");
@@ -417,6 +458,8 @@ public class BoardLoader extends DefaultHandler {
                 // probably this should really be done in the endElement() method?
                 log.debug(net);
                 nets.add(net);
+                
+//                reportProgress();
             }
         }
     }
