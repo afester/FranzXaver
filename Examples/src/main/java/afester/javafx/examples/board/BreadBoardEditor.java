@@ -18,6 +18,7 @@ import afester.javafx.examples.board.model.Net;
 import afester.javafx.examples.board.model.NetImport;
 import afester.javafx.examples.board.model.Trace;
 import afester.javafx.examples.board.model.TraceType;
+import afester.javafx.examples.board.tools.Action;
 import afester.javafx.examples.board.view.AddCornerInteractor;
 import afester.javafx.examples.board.view.BoardView;
 import afester.javafx.examples.board.view.BottomBoardView;
@@ -149,35 +150,31 @@ public class BreadBoardEditor extends Application {
         tabPane.getSelectionModel().selectedIndexProperty().addListener((obj, oldIdx, newIdx) -> switchTab(newIdx.intValue()));
         // Create the menu bar
 
-        Menu fileMenu = new Menu("File");
-        MenuItem menuItem0 = new MenuItem("New board ...");
-        menuItem0.setOnAction(e -> newBoard());
-        MenuItem menuItem1 = new MenuItem("Load board ...");
-        menuItem1.setOnAction(e -> loadBoard());
-        MenuItem menuItem2 = new MenuItem("Save board");
-        menuItem2.setOnAction(e -> saveBoard());
-        MenuItem menuItem3 = new MenuItem("Save board as ...");
-        menuItem3.setOnAction(e -> saveBoardAs());
-        MenuItem menuItem4 = new MenuItem("Import schematic ...");
-        menuItem4.setOnAction(e -> importSchematic());
-        MenuItem menuItem5 = new MenuItem("Synchronize schematic ...");
-        menuItem5.setOnAction(e -> synchronizeSchematic());
-        MenuItem menuItem7 = new MenuItem("Quit");
-        menuItem7.setOnAction(e -> stage.close());
+        // define all actions which are supported by the application
+        var actionNewBoard             = new Action("New board ...",        "Creates a new default board", e -> newBoard());
+        var actionLoadBoard            = new Action("Load board ...",       "", e -> loadBoard());
+        var actionSaveBoard            = new Action("Save board",           "", e -> saveBoard());
+        var actionSaveBoardAs          = new Action("Save board as ...",    "", e -> saveBoardAs());
+        var actionImportSchematic      = new Action("Import schematic ...", "", e -> importSchematic());
+        var actionSynchronizeSchematic = new Action("Synchronize schematic ...", "", e -> synchronizeSchematic());
+        var actionLoadSchematicInEagle = new Action("Load schematic in Eagle ...", "", e -> loadSchematicInEagle());
+        var actionQuit                 = new Action("Quit",                        "", e -> stage.close());
+        var actionCenter               = new Action("Center",                      "", e -> currentDrawingView.centerContent());
+        var actionFitToWindow          = new Action("Fit to Window",               "", e -> currentDrawingView.fitContentToWindow());
+        var actionColorSettings        = new Action("Color settings ...", "", e -> setupColors());
 
-        fileMenu.getItems().addAll(menuItem0, menuItem1, new SeparatorMenuItem(),
-                                   menuItem2, menuItem3, new SeparatorMenuItem(),
-                                   menuItem4, menuItem5, new SeparatorMenuItem(),
-                                   menuItem7);
+        Menu fileMenu = Action.createMenu("File", 
+                          actionNewBoard, actionLoadBoard,
+                          new Action.Separator(),
+                          actionSaveBoard, actionSaveBoardAs,
+                          new Action.Separator(),
+                          actionImportSchematic, actionSynchronizeSchematic,
+                          actionLoadSchematicInEagle,
+                          new Action.Separator(),
+                          actionQuit);
 
-        Menu viewMenu = new Menu("View");
-        MenuItem viewItem1 = new MenuItem("Center");
-        viewItem1.setOnAction(e -> currentDrawingView.centerContent());
-        MenuItem viewItem2 = new MenuItem("Fit to Window");
-        viewItem2.setOnAction(e -> currentDrawingView.fitContentToWindow());
-        MenuItem colorSettings = new MenuItem("Color Settings ...");
-        colorSettings.setOnAction(e -> setupColors());
-        viewMenu.getItems().addAll(viewItem1, viewItem2, colorSettings);
+        Menu viewMenu = Action.createMenu("View", 
+                          actionCenter, actionFitToWindow, actionColorSettings);
 
         Menu editMenu = new Menu("Edit");
         MenuItem editItem1 = new MenuItem("Select");
@@ -618,6 +615,10 @@ public class BreadBoardEditor extends Application {
     }
 
 
+    private void loadSchematicInEagle() {
+        
+    }
+    
     private void synchronizeSchematic() {
         
         // TODO: we need to block the UI while this task is running.
@@ -683,9 +684,10 @@ public class BreadBoardEditor extends Application {
 //                    }
 
                         Board board = topView.getBoard();
-                        appendLog("Synchronizing " + board.getFileName() + "\n");
+                        appendLog("Synchronizing board " + board.getFileName() + "\n");
+                        appendLog("With schematic      " + board.getSchematicFile() + "\n");
                         try {
-                        board.synchronizeSchematic(log -> appendLog(log));
+                            board.synchronizeSchematic(log -> appendLog(log));
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
