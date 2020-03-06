@@ -251,10 +251,10 @@ public class BreadBoardEditor extends Application {
         InputStream is = getClass().getResourceAsStream("PCBius.ttf");
         Font.loadFont(is, 0);
 
-//        final var lastFile = props.getString("lastFile", null);
-//        if (lastFile != null) {
-//            loadBoard(new File(lastFile));
-//        }
+        final var lastFile = props.getString("lastFile", null);
+        if (lastFile != null) {
+            loadBoard(new File(lastFile));
+        }
     }
 
 

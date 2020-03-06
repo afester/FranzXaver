@@ -64,8 +64,16 @@ public class Board {
         this.boardFile = sourceFile;
     }
 
+    // The grid used for snapping board corners
     private final static double GRID = 1.0;        
 
+    /**
+     * Snaps the board corners to a specific grid.
+     *
+     * @param pos
+     * @param grid
+     * @return
+     */
     private Point2D snapToGrid(Point2D pos, double grid) {
         return new Point2D(((int) ( pos.getX() / grid)) * grid,
                            ((int) ( pos.getY() / grid)) * grid);

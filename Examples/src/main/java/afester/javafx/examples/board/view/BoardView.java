@@ -1,6 +1,5 @@
 package afester.javafx.examples.board.view;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,14 +28,14 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.Font;
 
 
 public abstract class BoardView extends Pane {
     private final static Logger log = LogManager.getLogger();
 
     private Board board;
-    private final Point2D padOffset = Point2D.ZERO; // new Point2D(2.5, 2.0);
+    private final Point2D padOffset = new Point2D(2.5, 2.0); // TODO: This must be part of the model since 
+                                                             // this might be different from board to board 
     private Point2D refPoint = Point2D.ZERO; // The coordinates of the upper left pad/hole
     private BoardShape boardShape;
 
@@ -454,9 +453,14 @@ public abstract class BoardView extends Pane {
                                                // required to properly position the Eagle parts ...
 
     public Point2D snapToGrid(Point2D pos){
-        var snappedPos = pos.subtract(refPoint).subtract(getPadOffset()).multiply(1/GRID);
+        var snappedPos = pos.subtract(getPadOffset())
+                            .multiply(1 / GRID);
+
         snappedPos = new Point2D((int) snappedPos.getX(), (int) snappedPos.getY());
-        snappedPos = snappedPos.multiply(GRID).add(getPadOffset()).add(refPoint);
+
+        snappedPos = snappedPos.multiply(GRID)
+                               .add(getPadOffset());
+
         return snappedPos;
     }
 
