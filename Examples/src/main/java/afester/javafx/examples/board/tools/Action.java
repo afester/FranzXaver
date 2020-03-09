@@ -1,16 +1,36 @@
 package afester.javafx.examples.board.tools;
 
+import afester.javafx.components.ToolbarButton;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 
 
 
+/**
+ * There are essentially three kinds of Actions:
+ * 
+ * * Normal actions - when the menu item or toolbar button is pressed,
+ *                    the action listener for the action is called.
+ * " Toggle actions - when the menu item or toolbar button is pressed,
+ *                    the menu item / toolbar changes its state between true and
+ *                    false and the action listener for the action is called
+ *                    to promote the new state.
+ *                    TODO: It should also be possible to bind to the "current 
+ *                    state" of the action to update dependent values
+ * * Toggle action group - when the menu item or toolbar button is pressed,
+ *                    it is selected and all other actions of the same group 
+ *                    become deselected. The ActionGroup's listener
+ *                    is called to determine the new Action which is now active.                     
+ */
 public class Action {
 
     public static class Separator extends Action {
@@ -21,14 +41,16 @@ public class Action {
         }
     }
 
-    private String title;
+    protected String title;
     private String description;
-    private Image icon;
+    protected Image icon;
     private EventHandler<ActionEvent> action;
 
     // property which enables or disables this action
-    // ...
-
+    private final BooleanProperty isEnabled = new SimpleBooleanProperty(true);
+    public BooleanProperty enabledProperty() { return isEnabled; }
+    public boolean isEnabled() { return isEnabled.get(); }
+    public void setEnabled(boolean flag) { isEnabled.set(flag); }
 
     private Action() {
     }
@@ -54,17 +76,30 @@ public class Action {
     public MenuItem getMenuItem() {
         MenuItem result = new MenuItem(title);
         result.setOnAction(action);
+        result.disableProperty().bind(enabledProperty().not());
         return result;
     }
 
-    public MenuItem getToolbarButton() {
-        return null;
+    public Node getToolbarButton() {
+        ToolbarButton result = new ToolbarButton(title, icon);
+        // result.setOnAction(action);
+        result.disableProperty().bind(enabledProperty().not());
+        return result;
     }
 
     public static Menu createMenu(String title, Action... actions){
         Menu result = new Menu(title);
         for (Action a : actions) {
             result.getItems().add(a.getMenuItem());
+        }
+
+        return result;
+    }
+
+    public static ToolBar createToolBar(Action... actions) {
+        ToolBar result = new ToolBar();
+        for (Action a : actions) {
+            result.getItems().add(a.getToolbarButton());
         }
 
         return result;

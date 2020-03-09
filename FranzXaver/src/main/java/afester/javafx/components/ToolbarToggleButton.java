@@ -29,4 +29,14 @@ public class ToolbarToggleButton extends RadioButton {
         getStyleClass().add("toggle-button");
     }
 
+    public ToolbarToggleButton(String toolTip, Image icon) {
+
+        ImageView image = new ImageView(icon);
+        setGraphic(image);
+        setTooltip(new Tooltip(toolTip));
+        
+        getStyleClass().remove("radio-button");
+        getStyleClass().add("toggle-button");
+    }
+
 }

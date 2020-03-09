@@ -20,4 +20,11 @@ public class ToolbarButton extends Button {
         }
         setTooltip(new Tooltip(toolTip));
     }
+
+
+    public ToolbarButton(String toolTip, Image img) {
+        ImageView image = new ImageView(img);
+        setGraphic(image);
+        setTooltip(new Tooltip(toolTip));
+    }
 }

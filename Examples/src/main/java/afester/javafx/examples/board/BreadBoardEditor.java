@@ -19,6 +19,7 @@ import afester.javafx.examples.board.model.NetImport;
 import afester.javafx.examples.board.model.Trace;
 import afester.javafx.examples.board.model.TraceType;
 import afester.javafx.examples.board.tools.Action;
+import afester.javafx.examples.board.tools.ActionToggle;
 import afester.javafx.examples.board.view.AddCornerInteractor;
 import afester.javafx.examples.board.view.BoardView;
 import afester.javafx.examples.board.view.BottomBoardView;
@@ -38,15 +39,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
@@ -111,10 +111,14 @@ public class BreadBoardEditor extends Application {
     private final ToolbarButton saveToolButton = new ToolbarButton("Save board", "afester/javafx/examples/board/file-save.png");
     private final ToolbarButton saveAsToolButton = new ToolbarButton("Save board as", "afester/javafx/examples/board/file-saveas.png");
 
-    private final ToolbarToggleButton toggleSvgToolButton = new ToolbarToggleButton("Toggle draft / SVG", "afester/javafx/examples/board/view-svg.png");
-    private final ToolbarToggleButton toggleShowTracesToolButton = new ToolbarToggleButton("Show / hide routes", "afester/javafx/examples/board/view-traces.png");
-    private final ToolbarToggleButton toggleShowAirwiresToolButton = new ToolbarToggleButton("Show / hide unrouted wires", "afester/javafx/examples/board/view-airwires.png");
-    private final ToolbarToggleButton toggleShowDimensionsToolButton = new ToolbarToggleButton("Show / hide dimensions", "afester/javafx/examples/board/view-dimensions.png");
+    private final ActionToggle toggleShowSvgAction = 
+            new ActionToggle("Toggle draft / SVG",     "", new Image("afester/javafx/examples/board/view-svg.png"), e -> {});
+    private final ActionToggle toggleShowTracesAction = 
+            new ActionToggle("Show / hide traces",     "", new Image("afester/javafx/examples/board/view-traces.png"), e -> {});
+    private final ActionToggle toggleShowAirwiresAction = 
+            new ActionToggle("Show / hide airwires",   "", new Image("afester/javafx/examples/board/view-airwires.png"), e -> {});
+    private final ActionToggle toggleShowDimensionsAction = 
+            new ActionToggle("Show / hide dimensions", "", new Image("afester/javafx/examples/board/view-dimensions.png"), e -> {});
 
     // Edit mode toggles
     private final ToolbarToggleButton selectToolButton = new ToolbarToggleButton("Select", "afester/javafx/examples/board/mode-select.png");
@@ -159,9 +163,15 @@ public class BreadBoardEditor extends Application {
         var actionSynchronizeSchematic = new Action("Synchronize schematic ...", "", e -> synchronizeSchematic());
         var actionLoadSchematicInEagle = new Action("Load schematic in Eagle ...", "", e -> loadSchematicInEagle());
         var actionQuit                 = new Action("Quit",                        "", e -> stage.close());
+
         var actionCenter               = new Action("Center",                      "", e -> currentDrawingView.centerContent());
         var actionFitToWindow          = new Action("Fit to Window",               "", e -> currentDrawingView.fitContentToWindow());
         var actionColorSettings        = new Action("Color settings ...", "", e -> setupColors());
+
+        var actionSelect               = new Action("Select",                      "", e -> {});
+        var actionTrace                = new Action("Trace",               "", e -> {});
+        
+        var actionAbout                = new Action("_Help", "", e -> showAbout());
 
         Menu fileMenu = Action.createMenu("File", 
                           actionNewBoard, actionLoadBoard,
@@ -174,18 +184,17 @@ public class BreadBoardEditor extends Application {
                           actionQuit);
 
         Menu viewMenu = Action.createMenu("View", 
-                          actionCenter, actionFitToWindow, actionColorSettings);
+                          actionCenter, actionFitToWindow, actionColorSettings,
+                          new Action.Separator(),
+                          toggleShowSvgAction, toggleShowTracesAction,
+                          toggleShowAirwiresAction, toggleShowDimensionsAction);
 
-        Menu editMenu = new Menu("Edit");
-        MenuItem editItem1 = new MenuItem("Select");
-        MenuItem editItem2 = new MenuItem("Trace");
-        editMenu.getItems().addAll(editItem1, editItem2);
+        Menu editMenu = Action.createMenu("Edit", 
+                          actionSelect, actionTrace);
 
-        Menu helpMenu = new Menu("_Help");
+        Menu helpMenu = Action.createMenu("Help", 
+                          actionAbout);
         helpMenu.setAccelerator(KeyCombination.keyCombination("Alt+H"));
-        MenuItem menuItemAbout = new MenuItem("_About ...");
-        menuItemAbout.setOnAction(e -> showAbout());
-        helpMenu.getItems().addAll(menuItemAbout);
 
         MenuBar menuBar = new MenuBar();
         menuBar.getMenus().addAll(fileMenu, viewMenu, editMenu, helpMenu);
@@ -323,9 +332,12 @@ public class BreadBoardEditor extends Application {
 
 
     private ToolBar createMainToolbar() {
+        /*
         saveToolButton.setDisable(true);
 
         saveAsToolButton.setDisable(true);
+
+        toggleShowSvgAction.setEnabled(false);
 
         toggleSvgToolButton.setDisable(true);
 
@@ -379,6 +391,12 @@ public class BreadBoardEditor extends Application {
                 toggleShowAirwiresToolButton,
                 toggleShowDimensionsToolButton
             );
+        return toolBar;
+        */
+
+        ToolBar toolBar = Action.createToolBar(
+                toggleShowSvgAction, toggleShowTracesAction,
+                toggleShowAirwiresAction, toggleShowDimensionsAction);
         return toolBar;
     }
 
@@ -444,10 +462,11 @@ public class BreadBoardEditor extends Application {
                 bottomView.showDimensionsProperty().unbind();
             }
 
-            topView.showSvgProperty().bind(toggleSvgToolButton.selectedProperty());
-            topView.showTracesProperty().bind(toggleShowTracesToolButton.selectedProperty());
-            topView.showAirwiresProperty().bind(toggleShowAirwiresToolButton.selectedProperty());
-            topView.showDimensionsProperty().bind(toggleShowDimensionsToolButton.selectedProperty());
+            // topView.showSvgProperty().bind(toggleSvgToolButton.selectedProperty());
+            topView.showSvgProperty().bind(toggleShowSvgAction.selectedProperty());
+            topView.showTracesProperty().bind(toggleShowTracesAction.selectedProperty());
+            topView.showAirwiresProperty().bind(toggleShowAirwiresAction.selectedProperty());
+            topView.showDimensionsProperty().bind(toggleShowDimensionsAction.selectedProperty());
 
             currentDrawingView = topDrawingView;
         } else if (newIdx == 1) {
@@ -473,10 +492,10 @@ public class BreadBoardEditor extends Application {
             topView.showTracesProperty().unbind();
             topView.showAirwiresProperty().unbind();
             topView.showDimensionsProperty().unbind();
-            bottomView.showSvgProperty().bind(toggleSvgToolButton.selectedProperty());
-            bottomView.showTracesProperty().bind(toggleShowTracesToolButton.selectedProperty());
-            bottomView.showAirwiresProperty().bind(toggleShowAirwiresToolButton.selectedProperty());
-            bottomView.showDimensionsProperty().bind(toggleShowDimensionsToolButton.selectedProperty());
+            bottomView.showSvgProperty().bind(toggleShowSvgAction.selectedProperty());
+            bottomView.showTracesProperty().bind(toggleShowTracesAction.selectedProperty());
+            bottomView.showAirwiresProperty().bind(toggleShowAirwiresAction.selectedProperty());
+            bottomView.showDimensionsProperty().bind(toggleShowDimensionsAction.selectedProperty());
 
             currentDrawingView = bottomDrawingView;
         } else if (newIdx == 2) {
@@ -744,10 +763,10 @@ public class BreadBoardEditor extends Application {
         openToolButton.setDisable(false);
         saveToolButton.setDisable(false);
         saveAsToolButton.setDisable(false);
-        toggleSvgToolButton.setDisable(false);
-        toggleShowTracesToolButton.setDisable(false);
-        toggleShowAirwiresToolButton.setDisable(false);
-        toggleShowDimensionsToolButton.setDisable(false);
+        toggleShowSvgAction.setEnabled(true);
+        toggleShowTracesAction.setEnabled(true);
+        toggleShowAirwiresAction.setEnabled(true);
+        toggleShowDimensionsAction.setEnabled(true);
         selectToolButton.setDisable(false);
         splitTraceToolButton.setDisable(false);
         editShapeToolButton.setDisable(false);
