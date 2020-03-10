@@ -33,9 +33,6 @@ import javafx.scene.image.ImageView;
  */
 public class ActionToggle extends Action {
 
-    public static class ToggleGroup {
-    }
-
     // property which sets this toggle action as selected or unselected
     private final BooleanProperty isSelected = new SimpleBooleanProperty(true);
     public BooleanProperty selectedProperty() { return isSelected; }
@@ -86,7 +83,7 @@ public class ActionToggle extends Action {
     }
 
     @Override
-    public Node getToolbarButton() {
+    public Node[] getToolbarButtons() {
         ToolbarToggleButton result = new ToolbarToggleButton(title, icon);
         toolbarButtons.add(result);
 
@@ -97,6 +94,6 @@ public class ActionToggle extends Action {
             this.setSelected(newValue);
         });
 
-        return result;
+        return new Node[] {result};
     }
 }

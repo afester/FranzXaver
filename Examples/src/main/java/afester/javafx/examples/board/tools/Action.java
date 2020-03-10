@@ -13,8 +13,6 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
 
 
-
-
 /**
  * There are essentially three kinds of Actions:
  * 
@@ -38,6 +36,11 @@ public class Action {
         @Override
         public MenuItem getMenuItem() {
             return new SeparatorMenuItem();
+        }
+
+        @Override
+        public Node[] getToolbarButtons() {
+            return new Node[] {new javafx.scene.control.Separator()};
         }
     }
 
@@ -72,6 +75,10 @@ public class Action {
         this(title, null, null, action);
     }
 
+    public Action(String title, String description, Image icon) {
+        this(title, description, icon, null);
+    }
+
 
     public MenuItem getMenuItem() {
         MenuItem result = new MenuItem(title);
@@ -80,11 +87,11 @@ public class Action {
         return result;
     }
 
-    public Node getToolbarButton() {
+    public Node[] getToolbarButtons() {
         ToolbarButton result = new ToolbarButton(title, icon);
-        // result.setOnAction(action);
+        result.setOnAction(action);
         result.disableProperty().bind(enabledProperty().not());
-        return result;
+        return new Node[] {result};
     }
 
     public static Menu createMenu(String title, Action... actions){
@@ -99,7 +106,7 @@ public class Action {
     public static ToolBar createToolBar(Action... actions) {
         ToolBar result = new ToolBar();
         for (Action a : actions) {
-            result.getItems().add(a.getToolbarButton());
+            result.getItems().addAll(a.getToolbarButtons());
         }
 
         return result;

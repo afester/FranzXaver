@@ -19,6 +19,8 @@ import afester.javafx.examples.board.model.NetImport;
 import afester.javafx.examples.board.model.Trace;
 import afester.javafx.examples.board.model.TraceType;
 import afester.javafx.examples.board.tools.Action;
+import afester.javafx.examples.board.tools.ActionChoice;
+import afester.javafx.examples.board.tools.ActionRadio;
 import afester.javafx.examples.board.tools.ActionToggle;
 import afester.javafx.examples.board.view.AddCornerInteractor;
 import afester.javafx.examples.board.view.BoardView;
@@ -106,31 +108,81 @@ public class BreadBoardEditor extends Application {
     private final Button toBridgeToolButton = new ToolbarButton("Bridge", "afester/javafx/examples/board/mode-bridge.png");
     private final Button toTraceToolButton = new ToolbarButton("Trace", "afester/javafx/examples/board/mode-trace.png");
 
-    private final ToolbarButton newToolButton = new ToolbarButton("New board", "afester/javafx/examples/board/file-new.png");
-    private final ToolbarButton openToolButton = new ToolbarButton("Open board", "afester/javafx/examples/board/file-open.png");
-    private final ToolbarButton saveToolButton = new ToolbarButton("Save board", "afester/javafx/examples/board/file-save.png");
-    private final ToolbarButton saveAsToolButton = new ToolbarButton("Save board as", "afester/javafx/examples/board/file-saveas.png");
-
-    private final ActionToggle toggleShowSvgAction = 
-            new ActionToggle("Toggle draft / SVG",     "", new Image("afester/javafx/examples/board/view-svg.png"), e -> {});
-    private final ActionToggle toggleShowTracesAction = 
-            new ActionToggle("Show / hide traces",     "", new Image("afester/javafx/examples/board/view-traces.png"), e -> {});
-    private final ActionToggle toggleShowAirwiresAction = 
-            new ActionToggle("Show / hide airwires",   "", new Image("afester/javafx/examples/board/view-airwires.png"), e -> {});
-    private final ActionToggle toggleShowDimensionsAction = 
-            new ActionToggle("Show / hide dimensions", "", new Image("afester/javafx/examples/board/view-dimensions.png"), e -> {});
-
-    // Edit mode toggles
-    private final ToolbarToggleButton selectToolButton = new ToolbarToggleButton("Select", "afester/javafx/examples/board/mode-select.png");
-    private final ToolbarToggleButton splitTraceToolButton = new ToolbarToggleButton("Split Trace", "afester/javafx/examples/board/mode-splittrace.png");
-    private final ToolbarToggleButton editShapeToolButton = new ToolbarToggleButton("Edit shape", "afester/javafx/examples/board/mode-editshape.png");
-
     private DrawingArea currentDrawingView;
     private DrawingArea topDrawingView;
     private DrawingArea bottomDrawingView;
     private PrintPanel printPanel;
 
     private ApplicationProperties props;
+
+    // define all actions which are supported by the application
+    private final Action actionNewBoard = 
+            new Action("New board ...", "Creates a new default board", 
+                       new Image("afester/javafx/examples/board/file-new.png"), 
+                       e -> newBoard());
+    private final Action actionLoadBoard = 
+            new Action("Load board ...",       "",
+                       new Image("afester/javafx/examples/board/file-open.png"),
+                       e -> loadBoard());
+    private final Action actionSaveBoard = 
+            new Action("Save board",           "", 
+                       new Image("afester/javafx/examples/board/file-save.png"),
+                       e -> saveBoard());
+    private final Action actionSaveBoardAs = 
+            new Action("Save board as ...",    "", 
+                       new Image("afester/javafx/examples/board/file-saveas.png"),
+                       e -> saveBoardAs());
+    private final Action actionImportSchematic = 
+            new Action("Import schematic ...", "", 
+                       e -> importSchematic());
+    private final Action actionSynchronizeSchematic =
+            new Action("Synchronize schematic ...", "", 
+                       e -> synchronizeSchematic());
+    private final Action actionLoadSchematicInEagle =
+            new Action("Load schematic in Eagle ...", "", 
+                       e -> loadSchematicInEagle());
+    private final Action actionQuit =
+            new Action("Quit", "", 
+                       e -> stage.close());
+
+    private final Action actionCenter =
+            new Action("Center", "",
+                       e -> currentDrawingView.centerContent());
+    private final Action actionFitToWindow =
+            new Action("Fit to Window", "", 
+                       e -> currentDrawingView.fitContentToWindow());
+    private final Action actionColorSettings =
+            new Action("Color settings ...", "", 
+                       e -> setupColors());
+    private final ActionToggle toggleShowSvgAction = 
+            new ActionToggle("Toggle draft / SVG", "", 
+                             new Image("afester/javafx/examples/board/view-svg.png"));
+    private final ActionToggle toggleShowTracesAction = 
+            new ActionToggle("Show / hide traces",
+                             "", new Image("afester/javafx/examples/board/view-traces.png"));
+    private final ActionToggle toggleShowAirwiresAction = 
+            new ActionToggle("Show / hide airwires",   "", new Image("afester/javafx/examples/board/view-airwires.png"));
+    private final ActionToggle toggleShowDimensionsAction = 
+            new ActionToggle("Show / hide dimensions", "", new Image("afester/javafx/examples/board/view-dimensions.png"));
+
+    private final Action actionUndo =
+            new Action("Undo", "", e -> {});
+    private final Action actionRedo =
+            new Action("Redo", "", e -> {});
+
+    private final Action actionAbout = new Action("About ...", "", e -> showAbout());
+
+    // Edit mode toggles
+    private static enum Interactors {SELECT, SPLIT_TRACE, EDIT_SHAPE}
+
+    private final ActionRadio<Interactors> selectInteractorAction = 
+            new ActionRadio<>(e -> System.err.println(e),
+                new ActionChoice<>(Interactors.SELECT, "Select",      "", 
+                                       new Image("afester/javafx/examples/board/mode-select.png")),
+                new ActionChoice<>(Interactors.SPLIT_TRACE, "Split Trace", "", 
+                                       new Image("afester/javafx/examples/board/mode-splittrace.png")),
+                new ActionChoice<>(Interactors.EDIT_SHAPE, "Edit shape",  "", 
+                                   new Image("afester/javafx/examples/board/mode-editshape.png")));
 
     @Override
     public void start(Stage stage){
@@ -152,27 +204,8 @@ public class BreadBoardEditor extends Application {
 
         tabPane.getTabs().addAll(editTab, bottomViewTab, printTab);
         tabPane.getSelectionModel().selectedIndexProperty().addListener((obj, oldIdx, newIdx) -> switchTab(newIdx.intValue()));
+
         // Create the menu bar
-
-        // define all actions which are supported by the application
-        var actionNewBoard             = new Action("New board ...",        "Creates a new default board", e -> newBoard());
-        var actionLoadBoard            = new Action("Load board ...",       "", e -> loadBoard());
-        var actionSaveBoard            = new Action("Save board",           "", e -> saveBoard());
-        var actionSaveBoardAs          = new Action("Save board as ...",    "", e -> saveBoardAs());
-        var actionImportSchematic      = new Action("Import schematic ...", "", e -> importSchematic());
-        var actionSynchronizeSchematic = new Action("Synchronize schematic ...", "", e -> synchronizeSchematic());
-        var actionLoadSchematicInEagle = new Action("Load schematic in Eagle ...", "", e -> loadSchematicInEagle());
-        var actionQuit                 = new Action("Quit",                        "", e -> stage.close());
-
-        var actionCenter               = new Action("Center",                      "", e -> currentDrawingView.centerContent());
-        var actionFitToWindow          = new Action("Fit to Window",               "", e -> currentDrawingView.fitContentToWindow());
-        var actionColorSettings        = new Action("Color settings ...", "", e -> setupColors());
-
-        var actionSelect               = new Action("Select",                      "", e -> {});
-        var actionTrace                = new Action("Trace",               "", e -> {});
-        
-        var actionAbout                = new Action("_Help", "", e -> showAbout());
-
         Menu fileMenu = Action.createMenu("File", 
                           actionNewBoard, actionLoadBoard,
                           new Action.Separator(),
@@ -189,8 +222,11 @@ public class BreadBoardEditor extends Application {
                           toggleShowSvgAction, toggleShowTracesAction,
                           toggleShowAirwiresAction, toggleShowDimensionsAction);
 
-        Menu editMenu = Action.createMenu("Edit", 
-                          actionSelect, actionTrace);
+        Menu editMenu = Action.createMenu("Edit",
+                         actionUndo,
+                         actionRedo);
+                         //new Action.Separator(),
+                         //selectInteractorAction
 
         Menu helpMenu = Action.createMenu("Help", 
                           actionAbout);
@@ -334,19 +370,13 @@ public class BreadBoardEditor extends Application {
     private ToolBar createMainToolbar() {
         /*
         saveToolButton.setDisable(true);
-
         saveAsToolButton.setDisable(true);
-
         toggleShowSvgAction.setEnabled(false);
-
         toggleSvgToolButton.setDisable(true);
-
         toggleShowTracesToolButton.setDisable(true);
         toggleShowTracesToolButton.setSelected(true);
-
         toggleShowAirwiresToolButton.setDisable(true);
         toggleShowAirwiresToolButton.setSelected(true);
-
         toggleShowDimensionsToolButton.setDisable(true);
         toggleShowDimensionsToolButton.setSelected(true);
 
@@ -394,7 +424,37 @@ public class BreadBoardEditor extends Application {
         return toolBar;
         */
 
+        selectInteractorAction.selectedChoiceProperty().addListener((obj, oldValue, newValue) -> {
+            if (topView != null) {
+                switch(newValue) {
+                    case EDIT_SHAPE:
+                        setShapeEditMode(true);
+                        break;
+                    case SELECT:
+                        setShapeEditMode(false);
+                        topDrawingView.setInteractor(new EditInteractor(topView));
+                        break;
+                    case SPLIT_TRACE:
+                        setShapeEditMode(false);
+                        topDrawingView.setInteractor(new SplitTraceInteractor(topView));
+                        break;
+                    default:
+                        break;
+                }
+            }
+           System.err.printf("%s => %s\n", oldValue, newValue); 
+        });
+
         ToolBar toolBar = Action.createToolBar(
+                actionNewBoard,
+                actionLoadBoard,
+                actionSaveBoard,
+                actionSaveBoardAs,
+                new Action.Separator(),
+
+                selectInteractorAction,
+                new Action.Separator(),
+
                 toggleShowSvgAction, toggleShowTracesAction,
                 toggleShowAirwiresAction, toggleShowDimensionsAction);
         return toolBar;
@@ -759,17 +819,15 @@ public class BreadBoardEditor extends Application {
         toBridgeToolButton.setDisable(false);
         toTraceToolButton.setDisable(false);
 
-        newToolButton.setDisable(false);
-        openToolButton.setDisable(false);
-        saveToolButton.setDisable(false);
-        saveAsToolButton.setDisable(false);
+        actionNewBoard.setEnabled(true);
+        actionLoadBoard.setEnabled(true);
+        actionSaveBoard.setEnabled(true);
+        actionSaveBoardAs.setEnabled(true);
         toggleShowSvgAction.setEnabled(true);
         toggleShowTracesAction.setEnabled(true);
         toggleShowAirwiresAction.setEnabled(true);
         toggleShowDimensionsAction.setEnabled(true);
-        selectToolButton.setDisable(false);
-        splitTraceToolButton.setDisable(false);
-        editShapeToolButton.setDisable(false);
+        selectInteractorAction.setEnabled(true);
 
         stage.sizeToScene();
         switchTab(0);   // ???????????
