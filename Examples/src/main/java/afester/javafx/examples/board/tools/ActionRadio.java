@@ -20,22 +20,11 @@ public class ActionRadio<T> extends Action {
     public T getSelectedChoice() { return selectedChoice.get(); }
     public void setSelectedChoice(T value) { selectedChoice.set(value); }
 
-//    public ActionRadio(String title, String description, Image icon, 
-//                  EventHandler<ActionEvent> action) {
-//        super(title, description, icon, action);
-//        
-////        isSelected.addListener((obj, oldValue, newValue) -> {
-////            menuItems.forEach(m -> m.setSelected(newValue));
-////            toolbarButtons.forEach(t -> t.setSelected(newValue));
-////        });
-//    }
-
     private final ActionChoice<T>[] choices;
 
     @SafeVarargs
-    public ActionRadio(EventHandler<ActionEvent> action, 
-                       ActionChoice<T>... actionChoice) {
-        super("", "", null, action);
+    public ActionRadio(ActionChoice<T>... actionChoice) {
+        super("", "", null, null);
         choices = actionChoice;
     }
 

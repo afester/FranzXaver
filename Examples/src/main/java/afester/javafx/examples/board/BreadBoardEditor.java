@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 
 import afester.javafx.components.DrawingArea;
 import afester.javafx.components.StatusBar;
-import afester.javafx.components.ToolbarButton;
 import afester.javafx.components.ToolbarToggleButton;
 import afester.javafx.examples.board.eagle.EagleImport;
 import afester.javafx.examples.board.model.AbstractEdge;
@@ -37,11 +36,9 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.Separator;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -98,15 +95,6 @@ public class BreadBoardEditor extends Application {
     private ToolBar editCornersToolBar; 
     private ToolBar routingToolbar; 
 
-    private final ToolbarToggleButton reconnectTraceModeToolButton = new ToolbarToggleButton("Reconnect Trace", "afester/javafx/examples/board/mode-reconnect.png");
-    private final ToolbarToggleButton moveJunctionToolButton = new ToolbarToggleButton("Move Junction", "afester/javafx/examples/board/mode-movejunction.png");
-    private final Button shortestPathButton = new ToolbarButton("Shortest", "afester/javafx/examples/board/net-shortest.png");
-    private final Button resetNetButton = new ToolbarButton("Reset net", "afester/javafx/examples/board/net-reset.png");
-    private final Button cleanupNetButton = new ToolbarButton("Validate/Cleanup net", "afester/javafx/examples/board/net-cleanup.png");
-    private final Button deleteSegmentButton = new ToolbarButton("Delete segment", "afester/javafx/examples/board/net-delsegment.png");
-    private final Button shortestAllButton = new ToolbarButton("Shortest all", "afester/javafx/examples/board/net-shortestall.png");
-    private final Button toBridgeToolButton = new ToolbarButton("Bridge", "afester/javafx/examples/board/mode-bridge.png");
-    private final Button toTraceToolButton = new ToolbarButton("Trace", "afester/javafx/examples/board/mode-trace.png");
 
     private DrawingArea currentDrawingView;
     private DrawingArea topDrawingView;
@@ -154,15 +142,15 @@ public class BreadBoardEditor extends Application {
     private final Action actionColorSettings =
             new Action("Color settings ...", "", 
                        e -> setupColors());
-    private final ActionToggle toggleShowSvgAction = 
+    private final ActionToggle actionToggleShowSvg = 
             new ActionToggle("Toggle draft / SVG", "", 
                              new Image("afester/javafx/examples/board/view-svg.png"));
-    private final ActionToggle toggleShowTracesAction = 
+    private final ActionToggle actionToggleShowTraces = 
             new ActionToggle("Show / hide traces",
                              "", new Image("afester/javafx/examples/board/view-traces.png"));
-    private final ActionToggle toggleShowAirwiresAction = 
+    private final ActionToggle actionToggleShowAirwires = 
             new ActionToggle("Show / hide airwires",   "", new Image("afester/javafx/examples/board/view-airwires.png"));
-    private final ActionToggle toggleShowDimensionsAction = 
+    private final ActionToggle actionToggleShowDimensions = 
             new ActionToggle("Show / hide dimensions", "", new Image("afester/javafx/examples/board/view-dimensions.png"));
 
     private final Action actionUndo =
@@ -170,17 +158,56 @@ public class BreadBoardEditor extends Application {
     private final Action actionRedo =
             new Action("Redo", "", e -> {});
 
+    // Junction mode toggles
+    private static enum MoveMode {RECONNECT, MOVE}
+
+    private final ActionRadio<MoveMode> actionSelectJunctionMode = 
+            new ActionRadio<>(
+                new ActionChoice<>(MoveMode.RECONNECT, "Reconnect Trace",      "", 
+                                   new Image("afester/javafx/examples/board/mode-reconnect.png")),
+                new ActionChoice<>(MoveMode.MOVE, "Move Junction", "", 
+                                   new Image("afester/javafx/examples/board/mode-movejunction.png")));
+
+    private final Action actionShortestpath =
+            new Action("Shortest", "",
+                       new Image("afester/javafx/examples/board/net-shortest.png"),
+                       e -> calculateShortestPath());
+    private final Action actionResetNet =
+            new Action("Reset net", "",
+                       new Image("afester/javafx/examples/board/net-reset.png"),
+                       e -> resetNet());
+    private final Action actionCleanupNet =
+            new Action("Validate/Cleanup net", "",
+                       new Image("afester/javafx/examples/board/net-cleanup.png"),
+                       e -> cleanupNet());
+    private final Action actionDeleteSegment =
+            new Action("Delete segment", "",
+                       new Image("afester/javafx/examples/board/net-delsegment.png"),
+                       e -> deleteSegment());
+    private final Action actionShortestAll =
+            new Action("Shortest all", "",
+                       new Image("afester/javafx/examples/board/net-shortestall.png"),
+                       e -> calculateShortestPathAll());
+    private final Action actionToBridge =
+            new Action("Bridge", "",
+                       new Image("afester/javafx/examples/board/mode-bridge.png"),
+                       e -> toBridge());
+    private final Action actionToTrace =
+            new Action("Trace", "",
+                       new Image("afester/javafx/examples/board/mode-trace.png"),
+                       e -> toTrace());
+
     private final Action actionAbout = new Action("About ...", "", e -> showAbout());
 
     // Edit mode toggles
     private static enum Interactors {SELECT, SPLIT_TRACE, EDIT_SHAPE}
 
-    private final ActionRadio<Interactors> selectInteractorAction = 
-            new ActionRadio<>(e -> System.err.println(e),
+    private final ActionRadio<Interactors> actionSelectInteractor = 
+            new ActionRadio<>(
                 new ActionChoice<>(Interactors.SELECT, "Select",      "", 
-                                       new Image("afester/javafx/examples/board/mode-select.png")),
+                                   new Image("afester/javafx/examples/board/mode-select.png")),
                 new ActionChoice<>(Interactors.SPLIT_TRACE, "Split Trace", "", 
-                                       new Image("afester/javafx/examples/board/mode-splittrace.png")),
+                                   new Image("afester/javafx/examples/board/mode-splittrace.png")),
                 new ActionChoice<>(Interactors.EDIT_SHAPE, "Edit shape",  "", 
                                    new Image("afester/javafx/examples/board/mode-editshape.png")));
 
@@ -219,8 +246,8 @@ public class BreadBoardEditor extends Application {
         Menu viewMenu = Action.createMenu("View", 
                           actionCenter, actionFitToWindow, actionColorSettings,
                           new Action.Separator(),
-                          toggleShowSvgAction, toggleShowTracesAction,
-                          toggleShowAirwiresAction, toggleShowDimensionsAction);
+                          actionToggleShowSvg, actionToggleShowTraces,
+                          actionToggleShowAirwires, actionToggleShowDimensions);
 
         Menu editMenu = Action.createMenu("Edit",
                          actionUndo,
@@ -313,54 +340,33 @@ public class BreadBoardEditor extends Application {
     
     private ToolBar createRoutingToolbar() {
         // Create the toolbar
+        actionSelectJunctionMode.selectedChoiceProperty().addListener((obj, oldValue, newValue) -> {
+            switch(newValue) {
+                case MOVE:
+                    topView.setReconnectMode(false);
+                    break;
 
-        final ToggleGroup junctionModeToggleGroup = new ToggleGroup();
+                case RECONNECT:
+                    topView.setReconnectMode(true);
+                    break;
+    
+                default:
+                    break;
+            }
+        });
 
-        reconnectTraceModeToolButton.setDisable(true);
-        reconnectTraceModeToolButton.setToggleGroup(junctionModeToggleGroup);
-        reconnectTraceModeToolButton.setOnAction(e -> topView.setReconnectMode(true));
+        ToolBar toolBar = Action.createToolBar(
+                actionSelectJunctionMode,
+                new Action.Separator(),
+                actionShortestpath,
+                actionResetNet,
+                actionCleanupNet,
+                actionDeleteSegment,
+                actionToBridge,
+                actionToTrace,
+                new Action.Separator(),
+                actionShortestAll);
 
-        moveJunctionToolButton.setDisable(true);
-        moveJunctionToolButton.setToggleGroup(junctionModeToggleGroup);
-        moveJunctionToolButton.setOnAction(e -> topView.setReconnectMode(false));       
-        moveJunctionToolButton.setSelected(true);
-
-        shortestPathButton.setDisable(true);
-        shortestPathButton.setOnAction(e -> calculateShortestPath());
-
-        resetNetButton.setDisable(true);
-        resetNetButton.setOnAction(e -> resetNet());
-
-        cleanupNetButton.setDisable(true);
-        cleanupNetButton.setOnAction(e -> cleanupNet());
-
-        deleteSegmentButton.setDisable(true);
-        deleteSegmentButton.setOnAction(e -> deleteSegment());
-
-        shortestAllButton.setDisable(true);
-        shortestAllButton.setOnAction(e -> calculateShortestPathAll());
-
-        toBridgeToolButton.setDisable(true);
-        toBridgeToolButton.setOnAction(e -> toBridge());
-
-        toTraceToolButton.setDisable(true);
-        toTraceToolButton.setOnAction(e -> toTrace());
-
-        ToolBar toolBar = new ToolBar(
-                reconnectTraceModeToolButton,
-                moveJunctionToolButton,
-                new Separator(),
-
-                shortestPathButton,
-                resetNetButton,
-                cleanupNetButton,
-                deleteSegmentButton,
-                toBridgeToolButton,
-                toTraceToolButton,
-                new Separator(),
-
-                shortestAllButton
-            );
         toolBar.setOrientation(Orientation.VERTICAL);
         toolBar.managedProperty().bind(toolBar.visibleProperty());
         return toolBar;
@@ -368,63 +374,7 @@ public class BreadBoardEditor extends Application {
 
 
     private ToolBar createMainToolbar() {
-        /*
-        saveToolButton.setDisable(true);
-        saveAsToolButton.setDisable(true);
-        toggleShowSvgAction.setEnabled(false);
-        toggleSvgToolButton.setDisable(true);
-        toggleShowTracesToolButton.setDisable(true);
-        toggleShowTracesToolButton.setSelected(true);
-        toggleShowAirwiresToolButton.setDisable(true);
-        toggleShowAirwiresToolButton.setSelected(true);
-        toggleShowDimensionsToolButton.setDisable(true);
-        toggleShowDimensionsToolButton.setSelected(true);
-
-        selectToolButton.setDisable(true);
-        selectToolButton.setOnAction(e -> {
-            if (topView != null) {
-                topDrawingView.setInteractor(new EditInteractor(topView));
-            }
-        });
-
-        splitTraceToolButton.setDisable(true);
-        splitTraceToolButton.setOnAction(e -> {
-            if (topView != null) {
-                topDrawingView.setInteractor(new SplitTraceInteractor(topView));
-            }
-        });
-
-        editShapeToolButton.setDisable(true);
-        editShapeToolButton.selectedProperty().addListener((value, oldValue, newValue) -> setShapeEditMode(newValue));
-
-        ToggleGroup toggleGroup = new ToggleGroup();
-        selectToolButton.setToggleGroup(toggleGroup);
-        splitTraceToolButton.setToggleGroup(toggleGroup);
-        editShapeToolButton.setToggleGroup(toggleGroup);
-
-        selectToolButton.setSelected(true);
-
-        ToolBar toolBar = new ToolBar(
-                newToolButton,
-                openToolButton,
-                saveToolButton,
-                saveAsToolButton,
-                new Separator(),
-
-                selectToolButton,
-                splitTraceToolButton,
-                editShapeToolButton,
-                new Separator(),
-
-                toggleSvgToolButton,
-                toggleShowTracesToolButton,
-                toggleShowAirwiresToolButton,
-                toggleShowDimensionsToolButton
-            );
-        return toolBar;
-        */
-
-        selectInteractorAction.selectedChoiceProperty().addListener((obj, oldValue, newValue) -> {
+        actionSelectInteractor.selectedChoiceProperty().addListener((obj, oldValue, newValue) -> {
             if (topView != null) {
                 switch(newValue) {
                     case EDIT_SHAPE:
@@ -442,7 +392,6 @@ public class BreadBoardEditor extends Application {
                         break;
                 }
             }
-           System.err.printf("%s => %s\n", oldValue, newValue); 
         });
 
         ToolBar toolBar = Action.createToolBar(
@@ -452,11 +401,11 @@ public class BreadBoardEditor extends Application {
                 actionSaveBoardAs,
                 new Action.Separator(),
 
-                selectInteractorAction,
+                actionSelectInteractor,
                 new Action.Separator(),
 
-                toggleShowSvgAction, toggleShowTracesAction,
-                toggleShowAirwiresAction, toggleShowDimensionsAction);
+                actionToggleShowSvg, actionToggleShowTraces,
+                actionToggleShowAirwires, actionToggleShowDimensions);
         return toolBar;
     }
 
@@ -523,10 +472,10 @@ public class BreadBoardEditor extends Application {
             }
 
             // topView.showSvgProperty().bind(toggleSvgToolButton.selectedProperty());
-            topView.showSvgProperty().bind(toggleShowSvgAction.selectedProperty());
-            topView.showTracesProperty().bind(toggleShowTracesAction.selectedProperty());
-            topView.showAirwiresProperty().bind(toggleShowAirwiresAction.selectedProperty());
-            topView.showDimensionsProperty().bind(toggleShowDimensionsAction.selectedProperty());
+            topView.showSvgProperty().bind(actionToggleShowSvg.selectedProperty());
+            topView.showTracesProperty().bind(actionToggleShowTraces.selectedProperty());
+            topView.showAirwiresProperty().bind(actionToggleShowAirwires.selectedProperty());
+            topView.showDimensionsProperty().bind(actionToggleShowDimensions.selectedProperty());
 
             currentDrawingView = topDrawingView;
         } else if (newIdx == 1) {
@@ -552,10 +501,10 @@ public class BreadBoardEditor extends Application {
             topView.showTracesProperty().unbind();
             topView.showAirwiresProperty().unbind();
             topView.showDimensionsProperty().unbind();
-            bottomView.showSvgProperty().bind(toggleShowSvgAction.selectedProperty());
-            bottomView.showTracesProperty().bind(toggleShowTracesAction.selectedProperty());
-            bottomView.showAirwiresProperty().bind(toggleShowAirwiresAction.selectedProperty());
-            bottomView.showDimensionsProperty().bind(toggleShowDimensionsAction.selectedProperty());
+            bottomView.showSvgProperty().bind(actionToggleShowSvg.selectedProperty());
+            bottomView.showTracesProperty().bind(actionToggleShowTraces.selectedProperty());
+            bottomView.showAirwiresProperty().bind(actionToggleShowAirwires.selectedProperty());
+            bottomView.showDimensionsProperty().bind(actionToggleShowDimensions.selectedProperty());
 
             currentDrawingView = bottomDrawingView;
         } else if (newIdx == 2) {
@@ -809,25 +758,25 @@ public class BreadBoardEditor extends Application {
         leftGroup.getChildren().clear();
         leftGroup.getChildren().add(bomView);
 
-        reconnectTraceModeToolButton.setDisable(false);
-        moveJunctionToolButton.setDisable(false);
-        shortestPathButton.setDisable(false);
-        resetNetButton.setDisable(false);
-        cleanupNetButton.setDisable(false);
-        deleteSegmentButton.setDisable(false);
-        shortestAllButton.setDisable(false);
-        toBridgeToolButton.setDisable(false);
-        toTraceToolButton.setDisable(false);
+        actionSelectJunctionMode.setEnabled(true); // reconnectTraceModeToolButton.setDisable(false);
+                                                   // moveJunctionToolButton.setDisable(false);
+        actionShortestpath.setEnabled(true); // shortestPathButton.setDisable(false);
+        actionResetNet.setEnabled(true); // resetNetButton.setDisable(false);
+        actionCleanupNet.setEnabled(true);  // cleanupNetButton.setDisable(false);
+        actionDeleteSegment.setEnabled(true);// deleteSegmentButton.setDisable(false);
+        actionShortestAll.setEnabled(true); // shortestAllButton.setDisable(false);
+        actionToBridge.setEnabled(true); // toBridgeToolButton.setDisable(false);
+        actionToTrace.setEnabled(true); // toTraceToolButton.setDisable(false);
 
         actionNewBoard.setEnabled(true);
         actionLoadBoard.setEnabled(true);
         actionSaveBoard.setEnabled(true);
         actionSaveBoardAs.setEnabled(true);
-        toggleShowSvgAction.setEnabled(true);
-        toggleShowTracesAction.setEnabled(true);
-        toggleShowAirwiresAction.setEnabled(true);
-        toggleShowDimensionsAction.setEnabled(true);
-        selectInteractorAction.setEnabled(true);
+        actionToggleShowSvg.setEnabled(true);
+        actionToggleShowTraces.setEnabled(true);
+        actionToggleShowAirwires.setEnabled(true);
+        actionToggleShowDimensions.setEnabled(true);
+        actionSelectInteractor.setEnabled(true);
 
         stage.sizeToScene();
         switchTab(0);   // ???????????
