@@ -43,24 +43,42 @@ public class SvgOnButton extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("SVG Display sample");
+        final SvgLoader loader = new SvgLoader();
 
-        // load the sample svg file
-        InputStream svgFile = 
-              getClass().getResourceAsStream("/afester/javafx/examples/data/Ghostscript_Tiger.svg");
-        SvgLoader loader = new SvgLoader();
+//##############
+        // load first svg file
+        InputStream svgFile = getClass().getResourceAsStream(
+                        "/afester/javafx/examples/data/Ghostscript_Tiger.svg");
         Group svgImage = loader.loadSvg(svgFile);
 
         // Scale the image and wrap it in a Group to make the button 
         // properly scale to the size of the image  
         svgImage.setScaleX(0.1);
         svgImage.setScaleY(0.1);
-        Group graphic = new Group(svgImage);
+        Group graphic1 = new Group(svgImage);
 
-        Button button = new Button();
-        button.setGraphic(graphic);
+        Button button1 = new Button();
+        HBox.setMargin(button1, new Insets(10));
+        button1.setGraphic(graphic1);
+//##############
+        // load second svg file
+        svgFile = getClass().getResourceAsStream(
+                        "/afester/javafx/examples/data/ellipse.svg");
+        svgImage = loader.loadSvg(svgFile);
 
-        HBox layout = new HBox(button);
-        HBox.setMargin(button, new Insets(10));
+        // Scale the image and wrap it in a Group to make the button 
+        // properly scale to the size of the image  
+        svgImage.setScaleX(0.6);
+        svgImage.setScaleY(0.6);
+        Group graphic2 = new Group(svgImage);
+
+        Button button2 = new Button();
+        HBox.setMargin(button2, new Insets(10));
+        button2.setGraphic(graphic2);
+//###############
+
+        // Add all buttons to a horizontal box as the main layout
+        HBox layout = new HBox(button1, button2);
 
         Scene scene = new Scene(layout);
         primaryStage.setScene(scene);
