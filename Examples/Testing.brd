@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?><breadboard schematic="">
+  <boardShape>
+    <point x="0.0" y="0.0"/>
+    <point x="50.0" y="0.0"/>
+    <point x="50.0" y="50.0"/>
+    <point x="0.0" y="50.0"/>
+  </boardShape>
+  <package id="urn:adsk.eagle:library:348$0204/5" name="0204/5">
+    <line width="0.508" x1="2.54" x2="2.032" y1="-0.0" y2="-0.0"/>
+    <line width="0.508" x1="-2.54" x2="-2.032" y1="-0.0" y2="-0.0"/>
+    <arc angle="90.0" cx="-1.524" cy="-0.635" radius="0.254" start="90.0" width="0.1524"/>
+    <arc angle="-90.0" cx="-1.524" cy="0.635" radius="0.254" start="270.0" width="0.1524"/>
+    <arc angle="-90.0" cx="1.524" cy="0.635" radius="0.254" start="360.0" width="0.1524"/>
+    <arc angle="90.0" cx="1.524" cy="-0.635" radius="0.254" start="360.0" width="0.1524"/>
+    <line width="0.1524" x1="-1.778" x2="-1.778" y1="0.635" y2="-0.635"/>
+    <line width="0.1524" x1="-1.524" x2="-1.27" y1="-0.889" y2="-0.889"/>
+    <line width="0.1524" x1="-1.143" x2="-1.27" y1="-0.762" y2="-0.889"/>
+    <line width="0.1524" x1="-1.524" x2="-1.27" y1="0.889" y2="0.889"/>
+    <line width="0.1524" x1="-1.143" x2="-1.27" y1="0.762" y2="0.889"/>
+    <line width="0.1524" x1="1.143" x2="1.27" y1="-0.762" y2="-0.889"/>
+    <line width="0.1524" x1="1.143" x2="-1.143" y1="-0.762" y2="-0.762"/>
+    <line width="0.1524" x1="1.143" x2="1.27" y1="0.762" y2="0.889"/>
+    <line width="0.1524" x1="1.143" x2="-1.143" y1="0.762" y2="0.762"/>
+    <line width="0.1524" x1="1.524" x2="1.27" y1="-0.889" y2="-0.889"/>
+    <line width="0.1524" x1="1.524" x2="1.27" y1="0.889" y2="0.889"/>
+    <line width="0.1524" x1="1.778" x2="1.778" y1="0.635" y2="-0.635"/>
+    <text size="1.4092650000585345" weight="BOLD" x="-2.0066" y="-1.1684">&gt;NAME</text>
+    <text size="1.4092650000585345" weight="BOLD" x="-2.1336" y="2.3114">&gt;VALUE</text>
+    <rectangle x1="-2.032" x2="-1.778" y1="0.254" y2="-0.254"/>
+    <rectangle x1="1.778" x2="2.032" y1="0.254" y2="-0.254"/>
+    <pad padName="1" x="-2.54" y="-0.0"/>
+    <pad padName="2" x="2.54" y="-0.0"/>
+  </package>
+  <package id="urn:adsk.eagle:library:210$DO35-7" name="DO35-7">
+    <line width="0.508" x1="3.81" x2="2.921" y1="-0.0" y2="-0.0"/>
+    <line width="0.508" x1="-3.81" x2="-2.921" y1="-0.0" y2="-0.0"/>
+    <line width="0.1524" x1="-0.635" x2="0.0" y1="-0.0" y2="-0.0"/>
+    <line width="0.1524" x1="1.016" x2="1.016" y1="-0.635" y2="0.635"/>
+    <line width="0.1524" x1="1.016" x2="0.0" y1="0.635" y2="-0.0"/>
+    <line width="0.1524" x1="0.0" x2="1.524" y1="-0.0" y2="-0.0"/>
+    <line width="0.1524" x1="0.0" x2="1.016" y1="-0.0" y2="-0.635"/>
+    <line width="0.1524" x1="0.0" x2="0.0" y1="-0.635" y2="-0.0"/>
+    <line width="0.1524" x1="0.0" x2="0.0" y1="-0.0" y2="0.635"/>
+    <arc angle="90.0" cx="2.032" cy="-0.762" radius="0.254" start="360.0" width="0.1524"/>
+    <line width="0.1524" x1="2.286" x2="2.286" y1="-0.762" y2="0.762"/>
+    <arc angle="-90.0" cx="2.032" cy="0.762" radius="0.254" start="360.0" width="0.1524"/>
+    <arc angle="90.0" cx="-2.032" cy="-0.762" radius="0.254" start="90.0" width="0.1524"/>
+    <arc angle="-90.0" cx="-2.032" cy="0.762" radius="0.254" start="270.0" width="0.1524"/>
+    <line width="0.1524" x1="-2.032" x2="2.032" y1="1.016" y2="1.016"/>
+    <line width="0.1524" x1="-2.286" x2="-2.286" y1="-0.762" y2="0.762"/>
+    <line width="0.1524" x1="-2.032" x2="2.032" y1="-1.016" y2="-1.016"/>
+    <text size="1.8067500000750443" weight="BOLD" x="-2.286" y="-1.27">&gt;NAME</text>
+    <text size="1.8067500000750443" weight="BOLD" x="-2.286" y="2.667">&gt;VALUE</text>
+    <rectangle x1="-1.905" x2="-1.397" y1="1.016" y2="-1.016"/>
+    <rectangle x1="2.286" x2="2.921" y1="0.254" y2="-0.254"/>
+    <rectangle x1="-2.921" x2="-2.286" y1="0.254" y2="-0.254"/>
+    <pad padName="A" x="3.81" y="-0.0"/>
+    <pad padName="C" x="-3.81" y="-0.0"/>
+  </package>
+  <package id="urn:adsk.eagle:library:513$1X02" name="1X02">
+    <line width="0.2032" x1="-0.635" x2="0.635" y1="-1.27" y2="-1.27"/>
+    <line width="0.2032" x1="0.635" x2="1.27" y1="-1.27" y2="-0.635"/>
+    <line width="0.2032" x1="1.27" x2="0.635" y1="0.635" y2="1.27"/>
+    <line width="0.2032" x1="1.27" x2="1.905" y1="-0.635" y2="-1.27"/>
+    <line width="0.2032" x1="1.905" x2="3.175" y1="-1.27" y2="-1.27"/>
+    <line width="0.2032" x1="3.175" x2="3.81" y1="-1.27" y2="-0.635"/>
+    <line width="0.2032" x1="3.81" x2="3.175" y1="0.635" y2="1.27"/>
+    <line width="0.2032" x1="3.175" x2="1.905" y1="1.27" y2="1.27"/>
+    <line width="0.2032" x1="1.905" x2="1.27" y1="1.27" y2="0.635"/>
+    <line width="0.2032" x1="-1.27" x2="-1.27" y1="-0.635" y2="0.635"/>
+    <line width="0.2032" x1="-0.635" x2="-1.27" y1="-1.27" y2="-0.635"/>
+    <line width="0.2032" x1="-1.27" x2="-0.635" y1="0.635" y2="1.27"/>
+    <line width="0.2032" x1="0.635" x2="-0.635" y1="1.27" y2="1.27"/>
+    <line width="0.2032" x1="3.81" x2="3.81" y1="-0.635" y2="0.635"/>
+    <rectangle x1="2.286" x2="2.794" y1="0.254" y2="-0.254"/>
+    <rectangle x1="-0.254" x2="0.254" y1="0.254" y2="-0.254"/>
+    <text size="0.8672400000360212" weight="EXTRA_BOLD" x="-1.27" y="-1.397">&gt;NAME</text>
+    <text size="0.8672400000360212" weight="EXTRA_BOLD" x="-1.27" y="2.032">&gt;VALUE</text>
+    <pad padName="1" x="0.0" y="-0.0"/>
+    <pad padName="2" x="2.54" y="-0.0"/>
+  </package>
+  <part name="R2" packageRef="urn:adsk.eagle:library:348$0204/5" rotation="270.0" value="10k" x="30.44" y="17.240000000000002">
+    <pad id="0" padName="1"/>
+    <pad id="1" padName="2"/>
+  </part>
+  <part name="R3" packageRef="urn:adsk.eagle:library:348$0204/5" rotation="270.0" value="20k" x="10.120000000000001" y="17.240000000000002">
+    <pad id="2" padName="1"/>
+    <pad id="3" padName="2"/>
+  </part>
+  <part name="R4" packageRef="urn:adsk.eagle:library:348$0204/5" rotation="90.0" value="20k" x="10.120000000000001" y="9.620000000000001">
+    <pad id="4" padName="1"/>
+    <pad id="5" padName="2"/>
+  </part>
+  <part name="J1" packageRef="urn:adsk.eagle:library:513$1X02" rotation="270.0" value="" x="2.5" y="14.7">
+    <pad id="6" padName="1"/>
+    <pad id="7" padName="2"/>
+  </part>
+  <part name="J2" packageRef="urn:adsk.eagle:library:513$1X02" rotation="90.0" value="" x="48.22" y="12.16">
+    <pad id="8" padName="1"/>
+    <pad id="9" padName="2"/>
+  </part>
+  <part name="D1" packageRef="urn:adsk.eagle:library:210$DO35-7" rotation="0.0" value="1N4148" x="41.87" y="4.54">
+    <pad id="10" padName="A"/>
+    <pad id="11" padName="C"/>
+  </part>
+  <part name="R1" packageRef="urn:adsk.eagle:library:348$0204/5" rotation="180.0" value="20k" x="15.2" y="12.16">
+    <pad id="12" padName="1"/>
+    <pad id="13" padName="2"/>
+  </part>
+  <net name="N$1">
+    <junction id="14" x="2.4999999999999996" y="12.16"/>
+    <junction id="15" x="10.120000000000001" y="14.7"/>
+    <junction id="16" x="10.120000000000001" y="12.16"/>
+    <junction id="17" x="12.66" y="12.16"/>
+    <airwire from="7" to="14"/>
+    <airwire from="13" to="17"/>
+    <airwire from="3" to="15"/>
+    <trace from="14" isBridge="false" to="16"/>
+    <trace from="15" isBridge="false" to="16"/>
+    <airwire from="16" to="5"/>
+    <trace from="17" isBridge="false" to="16"/>
+  </net>
+  <net name="GND">
+    <junction id="18" x="10.120000000000001" y="19.78"/>
+    <junction id="19" x="2.5" y="14.7"/>
+    <junction id="20" x="34.25" y="19.78"/>
+    <junction id="21" x="48.22" y="14.7"/>
+    <junction id="22" x="38.06" y="14.7"/>
+    <junction id="23" x="38.06" y="19.78"/>
+    <junction id="24" x="2.5" y="19.78"/>
+    <airwire from="2" to="18"/>
+    <trace from="18" isBridge="false" to="24"/>
+    <airwire from="19" to="6"/>
+    <trace from="18" isBridge="false" to="20"/>
+    <airwire from="20" to="0"/>
+    <trace from="20" isBridge="false" to="23"/>
+    <airwire from="21" to="9"/>
+    <trace from="22" isBridge="false" to="21"/>
+    <trace from="24" isBridge="false" to="19"/>
+    <trace from="23" isBridge="true" to="22"/>
+  </net>
+  <net name="+5V"/>
+  <net name="N$2">
+    <junction id="25" x="48.22000000000001" y="12.16"/>
+    <junction id="26" x="30.44" y="12.16"/>
+    <junction id="27" x="30.44" y="14.7"/>
+    <junction id="28" x="17.74" y="12.16"/>
+    <airwire from="12" to="28"/>
+    <trace from="26" isBridge="false" to="25"/>
+    <airwire from="25" to="8"/>
+    <trace from="26" isBridge="false" to="27"/>
+    <airwire from="27" to="1"/>
+    <trace from="28" isBridge="false" to="26"/>
+  </net>
+</breadboard>
