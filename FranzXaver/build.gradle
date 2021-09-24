@@ -16,9 +16,9 @@ repositories {
 }
 
 dependencies {
-    compile 'org.apache.xmlgraphics:batik-dom:1.8'
-    compile 'org.apache.xmlgraphics:batik-anim:1.8'
-    compile 'org.apache.xmlgraphics:batik-bridge:1.8'
+    compile 'org.apache.xmlgraphics:batik-dom:1.9'
+    compile 'org.apache.xmlgraphics:batik-anim:1.9'
+    compile 'org.apache.xmlgraphics:batik-bridge:1.9'
     compile 'xalan:xalan:2.7.2'
     compile 'org.apache.logging.log4j:log4j-api:2.5'
 

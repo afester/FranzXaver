@@ -26,6 +26,8 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.CubicCurve;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.shape.Shape;
@@ -44,6 +46,8 @@ import org.apache.batik.anim.dom.SVGOMLinearGradientElement;
 import org.apache.batik.anim.dom.SVGOMMetadataElement;
 import org.apache.batik.anim.dom.SVGOMPathElement;
 import org.apache.batik.anim.dom.SVGOMPatternElement;
+import org.apache.batik.anim.dom.SVGOMPolygonElement;
+import org.apache.batik.anim.dom.SVGOMPolylineElement;
 import org.apache.batik.anim.dom.SVGOMRadialGradientElement;
 import org.apache.batik.anim.dom.SVGOMRectElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
@@ -55,9 +59,12 @@ import org.apache.batik.css.dom.CSSOMValue;
 import org.apache.batik.dom.svg.SVGPathSegItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import org.w3c.dom.css.CSSPrimitiveValue;
 import org.w3c.dom.css.CSSStyleDeclaration;
 import org.w3c.dom.svg.SVGRect;
+import org.w3c.dom.svg.SVGPoint;
+import org.w3c.dom.svg.SVGPointList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -269,6 +276,74 @@ public class SvgBasicElementHandler {
         
         LinearGradient gradientObject = gradientFactory.createLinearGradient(element, stops);
         styleTools.addPaint(id, gradientObject);
+    }
+
+    
+    /**
+     * Converts an SVGOMPolygonElement svg node to a JavaFX Polygon object.
+     *
+     * @param element The svg Polygon node to convert. 
+     */
+    void handleElement(SVGOMPolygonElement element) {
+        // Get attributes from SVG node
+        double[] coordinates = getCoordinates(element.getPoints());
+
+        // Create JavaFX Polygon object
+        Polygon result = new Polygon(coordinates);
+        result.setId(element.getId());
+
+        Affine transformation = styleTools.getTransform(element);
+        if (transformation != null) {
+            result.getTransforms().add(transformation);
+        }
+
+        styleTools.applyStyle(result, element);
+
+        loader.parentNode.getChildren().add(result);
+    }
+
+    
+    /**
+     * Converts an SVGOMPolylineElement svg node to a JavaFX Polyline object.
+     *
+     * @param element The svg PolyLine node to convert. 
+     */
+    void handleElement(SVGOMPolylineElement element) {
+        // Get attributes from SVG node
+        double[] coordinates = getCoordinates(element.getPoints());
+
+        // Create JavaFX Polygon object
+        Polyline result = new Polyline(coordinates);
+        result.setId(element.getId());
+
+        Affine transformation = styleTools.getTransform(element);
+        if (transformation != null) {
+            result.getTransforms().add(transformation);
+        }
+
+        styleTools.applyStyle(result, element);
+
+        loader.parentNode.getChildren().add(result);
+    }
+
+    
+    /**
+     * Returns an array with coordinate pairs from an SVGPointList.
+     *
+     * @param points The SVGPointList which contains the svg points.
+     * @return An array of X/Y coordinate pairs which correspond to the 
+     *         given svg point list.
+     */
+    private static double[] getCoordinates(SVGPointList points) {
+        int numberOfPoints = points.getNumberOfItems();
+        double[] coordinates = new double[2 * numberOfPoints];
+
+        for (int i = 0; i < numberOfPoints; i++) {
+            SVGPoint point = points.getItem(i);
+            coordinates[2 * i] = point.getX();
+            coordinates[2 * i + 1] = point.getY();
+        }
+        return coordinates;
     }
 
 

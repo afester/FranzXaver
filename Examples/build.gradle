@@ -17,9 +17,9 @@ dependencies {
     compile 'org.fxmisc.flowless:flowless:0.4.7'
 	compile files('../../RichTextFX/richtextfx/build/libs/richtextfx-fat-1.0.0-SNAPSHOT.jar')
 
-    runtime 'org.apache.xmlgraphics:batik-dom:1.8'
-    runtime 'org.apache.xmlgraphics:batik-anim:1.8'
-    runtime 'org.apache.xmlgraphics:batik-bridge:1.8'
+    runtime 'org.apache.xmlgraphics:batik-dom:1.9'
+    runtime 'org.apache.xmlgraphics:batik-anim:1.9'
+    runtime 'org.apache.xmlgraphics:batik-bridge:1.9'
     runtime 'xalan:xalan:2.7.2'
     runtime 'org.apache.logging.log4j:log4j-api:2.5'
     runtime 'org.apache.xmlgraphics:xmlgraphics-commons:2.1'
