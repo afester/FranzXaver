@@ -27,7 +27,7 @@ public class AboutDialog extends Dialog<Void> {
             Label javaFxVersionLabel = (Label) aboutPanel.lookup("#javaFxVersion");
             javaFxVersionLabel.setText(System.getProperty("javafx.runtime.version"));
 
-            final var log4jVersion = org.apache.logging.log4j.core.Layout.class.getPackage().getImplementationVersion();
+            final var log4jVersion = "unknown"; // org.apache.logging.log4j.core.Layout.class.getPackage().getImplementationVersion();
             Label log4jVersionLabel = (Label) aboutPanel.lookup("#log4jVersion");
             log4jVersionLabel.setText(log4jVersion);
 

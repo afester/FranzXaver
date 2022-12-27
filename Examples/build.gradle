@@ -1,28 +1,52 @@
-apply plugin: 'java'
-apply plugin: 'application'
-apply plugin: 'eclipse'
-apply from: 'webstart.gradle'
-apply from: 'fxdist.gradle'
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
+    id 'eclipse'
+    // id 'fxdist.gradle'
+}
+
+javafx {
+    version = '19'
+    modules = [ 'javafx.controls', 'javafx.graphics', 'javafx.fxml', 'javafx.swing']
+}
 
 version = project.properties['application.version']
 
-mainClassName = "afester.javafx.examples.AllExamples"
+mainClassName = "afester.javafx.examples.board.Main"
 
 repositories {
     mavenCentral()
 }
 
-dependencies {
-    compile project (":FranzXaver")
-    compile 'org.fxmisc.flowless:flowless:0.4.7'
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+            excludes = ['afester/javafx/examples/controls/WebViewExample.java',
+                        'afester/javafx/examples/table/dynamic/TableExample.java',
+                        'afester/javafx/examples/ttf/DoubleMatrixTest.java']
+       }
+   }
+}
 
-    runtime 'org.apache.xmlgraphics:batik-dom:1.9'
-    runtime 'org.apache.xmlgraphics:batik-anim:1.9'
-    runtime 'org.apache.xmlgraphics:batik-bridge:1.9'
-    runtime 'xalan:xalan:2.7.2'
-    runtime 'org.apache.logging.log4j:log4j-api:2.5'
-    runtime 'org.apache.xmlgraphics:xmlgraphics-commons:2.1'
-    runtime 'org.apache.logging.log4j:log4j-core:2.5'
+
+dependencies {
+    implementation project (":FranzXaver")
+    implementation 'org.fxmisc.flowless:flowless:0.4.7'
+    implementation 'org.apache.logging.log4j:log4j-api:2.5'
+    implementation 'junit:junit:4.12'
+
+    runtimeOnly 'org.apache.xmlgraphics:batik-dom:1.16'
+    runtimeOnly 'org.apache.xmlgraphics:batik-anim:1.16'
+    runtimeOnly 'org.apache.xmlgraphics:batik-bridge:1.16'
+    runtimeOnly 'xalan:xalan:2.7.2'
+    runtimeOnly 'org.apache.logging.log4j:log4j-api:2.5'
+    runtimeOnly 'org.apache.xmlgraphics:xmlgraphics-commons:2.1'
+    runtimeOnly 'org.apache.logging.log4j:log4j-core:2.5'
+
+    testImplementation 'org.apache.logging.log4j:log4j-api:2.5'
+    testImplementation 'junit:junit:4.12'
 }
 
 startScripts {
@@ -32,12 +56,28 @@ startScripts {
     }
 }
 
-
-wsCreateJnlp {
-    wsJnlpFilename = "franzxaver.jnlp"
-    wsTitle = "JavaFX examples"
-    wsVendor = "Andreas Fester"
-    wsName = "JavaFX sample application and component library"
-    wsMainClass = "afester.javafx.examples.AllExamples"
+task('dependenciesList') {
+    doLast {
+        println "Compile dependencies"
+        def selectedDeps = project.configurations.compileClasspath.incoming.resolutionResult.allDependencies.collect { dep ->
+            "${dep.selected}"
+        }
+        selectedDeps.unique().sort().each { println it}
+    }
 }
+
+task('dependencyPaths') {
+   doFirst{
+      sourceSets.main.runtimeClasspath.each { println it}
+   }
+}
+
+
+//wsCreateJnlp {
+//    wsJnlpFilename = "franzxaver.jnlp"
+//    wsTitle = "JavaFX examples"
+//    wsVendor = "Andreas Fester"
+//    wsName = "JavaFX sample application and component library"
+//    wsMainClass = "afester.javafx.examples.AllExamples"
+//}
 

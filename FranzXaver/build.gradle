@@ -1,5 +1,16 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
+
+plugins {
+    id 'java-library'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
+    id 'eclipse'
+}
+
+
+javafx {
+    version = '19'
+    modules = [ 'javafx.controls', 'javafx.graphics', 'javafx.fxml', 'javafx.swing']
+}
+
 
 version = project.properties['application.version']
 
@@ -11,19 +22,33 @@ sourceSets {
     }
 }
 
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+            excludes = ['afester/javafx/components/DynamicTable.java',
+                        'afester/javafx/components/MultiSegmentPanelBehavior.java']
+       }
+   }
+}
+
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compile 'org.apache.xmlgraphics:batik-dom:1.9'
-    compile 'org.apache.xmlgraphics:batik-anim:1.9'
-    compile 'org.apache.xmlgraphics:batik-bridge:1.9'
-    compile 'xalan:xalan:2.7.2'
-    compile 'org.apache.logging.log4j:log4j-api:2.5'
+    //implementation 'org.apache.xmlgraphics:batik-util:1.9'
+    // implementation 'org.apache.xmlgraphics:batik-dom:1.9'
+    implementation 'org.apache.xmlgraphics:batik-anim:1.16'
+    implementation 'org.apache.xmlgraphics:batik-bridge:1.16'
+    //implementation 'org.apache.xmlgraphics:batik-css:1.9'
+    // implementation 'xalan:xalan:2.7.2'
+    implementation 'org.apache.logging.log4j:log4j-api:2.5'
+    //implementation 'org.scilab.forge:jlatexmath:1.0.7'
 
-    runtime 'org.apache.xmlgraphics:xmlgraphics-commons:2.1'
-    runtime 'org.apache.logging.log4j:log4j-core:2.5'
+    runtimeOnly 'org.apache.xmlgraphics:xmlgraphics-commons:2.1'
+    runtimeOnly 'org.apache.logging.log4j:log4j-core:2.5'
 
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 }

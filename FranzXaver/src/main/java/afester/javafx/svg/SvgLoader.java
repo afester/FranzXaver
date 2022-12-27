@@ -36,7 +36,7 @@ import org.apache.batik.anim.dom.SVGOMPolylineElement;
 import org.apache.batik.anim.dom.SVGOMRadialGradientElement;
 import org.apache.batik.anim.dom.SVGOMRectElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
-import org.apache.batik.anim.dom.SVGOMTSpanElement;
+// import org.apache.batik.anim.dom.SVGOMTSpanElement;
 import org.apache.batik.anim.dom.SVGOMTextElement;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.DocumentLoader;
