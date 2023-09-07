@@ -17,6 +17,7 @@ mainClassName = "afester.javafx.examples.board.Main"
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 sourceSets {
@@ -33,13 +34,14 @@ sourceSets {
 
 dependencies {
     implementation project (":FranzXaver")
+    implementation 'xml-apis:xml-apis:2.0.2'
     implementation 'org.fxmisc.flowless:flowless:0.4.7'
     implementation 'org.apache.logging.log4j:log4j-api:2.5'
     implementation 'junit:junit:4.12'
 
-    runtimeOnly 'org.apache.xmlgraphics:batik-dom:1.16'
-    runtimeOnly 'org.apache.xmlgraphics:batik-anim:1.16'
-    runtimeOnly 'org.apache.xmlgraphics:batik-bridge:1.16'
+    runtimeOnly 'org.apache.xmlgraphics:batik-dom:1.17.0-SNAPSHOT'
+    runtimeOnly 'org.apache.xmlgraphics:batik-anim:1.17.0-SNAPSHOT'
+    runtimeOnly 'org.apache.xmlgraphics:batik-bridge:1.17.0-SNAPSHOT'
     runtimeOnly 'xalan:xalan:2.7.2'
     runtimeOnly 'org.apache.logging.log4j:log4j-api:2.5'
     runtimeOnly 'org.apache.xmlgraphics:xmlgraphics-commons:2.1'

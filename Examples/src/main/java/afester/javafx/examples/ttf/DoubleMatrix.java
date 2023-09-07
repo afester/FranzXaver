@@ -42,7 +42,7 @@ public class DoubleMatrix {
 //        String header = String.format("/%0" + (width - 2) +  "d\\\n", 0).replace("0", " "); 
 //        String footer = String.format("\\%0" + (width - 2) + "d/\n", 0).replace("0", " "); 
         String header = String.format(".-%0" + (width - 4) +  "d-.\n", 0).replace("0", " "); 
-        String footer = String.format("`-%0" + (width - 4) + "d-´\n", 0).replace("0", " "); 
+        String footer = String.format("`-%0" + (width - 4) + "d-.\n", 0).replace("0", " "); 
 
         StringBuffer result = new StringBuffer();
         int idx = 0;

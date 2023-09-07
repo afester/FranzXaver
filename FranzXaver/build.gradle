@@ -35,13 +35,14 @@ sourceSets {
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
     //implementation 'org.apache.xmlgraphics:batik-util:1.9'
     // implementation 'org.apache.xmlgraphics:batik-dom:1.9'
-    implementation 'org.apache.xmlgraphics:batik-anim:1.16'
-    implementation 'org.apache.xmlgraphics:batik-bridge:1.16'
+    implementation 'org.apache.xmlgraphics:batik-anim:1.17.0-SNAPSHOT'
+    implementation 'org.apache.xmlgraphics:batik-bridge:1.17.0-SNAPSHOT'
     //implementation 'org.apache.xmlgraphics:batik-css:1.9'
     // implementation 'xalan:xalan:2.7.2'
     implementation 'org.apache.logging.log4j:log4j-api:2.5'

@@ -112,7 +112,7 @@ public class Part {
     }
 
     /**
-     * @return The value of this part (like 1,2k / 4,7µF / BC547)
+     * @return The value of this part (like 1,2k / 4,7ÂµF / BC547)
      */
     public String getValue() {
         return partValue;
@@ -147,7 +147,7 @@ public class Part {
 
 
     /**
-     * Rotates the part 90° clockwise. 
+     * Rotates the part 90Â° clockwise. 
      */
     public void rotateClockwise() {
         double rot = getRotation();

@@ -1,6 +1,6 @@
-# .project
-# .classpath
-# .settings
+.project
+.classpath
+.settings
 
 .gradle
 bin

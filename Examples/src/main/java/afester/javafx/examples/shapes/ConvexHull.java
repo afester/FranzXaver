@@ -123,7 +123,7 @@ public class ConvexHull extends Application {
 
         // sort remaining points by polar angle with P0, 
         // !! TODO: if several points have the same polar angle then only keep the farthest
-        // Note: can be at most 180° since P0 is the lowest point!
+        // Note: can be at most 180Â° since P0 is the lowest point!
         List<Point2D> sorted = new ArrayList<>();
         points.stream()
               .filter(e -> e != P0)
@@ -154,7 +154,7 @@ public class ConvexHull extends Application {
 //    private void dumpAngles(Point2D P0, List<Point2D> points) {
 //        for (Point2D p : points) {
 //            double angle = UNIT_X.angle(p.subtract(P0));
-//            System.err.printf("  %s -> %s°\n", p, angle);
+//            System.err.printf("  %s -> %sÂ°\n", p, angle);
 //        }
 //    }
 
