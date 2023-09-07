@@ -746,6 +746,7 @@ public class BreadBoardEditor extends Application {
         final long startTime = System.currentTimeMillis();
 
         log.info("Setting up UI ...");
+        stage.setTitle(String.format("%s (%s)", board.getFileName(), board.getSchematicFile()));
         topView = new TopBoardView(board, props);
 
         topDrawingView.getPaper().getChildren().clear();

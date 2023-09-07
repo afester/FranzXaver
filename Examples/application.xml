@@ -4,9 +4,9 @@
 <comment>BreadBoardEditor</comment>
 <entry key="appWidth">1566.0</entry>
 <entry key="TOPTRACE_HIGHLIGHTED.width">1.0</entry>
-<entry key="BOTTOMPIN.color">0x000000ff</entry>
-<entry key="BOTTOMAIRWIRE_SELECTED.color">0xff0000ff</entry>
 <entry key="TOPBRIDGE_NORMAL.color">0x525252ff</entry>
+<entry key="BOTTOMAIRWIRE_SELECTED.color">0xff0000ff</entry>
+<entry key="BOTTOMPIN.color">0x000000ff</entry>
 <entry key="TOPAIRWIRE_HIGHLIGHTED.color">0x000000ff</entry>
 <entry key="BOTTOMBRIDGE_NORMAL.color">0x000000ff</entry>
 <entry key="BOTTOMBOARD.linestyle">SOLID</entry>
@@ -66,7 +66,7 @@
 <entry key="TOPPIN.color">0x000000ff</entry>
 <entry key="BOTTOMTRACE_HIGHLIGHTED.width">1.0</entry>
 <entry key="TOPTRACE_HIGHLIGHTED.opacity">1.0</entry>
-<entry key="verticalSplitter">0.7618437900128041</entry>
+<entry key="verticalSplitter">0.6274007682458387</entry>
 <entry key="TOPAIRWIRE_NORMAL.linestyle">SOLID</entry>
 <entry key="BOTTOMTRACE_SELECTED.linestyle">SOLID</entry>
 <entry key="BOTTOMPIN.width">0.5</entry>
