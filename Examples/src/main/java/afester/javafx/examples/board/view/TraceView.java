@@ -190,9 +190,11 @@ public class TraceView extends AbstractEdgeView implements Interactable {
     private void setAirwireVisual(AbstractWireState newState) {
         switch(newState) {
             case NORMAL:
-//                setStroke(Color.ORANGE);
-//                setStrokeWidth(0.3);
-//1                getStyleClass().add("AirwireNormal");
+                if (isBottom) {
+                    updateStyle(props.getStyle(StyleSelector.BOTTOMAIRWIRE_NORMAL));
+                } else {
+                    updateStyle(props.getStyle(StyleSelector.TOPAIRWIRE_NORMAL));
+                }
                 break;
 
             case HIGHLIGHTED:

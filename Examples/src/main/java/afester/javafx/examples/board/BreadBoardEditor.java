@@ -712,15 +712,15 @@ public class BreadBoardEditor extends Application {
 //                    }
 
                         Board board = topView.getBoard();
-                        appendLog("Synchronizing board " + board.getFileName() + "\n");
-                        appendLog("With schematic      " + board.getSchematicFile() + "\n");
+                        appendLog("Synchronizing board: " + board.getFileName() + "\n");
+                        appendLog("With schematic     : " + board.getSchematicFile() + "\n");
                         try {
                             board.synchronizeSchematic(log -> appendLog(log));
                         } catch(Exception e) {
                             e.printStackTrace();
                         }
                         appendLog("Board synchronized." + "\n");
-
+                    	
                         return null;
                     }
                 };
@@ -858,7 +858,7 @@ public class BreadBoardEditor extends Application {
     }
 
 
-    public static void main(String[] args) {
+    public static void boardMain(String[] args) {
         launch(args);
     }
 

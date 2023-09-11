@@ -5,7 +5,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -394,8 +396,6 @@ public class Board {
         potentiallyModifiedNets.forEach(netName -> {
             Net oldNet = getNets().get(netName);
             Net newNet = updatedBoard.getNets().get(netName);
-//            System.err.println("    " + oldNet);
-//            System.err.println(" <=>" + newNet);
             if (!oldNet.sameAs(newNet)) {
                 modifiedNets.add(netName);
             }
@@ -405,88 +405,88 @@ public class Board {
         log.accept(String.format("Added    nets: %s\n", addedNets));
         log.accept(String.format("Modified nets: %s\n", modifiedNets));
 
-//        removedNets.forEach(netName -> {
-//            Net net = getNets().get(netName);
-//            net.clear();
-//            getNets().remove(netName);
-//        });
-//
-//        modifiedNets.forEach(netName -> {
-//            System.err.printf("Recreating Net %s\n", netName);
-//
-//            Net oldnet = getNets().get(netName);
-//            oldnet.clear();
-//            getNets().remove(netName);
-//
-//            // TODO: The following code is the same as in addedNets below! 
-//            List<Pin> padList = new ArrayList<>();
-//            Net newNet = updatedBoard.getNets().get(netName);
-//            newNet.getPads().forEach(pad -> {
-//                String partName = pad.getPart().getName();
-//                Part part = getParts().get(partName);
-//
-//                if (part != null) {
-//                    final String padName = pad.getPadName();
-//                    System.err.printf("   %s, %s\n", part, padName);
-//
-//                    final Pin p = part.getPin(padName);
-//
-//                    if (p != null) {
-//                        padList.add(p);
-//                    } else {
-//                        System.err.printf("WARNING: Pin %s not found in Part %s\n", padName, partName);
-//                    }
-//                } else {
-//                    System.err.printf("WARNING: Part %s not found in board\n", partName);
-//                }
-//            });
-//
-//            // Create a new net and connect all pads through an AirWire (TODO: duplicate code in EagleNetImport)
-//            Net net = new Net(netName);
-//            Pin p1 = null;
-//            for (Pin p2 : padList) {
-//                if (p1 != null) {
-//                    net.addTrace(new AirWire(p1, p2, net));
-//                }
-//                p1 = p2;
-//            }
-//
-//            addNet(net);
-//        });
-//
-//        addedNets.forEach(netName -> {
-//            List<Pin> padList = new ArrayList<>();
-//            Net newNet = updatedBoard.getNets().get(netName);
-//            newNet.getPads().forEach(pad -> {
-//                String partName = pad.getPart().getName();
-//                Part part = getParts().get(partName);
-//                if (part != null) {
-//                    final String padName = pad.getPadName();
-//                    final Pin p = part.getPin(padName);
-//                    if (p != null) {
-//                        padList.add(p);
-//                    } else {
-//                        System.err.printf("WARNING: Pin %s not found in Part %s\n", padName, partName);
-//                    }
-//                } else {
-//                    System.err.printf("WARNING: Part %s not found in board\n", partName);
-//                }
-//            });
-//
-//            // Create a new net and connect all pads through an AirWire (TODO: duplicate code in EagleNetImport)
-//            Net net = new Net(netName);
-//            Pin p1 = null;
-//            for (Pin p2 : padList) {
-//                if (p1 != null) {
-//                    net.addTrace(new AirWire(p1, p2, net));
-//                }
-//                p1 = p2;
-//            }
-//
-//            addNet(net);
-//        });
-//
-//        // getNets().forEach( (k, n) -> n.dumpNet());
+        removedNets.forEach(netName -> {
+            Net net = getNets().get(netName);
+            net.clear();
+            getNets().remove(netName);
+        });
+
+        modifiedNets.forEach(netName -> {
+            System.err.printf("Recreating Net %s\n", netName);
+
+            Net oldnet = getNets().get(netName);
+            oldnet.clear();
+            getNets().remove(netName);
+
+            // TODO: The following code is the same as in addedNets below! 
+            List<Pin> padList = new ArrayList<>();
+            Net newNet = updatedBoard.getNets().get(netName);
+            newNet.getPads().forEach(pad -> {
+                String partName = pad.getPart().getName();
+                Part part = getParts().get(partName);
+
+                if (part != null) {
+                    final String padName = pad.getPadName();
+                    System.err.printf("   %s, %s\n", part, padName);
+
+                    final Pin p = part.getPin(padName);
+
+                    if (p != null) {
+                        padList.add(p);
+                    } else {
+                        System.err.printf("WARNING: Pin %s not found in Part %s\n", padName, partName);
+                    }
+                } else {
+                    System.err.printf("WARNING: Part %s not found in board\n", partName);
+                }
+            });
+
+            // Create a new net and connect all pads through an AirWire (TODO: duplicate code in EagleNetImport)
+            Net net = new Net(netName);
+            Pin p1 = null;
+            for (Pin p2 : padList) {
+                if (p1 != null) {
+                	net.addTrace(new Trace(TraceType.AIRWIRE), p1, p2);
+                }
+                p1 = p2;
+            }
+
+            addNet(net);
+        });
+
+        addedNets.forEach(netName -> {
+            List<Pin> padList = new ArrayList<>();
+            Net newNet = updatedBoard.getNets().get(netName);
+            newNet.getPads().forEach(pad -> {
+                String partName = pad.getPart().getName();
+                Part part = getParts().get(partName);
+                if (part != null) {
+                    final String padName = pad.getPadName();
+                    final Pin p = part.getPin(padName);
+                    if (p != null) {
+                        padList.add(p);
+                    } else {
+                        System.err.printf("WARNING: Pin %s not found in Part %s\n", padName, partName);
+                    }
+                } else {
+                    System.err.printf("WARNING: Part %s not found in board\n", partName);
+                }
+            });
+
+            // Create a new net and connect all pads through an AirWire (TODO: duplicate code in EagleNetImport)
+            Net net = new Net(netName);
+            Pin p1 = null;
+            for (Pin p2 : padList) {
+                if (p1 != null) {
+                    net.addTrace(new Trace(TraceType.AIRWIRE), p1, p2);
+                }
+                p1 = p2;
+            }
+
+            addNet(net);
+        });
+
+        // getNets().forEach( (k, n) -> n.dumpNet());
     }
 
     
@@ -513,19 +513,23 @@ public class Board {
             log.accept(String.format("  %s => %s\n", oldPin, newPin));
 
             if (oldPin != null) {
-                oldPin.getEdges().forEach(e -> {
-                    log.accept(String.format("  Adding %s to %s\n", e, newPin));
+            	var iter = oldPin.getEdges().iterator();
+            	while(iter.hasNext()) {
+            		var e = iter.next();
+                    log.accept(String.format("  Reconnect %s\n", e));
+                    log.accept(String.format("            to %s\n", newPin));
 
                     // e.reconnect(oldPin, newPin);  // throws CME
                     newPin.addEdge(e);
                     if (e.getFrom() == oldPin) {
-                        e.fromProperty().setValue(newPin);
+                        e.setFrom(newPin);
                     } else  if (e.getTo() == oldPin) {
-                        e.toProperty().setValue(newPin);
+                        e.setTo(newPin);
                     } else {
                         log.accept("ERROR: pin is neither FROM nor TO!");
                     }
-                });
+                    iter.remove();
+            	}
             }
         }
     }

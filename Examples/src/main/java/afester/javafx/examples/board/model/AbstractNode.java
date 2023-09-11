@@ -131,11 +131,4 @@ public abstract class AbstractNode {
 
         return result.stream().collect(Collectors.toList());
     }
-
-    /**
-     * @return The number of edges which are connected to this node.
-     */
-    public int getEdgeCount() {
-        return edges.size();
-    }
 }

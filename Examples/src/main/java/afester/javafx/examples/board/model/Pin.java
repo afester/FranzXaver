@@ -57,34 +57,6 @@ public final class Pin extends AbstractNode {
     }
 
     @Override
-    public int hashCode() {
-        final String key = getPadId();
-
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + key.hashCode();
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Pin other = (Pin) obj;
-        
-        final String key = getPadId();
-
-        if (!key.equals(other.getPadId()))
-            return false;
-        return true;
-    }
-
-
-    @Override
     public String toString() {
         return String.format("Pin[part=\"%s\", padName=\"%s\", pos=%s]", 
                              (part == null? "null" : part.getName()), getPadName(), /*pin + "@" + gate,*/ getPosition());  

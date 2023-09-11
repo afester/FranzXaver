@@ -96,13 +96,11 @@ public abstract class AbstractEdge {
      * @param newNode The new node to which the edge shall be connected.
      */
     public void reconnect(AbstractNode currentNode, AbstractNode newNode) {
+        newNode.getEdges().add(this);
+        currentNode.getEdges().remove(this);
         if (getFrom() == currentNode) {
-            currentNode.getEdges().remove(this);
-            newNode.getEdges().add(this);
             setFrom(newNode);
         } else if (getTo() == currentNode) {
-            currentNode.getEdges().remove(this);
-            newNode.getEdges().add(this);
             setTo(newNode);
         } else {
             throw new RuntimeException("Unexpected: Edge does neither go FROM nor TO the given node!");

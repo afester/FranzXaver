@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Group;
 
 /**
- * A ColorGroup contains the visualization of all shapes which share the same
+ * A StyleGroup contains the visualization of all shapes which share the same
  * style.
  */
 public class StyleGroup extends Group {
